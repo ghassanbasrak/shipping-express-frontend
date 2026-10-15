@@ -1,0 +1,32 @@
+export default interface IShippingCompany {
+  id: string;
+  _id?: string;
+  name?: string;
+  serviceName?: string;
+  hasState?: boolean;
+  isEnglish?: boolean;
+  isActive?: boolean;
+  internationalProfitsRate?: number;
+  internationalProfitsExtras?: number;
+  localPrice?: number;
+  codPrice?: number;
+  maxWeight?: number;
+  extraWeightPrice?: number;
+  returnFees?: number;
+  shipmentFees?: number;
+  shipmentCodFees?: number;
+  shipmentExtraWeightFees?: number;
+  shipmentReturnFees?: number;
+  fuelPercentage?: number;
+  color?: string;
+  logoUrl?: string;
+  iconUrl?: string;
+  shippingMethods?: string[];
+  shipmentsCount?: number;
+  packageRequestsCount?: number;
+  shipmentCountriesCount?: number;
+  shipmentStatesCount?: number;
+  shipmentCitiesCount?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}

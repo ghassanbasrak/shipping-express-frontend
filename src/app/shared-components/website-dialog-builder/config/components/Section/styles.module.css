@@ -1,0 +1,17 @@
+.Section:not(.Section .Section) {
+  width: 100%;
+  margin-right: auto;
+  margin-left: auto;
+  padding-right: 1.75rem;
+  padding-left: 1.75rem;
+}
+
+/* @media (min-width: 1150px) {
+  .Section:not(.Section .Section) {
+    max-width: 1150px;
+  }
+} */
+
+.Section:not(.Section .Section) .Section-inner {
+  width: 100%;
+}

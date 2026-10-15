@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="description" content="Ashamco Express" />
+    <meta name="keywords" content="Ashamco Express" />
+    <meta name="author" content="Ashamco Express" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="theme-color" content="#000000" />
+    <base href="/" />
+
+    <link href="/assets/tailwind-base.css" rel="stylesheet" />
+
+    <!--
+          manifest.json provides metadata used when your web app is added to the
+          homescreen on Android. See https://developers.google.com/web/fundamentals/engage-and-retain/web-app-manifest/
+        -->
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="shortcut icon" href="/favicon.png" />
+
+    <!--<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">-->
+
+    <!--        You can choose main icon from variety of the material ui icon fonts-->
+    <link
+      href="/assets/fonts/material-design-icons/MaterialIconsOutlined.css"
+      rel="stylesheet"
+    />
+    <!--        <link href="/assets/fonts/material-design-icons/MaterialIcons.css" rel="stylesheet">-->
+    <!--        <link href="/assets/fonts/material-design-icons/MaterialIconsRound.css" rel="stylesheet">-->
+    <!--        <link href="/assets/fonts/material-design-icons/MaterialIconsSharp.css" rel="stylesheet">-->
+    <!--        <link href="/assets/fonts/material-design-icons/MaterialIconsTwoTone.css" rel="stylesheet">-->
+
+    <link href="/assets/fonts/inter/inter.css" rel="stylesheet" />
+    <link href="/assets/fonts/meteocons/style.css" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/react-quill@1.3.3/dist/quill.snow.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.2/styles/github.min.css"
+    />
+
+    <noscript id="emotion-insertion-point"></noscript>
+    <!--
+          Notice the use of  in the tags above.
+          It will be replaced with the URL of the `public` folder during the build.
+          Only files inside the `public` folder can be referenced from the HTML.
+
+          Unlike "/favicon.ico" or "favicon.ico", "/favicon.ico" will
+          work correctly both with client-side routing and a non-root public URL.
+          Learn how to configure a non-root public URL by running `npm run build`.
+        -->
+    <title>Ashamco Express</title>
+
+    <!-- FUSE Splash Screen CSS -->
+    <style>
+      body #fuse-splash-screen {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ffffff;
+        color: #f9fafb;
+        z-index: 999999;
+        pointer-events: none;
+        opacity: 1;
+        visibility: visible;
+        transition: opacity 400ms cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      /* body #fuse-splash-screen img {
+                width: 120px;
+                max-width: 120px;
+            } */
+
+      #spinner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 40px;
+        width: 56px;
+      }
+
+      #spinner > div {
+        width: 12px;
+        height: 12px;
+        background-color: #0f1ca6;
+        border-radius: 100%;
+        display: inline-block;
+        -webkit-animation: fuse-bouncedelay 1s infinite ease-in-out both;
+        animation: fuse-bouncedelay 1s infinite ease-in-out both;
+      }
+
+      #white-spinner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 40px;
+        width: 56px;
+      }
+
+      #white-spinner > div {
+        width: 12px;
+        height: 12px;
+        background-color: #ffffff;
+        border-radius: 100%;
+        display: inline-block;
+        -webkit-animation: fuse-bouncedelay 1s infinite ease-in-out both;
+        animation: fuse-bouncedelay 1s infinite ease-in-out both;
+      }
+
+      #spinner .bounce1 {
+        -webkit-animation-delay: -0.32s;
+        animation-delay: -0.32s;
+      }
+
+      #spinner .bounce2 {
+        -webkit-animation-delay: -0.16s;
+        animation-delay: -0.16s;
+      }
+
+      #white-spinner .bounce1 {
+        -webkit-animation-delay: -0.32s;
+        animation-delay: -0.32s;
+      }
+
+      #white-spinner .bounce2 {
+        -webkit-animation-delay: -0.16s;
+        animation-delay: -0.16s;
+      }
+
+      @-webkit-keyframes fuse-bouncedelay {
+        0%,
+        80%,
+        100% {
+          -webkit-transform: scale(0);
+        }
+        40% {
+          -webkit-transform: scale(1);
+        }
+      }
+
+      @keyframes fuse-bouncedelay {
+        0%,
+        80%,
+        100% {
+          -webkit-transform: scale(0);
+          transform: scale(0);
+        }
+        40% {
+          -webkit-transform: scale(1);
+          transform: scale(1);
+        }
+      }
+      .ql-container.ql-snow {
+        height: 350px !important;
+      }
+
+      .ql-html-buttonGroup {
+        position: absolute;
+        bottom: -15px !important;
+        transform: scale(1.5);
+        left: calc(50% - 60px);
+      }
+
+      .ql-html-popupContainer {
+        direction: ltr;
+      }
+
+      .ql-toolbar {
+        direction: ltr;
+      }
+
+      .ql-editor.ql-blank::before {
+        display: block; /* needed to allow for the below margin */
+        margin-bottom: -1.42em; /* pulls content below the placeholder up to match the position: absolute behavior where content is on the same line as the placeholder; 1.42 matches the line-height of the editor */
+        position: static;
+      }
+    </style>
+    <!-- / FUSE Splash Screen CSS -->
+  </head>
+  <body>
+    <noscript> You need to enable JavaScript to run this app. </noscript>
+
+    <div id="root" class="flex">
+      <!-- FUSE Splash Screen -->
+      <div id="fuse-splash-screen">
+        <div>
+          <img width="256" src="assets/images/logo/logo-text.png" alt="logo" />
+        </div>
+        <div id="spinner">
+          <div class="bounce1"></div>
+          <div class="bounce2"></div>
+          <div class="bounce3"></div>
+        </div>
+      </div>
+      <!-- / FUSE Splash Screen -->
+    </div>
+    <script type="module" src="/src/index.tsx"></script>
+
+    <!--
+      This HTML file is a template.
+      If you open it directly in the browser, you will see an empty page.
+
+      You can add webfonts, meta tags, or analytics to this file.
+      The build step will place the bundled scripts into the <body> tag.
+
+      To begin the development, run `npm start` or `yarn start`.
+      To create a production bundle, use `npm run build` or `yarn build`.
+    -->
+  </body>
+</html>

@@ -1,0 +1,110 @@
+.Button {
+  -webkit-tap-highlight-color: transparent;
+  --background: 0 0% 97%;
+  --foreground: 200 4% 44%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+  --primary: 358 71% 43%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 45 80% 54%;
+  --secondary-foreground: 210 20% 96%;
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --accent: 210 40% 96.1%;
+  --accent-foreground: 222.2 47.4% 11.2%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 358, 71%, 43%;
+  --radius: 0.5rem;
+  --swiper-theme-color: #007aff;
+  --swiper-navigation-size: 44px;
+  box-sizing: border-box;
+  --tw-border-spacing-x: 0;
+  --tw-border-spacing-y: 0;
+  --tw-translate-x: 0;
+  --tw-translate-y: 0;
+  --tw-rotate: 0;
+  --tw-skew-x: 0;
+  --tw-skew-y: 0;
+  --tw-scale-x: 1;
+  --tw-scale-y: 1;
+  --tw-scroll-snap-strictness: proximity;
+  --tw-ring-offset-width: 0px;
+  --tw-ring-color: rgb(59 130 246 / 0.5);
+  --tw-ring-offset-shadow: 0 0 #0000;
+  --tw-ring-shadow: 0 0 #0000;
+  font-family: inherit;
+  font-feature-settings: inherit;
+  font-variation-settings: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+  margin: 0;
+  text-transform: none;
+  -webkit-appearance: button;
+  background-image: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  border-radius: calc(var(--radius) - 2px);
+  border-width: 2px;
+  
+  font-weight: 600;
+  --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+  --tw-ring-offset-color: hsl(var(--background));
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+  animation-duration: 300ms;
+}
+
+.Button--sm {
+  height: 3rem;
+  padding: 1rem; 
+  font-size: 1rem;
+  /* line-height: 1.25rem; */
+}
+.Button--default {
+  height: 3.5rem;
+  padding: 1.5rem; 
+  font-size: 1.3rem;
+}
+.Button--lg {
+  height: 4rem;
+  padding: 2rem; 
+  font-size: 1.45rem;
+}
+
+.Button--primary-outlined {
+  fill: hsl(var(--background));
+  border-style: solid;
+  list-style: none;
+  user-select: text;
+  color: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+}
+.Button--primary-contained {
+  border: 0 solid #e5e7eb;
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+.Button--secondary-outlined {
+  fill: hsl(var(--background));
+  border-style: solid;
+  list-style: none;
+  user-select: text;
+  color: hsl(var(--secondary));
+  border-color: hsl(var(--secondary));
+}
+.Button--secondary-contained {
+  border: 0 solid #e5e7eb;
+  background-color: hsl(var(--secondary));
+  color: hsl(var(--secondary-foreground));
+}

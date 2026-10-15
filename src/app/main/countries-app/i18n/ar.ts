@@ -1,0 +1,102 @@
+const locale = {
+  COUNTRIES: "الدول",
+  SEARCH_COUNTRIES: "البحث في الدول",
+  ADD_COUNTRY: "إضافة دولة",
+  SAVE_COUNTRY: "حفظ الدولة",
+  NO_COUNTRIES: "لا يوجد دول!",
+  NAME: "الاسم",
+  SUBZONE_NAME: "اسم المنطقة الفرعية",
+  REGION: "المنطقة",
+  CODE: "الرمز",
+  DIAL_CODE: "اللاحقة الدولية",
+  FLAG_URL: "رابط علم الدولة",
+  REQUIRED_FIELD: "هذا الحقل مطلوب",
+  TWO_CHARACTERS_AT_LEAST: "يجب إدخال محرفين على الأقل",
+  TWO_CHARACTERS_MAX: "يجب إدخال محرفين على الأكثر",
+  UPPERCASE: "يجب إدخال حروف إنكليزية كبيرة فقط",
+  INVALID_URL: "الرابط غير صالح",
+
+  ADD_NEW_COUNTRY: "إضافة دولة جديدة",
+  EDIT_COUNTRY: "تعديل الدولة",
+
+  COUNTRY_DETAILS: "معلومات الدولة",
+  NO_SUCH_COUNTRY: "لا يوجد مثل هذا الدولة",
+  GO_TO_COUNTRIES: "الذهاب إلى صفحة الدول",
+  REMOVE: "حذف",
+  REMOVING: "جاري الحذف..",
+  SAVE: "حفظ",
+  BASIC_INFO: "المعلومات الرئيسية",
+
+  SOMETHING_WENT_WRONG_WHEN_SAVE_COUNTRY: "حدث خطأ عند حفظ الدولة!",
+  SOMETHING_WENT_WRONG_WHEN_ADD_COUNTRY: "حدث خطأ عند إضافة الدولة!",
+  SOMETHING_WENT_WRONG_WHEN_REMOVE_COUNTRY: "حدث خطأ عند حذف الدولة!",
+  SOMETHING_WENT_WRONG_WHEN_SAVE_STATE: "حدث خطأ عند حفظ الولاية!",
+  SOMETHING_WENT_WRONG_WHEN_ADD_STATE: "حدث خطأ عند إضافة الولاية!",
+  SOMETHING_WENT_WRONG_WHEN_REMOVE_STATE: "حدث خطأ عند حذف الولاية!",
+
+  COUNTRY_SAVED_SUCCESSFULLY: "تم حفظ الدولة بنجاح",
+  COUNTRY_REMOVED_SUCCESSFULLY: "تم حذف الدولة بنجاح",
+  STATE_SAVED_SUCCESSFULLY: "تم حفظ الولاية بنجاح",
+  STATE_ADDED_SUCCESSFULLY: "تم إضافة الولاية بنجاح",
+  STATE_REMOVED_SUCCESSFULLY: "تم حذف الولاية بنجاح",
+  STATES: "الولايات",
+  PLEASE_FILL_ALL_REQUIRED_FIELDS: "يرجى ملأ جميع الحقول المطلوبة",
+  NEW_STATE: "ولاية جديدة",
+  STATE_NAME: "اسم الولاية",
+  SAVING: "جاري الحفظ",
+  ADD_STATE: "إضافة ولاية",
+  ADD: "إضافة",
+  ADDING: "جاري الإضافة..",
+
+  //! new
+  REMOVE_COUNTRY_TITLE: "حذف الدولة",
+  REMOVE_COUNTRY_MESSAGE: "هل أنت متأكد من حذف هذا الدولة؟",
+  VIEW: "عرض",
+  SOMETHING_WENT_WRONG_WHEN_GET_COUNTRIES: "حدث خطأ عند جلب الدول!",
+
+  SHIPPING_COMPANY: "شركة الشحن",
+  ALL: "الكل",
+  START_DATE: "تاريخ البداية",
+  END_DATE: "تاريخ الإنتهاء",
+  SHIPPING_COMPANIES: "شركات الشحن",
+  EDIT_NAMES: "تعديل التسمية",
+  NAMES_CONFIG: "إعدادات التسمية",
+  SOMETHING_WENT_WRONG_WHEN_SAVE_SHIPMENT_COUNTRY:
+    "حدث خطأ عند حفظ اسم الدولة!",
+  SOMETHING_WENT_WRONG_WHEN_REMOVE_SHIPMENT_COUNTRY:
+    "حدث خطأ عند حذف اسم الدولة!",
+  SOMETHING_WENT_WRONG_WHEN_ACTIVATE_SHIPMENT_COUNTRY:
+    "حدث خطأ عند تفعيل اسم الدولة!",
+  SOMETHING_WENT_WRONG_WHEN_DEACTIVATE_SHIPMENT_COUNTRY:
+    "حدث خطأ عند إلغاء تفعيل اسم الدولة!",
+  SHIPMENT_COUNTRY_SAVED_SUCCESSFULLY: "تم حفظ اسم الدولة بنجاح",
+  SHIPMENT_COUNTRY_REMOVED_SUCCESSFULLY: "تم حذف اسم الدولة بنجاح",
+  SHIPMENT_COUNTRY_ACTIVATED_SUCCESSFULLY: "تم تفعيل اسم الدولة بنجاح",
+  SHIPMENT_COUNTRY_DEACTIVATED_SUCCESSFULLY: "تم إلغاء تفعيل اسم الدولة بنجاح",
+  CHANGE_NAMES_AFTER_SAVE:
+    "بإمكانك تعديل الاسماء لشركات الشحن عند إضافة الدولة",
+  OTHER_COUNTRY_DETAILS: "معلومات أخرى عن الدولة",
+  CREATED_AT: "تاريخ الإنشاء",
+  ACTIONS: "العمليات",
+  CHANGE_NAMING_CONFIG_FOR: "تعديل إعدادات التسمية للدولة",
+  VIEW_STATES: "عرض المحافظات",
+};
+
+Object.assign(locale, {
+  RETRY: "إعادة المحاولة",
+  CANCEL: "إلغاء",
+  CLOSE: "إغلاق",
+  RESET_FILTERS: "إعادة ضبط الفلاتر",
+  ACTIVE: "مفعّل",
+  LOOKUP_ERROR: "تعذر تحميل شركات الشحن. يرجى إعادة المحاولة.",
+  LANGUAGES_ERROR: "تعذر تحميل اللغات الإضافية. العربية والإنجليزية متاحتان.",
+  PARTIAL_SAVE:
+    "تم حفظ الدولة، لكن تعذر حفظ بعض أسماء شركات الشحن. احتفظنا بتعديلاتك هنا لتتمكن من إعادة المحاولة.",
+  PARTIAL_REMOVE: "تم حذف الدولة، لكن تعذر حذف بعض روابط شركات الشحن.",
+  SOMETHING_WENT_WRONG: "تعذر تنفيذ الطلب. يرجى إعادة المحاولة.",
+  SEARCH_STATES: "البحث في المناطق",
+  STATE_PREVIEW: "المناطق",
+  NO_STATES: "لا توجد مناطق لهذه الدولة.",
+  CHANGES_NOT_SAVED: "بعض التعديلات لم تُحفظ بعد.",
+});
+export default locale;

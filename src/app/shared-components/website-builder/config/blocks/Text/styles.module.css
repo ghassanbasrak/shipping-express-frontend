@@ -1,0 +1,33 @@
+.Text--xxxxl {
+  font-size: var(--puck-font-size-xxxxl);
+  letter-spacing: 0.08ch;
+  font-weight: 800;
+}
+
+.Text--xxxl {
+  font-size: var(--puck-font-size-xxxl);
+}
+
+.Text--xxl {
+  font-size: var(--puck-font-size-xxl);
+}
+
+.Text--xl {
+  font-size: var(--puck-font-size-xl);
+}
+
+.Text--l {
+  font-size: var(--puck-font-size-l);
+}
+
+.Text--m {
+  font-size: var(--puck-font-size-m);
+}
+
+.Text--s {
+  font-size: var(--puck-font-size-s);
+}
+
+.Text--xs {
+  font-size: var(--puck-font-size-xs);
+}
