@@ -11,6 +11,7 @@ import { selectUser } from "src/app/auth/user/store/userSlice";
 import { showMessage } from "@fuse/core/FuseMessage/fuseMessageSlice";
 import { useFormContext } from "react-hook-form";
 import { useEffect, useState } from "react";
+import { isDemoMode } from "src/app/demo/demoMode";
 
 function MediaInput(props: MediaInputProps) {
   const {
@@ -44,6 +45,34 @@ function MediaInput(props: MediaInputProps) {
     setPickedData(data);
     setProgress(null);
     setFinished(false);
+    if (isDemoMode) {
+      // Keep demo images in the form and browser snapshot without a presigned upload.
+      if (data.file.size > 1024 * 1024) {
+        const message = "Demo images must be 1 MB or smaller";
+        setPickedData(null);
+        setError(message);
+        onUploadError?.(message);
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        const url = String(reader.result || "");
+        setProgress(100);
+        setFinished(true);
+        if (!preventSetValue) {
+          setValue(name, url, { shouldDirty: true, shouldValidate: true });
+        }
+        onUploadDone?.(url);
+      };
+      reader.onerror = () => {
+        const message = "Unable to read the demo image";
+        setPickedData(null);
+        setError(message);
+        onUploadError?.(message);
+      };
+      reader.readAsDataURL(data.file);
+      return;
+    }
     dispatch(
       createMedia({
         userId: user.id,

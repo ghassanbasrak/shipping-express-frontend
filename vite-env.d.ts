@@ -2,6 +2,7 @@
 
 interface ImportMetaEnv {
   readonly VITE_BASE_URL: string;
+  readonly VITE_DEMO_MODE?: string;
   readonly VITE_APP_URL: string;
   readonly VITE_X_MUI_LICENSE_KEY: string;
   readonly VITE_FIREBASE_API_KEY: string;
