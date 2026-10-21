@@ -218,7 +218,9 @@
   "scripts": {
     "start": "npm run dev",
     "dev": "vite",
+    "dev:demo": "cross-env VITE_DEMO_MODE=true vite",
     "build": "vite build",
+    "build:demo": "cross-env VITE_DEMO_MODE=true vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "build-docs": "ts-node --esm ./src/app/main/documentation/material-ui-components/build.ts",

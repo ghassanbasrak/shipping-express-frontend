@@ -4,6 +4,7 @@ import './styles/app-components.css';
 import './styles/app-utilities.css';
 import { createRoot } from 'react-dom/client';
 import App from './app/App';
+import { isDemoMode } from './app/demo/demoMode';
 
 // import * as serviceWorker from './serviceWorker';
 // import reportWebVitals from './reportWebVitals';
@@ -22,7 +23,15 @@ if (!container) {
  */
 const root = createRoot(container);
 
-root.render(<App />);
+if (isDemoMode) {
+	// Register the local transport before authentication or RTK Query can make requests.
+	import('./app/demo/demoApi').then(({ installDemoApi }) => {
+		installDemoApi();
+		root.render(<App />);
+	});
+} else {
+	root.render(<App />);
+}
 
 // reportWebVitals();
 
