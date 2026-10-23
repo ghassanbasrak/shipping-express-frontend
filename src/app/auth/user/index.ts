@@ -18,6 +18,7 @@ export type User = {
   companyName?: string;
   taxNumber?: string;
   isRegistered?: boolean;
+  isAuthorized?: boolean;
   isBlocked?: boolean;
   isAffiliate?: boolean;
   emailVerified?: boolean;
@@ -36,6 +37,7 @@ export type User = {
   settings?: import("type-fest").PartialDeep<
     import("@fuse/core/FuseSettings/FuseSettings").FuseSettingsConfigType
   >;
+  balance?: number;
   walletBalance?: number;
   codBalance?: number;
   createdAt?: string;

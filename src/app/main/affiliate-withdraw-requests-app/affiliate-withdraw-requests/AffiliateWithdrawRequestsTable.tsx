@@ -1,0 +1,345 @@
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { Alert, Button, Dialog } from "@mui/material";
+import { Navigate, useParams, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import CustomTable from "app/shared-components/custom-table/CustomTable";
+import {
+  TableDataTypes,
+  TableFieldProps,
+} from "app/shared-components/custom-table/Utils";
+import { useAppDispatch, useAppSelector } from "app/store/hooks";
+import { selectUser } from "src/app/auth/user/store/userSlice";
+
+import { FetchStatus } from "src/app/main/utils/dataStatus";
+import IAffiliateWithdrawRequest from "../models/IAffiliateWithdrawRequest";
+import {
+  GetAffiliateWithdrawRequestsApiArg,
+  useGetAffiliateWithdrawRequestsQuery,
+  useLazyGetAffiliateWithdrawRequestsQuery,
+} from "../AffiliateWithdrawRequestsApi";
+import {
+  affiliateWithdrawRequestStatus,
+  toAffiliateWithdrawRequestStatusTitle,
+  toAffiliateWithdrawRequestStatusColor,
+  canReviewAffiliateWithdrawRequest,
+  canViewAffiliateWithdrawRequests,
+} from "../Utils";
+import {
+  newAffiliateWithdrawRequestsInstance,
+  resetAffiliateWithdrawRequests,
+  selectAffiliateWithdrawRequestsFilters,
+  setAffiliateWithdrawRequestsPage,
+  setAffiliateWithdrawRequestsPageSize,
+} from "../store/affiliateWithdrawRequestsSlice";
+import AffiliateWithdrawRequestDecisionDialog from "../shared-components/dialogs/affiliate-withdraw-request-decision-dialog/AffiliateWithdrawRequestDecisionDialog";
+import AffiliateWithdrawRequestImageDialog from "../shared-components/dialogs/image-dialog/AffiliateWithdrawRequestImageDialog";
+export default function AffiliateWithdrawRequestsTable() {
+  const { t } = useTranslation("affiliateWithdrawRequestsApp"),
+    dispatch = useAppDispatch(),
+    user = useAppSelector(selectUser);
+  const { userId = "all" } = useParams(),
+    location = useLocation();
+  const routeKey = `${userId}/${user.role}/${location.search}`;
+  const filters = useSelector(
+    selectAffiliateWithdrawRequestsFilters,
+  ) as GetAffiliateWithdrawRequestsApiArg;
+  const [ready, setReady] = useState<string>();
+  const [decision, setDecision] = useState<{
+    id: string;
+    userId?: string;
+    bank?: string;
+    transactionReference?: string;
+    transactionDescription?: string;
+    transactionImageUrl?: string;
+    description?: string;
+    status: string;
+    next: "approved" | "rejected";
+  }>();
+  const [image, setImage] = useState<{
+    id: string;
+    url: string;
+    reference?: string;
+  }>();
+  const canView = canViewAffiliateWithdrawRequests(user);
+  useEffect(() => {
+    dispatch(
+      newAffiliateWithdrawRequestsInstance({
+        userIdFilter: user.role === "user" ? "all" : userId,
+        updatedByIdFilter:
+          new URLSearchParams(location.search).get("updatedById") || "",
+      }),
+    );
+    setReady(routeKey);
+    setDecision(undefined);
+    setImage(undefined);
+  }, [dispatch, routeKey]);
+  useEffect(
+    () => () => {
+      dispatch(resetAffiliateWithdrawRequests(null));
+    },
+    [dispatch],
+  );
+  const { data, currentData, isFetching, isError, refetch } =
+    useGetAffiliateWithdrawRequestsQuery(filters, {
+      skip: !canView || ready !== routeKey,
+      refetchOnMountOrArgChange: true,
+    });
+  const [getAll] = useLazyGetAffiliateWithdrawRequestsQuery();
+  useEffect(() => {
+    if (
+      currentData &&
+      !isFetching &&
+      filters.page > 0 &&
+      filters.page >
+        Math.max(0, Math.ceil(currentData.total / filters.pageSize) - 1)
+    )
+      dispatch(
+        setAffiliateWithdrawRequestsPage(
+          Math.max(0, Math.ceil(currentData.total / filters.pageSize) - 1),
+        ),
+      );
+  }, [currentData, isFetching, filters.page, filters.pageSize, dispatch]);
+  function review(
+    row: IAffiliateWithdrawRequest,
+    next: "approved" | "rejected",
+  ) {
+    if (!canReviewAffiliateWithdrawRequest(user, row.status)) return;
+    setDecision({
+      id: row.id,
+      userId: row.userId,
+      bank: row.bank,
+      transactionReference: row.transactionReference,
+      transactionDescription: row.transactionDescription,
+      transactionImageUrl: row.transactionImageUrl,
+      description: row.description,
+      status: row.status,
+      next,
+    });
+  }
+  const fields: TableFieldProps<IAffiliateWithdrawRequest>[] = [
+    {
+      id: "id",
+      label: t("REFERENCE"),
+      type: TableDataTypes.normal,
+      flex: 0.7,
+      minWidth: 70,
+    },
+    ...(user.role !== "user"
+      ? [
+          {
+            id: "user.firstName" as const,
+            label: t("MERCHANT"),
+            type: TableDataTypes.normal,
+            valueGetter: (row: IAffiliateWithdrawRequest) =>
+              `${row.user?.firstName || ""} ${row.user?.lastName || ""}`,
+            flex: 1.1,
+            minWidth: 110,
+          },
+          ...(user.role === "admin"
+            ? [
+                {
+                  id: "updatedBy.firstName" as const,
+                  label: t("UPDATED_BY"),
+                  type: TableDataTypes.normal,
+                  valueGetter: (row: IAffiliateWithdrawRequest) =>
+                    `${row.updatedBy?.firstName || ""} ${row.updatedBy?.lastName || ""}`,
+                  flex: 1,
+                  minWidth: 100,
+                },
+              ]
+            : []),
+        ]
+      : []),
+    {
+      id: "amount",
+      label: t("AMOUNT"),
+      type: TableDataTypes.money,
+      flex: 0.7,
+      minWidth: 70,
+    },
+    {
+      id: "description",
+      label: t("REQUEST_NOTES_"),
+      type: TableDataTypes.normal,
+      flex: 1.2,
+      minWidth: 120,
+    },
+    {
+      id: "transactionReference",
+      label: t("TRANSACTION_REFERENCE"),
+      type: TableDataTypes.normal,
+      flex: 0.7,
+      minWidth: 70,
+    },
+    {
+      id: "status",
+      label: t("STATUS"),
+      type: TableDataTypes.normal,
+      chip: true,
+      toChipTitle: (value) => t(toAffiliateWithdrawRequestStatusTitle(value)),
+      toChipColor: toAffiliateWithdrawRequestStatusColor,
+      flex: 0.7,
+      minWidth: 70,
+    },
+    {
+      id: "transactionDescription",
+      label: t("TRANSACTION_NOTES"),
+      type: TableDataTypes.normal,
+      flex: 1.2,
+      minWidth: 120,
+    },
+    {
+      id: "createdAt",
+      label: t("CREATED_AT"),
+      type: TableDataTypes.date,
+      flex: 0.7,
+      minWidth: 70,
+    },
+    {
+      id: "updatedAt",
+      label: t("UPDATED_AT"),
+      type: TableDataTypes.date,
+      flex: 0.7,
+      minWidth: 70,
+    },
+    {
+      id: "actions",
+      label: t("ACTIONS"),
+      type: TableDataTypes.actions,
+      flex: 1.3,
+      minWidth: 130,
+      actions: [
+        ...(user.role !== "user" &&
+        canView &&
+        canReviewAffiliateWithdrawRequest(
+          user,
+          affiliateWithdrawRequestStatus.pending,
+        )
+          ? [
+              {
+                title: t("REFUSE"),
+                color: "error" as const,
+                onActionClick: (row: IAffiliateWithdrawRequest) =>
+                  review(row, "rejected"),
+                conditions: [
+                  {
+                    id: "status",
+                    equalsTo: affiliateWithdrawRequestStatus.pending,
+                  },
+                ],
+              },
+              {
+                title: t("ACCEPT"),
+                color: "success" as const,
+                onActionClick: (row: IAffiliateWithdrawRequest) =>
+                  review(row, "approved"),
+                conditions: [
+                  {
+                    id: "status",
+                    equalsTo: affiliateWithdrawRequestStatus.pending,
+                  },
+                ],
+              },
+            ]
+          : []),
+        {
+          title: t("TRANSACTION_IMAGE"),
+          color: "primary",
+          keepOnView: true,
+          onActionClick: (row: IAffiliateWithdrawRequest) => {
+            if (canView && row.transactionImageUrl)
+              setImage({
+                id: row.id,
+                url: row.transactionImageUrl,
+                reference: row.transactionReference,
+              });
+          },
+          conditions: [{ id: "transactionImageUrl" }],
+        },
+      ],
+    },
+  ];
+  if (!canView) return <Navigate to="/home" replace />;
+  return (
+    <div
+      className="w-full flex flex-col h-full"
+      data-testid="affiliate-withdraw-requests-table"
+    >
+      {isError && (
+        <Alert
+          severity="error"
+          action={<Button onClick={() => refetch()}>{t("RETRY")}</Button>}
+        >
+          {t("LOAD_ERROR")}
+        </Alert>
+      )}
+      <CustomTable<IAffiliateWithdrawRequest>
+        fields={fields}
+        data={data?.results || []}
+        total={data?.total || 0}
+        page={filters.page}
+        pageSize={filters.pageSize}
+        status={
+          isError
+            ? FetchStatus.error
+            : ready !== routeKey || isFetching
+              ? FetchStatus.loading
+              : FetchStatus.done
+        }
+        error={isError ? t("LOAD_ERROR") : undefined}
+        noDataMessage={t("NO_WITHDRAW_REQUESTS")}
+        autoRowHeight
+        estimatedRowHeight={150}
+        checkboxSelection
+        exportedFileName="Ashamco - Affiliate Withdraw"
+        onChangePagination={({ page, pageSize }) => {
+          if (pageSize !== filters.pageSize)
+            dispatch(setAffiliateWithdrawRequestsPageSize(pageSize));
+          else dispatch(setAffiliateWithdrawRequestsPage(page));
+        }}
+        tableToolbarSelectionExportAllButton={user.role !== "user"}
+        tableToolbarSelectionExportAllButtonProps={{
+          onClick: async () => {
+            const response = await getAll({
+              ...filters,
+              page: 0,
+              pageSize: 500000,
+            }).unwrap();
+            return { data: response.results, fields };
+          },
+        }}
+      />
+      <Dialog
+        open={Boolean(decision)}
+        fullWidth
+        maxWidth="sm"
+        aria-labelledby="affiliate-withdraw-request-decision-title"
+      >
+        {decision && (
+          <AffiliateWithdrawRequestDecisionDialog
+            {...decision}
+            status={
+              data?.results.find((row) => row.id === decision.id)?.status ??
+              decision.status
+            }
+            onClose={() => setDecision(undefined)}
+          />
+        )}
+      </Dialog>
+      <Dialog
+        open={Boolean(image)}
+        fullWidth
+        maxWidth="md"
+        aria-labelledby="affiliate-withdraw-request-image-title"
+      >
+        {image && (
+          <AffiliateWithdrawRequestImageDialog
+            {...image}
+            onClose={() => setImage(undefined)}
+          />
+        )}
+      </Dialog>
+    </div>
+  );
+}

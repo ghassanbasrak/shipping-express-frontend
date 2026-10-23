@@ -1,4 +1,8 @@
 const locale = {
+  SOMETHING_WENT_WRONG_WHEN_GET_DATA:
+    "تعذر تصدير البيانات. يرجى إعادة المحاولة.",
+  EXCEL_FILE_EXPORTED_SUCCESSFULLY: "تم تصدير ملف إكسل بنجاح",
+  EXPORT_ALL_PAGES: "تصدير جميع الصفحات",
   WELCOME_TO: "مرحباً بك في",
   LOGO: "Ruwage",
   ADMIN_PORTAL: "بوابة الإدراة",

@@ -64,7 +64,7 @@ function AutocompleteFilterField({
                 onSelectItems(action.payload);
               }
             }
-          }
+          },
         );
       }
     } else {
@@ -96,17 +96,17 @@ function AutocompleteFilterField({
                 ...items.filter((item) =>
                   multiple
                     ? ctr.findIndex((id) => item.id === id) > -1
-                    : ctr === (item._id || item.id)
+                    : ctr === (item._id || item.id),
                 ),
                 ...(action.payload as any[]).filter((item) =>
                   multiple
                     ? !ctr.find((id) => (item._id || item.id) === id)
-                    : ctr !== (item._id || item.id)
+                    : ctr !== (item._id || item.id),
                 ),
               ];
               setItems(list);
             }
-          }
+          },
         );
       }
     }
@@ -130,12 +130,12 @@ function AutocompleteFilterField({
                   ? []
                   : value?.map((id) => items.find((item) => item.id === id)) ??
                     []
-                : items.find((item) => item.id === value)
+                : items.find((item) => item.id === value) || null
             }
             isOptionEqualToValue={isOptionEqualToValue}
             filterSelectedOptions={multiple}
             onChange={(_, data) => {
-              setItemsSearchBy("");
+              setItemsSearchBy(!multiple && data ? getOptionLabel(data) : "");
               if (data) {
                 if (closeOnChange) {
                   handleCloseMenu();
@@ -170,7 +170,7 @@ function AutocompleteFilterField({
                         }
                       }
                     }
-                    handleChangeSearchItems(value);
+                    if (reason === "input") handleChangeSearchItems(value);
                   }
                 : undefined
             }

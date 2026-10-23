@@ -1,0 +1,529 @@
+{
+  "project": "shipping-express-frontend",
+  "scope": "Feature areas registered by the legacy routesConfig; auth and common pages are tracked separately. Counts do not measure implementation effort.",
+  "counts": {
+    "featureAreas": 32,
+    "migrated": 19,
+    "partial": 1,
+    "pending": 12
+  },
+  "completedThisBatch": ["transactions-app", "transaction-reports-app"],
+  "features": [
+    {
+      "feature": "admins-app",
+      "status": "migrated",
+      "sourceConfigs": ["src/app/main/admins-app/AdminsAppConfig.js"],
+      "sourceRoutes": ["admins", "admins/:adminId/*"]
+    },
+    {
+      "feature": "affiliate-merchants-app",
+      "status": "pending",
+      "sourceConfigs": [
+        "src/app/main/affiliate-merchants-app/AffiliateMerchantsAppConfig.js"
+      ],
+      "sourceRoutes": [
+        "affiliate-merchants",
+        "affiliate-merchants/:affiliateMerchantId",
+        "edit-affiliate-profile",
+        "affiliate-merchants/:affiliateMerchantId",
+        "affiliate-merchants/:affiliateMerchantId/:tab",
+        "affiliate-profile",
+        "affiliate-profile/:tab"
+      ]
+    },
+    {
+      "feature": "affiliate-withdraw-requests-app",
+      "status": "migrated",
+      "sourceConfigs": [
+        "src/app/main/affiliate-withdraw-requests-app/AffiliateWithdrawRequestsAppConfig.js"
+      ],
+      "sourceRoutes": [
+        "affiliate-withdraw-requests/:userId",
+        "affiliate-withdraw-requests/:userId/:affiliateWithdrawRequestId/*"
+      ],
+      "includes": [
+        "Original /affiliate-withdraw-requests/:userId list and merchant-only /:affiliateWithdrawRequestId/* routes",
+        "Root IAffiliateWithdrawRequest with canonical auth User and IAdmin references; simple RTK API, shared Zod validations and affiliateWithdrawRequestsSlice.js",
+        "Ten-row server pagination, search/account/reviewer/status/date filters and filtered Excel export",
+        "Affiliate ledger balance using v1/affiliate-transactions/balance?affiliateId= with zero balances retained, loading/errors and retries",
+        "Merchant submission with positive amount within available balance, optional banking notes, fixed current-account ownership/type/pending status and pending-request guard",
+        "Read-only submitted details with type/owner checks, missing-record recovery and working list links",
+        "Pending-only staff approval with bank/reference, optional notes/receipt upload, and status-only rejection",
+        "Upload failure recovery and submission blocking during upload; receipt preview and local download",
+        "Separate affiliate page-view and legacy withdraw-requests update grants, non-affiliate protection, administrator-only reviewer filter and merchant account scope",
+        "Reference detail header/tabs/BasicInfoTab, preserved drafts on failures/refetches and duplicate-safe post-submit account refresh",
+        "English/Arabic mobile RTL; legacy Turkish bundle retained; inactive deletion remains unexposed"
+      ]
+    },
+    {
+      "feature": "alerts-app",
+      "status": "migrated",
+      "sourceConfigs": ["src/app/main/alerts-app/AlertsAppConfig.js"],
+      "sourceRoutes": ["/alerts", ":alertId/*"]
+    },
+    {
+      "feature": "applications-app",
+      "status": "migrated",
+      "sourceConfigs": [
+        "src/app/main/applications-app/ApplicationsAppConfig.js"
+      ],
+      "sourceRoutes": ["/applications", ":applicationId/*"],
+      "includes": [
+        "Staff-only v1/applications CRUD, search/account/date filters and ten-row server pagination",
+        "Root IApplication model with nested IApplicationScope and canonical auth User references",
+        "Reference detail header/tabs/BasicInfoTab, shared validations, simple RTK API and applicationsSlice.js",
+        "Immutable client identifier on edit, merchant search/selected-account fallback and localized English-required/Arabic-optional names",
+        "Read/write scope controls, optional persisted hourly limits including zero/null, preserved unknown scopes and save-failure recovery",
+        "View-only API keys, configured base URL, legacy docs links and reusable copy controls",
+        "Confirmed permission-guarded deletion and read-only operation grants",
+        "Arabic RTL and mobile list/form/dialog layouts"
+      ]
+    },
+    {
+      "feature": "auth-requests-app",
+      "status": "migrated",
+      "sourceConfigs": [
+        "src/app/main/auth-requests-app/AuthRequestsAppConfig.js"
+      ],
+      "sourceRoutes": [
+        "auth-requests/:userId",
+        "auth-requests/:userId/:authRequestId/*"
+      ],
+      "includes": [
+        "Account-scoped authorization lists, search/status/date filters, pagination and filtered Excel export",
+        "Merchant document upload/submission, validation, failure recovery and read-only submitted details",
+        "Current-account ownership, fixed pending authorization type and duplicate-safe post-submit refresh",
+        "Confirmed staff decisions for pending requests, operation permissions and document downloads",
+        "English/Arabic/Turkish locale resources and mobile RTL"
+      ]
+    },
+    {
+      "feature": "balance-errors-app",
+      "status": "pending",
+      "sourceConfigs": [
+        "src/app/main/balance-errors-app/BalanceErrorsAppConfig.js"
+      ],
+      "sourceRoutes": ["/balance-duplication-errors"]
+    },
+    {
+      "feature": "bank-transfers-app",
+      "status": "migrated",
+      "sourceConfigs": [
+        "src/app/main/bank-transfers-app/BankTransfersAppConfig.js"
+      ],
+      "sourceRoutes": [
+        "bank-transfers/:userId",
+        "bank-transfers/:userId/:bankTransferId/*"
+      ],
+      "includes": [
+        "Original account-scoped /bank-transfers/:userId list with ten-row server pagination, search, account/reviewer/status/date filters and filtered Excel export",
+        "Canonical auth User, IAdmin and IPlan populated references in IBankTransfer; simple RTK Query API and bankTransfersSlice.js",
+        "Pending-only staff approval with required bank selection, rejection with optional notes and exact field-limited PATCH payloads",
+        "Decision cancellation, validation, failure recovery and draft-preserving retries",
+        "Read-only merchant receipt access with backend account ownership and ignored route owner overrides",
+        "Receipt preview, real download, failed-download recovery and object URL cleanup",
+        "View/update permissions, administrator-only reviewer filter and enabled staff audit link",
+        "English/Arabic locale parity and mobile RTL; legacy Turkish bundle retained",
+        "Legacy-inactive creation, detail, deletion and upload flows remain unexposed"
+      ]
+    },
+    {
+      "feature": "cancel-shipment-requests-app",
+      "status": "pending",
+      "sourceConfigs": [
+        "src/app/main/cancel-shipment-requests-app/CancelShipmentRequestsAppConfig.js"
+      ],
+      "sourceRoutes": ["cancel-shipment-requests/:userId"]
+    },
+    {
+      "feature": "cities-app",
+      "status": "migrated",
+      "sourceConfigs": ["src/app/main/cities-app/CitiesConfig.js"],
+      "sourceRoutes": [
+        "cities/:shippingCompanyId/:stateId",
+        "cities/:shippingCompanyId/:stateId/:cityId/*"
+      ]
+    },
+    {
+      "feature": "countries-app",
+      "status": "migrated",
+      "sourceConfigs": ["src/app/main/countries-app/CountriesConfig.js"],
+      "sourceRoutes": [
+        "countries/:shippingCompanyId",
+        "countries/:shippingCompanyId/:countryId/*"
+      ]
+    },
+    {
+      "feature": "coupons-app",
+      "status": "migrated",
+      "sourceConfigs": ["src/app/main/coupons-app/CouponsAppConfig.js"],
+      "sourceRoutes": [
+        "coupons/:shippingCompanyId/:userId",
+        "coupons/:shippingCompanyId/:userId/:couponId/*"
+      ]
+    },
+    {
+      "feature": "dashboard",
+      "status": "pending",
+      "sourceConfigs": ["src/app/main/dashboard/DashboardPageConfig.js"],
+      "sourceRoutes": ["/dashboard"]
+    },
+    {
+      "feature": "home-app",
+      "status": "partial",
+      "sourceConfigs": ["src/app/main/home-app/HomeAppConfig.js"],
+      "sourceRoutes": ["home"]
+    },
+    {
+      "feature": "logs-app",
+      "status": "pending",
+      "sourceConfigs": ["src/app/main/logs-app/LogsConfig.js"],
+      "sourceRoutes": ["/logs", "/logs/:logId"]
+    },
+    {
+      "feature": "merchant-dues-app",
+      "status": "pending",
+      "sourceConfigs": [
+        "src/app/main/merchant-dues-app/MerchantDuesAppConfig.js"
+      ],
+      "sourceRoutes": [
+        "merchant-dues/:shippingCompanyId/:userId",
+        "merchant-dues/:userId/:merchantDueId/*"
+      ]
+    },
+    {
+      "feature": "merchant-services",
+      "status": "pending",
+      "sourceConfigs": [
+        "src/app/main/merchant-services/MerchantServicesConfig.js"
+      ],
+      "sourceRoutes": ["store-authentication", "new-store", "store-integration"]
+    },
+    {
+      "feature": "merchant-statistics-app",
+      "status": "migrated",
+      "sourceConfigs": [
+        "src/app/main/merchant-statistics-app/MerchantStatisticsAppConfig.js"
+      ],
+      "sourceRoutes": ["merchant-statistics"],
+      "includes": [
+        "Original staff-only /merchant-statistics aggregate report using POST v1/users/statistics; canonical auth User references and all four original financial/obligation/bank-transfer/COD sections",
+        "Searchable merchant selection, current remote search parameters, retained selected accounts, six-month initial range, optional date bounds and range validation",
+        "Reference Fuse header/tabs/BasicInfoTab layout, shared validation helpers, simple RTK Query API and nested domain interfaces without form/filter wrappers in the root model",
+        "Submitted merchant/date snapshot retained independently of editable filters; duplicate-request protection and failed-request recovery without lost drafts",
+        "Complete compressed multipage PDF download with request snapshot, explicit export error recovery, lazy PDF dependencies and safe filenames",
+        "Staff view grants, English/Arabic/Turkish report labels, Arabic RTL and full-width mobile merchant/date fields"
+      ]
+    },
+    {
+      "feature": "merchant-statistics-new-app",
+      "status": "migrated",
+      "sourceConfigs": [
+        "src/app/main/merchant-statistics-new-app/MerchantStatisticsAppConfig.js"
+      ],
+      "sourceRoutes": ["merchant-statistics-new"],
+      "includes": [
+        "Original staff-only /merchant-statistics-new aggregate report using POST v1/users/statistics-new; dependency on migrated base statistics controls and auth User, without fabricated shipment entities",
+        "Required bankTransferTotals/otherFees inputs preserve zero and signed source values; send only the account, optional ISO date bounds and those two adjustments",
+        "All five status counts/fees for local, international and COD shipment summaries; all five COD balance categories, all eight wallet/charge/tax fields and multiline message/note pairs",
+        "Preserve exact case-sensitive backend BankTransferChargeAmount; render zero groups and escaped report notes correctly",
+        "Frozen request/adjustment snapshot, draft-preserving failures, duplicate-request protection and full compressed multipage PDF with retries",
+        "Separate merchant-statistics-new view grants retain original route semantics; no new default staff permission or silent alias to merchant-statistics",
+        "Reference header/tabs/BasicInfoTab, shared validation refinements, simple RTK Query and English/Arabic/Turkish resources with mobile RTL"
+      ]
+    },
+    {
+      "feature": "merchants-app",
+      "status": "pending",
+      "sourceConfigs": ["src/app/main/merchants-app/MerchantsAppConfig.js"],
+      "sourceRoutes": [
+        "merchants",
+        "merchants/:merchantId",
+        "edit-profile",
+        "merchants/:merchantId/view",
+        "profile"
+      ]
+    },
+    {
+      "feature": "package-requests-app",
+      "status": "migrated",
+      "sourceConfigs": [
+        "src/app/main/package-requests-app/PackageRequestsAppConfig.js"
+      ],
+      "sourceRoutes": [
+        "package-requests/:userId",
+        "package-requests/:userId/:packageRequestId/*"
+      ],
+      "includes": [
+        "Original /package-requests/:userId and /package-requests/:userId/:packageRequestId/* routes with bags request type",
+        "Root IPackageRequest plus nested address interfaces importing migrated geographic entities; canonical auth User/IAdmin and feature-owned read-only IPackagingSupply catalog model",
+        "Original v1/products?page=0&pageSize=50 packaging catalog with localized names/descriptions, images, bundle counts and selection-based totals",
+        "Merchant creation with current-account identity, fixed bags/pending, wallet limit, sanitized phone/address/payload and optional notes/city/street/ZIP",
+        "Reference form header/tabs/BasicInfoTab, shared Zod validations, simple RTK API and packageRequestsSlice.js",
+        "Search/account/reviewer/status/date filters, ten-row server pagination and matching filtered Excel export",
+        "Submitted read-only details with historical supply snapshots, owner/type checks and current-account route-override protection",
+        "Confirmed pending-only staff acceptance/rejection with view/update permissions, fresh wallet check and status-only PATCH payloads",
+        "View dialog review controls, insufficient-wallet blocking, failed-write retries and stable draft/lookup recovery",
+        "Searchable geographic lookups, selected-ID fallbacks, dependent clearing, city-to-state/ZIP selection and legacy phone serialization",
+        "Enabled carrier packaging summary using corrected /package-requests/all list destination",
+        "English/Arabic mobile RTL with LTR phone; legacy Turkish bundle retained; inactive reset/reference/edit/delete controls remain unexposed"
+      ]
+    },
+    {
+      "feature": "payment-app",
+      "status": "pending",
+      "sourceConfigs": ["src/app/main/payment-app/PaymentAppConfig.js"],
+      "sourceRoutes": ["payment/:userId/:topupRequestId/:result"]
+    },
+    {
+      "feature": "plans-app",
+      "status": "migrated",
+      "sourceConfigs": ["src/app/main/plans-app/PlansAppConfig.js"],
+      "sourceRoutes": ["plans", "plans/:planId"]
+    },
+    {
+      "feature": "shipment-users-app",
+      "status": "migrated",
+      "sourceConfigs": [
+        "src/app/main/shipment-users-app/ShipmentUsersAppConfig.js"
+      ],
+      "sourceRoutes": ["shipment-users/:type", ":shipmentUserId"],
+      "includes": [
+        "Sender/receiver/all card lists, search and 16-item pagination",
+        "Route-driven responsive side editor with separate header, tabs and basic information",
+        "Create, view, update, confirmed delete, failures/retry and unsaved-draft preservation",
+        "Country/state/city lookups, selected-ID fallback reads and dependent address clearing",
+        "Legacy phone and national-address serialization; server-assigned ownership",
+        "Staff operation permissions, merchant access, English/Arabic and mobile RTL"
+      ]
+    },
+    {
+      "feature": "shipments-app",
+      "status": "pending",
+      "sourceConfigs": ["src/app/main/shipments-app/ShipmentsAppConfig.js"],
+      "sourceRoutes": [
+        "shipments/:shippingCompanyId/:shippingType",
+        "shipments/:shippingCompanyId/:shippingType/:shipmentId/*",
+        "shipping-price-calculator"
+      ]
+    },
+    {
+      "feature": "shipping-companies-app",
+      "status": "migrated",
+      "sourceConfigs": [
+        "src/app/main/shipping-companies-app/ShippingCompaniesAppConfig.js"
+      ],
+      "sourceRoutes": [
+        "shipping-companies",
+        "shipping-companies/:shippingCompanyId"
+      ]
+    },
+    {
+      "feature": "states-app",
+      "status": "migrated",
+      "sourceConfigs": ["src/app/main/states-app/StatesConfig.js"],
+      "sourceRoutes": [
+        "states/:shippingCompanyId/:countryId",
+        "states/:shippingCompanyId/:countryId/:stateId/*"
+      ]
+    },
+    {
+      "feature": "topup-requests-app",
+      "status": "pending",
+      "sourceConfigs": [
+        "src/app/main/topup-requests-app/TopupRequestsAppConfig.js"
+      ],
+      "sourceRoutes": [
+        "topup-requests/:userId",
+        "topup-requests/:userId/:topupRequestId/*"
+      ]
+    },
+    {
+      "feature": "transaction-reports-app",
+      "status": "migrated",
+      "sourceConfigs": [
+        "src/app/main/transaction-reports-app/TransactionReportsAppConfig.js"
+      ],
+      "sourceRoutes": ["transaction-reports/:userId"],
+      "includes": [
+        "Original /transaction-reports/:userId uses the migrated transaction domain with independent transactionReportsSlice.js and simple RTK Query",
+        "Staff must select a merchant before querying/exporting; merchant route IDs are ignored and backend current-account scope is retained",
+        "Wallet/COD view grants determine available balance tabs and initial scope; title category and optional date filters reset pagination correctly",
+        "All source transaction report columns, accounting IDs, localized title/statement, previous/current balances and notes retained",
+        "PDF/XLSX generation uses GET v1/transactions/report with exact reportType, selected account/balance/title/date scope and pageSize=50000",
+        "Full filtered exports start at page zero even when the visible ledger is on a later page, correcting the legacy skip caused by current-page export offsets",
+        "Actual report-file downloads check HTTP status and missing URLs, preserve submitted export scope, release temporary links/object URLs and remain retryable after generation/download failures",
+        "Invalid or reversed date filters block query/export rather than silently broadening scope; current account search, fallback labels and lookup retry behavior preserved",
+        "English/Arabic/Turkish labels, responsive RTL controls and successful real local PDF/XLSX downloads from fixture services"
+      ]
+    },
+    {
+      "feature": "transactions-app",
+      "status": "migrated",
+      "sourceConfigs": [
+        "src/app/main/transactions-app/TransactionsAppConfig.js"
+      ],
+      "sourceRoutes": [
+        "transactions/:userId/:relatedBalance",
+        "transactions/:userId/:relatedBalance/:transactionId/*"
+      ],
+      "includes": [
+        "Original /transactions/:userId/:relatedBalance ledger and staff-only /transactions/:userId/:relatedBalance/:transactionId/* forms using v1/transactions GET/POST/PATCH",
+        "Canonical auth User and migrated IAdmin populations; nested accounting invoice metadata and root transaction domain owned by this feature",
+        "Simple RTK Query API, reference Fuse list/header/table and detail/header/tabs/BasicInfoTab layout, shared Zod validations and transactionsSlice.js",
+        "Ten-row server pagination, encoded search, staff merchant selection, admin createdById scope, balance/category/date filters and matching filtered export-all pageSize=50000",
+        "Wallet/COD view and create grants, existing-record update grants, backend current-account merchant lists and no route-owner overrides for merchant reads",
+        "Required positive amount and selected account, optional notes, custom/bank/fee operation labels and field-limited mutation payloads without populations or metadata",
+        "Inclusive 15-percent wallet deposit tax, net-credit balance previews, untaxed withdrawals/COD, negative balances where source allowed them and exact historical gross-display cutoff",
+        "Draft-preserving failed writes/refetches, fresh account lookup errors/retries, duplicate-save guard and safe success navigation independent of balance-refresh failure",
+        "Existing invoice links and accounting IDs retained; inactive deletion/bulk deletion/invoice-generation/reset and unreachable merchant form payment controls remain unexposed",
+        "Wallet/COD staff audit links enabled with createdById; shared ShipmentTransactionsTable.tsx prepared at its original path without claiming shipment migration complete",
+        "English/Arabic/Turkish resources, mobile RTL, matched flex/minWidth columns and real local Excel export verification"
+      ]
+    },
+    {
+      "feature": "verification-requests-app",
+      "status": "migrated",
+      "sourceConfigs": [
+        "src/app/main/verification-requests-app/VerificationRequestsAppConfig.js"
+      ],
+      "sourceRoutes": ["verification-requests/:userId"],
+      "includes": [
+        "Staff review table with account/reviewer/status/date filters, pagination and filtered Excel export",
+        "Tax/registration fields and all active legacy document-download columns",
+        "Confirmed status-only decisions with reversible approval/refusal and cache refresh",
+        "Admin-only reviewer filter/column, updatedById URL scope and enabled staff audit link",
+        "Existing onboarding verification submission retained with review-list invalidation",
+        "English/Arabic/Turkish locale resources and mobile RTL"
+      ]
+    },
+    {
+      "feature": "withdraw-requests-app",
+      "status": "pending",
+      "sourceConfigs": [
+        "src/app/main/withdraw-requests-app/WithdrawRequestsAppConfig.js"
+      ],
+      "sourceRoutes": [
+        "withdraw-requests/:userId",
+        "withdraw-requests/:userId/:withdrawRequestId/*"
+      ]
+    }
+  ],
+  "foundation": {
+    "status": "migrated",
+    "includes": [
+      "new Fuse foundation and JWT authentication",
+      "OTP, registration, reset-password, blocking and verification gates",
+      "role and operation permission middleware",
+      "branding, RTL and navigation infrastructure"
+    ]
+  },
+  "commonPages": {
+    "status": "partial",
+    "migrated": [
+      "error pages",
+      "maintenance page from authentication foundation"
+    ],
+    "pending": ["legacy coming-soon page and final route parity review"]
+  },
+  "sharedComponents": {
+    "status": "provided-by-user",
+    "note": "Shared components were already migrated by the user; validate each component when its consuming feature is migrated.",
+    "verifiedThisBatch": [
+      "CustomTable ten-row server pagination, matched column sizes, active invoice links and filtered Excel export workbook content",
+      "FilterIcon account/staff lookup, repeated transaction-title selection and optional date scopes",
+      "Existing MUI DatePicker, local report/adjustment controls and mobile RTL sizing",
+      "ShipmentTransactionsTable.tsx restored as a typed consumer of the migrated transaction domain at its original shared path"
+    ]
+  },
+  "home": {
+    "status": "partial",
+    "note": "Only the welcome/sign-out landing page exists. Original merchant/home content and the separate administrator dashboard remain pending."
+  },
+  "deferredIntegrationLinks": [
+    "shipping-company shipment summary (packaging-request summary is now available)",
+    "request-table merchant profile links until merchants-app is available",
+    "affiliate withdrawal return link uses /affiliate-withdraw-requests/all until affiliate-profile/withdraw-requests is owned by migrated affiliate-merchants-app",
+    "Statistics header returns to /home until merchants-app owns the original /merchants destination",
+    "remaining staff shipment/withdrawal/cancellation audit links; verification, bank-transfer and wallet/COD transaction audit links are now available",
+    "transaction-table merchant profile links until merchants-app is available",
+    "transaction adjustment success/back destinations use account-scoped ledger routes until merchants-app owns /merchants/:userId/view",
+    "merchant transaction-list top-up link to /topup-requests/all/new until topup-requests-app is available"
+  ],
+  "nextCandidates": [
+    "shipments-app: transaction enums/domain and shared shipment ledger are now available; migrate the root shipment workflow before cancellation and COD withdrawal consumers",
+    "topup-requests-app and payment-app after the transaction foundation, preserving actual payment gateway contracts",
+    "merchants-app and affiliate-merchants-app operational/profile tabs after their owning shipping and remaining finance workflows",
+    "logs-app after shipment-detail domain dependencies are available"
+  ],
+  "excludedByUser": [
+    "Salla",
+    "Odoo",
+    "products-app and product e-commerce",
+    "aramex-comparisons-app",
+    "smsa-comparisons-app",
+    "compare-bills-app"
+  ],
+  "retainedRequirement": "Keep package-requests-app; do not remove it with product e-commerce.",
+  "unroutedSourceDirectories": [
+    "auth",
+    "dashboards",
+    "firebase-auth-app",
+    "magic-link",
+    "magic-link-sent",
+    "members-app",
+    "profile-app",
+    "reports-app"
+  ],
+  "unroutedSourceNote": "These directories are not direct entries in the legacy route registry. Audit imports before deciding whether to port or retire them; they are not counted as completed or automatically included as active features.",
+  "reportingPolicy": "Update this inventory and report all completed, partial, pending and excluded work after every migration batch.",
+  "validation": {
+    "activeTypecheck": "passed (tsconfig.app.json)",
+    "productionBuild": "passed; existing large-chunk warning remains",
+    "regressionChecks": {
+      "auth": 12,
+      "countries": 14,
+      "shippingCompanies": 12,
+      "geography": 21,
+      "foundations": 19,
+      "couponsAlerts": 21,
+      "shipmentUsers": 18,
+      "accountRequests": 26,
+      "applications": 20,
+      "total": 262,
+      "bankTransfers": 12,
+      "affiliateWithdraw": 17,
+      "packaging": 19,
+      "statistics": 22,
+      "transactions": 29
+    },
+    "browserChecksThisBatch": {
+      "transactionsAndReports": 31,
+      "uncaughtExceptions": 0,
+      "fixtures": "Mock account/auth/transaction/report services with real local Excel/PDF downloads and isolated list/write/account/file failures; no live backend writes",
+      "screenshots": [
+        "test-results/transactions-browser/transactions-desktop.png",
+        "test-results/transactions-browser/transaction-reports-desktop.png",
+        "test-results/transactions-browser/transactions-ar-mobile.png",
+        "test-results/transactions-browser/transaction-reports-ar-mobile.png",
+        "test-results/transactions-browser/transaction-form-ar-mobile.png"
+      ]
+    },
+    "scope": "Active application typecheck and production build. Browser contracts use fixtures; live backend acceptance is not verified. The full unused-template/shared-component source check is not the active migration gate."
+  },
+  "notesThisBatch": [
+    "The shipment transaction view imports transaction types and consumes ledger rows. This batch migrates that dependency and the transaction report consumer before building the main shipment workflow",
+    "Root ITransaction contains only ledger fields, canonical account/staff references and nested invoice metadata. Filters and request/response wrappers stay in Api.ts; no shipment or merchant stub model was introduced",
+    "JavaScript feature slices retain list state only. Each list wrapper remains simple while its table owns query initialization/pagination and its header owns filter controls",
+    "Wallet and COD queries/controls honor their own view grants; all-balance reads require both scopes. New writes require create and existing edits require update; create-only staff cannot edit existing records",
+    "The legacy detail save button reused create permission for edits. The migration applies the explicit update grant to PATCH operations while keeping separate wallet/COD grants and the merchant-update requirement on the original all/new entry route",
+    "Custom operation is a valid original default/submittable value even though the old select omitted its label. It is now displayed explicitly without enabling inactive reset or accounting generation controls",
+    "Inclusive deposit tax is removed from gross amounts before balance credit; the separate historical amount-with-tax column retains its original cutoff and invoice/taxable conditions. Stored records do not inherit a new tax flag when one was absent",
+    "Operation label prefixes are added only to the outgoing notes. Failed saves preserve raw notes, and already prefixed notes do not receive a duplicate prefix when an existing record is saved",
+    "Successful creation returns to the migrated account ledger before optional balance refresh can fail; retries cannot duplicate the successful monetary write",
+    "Server PDF/XLSX exports previously used the visible list page with a 50000-row page size and could skip records. Exports now start at zero and preserve all active filters",
+    "Missing report URLs and HTTP download errors now reject visibly and release loading. Temporary links/object URLs are cleaned; merchant exports retain backend current-account ownership",
+    "Staff wallet/COD audit links are enabled. The earlier foundations regression was updated to recognize these newly migrated owning features; no default grants or excluded features were added",
+    "Merchant profile navigation and top-up entry points remain deferred to their pending owning features rather than opening unavailable routes"
+  ]
+}

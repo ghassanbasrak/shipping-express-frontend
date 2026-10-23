@@ -1,4 +1,8 @@
 const locale = {
+  SOMETHING_WENT_WRONG_WHEN_GET_DATA:
+    "Unable to export the data. Please try again.",
+  EXCEL_FILE_EXPORTED_SUCCESSFULLY: "Excel file exported successfully",
+  EXPORT_ALL_PAGES: "Export All Pages",
   WELCOME_TO: "Welcome To",
   LOGO: "Ruwage",
   ADMIN_PORTAL: "Admin Portal",

@@ -15,12 +15,12 @@ export const getCustomAutoCompleteItems = createAsyncThunk<
   }) => {
     let url = getItemsUrl;
     if (searchBy) {
-      url += `${url.includes("?") ? "&" : "?"}search=${searchBy}`;
+      url += `${url.includes("?") ? "&" : "?"}search=${encodeURIComponent(searchBy)}`;
     }
     const response = await axios.get(url);
     const data = await response.data;
     return data.results;
-  }
+  },
 );
 
 export const getCustomAutoCompleteItem = createAsyncThunk<
@@ -32,7 +32,7 @@ export const getCustomAutoCompleteItem = createAsyncThunk<
     const response = await axios.get(`${getItemUrl}/${id}`);
     const data = await response.data;
     return data === undefined ? null : data;
-  }
+  },
 );
 
 export const getCustomAutoCompleteItemsOneByOne = createAsyncThunk<
@@ -49,7 +49,7 @@ export const getCustomAutoCompleteItemsOneByOne = createAsyncThunk<
     }
 
     return list;
-  }
+  },
 );
 
 const filterItemsSlice = createSlice({
