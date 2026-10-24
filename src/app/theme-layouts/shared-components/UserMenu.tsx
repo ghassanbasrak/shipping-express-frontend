@@ -8,18 +8,17 @@ import Typography from "@mui/material/Typography";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { selectUser } from "src/app/auth/user/store/userSlice";
-import useAuth from "src/app/auth/useAuth";
 import { darken } from "@mui/material/styles";
 import { useAppSelector } from "app/store/hooks";
 import Icon from "app/shared-components/Icon";
 import { useTranslation } from "react-i18next";
+import { isDemoMode, resetDemoData } from "src/app/demo/demoMode";
 
 /**
  * The user menu.
  */
 function UserMenu() {
   const user = useAppSelector(selectUser);
-  const { signOut } = useAuth();
   const [userMenu, setUserMenu] = useState<HTMLElement | null>(null);
   const { t } = useTranslation("public");
   const userMenuClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -107,29 +106,37 @@ function UserMenu() {
           </>
         ) : (
           <>
-            <MenuItem
-              component={Link}
-              to="/profile"
-              onClick={userMenuClose}
-              role="button"
-            >
-              <ListItemIcon className="min-w-40">
-                <Icon type="fa6" name="FaCircleUser" size="1.5em" />
-              </ListItemIcon>
-              <ListItemText primary={t("MY_PROFILE")} />
-            </MenuItem>
-            <MenuItem
-              component={Link}
-              to="/sign-out"
-              onClick={() => {
-                userMenuClose();
-              }}
-            >
-              <ListItemIcon className="min-w-40">
-                <Icon type="fa" name="FaSignOutAlt" size="1.5em" />
-              </ListItemIcon>
-              <ListItemText primary={t("SIGN_OUT")} />
-            </MenuItem>
+            {isDemoMode ? (
+              <MenuItem onClick={resetDemoData}>
+                <ListItemText primary="Reset demo data" />
+              </MenuItem>
+            ) : (
+              <>
+                <MenuItem
+                  component={Link}
+                  to="/profile"
+                  onClick={userMenuClose}
+                  role="button"
+                >
+                  <ListItemIcon className="min-w-40">
+                    <Icon type="fa6" name="FaCircleUser" size="1.5em" />
+                  </ListItemIcon>
+                  <ListItemText primary={t("MY_PROFILE")} />
+                </MenuItem>
+                <MenuItem
+                  component={Link}
+                  to="/sign-out"
+                  onClick={() => {
+                    userMenuClose();
+                  }}
+                >
+                  <ListItemIcon className="min-w-40">
+                    <Icon type="fa" name="FaSignOutAlt" size="1.5em" />
+                  </ListItemIcon>
+                  <ListItemText primary={t("SIGN_OUT")} />
+                </MenuItem>
+              </>
+            )}
           </>
         )}
       </Popover>

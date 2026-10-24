@@ -30,7 +30,7 @@ export default defineConfig({
     outDir: "build",
   },
   server: {
-    open: true,
+    open: false,
     port: 3000,
   },
   define: {
