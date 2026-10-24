@@ -5,7 +5,9 @@ export type Place = {
   code?: string;
 };
 const authApi = api
-  .enhanceEndpoints({ addTagTypes: ["AuthPlaces"] as const })
+  .enhanceEndpoints({
+    addTagTypes: ["AuthPlaces", "VerificationRequests"] as const,
+  })
   .injectEndpoints({
     endpoints: (build) => ({
       getAuthPlaces: build.query<
@@ -24,6 +26,7 @@ const authApi = api
         }),
       }),
       submitVerification: build.mutation<unknown, Record<string, unknown>>({
+        invalidatesTags: ["VerificationRequests"],
         query: (data) => ({ url: "v1/requests", method: "POST", data }),
       }),
     }),

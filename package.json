@@ -123,7 +123,8 @@
     "validator": "^13.12.0",
     "web-vitals": "3.5.1",
     "xlsx": "^0.18.5",
-    "zod": "3.22.4"
+    "zod": "3.22.4",
+    "html2canvas": "1.4.1"
   },
   "peerDependencies": {
     "autoprefixer": "10.4.16",
@@ -237,7 +238,29 @@
     "test:countries": "node scripts/countries-regression.cjs",
     "test:countries:browser": "npm run build && node scripts/countries-browser-smoke.cjs",
     "test:shipping-companies": "node scripts/shipping-companies-regression.cjs",
-    "test:shipping-companies:browser": "npm run build && node scripts/shipping-companies-browser-smoke.cjs"
+    "test:shipping-companies:browser": "npm run build && node scripts/shipping-companies-browser-smoke.cjs",
+    "test:geography": "node scripts/geography-regression.cjs",
+    "test:geography:browser": "npm run build && node scripts/geography-browser-smoke.cjs",
+    "test:foundations": "node scripts/foundations-regression.cjs",
+    "test:foundations:browser": "npm run build && node scripts/foundations-browser-smoke.cjs",
+    "test:coupons-alerts": "node scripts/coupons-alerts-regression.cjs",
+    "test:coupons-alerts:browser": "npm run build && node scripts/coupons-alerts-browser-smoke.cjs",
+    "test:shipment-users": "node scripts/shipment-users-regression.cjs",
+    "test:shipment-users:browser": "npm run build && node scripts/shipment-users-browser-smoke.cjs",
+    "test:account-requests": "node scripts/account-requests-regression.cjs",
+    "test:account-requests:browser": "npm run build && node scripts/account-requests-browser-smoke.cjs",
+    "test:applications": "node scripts/applications-regression.cjs",
+    "test:applications:browser": "npm run build && node scripts/applications-browser-smoke.cjs",
+    "test:bank-transfers": "node scripts/bank-transfers-regression.cjs",
+    "test:bank-transfers:browser": "npm run build && node scripts/bank-transfers-browser-smoke.cjs",
+    "test:affiliate-withdraw": "node scripts/affiliate-withdraw-regression.cjs",
+    "test:affiliate-withdraw:browser": "npm run build && node scripts/affiliate-withdraw-browser-smoke.cjs",
+    "test:packaging": "node scripts/packaging-regression.cjs",
+    "test:packaging:browser": "npm run build && node scripts/packaging-browser-smoke.cjs",
+    "test:statistics": "node scripts/statistics-regression.cjs",
+    "test:statistics:browser": "npm run build && node scripts/statistics-browser-smoke.cjs",
+    "test:transactions": "node scripts/transactions-regression.cjs",
+    "test:transactions:browser": "npm run build && node scripts/transactions-browser-smoke.cjs"
   },
   "engines": {
     "node": ">=18.0.0",

@@ -1,7 +1,6 @@
 import _ from "lodash";
 import { apiService as api } from "app/store/apiService";
 import { PartialDeep } from "type-fest";
-import { LocaleString } from "src/app/main/utils/commonTypes";
 import CountryModel, { countryEditableFields } from "./models/CountryModel";
 import ICountry, { IShipmentCountry } from "./models/ICountry";
 import IShippingCompany from "../shipping-companies-app/models/IShippingCompany";
@@ -155,23 +154,6 @@ const CountriesApi = api.enhanceEndpoints({ addTagTypes }).injectEndpoints({
     getCountriesLanguages: build.query<GetCountriesLanguagesApiResponse, void>({
       query: () => ({ url: "v1/languages" }),
     }),
-    getCountryStates: build.query<
-      GetCountryStatesApiResponse,
-      GetCountryStatesApiArg
-    >({
-      query: (filters) => ({
-        url: "v1/states",
-        params: {
-          countryId: filters.countryId,
-          page: filters.page,
-          pageSize: filters.pageSize,
-          ...(filters.shippingCompanyId !== "all"
-            ? { shippingCompanyId: filters.shippingCompanyId }
-            : {}),
-          ...(filters.searchText ? { search: filters.searchText } : {}),
-        },
-      }),
-    }),
   }),
   overrideExisting: false,
 });
@@ -209,25 +191,6 @@ export type GetCountriesShippingCompaniesApiResponse = {
   total: number;
 };
 export type GetCountriesLanguagesApiResponse = { results: string[] };
-// Read-only state preview until states-app is migrated.
-export type GetCountryStatesApiResponse = {
-  results: {
-    id: string;
-    _id?: string;
-    name?: LocaleString;
-    code?: string;
-    createdAt?: string;
-  }[];
-  total: number;
-};
-export type GetCountryStatesApiArg = {
-  countryId: string;
-  shippingCompanyId: string;
-  page: number;
-  pageSize: number;
-  searchText?: string;
-};
-
 export const {
   useGetCountriesQuery,
   useGetCountryQuery,
@@ -240,7 +203,6 @@ export const {
   useRemoveShipmentCountryMutation,
   useGetCountriesShippingCompaniesQuery,
   useGetCountriesLanguagesQuery,
-  useGetCountryStatesQuery,
 } = CountriesApi;
 
 export type CountriesApiType = {

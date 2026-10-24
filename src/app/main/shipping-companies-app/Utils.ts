@@ -62,8 +62,8 @@ export const shippingCompanySummaryLinks: {
   {
     title: "PACKAGE_REQUESTS",
     count: "packageRequestsCount",
-    path: () => "/package-requests/all/all",
-    available: false,
+    path: () => "/package-requests/all",
+    available: true,
   },
   {
     title: "COUNTRIES",
@@ -76,14 +76,14 @@ export const shippingCompanySummaryLinks: {
     title: "STATES",
     count: "shipmentStatesCount",
     path: (id) => `/states/${id}/all`,
-    available: false,
+    available: true,
     adminOnly: true,
   },
   {
     title: "CITIES",
     count: "shipmentCitiesCount",
-    path: (id) => `/cities/${id}/all/all`,
-    available: false,
+    path: (id) => `/cities/${id}/all`,
+    available: true,
     adminOnly: true,
   },
 ];
