@@ -15,12 +15,12 @@ export const getFilterItems = createAsyncThunk<
   }) => {
     let url = getItemsUrl;
     if (searchBy) {
-      url += `${url.includes("?") ? "&" : "?"}search=${searchBy}`;
+      url += `${url.includes("?") ? "&" : "?"}search=${encodeURIComponent(searchBy)}`;
     }
     const response = await axios.get(url);
     const data = await response.data;
     return data.results;
-  }
+  },
 );
 
 export const getFilterItem = createAsyncThunk<
@@ -46,7 +46,7 @@ export const getFilterItemsOneByOne = createAsyncThunk<
     }
 
     return list;
-  }
+  },
 );
 
 const filterItemsSlice = createSlice({

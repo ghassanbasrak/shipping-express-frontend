@@ -147,11 +147,13 @@ export function UploadFileInput({
   label,
   userId,
   onBusy,
+  accept = "image/*,.pdf",
 }: {
   name: string;
   label: string;
   userId: string;
   onBusy: (busy: boolean) => void;
+  accept?: string;
 }) {
   const { setValue, watch, getFieldState, formState } = useFormContext();
   const dispatch = useAppDispatch();
@@ -167,7 +169,7 @@ export function UploadFileInput({
         <input
           hidden
           type="file"
-          accept="image/*,.pdf"
+          accept={accept}
           onChange={async (event) => {
             const file = event.target.files?.[0];
             event.target.value = "";

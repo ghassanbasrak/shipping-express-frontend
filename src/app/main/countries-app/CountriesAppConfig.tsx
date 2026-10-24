@@ -8,7 +8,6 @@ import ar from "./i18n/ar";
 import tr from "./i18n/tr";
 const Countries = lazy(() => import("./countries/Countries"));
 const Country = lazy(() => import("./country/Country"));
-const CountryStates = lazy(() => import("./country/states/CountryStates"));
 i18next.addResourceBundle("en", "countriesApp", en);
 i18next.addResourceBundle("ar", "countriesApp", ar);
 i18next.addResourceBundle("tr", "countriesApp", tr);
@@ -18,11 +17,6 @@ const CountriesAppConfig: FuseRouteConfigType = {
     { path: "countries", element: <Navigate to="/countries/all" replace /> },
     { path: "countries/:shippingCompanyId", element: <Countries /> },
     { path: "countries/:shippingCompanyId/:countryId/*", element: <Country /> },
-    // Preserve the country-to-states drilldown until states-app owns this route.
-    {
-      path: "states/:shippingCompanyId/:countryId",
-      element: <CountryStates />,
-    },
   ],
 };
 export default CountriesAppConfig;
