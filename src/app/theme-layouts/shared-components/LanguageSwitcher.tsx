@@ -42,10 +42,10 @@ function LanguageSwitcher({
   };
 
   function handleLanguageChange(lng: LanguageType) {
-    dispatch(changeLanguage(lng.id));
-
     langMenuClose();
-    window.location.reload();
+    if (lng.id !== currentLanguage.id) {
+      dispatch(changeLanguage(lng.id));
+    }
   }
 
   return (
