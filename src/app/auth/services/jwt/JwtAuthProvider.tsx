@@ -20,7 +20,7 @@ import { useAppDispatch } from "app/store/hooks";
 import apiService from "app/store/apiService";
 import { closeDialog } from "@fuse/core/FuseDialog/fuseDialogSlice";
 import { resetUser } from "../../user/store/userSlice";
-import { demoUser, isDemoMode } from "src/app/demo/demoMode";
+import { getDemoUser, isDemoMode } from "src/app/demo/demoMode";
 
 export type JwtAuthStatus = "configuring" | "authenticated" | "unauthenticated";
 export type JwtAuthConfig = typeof config;
@@ -75,7 +75,7 @@ export const JwtAuthContext = createContext<JwtAuthContextType | undefined>(
 );
 
 function JwtAuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(isDemoMode ? demoUser : null);
+  const [user, setUser] = useState<User | null>(isDemoMode ? getDemoUser() : null);
   const [authStatus, setAuthStatus] = useState<JwtAuthStatus>(
     isDemoMode ? "authenticated" : "configuring",
   );
@@ -99,7 +99,10 @@ function JwtAuthProvider({ children }: { children: React.ReactNode }) {
     dispatch(resetUser());
   }, [dispatch]);
   const getUser = useCallback(async () => {
-    if (isDemoMode) return demoUser;
+    if (isDemoMode) {
+      const { data } = await axios.get<User>(`v1/users/${getDemoUser().id}`);
+      return acceptUser(data);
+    }
     const version = revision.current;
     const { data } = await axios.get<User>(config.accessToken);
     if (version !== revision.current) throw new Error("Session changed");

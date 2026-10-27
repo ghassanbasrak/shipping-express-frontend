@@ -4,9 +4,11 @@ import _ from "@lodash";
 import Paper from "@mui/material/Paper";
 import { useTranslation } from "react-i18next";
 import { alpha } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 
 function MagicLinkSentPage() {
   const { t } = useTranslation("magicLink");
+  const theme = useTheme();
   return (
     <div className="flex flex-col flex-auto items-center sm:justify-center min-w-0">
       <svg
@@ -17,7 +19,7 @@ function MagicLinkSentPage() {
           zIndex: -1,
         }}
       >
-        <rect fill="#092370" width="540" height="450" />
+        <rect fill={theme.palette.primary.dark} width="540" height="450" />
         <defs>
           <linearGradient
             id="a"
@@ -28,8 +30,8 @@ function MagicLinkSentPage() {
             y2="100%"
             gradientTransform="rotate(156,768,347)"
           >
-            <stop offset="0" stop-color="#092370" />
-            <stop offset="1" stop-color="#0f1ca6" />
+            <stop offset="0" stopColor={theme.palette.primary.dark} />
+            <stop offset="1" stopColor={theme.palette.primary.main} />
           </linearGradient>
           <pattern
             patternUnits="userSpaceOnUse"
@@ -126,7 +128,7 @@ function MagicLinkSentPage() {
         <div className="w-full max-w-320 sm:w-320 mx-auto sm:mx-0">
           <img
             className="h-48 mx-auto"
-            src="assets/images/logo/logo-text.png"
+            src={`/assets/images/logo/logo-text${theme.palette.mode === "dark" ? "-dark" : ""}.png`}
             alt="logo"
           />
 

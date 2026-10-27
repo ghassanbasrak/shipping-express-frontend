@@ -12,7 +12,7 @@ import { darken } from "@mui/material/styles";
 import { useAppSelector } from "app/store/hooks";
 import Icon from "app/shared-components/Icon";
 import { useTranslation } from "react-i18next";
-import { isDemoMode, resetDemoData } from "src/app/demo/demoMode";
+import { getDemoIdentity, isDemoMode, resetDemoData, switchDemoIdentity, type DemoIdentity } from "src/app/demo/demoMode";
 
 /**
  * The user menu.
@@ -107,9 +107,16 @@ function UserMenu() {
         ) : (
           <>
             {isDemoMode ? (
-              <MenuItem onClick={resetDemoData}>
-                <ListItemText primary="Reset demo data" />
-              </MenuItem>
+              <>
+                {(["admin", "merchant", "affiliate"] as DemoIdentity[]).map((identity) => (
+                  <MenuItem key={identity} selected={getDemoIdentity() === identity} onClick={() => switchDemoIdentity(identity)}>
+                    <ListItemText primary={`Demo ${identity}`} />
+                  </MenuItem>
+                ))}
+                <MenuItem onClick={resetDemoData}>
+                  <ListItemText primary="Reset demo data" />
+                </MenuItem>
+              </>
             ) : (
               <>
                 <MenuItem
