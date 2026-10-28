@@ -24,6 +24,75 @@ export const darkPaletteText = {
  * The themesConfig object is a configuration object for the color themes of the Fuse application.
  */
 export const themesConfig: FuseThemesType = {
+  ashamcoLight: {
+    palette: {
+      mode: 'light',
+      divider: '#e9e2f2',
+      text: lightPaletteText,
+      primary: {
+        light: '#A16CC4',
+        main: '#6338A0',
+        dark: '#302078',
+        contrastText: '#FFFFFF',
+      },
+      secondary: {
+        light: '#D66B4E',
+        main: '#A94738',
+        dark: '#87382F',
+        contrastText: '#FFFFFF',
+      },
+      background: {
+        paper: '#FFFFFF',
+        default: '#f6f4f9',
+      },
+    },
+  },
+  ashamcoDark: {
+    palette: {
+      mode: 'dark',
+      divider: 'rgba(255,255,255,.12)',
+      text: darkPaletteText,
+      primary: {
+        light: '#A16CC4',
+        main: '#6338A0',
+        dark: '#302078',
+        contrastText: '#FFFFFF',
+      },
+      secondary: {
+        light: '#D66B4E',
+        main: '#A94738',
+        dark: '#87382F',
+        contrastText: '#FFFFFF',
+      },
+      background: {
+        paper: '#211d2a',
+        default: '#111116',
+      },
+    },
+  },
+  ashamcoNavbar: {
+    palette: {
+      mode: 'dark',
+      divider: 'rgba(255,255,255,.12)',
+      text: darkPaletteText,
+      primary: {
+        light: '#A16CC4',
+        main: '#6338A0',
+        dark: '#302078',
+        contrastText: '#FFFFFF',
+      },
+      secondary: {
+        light: '#D66B4E',
+        main: '#A94738',
+        dark: '#87382F',
+        contrastText: '#FFFFFF',
+      },
+      background: {
+        paper: '#302078',
+        default: '#302078',
+      },
+    },
+  },
   legacy: {
     palette: {
       mode: "light",

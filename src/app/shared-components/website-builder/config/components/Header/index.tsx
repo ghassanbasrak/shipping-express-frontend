@@ -29,7 +29,9 @@ const NavItem = ({ label, href }: { label: string; href: string }) => {
 
 const Header = ({ editMode }) => (
   <header className={getClassName()}>
-    <div className={getClassName("logo")}>LOGO</div>
+    <div className={getClassName("logo")}>
+      <img src="/assets/images/logo/logo-text.png" alt="Ashamco Express" />
+    </div>
     <nav className={getClassName("items")}>
       <NavItem label="Home" href={`${editMode ? "" : "/"}`} />
       <NavItem label="Pricing" href={editMode ? "" : "/pricing"} />

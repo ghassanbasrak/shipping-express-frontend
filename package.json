@@ -223,6 +223,8 @@
     "dev:demo": "cross-env VITE_DEMO_MODE=true vite",
     "build": "vite build",
     "build:demo": "cross-env VITE_DEMO_MODE=true vite build",
+    "test:demo:browser": "node scripts/demo-browser-smoke.cjs",
+    "test:demo": "node scripts/demo-contracts.cjs",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "build-docs": "ts-node --esm ./src/app/main/documentation/material-ui-components/build.ts",

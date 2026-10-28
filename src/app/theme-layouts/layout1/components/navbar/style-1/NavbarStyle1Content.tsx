@@ -17,8 +17,7 @@ const Root = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: 24,
   color: theme.palette.text.primary,
-  background:
-    "linear-gradient(165deg, #0d1b6b 0%, #0a2078 38%, #07154f 100%)",
+  background: "linear-gradient(165deg, #0d1b6b 0%, #0a2078 38%, #07154f 100%)",
   border: `1px solid ${alpha("#ffffff", 0.1)}`,
   boxShadow:
     "0 24px 48px -16px rgba(9, 20, 80, .55), inset 0 1px 0 rgba(255,255,255,.08)",
@@ -34,7 +33,8 @@ const Root = styled("div")(({ theme }) => ({
     height: 220,
     top: -90,
     right: -80,
-    background: "radial-gradient(circle, rgba(124,77,255,.55), transparent 70%)",
+    background:
+      "radial-gradient(circle, rgba(124,77,255,.55), transparent 70%)",
   },
   "&::after": {
     width: 240,
@@ -83,7 +83,7 @@ function NavbarStyle1Content(props: NavbarStyle1ContentProps) {
     <Root
       className={clsx(
         "flex h-full flex-auto flex-col overflow-hidden",
-        props.className
+        props.className,
       )}
     >
       <div className="navbar-dots" />

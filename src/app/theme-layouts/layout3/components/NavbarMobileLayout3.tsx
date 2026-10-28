@@ -1,5 +1,5 @@
 import FuseScrollbars from "@fuse/core/FuseScrollbars";
-import { styled } from "@mui/material/styles";
+import { styled, useTheme } from "@mui/material/styles";
 import clsx from "clsx";
 import { memo } from "react";
 import NavbarToggleButton from "app/theme-layouts/shared-components/navbar/NavbarToggleButton";
@@ -46,6 +46,7 @@ type NavbarMobileLayout3Props = {
  */
 function NavbarMobileLayout3(props: NavbarMobileLayout3Props) {
   const { className = "" } = props;
+  const theme = useTheme();
 
   return (
     <Root className={clsx("flex h-full flex-col overflow-hidden", className)}>
@@ -66,7 +67,7 @@ function NavbarMobileLayout3(props: NavbarMobileLayout3Props) {
         <div className="flex-0 flex items-center justify-center py-48 opacity-10">
           <img
             className="w-full max-w-64"
-            src="assets/images/logo/logo.png"
+            src={`/assets/images/logo/logo${theme.palette.mode === "dark" ? "-dark" : ""}.png`}
             alt="footer logo"
           />
         </div>
