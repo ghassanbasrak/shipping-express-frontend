@@ -41,10 +41,10 @@ const settingsConfig: FuseSettingsConfigType = {
    * The theme object defines the color theme for the application.
    */
   theme: {
-    main: themesConfig.legacy,
-    navbar: themesConfig.navbarLegacy,
-    toolbar: themesConfig.legacy,
-    footer: themesConfig.legacy,
+    main: themesConfig.ashamcoLight,
+    navbar: themesConfig.ashamcoNavbar,
+    toolbar: themesConfig.ashamcoLight,
+    footer: themesConfig.ashamcoNavbar,
   },
 
   /**

@@ -4,6 +4,7 @@ import MockAdapter from "axios-mock-adapter";
 import ICountry, { IShipmentCountry } from "src/app/main/countries-app/models/ICountry";
 import IShippingCompany from "src/app/main/shipping-companies-app/models/IShippingCompany";
 import { demoStorageKey } from "./demoMode";
+import { createDemoExtras, handleDemoExtra, type DemoExtraDb } from "./demoExtraApi";
 
 type DemoState = {
   id: string;
@@ -13,8 +14,8 @@ type DemoState = {
   createdAt: string;
   shippingCompanyIds: string[];
 };
-type DemoCity = { id: string; stateId: string; name: { en: string; ar: string } };
-type DemoDb = {
+type DemoCity = { id: string; countryId?: string; stateId: string; name: { en: string; ar: string }; postalCode?: string };
+type DemoDb = DemoExtraDb & {
   countries: ICountry[];
   shippingCompanies: IShippingCompany[];
   shipmentCountries: IShipmentCountry[];
@@ -31,6 +32,7 @@ const carrierNames = [
   "Cedar Logistics",
   "Oasis Courier",
   "Red Sea Shipping",
+  ...Array.from({ length: 12 }, (_, index) => `Route Courier ${index + 7}`),
 ];
 const places: [string, string, string, string][] = [
   ["EG", "Egypt", "مصر", "+20"],
@@ -73,10 +75,10 @@ function seedDb(): DemoDb {
     shipmentCodFees: 2,
     shipmentExtraWeightFees: 2,
     shipmentReturnFees: 4,
-    color: ["#236A9E", "#B77B22", "#506F42", "#85599D", "#2C8B87", "#B05454"][index],
+    color: ["#236A9E", "#B77B22", "#506F42", "#85599D", "#2C8B87", "#B05454"][index % 6],
     logoUrl: logo,
     iconUrl: logo,
-    shipmentsCount: 120 - index * 13,
+    shipmentsCount: 120 + index * 7,
     packageRequestsCount: 18 + index * 3,
     createdAt: stamp,
   }));
@@ -127,10 +129,13 @@ function seedDb(): DemoDb {
   });
   const cities: DemoCity[] = states.map((state) => ({
     id: `demo-city-${state.id}`,
+    countryId: state.countryId,
     stateId: state.id,
     name: state.name,
+    postalCode: "11511",
   }));
-  return { countries, shippingCompanies, shipmentCountries, states, cities };
+  return { countries, shippingCompanies, shipmentCountries, states, cities,
+    ...createDemoExtras({ countries, shippingCompanies, states, cities }) };
 }
 
 function loadDb(): DemoDb {
@@ -144,7 +149,18 @@ function loadDb(): DemoDb {
         Array.isArray(value.shipmentCountries) &&
         Array.isArray(value.states) &&
         Array.isArray(value.cities)
-      ) return value;
+      ) {
+        const extras = createDemoExtras(value);
+        const merged = { ...value } as DemoDb;
+        merged.cities = merged.cities.map((city) => ({ ...city,
+          countryId: city.countryId || merged.states.find((state) => state.id === city.stateId)?.countryId,
+          postalCode: city.postalCode || "11511" }));
+        for (const key of Object.keys(extras) as (keyof DemoExtraDb)[])
+          if (key === "affiliateBalances" ? !merged.affiliateBalances || typeof merged.affiliateBalances !== "object" : !Array.isArray(merged[key]))
+            (merged as any)[key] = extras[key];
+        localStorage.setItem(demoStorageKey, JSON.stringify(merged));
+        return merged;
+      }
     }
   } catch {
     // An old or corrupt demo snapshot is replaced with the current seed.
@@ -188,10 +204,16 @@ const companyWithCounts = (company: IShippingCompany) => ({
   shipmentCitiesCount: db.cities.filter((city) => db.states.some((state) => state.id === city.stateId && state.shippingCompanyIds.includes(company.id))).length,
 });
 
-function handle(config: AxiosRequestConfig): [number, unknown] {
-  const path = new URL(config.url || "", `${axios.defaults.baseURL}/`).pathname.replace(/^\//, "");
+async function handle(config: AxiosRequestConfig): Promise<[number, unknown]> {
+  const requestUrl = new URL(config.url || "", `${axios.defaults.baseURL}/`);
+  const path = requestUrl.pathname.replace(/^\//, "");
   const method = (config.method || "get").toLowerCase();
-  const params = config.params || {};
+  const params: Record<string, any> = { ...config.params };
+  requestUrl.searchParams.forEach((value, key) => {
+    if (params[key] === undefined) params[key] = value;
+    else if (Array.isArray(params[key])) params[key].push(value);
+    else params[key] = [params[key], value];
+  });
   const data = bodyOf(config);
   const parts = path.split("/");
   if (parts[0] !== "v1") return [501, { message: `No demo handler for ${method.toUpperCase()} ${path}` }];
@@ -222,6 +244,9 @@ function handle(config: AxiosRequestConfig): [number, unknown] {
     if (method === "delete") {
       db.shippingCompanies.splice(index, 1);
       db.shipmentCountries = db.shipmentCountries.filter((row) => row.shippingCompanyId !== id);
+      db.shipmentStates = db.shipmentStates.filter((row) => row.shippingCompanyId !== id);
+      db.shipmentCities = db.shipmentCities.filter((row) => row.shippingCompanyId !== id);
+      db.states.forEach((row) => { row.shippingCompanyIds = row.shippingCompanyIds.filter((value) => value !== id); });
       saveDb();
       return [200, {}];
     }
@@ -252,7 +277,13 @@ function handle(config: AxiosRequestConfig): [number, unknown] {
     }
     if (method === "delete") {
       db.countries.splice(index, 1);
+      const removedStateIds = db.states.filter((row) => row.countryId === id).map((row) => row.id);
+      const removedCityIds = db.cities.filter((row) => removedStateIds.includes(row.stateId)).map((row) => row.id);
       db.states = db.states.filter((state) => state.countryId !== id);
+      db.cities = db.cities.filter((city) => !removedCityIds.includes(city.id));
+      db.shipmentStates = db.shipmentStates.filter((row) => !removedStateIds.includes(row.stateId));
+      db.shipmentCities = db.shipmentCities.filter((row) => !removedCityIds.includes(row.cityId));
+      db.shipmentCountries = db.shipmentCountries.filter((row) => row.countryId !== id);
       saveDb();
       return [200, {}];
     }
@@ -287,18 +318,8 @@ function handle(config: AxiosRequestConfig): [number, unknown] {
     }
   }
 
-  if (resource === "states" && method === "get") {
-    const rows = db.states.filter((state) =>
-      (!params.countryId || state.countryId === params.countryId) &&
-      (!params.shippingCompanyId || params.shippingCompanyId === "all" || state.shippingCompanyIds.includes(params.shippingCompanyId)) &&
-      search([state.name, state.code], params.search),
-    );
-    return [200, result(rows, params.page, params.pageSize)];
-  }
-  if (resource === "cities" && method === "get") {
-    const rows = db.cities.filter((city) => !params.stateId || city.stateId === params.stateId);
-    return [200, result(rows, params.page, params.pageSize)];
-  }
+  const extra = await handleDemoExtra({ db, config, path, method, params, data, save: saveDb });
+  if (extra) return extra;
   return [501, { message: `No demo handler for ${method.toUpperCase()} ${path}` }];
 }
 

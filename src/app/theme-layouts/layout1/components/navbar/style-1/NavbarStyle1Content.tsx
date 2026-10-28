@@ -168,7 +168,7 @@ function NavbarStyle1Content(props: NavbarStyle1ContentProps) {
         <div className="flex flex-1 space-x-8 mx-4 items-center">
           <img
             className="w-full max-w-128"
-            src={"assets/images/logo/logo-text-dark.png"}
+            src="/assets/images/logo/logo-text-dark.png"
             alt="footer logo"
           />
           {/*<Typography className="ms-16 font-bold" variant="subtitle1">*/}
@@ -189,7 +189,7 @@ function NavbarStyle1Content(props: NavbarStyle1ContentProps) {
         <div className="flex flex-0 items-center justify-center py-48 opacity-10">
           <img
             className="w-full max-w-64"
-            src={"assets/images/logo/logo.png"}
+            src="/assets/images/logo/logo-dark.png"
             alt="footer logo"
           />
         </div>

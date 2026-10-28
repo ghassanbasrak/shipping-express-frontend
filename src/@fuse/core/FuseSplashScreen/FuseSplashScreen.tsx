@@ -10,7 +10,7 @@ function FuseSplashScreen() {
   return (
     <div id="fuse-splash-screen">
       <div>
-        <img width="256" src="assets/images/logo/logo-text.png" alt="logo" />
+        <img width="256" src="/assets/images/logo/logo-text.png" alt="Ashamco Express" />
       </div>
       <Box
         id="spinner"

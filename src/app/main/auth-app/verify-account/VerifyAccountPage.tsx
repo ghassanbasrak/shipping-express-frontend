@@ -19,6 +19,7 @@ import {
   uploadMedia,
 } from "app/shared-components/media-input/store/mediaSlice";
 import { useAppDispatch } from "app/store/hooks";
+import { isDemoMode } from "src/app/demo/demoMode";
 
 export default function VerifyAccountPage() {
   const { t } = useTranslation("ashamcoAuth");
@@ -178,6 +179,17 @@ export function UploadFileInput({
             setProgress(0);
             setError(false);
             try {
+              if (isDemoMode) {
+                if (file.size > 1024 * 1024) throw new Error("Demo files must be 1 MB or smaller");
+                const demoUrl = await new Promise<string>((resolve, reject) => {
+                  const reader = new FileReader();
+                  reader.onload = () => resolve(String(reader.result || ""));
+                  reader.onerror = () => reject(reader.error);
+                  reader.readAsDataURL(file);
+                });
+                setValue(name, demoUrl, { shouldValidate: true, shouldDirty: true });
+                return;
+              }
               const media = (await dispatch(
                 createMedia({ userId, fileName: file.name }),
               ).unwrap()) as PresignedMedia;
