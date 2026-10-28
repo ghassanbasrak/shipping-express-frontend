@@ -1,4 +1,23 @@
 const locale = {
+  OPERATIONS_DASHBOARD: "Operations dashboard",
+  HOME: "Home",
+  BALANCE_DUPLICATION_ERRORS: "Balance Duplication Errors",
+  NEW_STORE: "New store",
+  STORE_INTEGRATION: "Store integration",
+  STORE_AUTHENTICATION: "Store authentication",
+  AFFILIATES: "Affiliates",
+  AFFILIATE_PROFILE: "Affiliate Account",
+  MERCHANTS: "Merchants",
+  MY_ACCOUNT: "My Account",
+  TOPUP_REQUESTS: "Top-up Requests",
+  WITHDRAW_REQUESTS: "Withdrawal Requests",
+  LOGS: "Logs",
+  CANCEL_SHIPMENT_REQUESTS: "Shipment Cancellation Requests",
+  MERCHANT_DUES: "Merchant COD Dues",
+
+  SHIPMENTS: "Shipments",
+  SHIPPING_PRICE_CALCULATOR: "Shipping Price Calculator",
+
   TRANSACTIONS: "Wallet Transactions",
   COD_TRANSACTIONS: "COD Transactions",
   TRANSACTION_REPORTS: "Transaction Reports",

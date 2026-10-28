@@ -176,6 +176,10 @@ export const fuseSettingsSlice = createSlice({
           state.defaults,
           action.payload?.settings as FuseSettingsConfigType,
         );
+        // An account refresh must not discard active route layout overrides.
+        // FuseLayout reapplies them by unmounting its children while settings differ.
+        if (_.isEqual(state.defaults, defaults)) return state;
+
         return {
           ...state,
           defaults: _.merge({}, defaults),
@@ -228,12 +232,20 @@ export const {
 /**
  * Generates the MUI theme object.
  */
-function generateMuiTheme(theme: FuseThemeType, direction: directionType) {
+function generateMuiTheme(
+  theme: FuseThemeType,
+  direction: directionType,
+  language: string,
+) {
+  const fonts = defaultThemeOptions.typography.fontFamily.split(",");
+  fonts[0] = language.split("-")[0] === "ar" ? "LamaSans" : "Inter var";
+
   const data = _.merge(
     {},
     defaultThemeOptions,
     theme,
     mustHaveThemeOptions,
+    { typography: { fontFamily: fonts.join(",") } },
   ) as ThemeOptions;
 
   return createTheme(
@@ -290,72 +302,74 @@ function changeThemeMode(
   return _.merge({}, theme, modes[mode]);
 }
 
+const getThemeLanguage = (state: RootState) => state.i18n.language;
+
 export const selectMainTheme = createSelector(
-  [getMainTheme, getDirection],
-  (theme, direction) => generateMuiTheme(theme, direction),
+  [getMainTheme, getDirection, getThemeLanguage],
+  (theme, direction, language) => generateMuiTheme(theme, direction, language),
 );
 
 export const selectMainThemeDark = createSelector(
-  [getMainTheme, getDirection],
-  (theme, direction) =>
-    generateMuiTheme(changeThemeMode(theme, "dark"), direction),
+  [getMainTheme, getDirection, getThemeLanguage],
+  (theme, direction, language) =>
+    generateMuiTheme(changeThemeMode(theme, "dark"), direction, language),
 );
 
 export const selectMainThemeLight = createSelector(
-  [getMainTheme, getDirection],
-  (theme, direction) =>
-    generateMuiTheme(changeThemeMode(theme, "light"), direction),
+  [getMainTheme, getDirection, getThemeLanguage],
+  (theme, direction, language) =>
+    generateMuiTheme(changeThemeMode(theme, "light"), direction, language),
 );
 
 export const selectNavbarTheme = createSelector(
-  [getNavbarTheme, getDirection],
-  (theme, direction) => generateMuiTheme(theme, direction),
+  [getNavbarTheme, getDirection, getThemeLanguage],
+  (theme, direction, language) => generateMuiTheme(theme, direction, language),
 );
 
 export const selectNavbarThemeDark = createSelector(
-  [getNavbarTheme, getDirection],
-  (theme, direction) =>
-    generateMuiTheme(changeThemeMode(theme, "dark"), direction),
+  [getNavbarTheme, getDirection, getThemeLanguage],
+  (theme, direction, language) =>
+    generateMuiTheme(changeThemeMode(theme, "dark"), direction, language),
 );
 
 export const selectNavbarThemeLight = createSelector(
-  [getNavbarTheme, getDirection],
-  (theme, direction) =>
-    generateMuiTheme(changeThemeMode(theme, "light"), direction),
+  [getNavbarTheme, getDirection, getThemeLanguage],
+  (theme, direction, language) =>
+    generateMuiTheme(changeThemeMode(theme, "light"), direction, language),
 );
 
 export const selectToolbarTheme = createSelector(
-  [getToolbarTheme, getDirection],
-  (theme, direction) => generateMuiTheme(theme, direction),
+  [getToolbarTheme, getDirection, getThemeLanguage],
+  (theme, direction, language) => generateMuiTheme(theme, direction, language),
 );
 
 export const selectToolbarThemeDark = createSelector(
-  [getToolbarTheme, getDirection],
-  (theme, direction) =>
-    generateMuiTheme(changeThemeMode(theme, "dark"), direction),
+  [getToolbarTheme, getDirection, getThemeLanguage],
+  (theme, direction, language) =>
+    generateMuiTheme(changeThemeMode(theme, "dark"), direction, language),
 );
 
 export const selectToolbarThemeLight = createSelector(
-  [getToolbarTheme, getDirection],
-  (theme, direction) =>
-    generateMuiTheme(changeThemeMode(theme, "light"), direction),
+  [getToolbarTheme, getDirection, getThemeLanguage],
+  (theme, direction, language) =>
+    generateMuiTheme(changeThemeMode(theme, "light"), direction, language),
 );
 
 export const selectFooterTheme = createSelector(
-  [getFooterTheme, getDirection],
-  (theme, direction) => generateMuiTheme(theme, direction),
+  [getFooterTheme, getDirection, getThemeLanguage],
+  (theme, direction, language) => generateMuiTheme(theme, direction, language),
 );
 
 export const selectFooterThemeDark = createSelector(
-  [getFooterTheme, getDirection],
-  (theme, direction) =>
-    generateMuiTheme(changeThemeMode(theme, "dark"), direction),
+  [getFooterTheme, getDirection, getThemeLanguage],
+  (theme, direction, language) =>
+    generateMuiTheme(changeThemeMode(theme, "dark"), direction, language),
 );
 
 export const selectFooterThemeLight = createSelector(
-  [getFooterTheme, getDirection],
-  (theme, direction) =>
-    generateMuiTheme(changeThemeMode(theme, "light"), direction),
+  [getFooterTheme, getDirection, getThemeLanguage],
+  (theme, direction, language) =>
+    generateMuiTheme(changeThemeMode(theme, "light"), direction, language),
 );
 // export const selectFuseThemesSettings = (state: RootState) => state.fuseSettings.themes;
 

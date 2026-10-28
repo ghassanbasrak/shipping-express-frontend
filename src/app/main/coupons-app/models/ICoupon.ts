@@ -11,6 +11,7 @@ export default interface ICoupon {
   maxUsageCount: number;
   usageCount?: number;
   isActive?: boolean;
+  startTime?: string | null;
   expiresAt?: string | null;
   createdAt?: string;
   updatedAt?: string;

@@ -15,28 +15,28 @@ type ListItemButtonStyleProps = ListItemButtonProps & {
 
 const Root = styled(ListItemButton)<ListItemButtonStyleProps>(
   ({ theme, ...props }) => ({
+    position: "relative",
     minHeight: 44,
     width: "100%",
-    borderRadius: "6px",
+    borderRadius: 12,
     margin: "0 0 4px 0",
-    paddingRight: 16,
-    paddingLeft: props.itempadding > 80 ? 80 : props.itempadding,
-    paddingTop: 10,
-    paddingBottom: 10,
-    color: alpha(theme.palette.text.primary, 0.7),
+    paddingRight: 14,
+    paddingLeft: props.itempadding,
+    paddingTop: 9,
+    paddingBottom: 9,
+    color: alpha(theme.palette.text.primary, 0.68),
     cursor: "pointer",
     textDecoration: "none!important",
+    transition: "background-color .2s ease, color .2s ease, transform .2s ease",
     "&:hover": {
       color: theme.palette.text.primary,
+      backgroundColor: alpha(theme.palette.common.white, 0.08),
     },
     "&.active": {
-      color: theme.palette.text.primary,
-      backgroundColor:
-        theme.palette.mode === "light"
-          ? "rgba(0, 0, 0, .05)!important"
-          : "rgba(255, 255, 255, .1)!important",
+      color: "#fff",
+      background: "linear-gradient(135deg, #2c5ef5 0%, #7c4dff 100%)",
+      boxShadow: "0 10px 22px -10px rgba(76, 99, 255, .9)",
       pointerEvents: "none",
-      transition: "border-radius .15s cubic-bezier(0.4,0.0,0.2,1)",
       "& > .fuse-list-item-text-primary": {
         color: "inherit",
       },
@@ -45,7 +45,7 @@ const Root = styled(ListItemButton)<ListItemButtonStyleProps>(
       },
     },
     "& >.fuse-list-item-icon": {
-      marginRight: 16,
+      marginRight: 14,
       color: "inherit",
     },
     "& > .fuse-list-item-text": {},
@@ -58,7 +58,7 @@ const Root = styled(ListItemButton)<ListItemButtonStyleProps>(
 function FuseNavVerticalItem(props: FuseNavItemComponentProps) {
   const { item, nestedLevel = 0, onItemClick, checkPermission } = props;
 
-  const itempadding = nestedLevel > 0 ? 38 + nestedLevel * 16 : 16;
+  const itempadding = nestedLevel > 0 ? 12 : 14;
 
   const component = item.url ? NavLinkAdapter : "li";
 

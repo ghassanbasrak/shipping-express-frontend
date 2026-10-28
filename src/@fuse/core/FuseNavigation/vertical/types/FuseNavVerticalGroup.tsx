@@ -19,14 +19,13 @@ type ListItemButtonComponentProps = ListItemButtonProps & {
 
 const Root = styled(ListItem)<ListItemButtonComponentProps>(
   ({ theme, ...props }) => ({
-    minminHeight: 44,
     width: "100%",
-    borderRadius: "6px",
-    margin: "28px 0 0 0",
-    paddingRight: 16,
-    paddingLeft: props.itempadding > 80 ? 80 : props.itempadding,
-    paddingTop: 10,
-    paddingBottom: 10,
+    borderRadius: 8,
+    margin: "20px 0 4px 0",
+    paddingRight: 14,
+    paddingLeft: props.itempadding,
+    paddingTop: 4,
+    paddingBottom: 4,
     color: alpha(theme.palette.text.primary, 0.7),
     fontWeight: 600,
     letterSpacing: "0.025em",
@@ -132,7 +131,7 @@ function FuseNavVerticalGroup(props: FuseNavItemComponentProps) {
     }
   }, [isLoadingRemoteData, isFetchingRemoteData, remoteData, remoteChildren]);
 
-  const itempadding = nestedLevel > 0 ? 38 + nestedLevel * 16 : 16;
+  const itempadding = nestedLevel > 0 ? 12 : 14;
 
   const component = item.url ? NavLinkAdapter : "li";
 
@@ -182,14 +181,14 @@ function FuseNavVerticalGroup(props: FuseNavItemComponentProps) {
             sx={{
               margin: 0,
               "& > .MuiListItemText-primary": {
-                fontSize: 12,
+                fontSize: 11,
                 color: (theme) =>
                   theme.palette.mode === "dark"
-                    ? "secondary.light"
-                    : "secondary.main",
-                fontWeight: 600,
+                    ? "rgba(255,255,255,.45)"
+                    : "text.secondary",
+                fontWeight: 700,
                 textTransform: "uppercase",
-                letterSpacing: ".05em",
+                letterSpacing: ".12em",
                 lineHeight: "20px",
               },
 

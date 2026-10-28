@@ -25,7 +25,7 @@ export default function MerchantStatisticsHeader({
         animate={{ opacity: 1 }}
         className="min-w-0 w-full sm:w-auto flex-1 space-y-8"
       >
-        <Button component={Link} to="/home" color="inherit" size="small">
+        <Button component={Link} to="/merchants" color="inherit" size="small">
           {t("GO_HOME")}
         </Button>
         <Typography className="text-20 sm:text-24 font-semibold">

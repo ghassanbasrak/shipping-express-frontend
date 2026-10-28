@@ -8,7 +8,7 @@ import { Layout1ConfigDefaultsType } from 'app/theme-layouts/layout1/Layout1Conf
 import { navbarCloseMobile, selectFuseNavbar } from 'app/theme-layouts/shared-components/navbar/navbarSlice';
 import NavbarStyle1Content from './NavbarStyle1Content';
 
-const navbarWidth = 280;
+const navbarWidth = 296;
 
 type StyledNavBarProps = {
 	theme?: Theme;
@@ -44,7 +44,11 @@ const StyledNavBarMobile = styled(SwipeableDrawer)(() => ({
 	'& .MuiDrawer-paper': {
 		minWidth: navbarWidth,
 		width: navbarWidth,
-		maxWidth: navbarWidth
+		maxWidth: navbarWidth,
+		padding: 12,
+		backgroundColor: 'transparent',
+		boxShadow: 'none',
+		overflow: 'visible'
 	}
 }));
 
@@ -60,7 +64,7 @@ function NavbarStyle1() {
 		<>
 			<Hidden lgDown>
 				<StyledNavBar
-					className="sticky top-0 z-20 h-screen flex-auto shrink-0 flex-col overflow-hidden shadow"
+					className="sticky top-0 z-20 h-screen flex-auto shrink-0 flex-col overflow-hidden p-12"
 					open={navbar.open}
 					position={config.navbar.position}
 				>

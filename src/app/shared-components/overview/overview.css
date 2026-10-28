@@ -1,0 +1,925 @@
+.ov-root {
+  color: var(--ov-ink);
+  background: var(--ov-bg);
+  min-height: 100%;
+  width: 100%;
+  font-variant-numeric: tabular-nums;
+}
+.ov-container {
+  max-width: 1540px;
+  margin-inline: auto;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.ov-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding-block: 4px 0;
+}
+.ov-heading {
+  min-width: 0;
+}
+.ov-eyebrow {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #0f9d8c;
+}
+.ov-heading h1 {
+  font-size: 32px;
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+  font-weight: 800;
+  margin: 7px 0 8px;
+}
+.ov-heading p {
+  font-size: 14px;
+  color: var(--ov-muted);
+  line-height: 1.7;
+  margin: 0;
+  max-width: 760px;
+}
+.ov-header-actions,
+.ov-footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.ov-header-actions {
+  flex-shrink: 0;
+}
+.ov-refresh.MuiButton-root {
+  border-color: var(--ov-border);
+  color: var(--ov-ink);
+  border-radius: 10px;
+  text-transform: none;
+  padding: 8px 16px;
+  background: var(--ov-paper);
+}
+.ov-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 16px;
+  background: var(--ov-paper);
+  border: 1px solid var(--ov-border);
+  border-radius: 16px;
+  padding: 18px 20px;
+}
+.ov-toolbar .MuiFormControl-root {
+  min-width: 160px;
+}
+.ov-toolbar .ov-carrier-filter {
+  min-width: 220px;
+  max-width: 320px;
+  flex: 1;
+}
+.ov-toolbar-note {
+  font-size: 12px;
+  color: var(--ov-muted);
+  margin-block: 3px 0;
+  line-height: 1.5;
+}
+.ov-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ov-scope-badge {
+  border: 1px solid var(--ov-border);
+  border-radius: 7px;
+  font-size: 11px;
+  color: var(--ov-muted);
+  padding: 4px 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: normal;
+}
+.ov-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+.ov-metric {
+  min-width: 0;
+  padding: 22px;
+  background: var(--ov-paper);
+  border: 1px solid var(--ov-border);
+  border-radius: 16px;
+  box-shadow: 0 3px 14px #152a4310;
+}
+.ov-metric-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--ov-muted);
+}
+.ov-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--ov-accent) 10%, transparent);
+  color: var(--ov-accent);
+  flex-shrink: 0;
+}
+.ov-metric-value {
+  font-size: 30px;
+  line-height: 1.3;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  margin-block: 14px 12px;
+  overflow-wrap: anywhere;
+}
+.ov-metric-meta {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+  font-size: 11px;
+  color: var(--ov-muted);
+  min-height: 24px;
+}
+.ov-change {
+  border-radius: 6px;
+  padding: 3px 6px;
+  font-weight: 700;
+  direction: ltr;
+  display: inline-block;
+}
+.ov-change.positive {
+  background: #0f9d8c15;
+  color: #0c897a;
+}
+.ov-change.negative {
+  background: #dc466015;
+  color: #c7344d;
+}
+.ov-change.neutral {
+  background: #64748b13;
+  color: #64748b;
+}
+.ov-note {
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--ov-muted);
+  margin-block: 8px 0;
+}
+.ov-updated,
+.ov-update {
+  display: block;
+  font-size: 10px;
+  line-height: 1.6;
+  color: var(--ov-muted);
+  margin-top: 12px;
+}
+.ov-update {
+  color: #0f9d8c;
+}
+.ov-query-error.MuiAlert-root {
+  margin-block: 12px 0;
+  font-size: 11px;
+  padding: 5px 8px;
+  align-items: center;
+}
+.ov-query-error .MuiAlert-message {
+  min-width: 0;
+}
+.ov-query-error .MuiAlert-action {
+  margin: 0;
+  padding: 0;
+}
+.ov-section {
+  background: var(--ov-paper);
+  border: 1px solid var(--ov-border);
+  border-radius: 18px;
+  padding: 24px;
+  min-width: 0;
+  box-shadow: 0 3px 14px #152a4308;
+}
+.ov-section-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+.ov-section h2 {
+  font-size: 18px;
+  line-height: 1.4;
+  font-weight: 750;
+  margin: 0;
+}
+.ov-section-header p {
+  font-size: 12px;
+  color: var(--ov-muted);
+  margin: 5px 0 0;
+  line-height: 1.65;
+}
+.ov-section-content {
+  min-width: 0;
+}
+.ov-section > .ov-query-error {
+  margin-bottom: 16px;
+}
+.ov-section > .ov-updated,
+.ov-section > .ov-update {
+  margin-top: -8px;
+  margin-bottom: 12px;
+}
+.ov-grid-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(300px, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+.ov-grid-equal {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+.ov-empty {
+  padding: 30px 16px;
+  text-align: center;
+  color: var(--ov-muted);
+  font-size: 13px;
+  line-height: 1.8;
+  background: var(--ov-bg);
+  border-radius: 12px;
+}
+.ov-skeleton {
+  display: grid;
+  gap: 10px;
+}
+.ov-tabs {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-block: 4px 22px;
+}
+.ov-tabs button {
+  border: 1px solid var(--ov-border);
+  color: var(--ov-muted);
+  background: transparent;
+  padding: 8px 15px;
+  border-radius: 9px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 650;
+}
+.ov-tabs button[aria-selected="true"] {
+  background: #0f9d8c12;
+  color: #098779;
+  border-color: #0f9d8c66;
+}
+.ov-stage {
+  display: grid;
+  grid-template-columns: minmax(100px, 1fr) minmax(80px, 2fr) 54px;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 18px;
+  font-size: 12px;
+}
+.ov-stage strong {
+  text-align: end;
+  font-size: 14px;
+}
+.ov-bar {
+  height: 8px;
+  background: var(--ov-bg);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.ov-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 8px;
+  transition: width 0.25s ease;
+}
+.ov-stage-label {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.ov-subtle-note {
+  margin-top: 18px;
+  color: var(--ov-muted);
+  font-size: 11px;
+  line-height: 1.7;
+}
+.ov-attention-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--ov-border);
+  font-size: 13px;
+}
+.ov-attention-row:last-child {
+  border-bottom: 0;
+}
+.ov-attention-label {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+}
+.ov-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #d3973a;
+  flex-shrink: 0;
+}
+.ov-attention-row strong {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.ov-activity {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.ov-activity-item {
+  background: var(--ov-bg);
+  border: 1px solid var(--ov-border);
+  border-radius: 12px;
+  padding: 16px;
+}
+.ov-activity-item strong {
+  font-size: 24px;
+  display: block;
+  line-height: 1.4;
+  margin-bottom: 5px;
+}
+.ov-activity-item span {
+  font-size: 12px;
+  color: var(--ov-muted);
+}
+.ov-rank-row {
+  display: grid;
+  grid-template-columns:
+    30px minmax(0, 1.4fr) minmax(70px, 0.7fr) minmax(90px, 1fr)
+    minmax(65px, 0.6fr);
+  gap: 12px;
+  align-items: center;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--ov-border);
+  font-size: 12px;
+}
+.ov-rank-head {
+  font-size: 10px;
+  color: var(--ov-muted);
+  font-weight: 700;
+}
+.ov-rank-row:last-child {
+  border: 0;
+}
+.ov-rank-num {
+  display: grid;
+  place-items: center;
+  background: var(--ov-bg);
+  width: 27px;
+  height: 27px;
+  border-radius: 8px;
+  font-size: 11px;
+  color: var(--ov-muted);
+}
+.ov-rank-name {
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+.ov-rank-value strong {
+  display: block;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.ov-rank-value small {
+  display: none;
+  color: var(--ov-muted);
+  font-size: 10px;
+}
+.ov-inline-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.ov-inline-controls .MuiFormControl-root {
+  min-width: 110px;
+}
+.ov-text-link.MuiButton-root {
+  font-size: 11px;
+  text-transform: none;
+  white-space: nowrap;
+  color: #0a8b7c;
+}
+.ov-arrow {
+  color: var(--ov-muted);
+  margin-inline-start: auto;
+  flex-shrink: 0;
+}
+.ov-quick-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+.ov-quick-action {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 19px;
+  border: 1px solid var(--ov-border);
+  border-radius: 14px;
+  background: var(--ov-paper);
+  color: inherit;
+  text-decoration: none !important;
+  transition:
+    border-color 0.15s,
+    transform 0.15s;
+}
+.ov-quick-action:hover {
+  border-color: #0f9d8c88;
+  transform: translateY(-2px);
+}
+.ov-quick-icon {
+  color: #0d9383;
+  background: #0f9d8c0e;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 11px;
+}
+.ov-quick-action strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+.ov-quick-action small {
+  display: block;
+  font-size: 11px;
+  color: var(--ov-muted);
+  line-height: 1.5;
+}
+.ov-hero {
+  background: #132b43;
+  color: white;
+  border-radius: 20px;
+  padding: 30px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(230px, 1fr);
+  gap: 30px;
+  position: relative;
+  overflow: hidden;
+}
+.ov-hero:after {
+  content: "";
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border: 55px solid #1c435a;
+  border-radius: 50%;
+  inset-inline-end: -110px;
+  top: -160px;
+  pointer-events: none;
+}
+.ov-hero > * {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+}
+.ov-hero .ov-eyebrow {
+  color: #8ee4d7;
+}
+.ov-hero h2 {
+  font-size: 27px;
+  font-weight: 750;
+  line-height: 1.45;
+  margin: 9px 0 10px;
+}
+.ov-hero p {
+  font-size: 13px;
+  color: #c0d1df;
+  line-height: 1.8;
+  max-width: 500px;
+  margin: 0;
+}
+.ov-hero-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 22px;
+}
+.ov-primary.MuiButton-root {
+  background: #15a590;
+  color: white;
+  border-radius: 9px;
+  padding: 10px 18px;
+  text-transform: none;
+  font-weight: 700;
+}
+.ov-primary.MuiButton-root:hover {
+  background: #0c8c7a;
+}
+.ov-secondary.MuiButton-root {
+  color: inherit;
+  border-color: #ffffff44;
+  border-radius: 9px;
+  text-transform: none;
+  padding: 10px 16px;
+}
+.ov-hero-wallet {
+  border-inline-start: 1px solid #ffffff22;
+  padding-inline-start: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.ov-hero-wallet-label {
+  font-size: 12px;
+  color: #c0d1df;
+}
+.ov-hero-wallet-value {
+  font-size: 31px;
+  font-weight: 800;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  margin-block: 8px;
+}
+.ov-hero-wallet .ov-note,
+.ov-hero-wallet .ov-updated {
+  color: #c0d1df;
+}
+.ov-hero-wallet .ov-text-link.MuiButton-root {
+  color: #8ee4d7;
+  padding-inline: 0;
+  align-self: flex-start;
+}
+.ov-hero .ov-query-error {
+  color: var(--ov-ink);
+}
+.ov-shipment {
+  display: grid;
+  grid-template-columns:
+    minmax(110px, 1fr) minmax(140px, 1.2fr) minmax(90px, 0.8fr)
+    80px;
+  gap: 14px;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--ov-border);
+  font-size: 12px;
+}
+.ov-shipment:last-child {
+  border-bottom: 0;
+}
+.ov-shipment a {
+  color: inherit !important;
+  text-decoration: none !important;
+  font-weight: 700;
+}
+.ov-shipment a:hover {
+  color: #0f9d8c !important;
+}
+.ov-shipment small {
+  display: block;
+  color: var(--ov-muted);
+  margin-top: 5px;
+  font-size: 10px;
+}
+.ov-status {
+  display: inline-block;
+  border-radius: 6px;
+  padding: 5px 8px;
+  font-size: 10px;
+  font-weight: 650;
+  background: var(--ov-bg);
+  color: var(--ov-muted);
+  white-space: normal;
+}
+.ov-carrier-row {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 17px 0;
+  border-bottom: 1px solid var(--ov-border);
+}
+.ov-carrier-row:last-child {
+  border-bottom: 0;
+}
+.ov-carrier-logo {
+  width: 52px;
+  height: 40px;
+  object-fit: contain;
+  border-radius: 7px;
+  padding: 4px;
+  background: #fff;
+}
+.ov-carrier-info {
+  flex: 1;
+  min-width: 0;
+}
+.ov-carrier-info strong {
+  font-size: 13px;
+  display: block;
+}
+.ov-carrier-info small {
+  font-size: 11px;
+  color: var(--ov-muted);
+  display: block;
+  line-height: 1.65;
+  margin-top: 4px;
+}
+.ov-carrier-row .MuiButton-root {
+  min-width: unset;
+  font-size: 11px;
+}
+.ov-carrier-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.ov-wallet-note {
+  font-size: 11px;
+  color: var(--ov-muted);
+  line-height: 1.7;
+}
+.ov-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  font-size: 11px;
+  color: var(--ov-muted);
+  padding: 4px;
+}
+.ov-footer span {
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+.ov-role {
+  display: inline-flex;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: #0f9d8c12;
+  color: #0d9383;
+  font-size: 12px;
+}
+@media (min-width: 1600px) {
+  .ov-container {
+    padding: 36px 42px;
+  }
+}
+@media (max-width: 1200px) {
+  .ov-grid-main {
+    grid-template-columns: minmax(0, 1.3fr) minmax(260px, 1fr);
+  }
+  .ov-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .ov-quick-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .ov-rank-row {
+    grid-template-columns:
+      25px minmax(0, 1.2fr) minmax(50px, 0.7fr) minmax(70px, 1fr)
+      minmax(55px, 0.6fr);
+    gap: 9px;
+  }
+  .ov-metric-value {
+    font-size: 28px;
+  }
+}
+@media (max-width: 900px) {
+  .ov-grid-main,
+  .ov-grid-equal {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .ov-container {
+    padding: 24px;
+    gap: 20px;
+  }
+  .ov-header {
+    align-items: flex-start;
+  }
+  .ov-heading h1 {
+    font-size: 28px;
+  }
+  .ov-hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .ov-hero-wallet {
+    border-inline-start: 0;
+    border-top: 1px solid #ffffff22;
+    padding-inline-start: 0;
+    padding-top: 22px;
+  }
+  .ov-hero-wallet-value {
+    font-size: 30px;
+  }
+  .ov-toolbar .ov-carrier-filter {
+    max-width: none;
+  }
+}
+@media (max-width: 600px) {
+  .ov-container {
+    padding: 20px 16px;
+    gap: 18px;
+  }
+  .ov-header {
+    flex-direction: column;
+    gap: 15px;
+  }
+  .ov-header-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .ov-heading h1 {
+    font-size: 26px;
+  }
+  .ov-heading p {
+    font-size: 12px;
+  }
+  .ov-toolbar {
+    padding: 16px;
+    gap: 16px;
+  }
+  .ov-toolbar .ov-filter-group,
+  .ov-toolbar .MuiFormControl-root,
+  .ov-toolbar .ov-carrier-filter {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+  }
+  .ov-metrics {
+    gap: 12px;
+  }
+  .ov-metric {
+    padding: 16px;
+  }
+  .ov-metric-heading {
+    font-size: 11px;
+    align-items: flex-start;
+    gap: 5px;
+  }
+  .ov-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+  }
+  .ov-icon svg {
+    font-size: 17px;
+  }
+  .ov-metric-value {
+    font-size: 24px;
+    margin-block: 12px 8px;
+  }
+  .ov-metric-meta {
+    font-size: 10px;
+    gap: 5px;
+  }
+  .ov-section {
+    padding: 19px 16px;
+  }
+  .ov-section h2 {
+    font-size: 17px;
+  }
+  .ov-section-header {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .ov-inline-controls {
+    width: 100%;
+  }
+  .ov-inline-controls .MuiFormControl-root {
+    flex: 1;
+    min-width: 0;
+  }
+  .ov-stage {
+    grid-template-columns: minmax(85px, 1fr) minmax(50px, 1fr) 40px;
+    gap: 10px;
+    font-size: 11px;
+  }
+  .ov-quick-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .ov-quick-action {
+    padding: 16px;
+  }
+  .ov-hero {
+    padding: 24px;
+    gap: 24px;
+  }
+  .ov-hero h2 {
+    font-size: 24px;
+  }
+  .ov-hero-actions .MuiButton-root {
+    flex: 1;
+    white-space: nowrap;
+  }
+  .ov-hero-wallet-value {
+    font-size: 29px;
+  }
+  .ov-rank-head {
+    display: none;
+  }
+  .ov-rank-row {
+    grid-template-columns: 25px minmax(0, 1fr);
+    gap: 10px;
+  }
+  .ov-rank-name {
+    font-size: 13px;
+  }
+  .ov-rank-value {
+    padding-inline-start: 35px;
+    grid-column: span 2;
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+  }
+  .ov-rank-value small {
+    display: block;
+    font-size: 11px;
+  }
+  .ov-rank-value strong {
+    font-size: 12px;
+  }
+  .ov-shipment {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+  }
+  .ov-shipment-date {
+    grid-column: 1;
+  }
+  .ov-shipment-receiver {
+    grid-column: 1;
+    grid-row: auto;
+  }
+  .ov-shipment-status {
+    grid-column: 2;
+    grid-row: 1/3;
+    max-width: 100px;
+  }
+  .ov-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .ov-footer-actions {
+    gap: 5px;
+  }
+  .ov-query-error.MuiAlert-root {
+    flex-wrap: wrap;
+    gap: 3px;
+  }
+  .ov-query-error .MuiAlert-action {
+    margin-inline-start: auto;
+  }
+  .ov-carrier-row {
+    gap: 10px;
+  }
+  .ov-activity {
+    gap: 10px;
+  }
+  .ov-activity-item {
+    padding: 14px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ov-quick-action,
+  .ov-bar span {
+    transition: none;
+  }
+}
+
+.ov-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+.ov-compact-metrics .ov-metric {
+  box-shadow: none;
+  background: var(--ov-bg);
+  border-color: transparent;
+}
+.ov-compact-metrics .ov-metric-value {
+  font-size: 27px;
+}
+.ov-compact-metrics .ov-metric-heading {
+  color: var(--ov-ink);
+}

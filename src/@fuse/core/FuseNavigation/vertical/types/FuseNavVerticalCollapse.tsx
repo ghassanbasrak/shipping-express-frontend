@@ -29,24 +29,34 @@ type ListComponentProps = ListProps & {
 
 const Root = styled(List)<ListComponentProps>(({ theme, ...props }) => ({
   padding: 0,
-  "&.open": {},
+  "&.open > .fuse-list-item": {
+    color: theme.palette.text.primary,
+    backgroundColor: alpha(theme.palette.common.white, 0.06),
+  },
   "& > .fuse-list-item": {
     minHeight: 44,
     width: "100%",
-    borderRadius: "6px",
+    borderRadius: 12,
     margin: "0 0 4px 0",
-    paddingRight: 16,
-    paddingLeft: props.itempadding > 80 ? 80 : props.itempadding,
-    paddingTop: 10,
-    paddingBottom: 10,
-    color: alpha(theme.palette.text.primary, 0.7),
+    paddingRight: 14,
+    paddingLeft: props.itempadding,
+    paddingTop: 9,
+    paddingBottom: 9,
+    color: alpha(theme.palette.text.primary, 0.68),
+    transition: "background-color .2s ease, color .2s ease",
     "&:hover": {
       color: theme.palette.text.primary,
+      backgroundColor: alpha(theme.palette.common.white, 0.08),
     },
     "& > .fuse-list-item-icon": {
-      marginRight: 16,
+      marginRight: 14,
       color: "inherit",
     },
+  },
+  "& .collapse-children": {
+    marginLeft: 22,
+    paddingLeft: 6,
+    borderLeft: `1px dashed ${alpha(theme.palette.common.white, 0.16)}`,
   },
 }));
 
@@ -65,7 +75,7 @@ function FuseNavVerticalCollapse(props: FuseNavItemComponentProps) {
 
   const [open, setOpen] = useState(() => needsToBeOpened(location, item));
 
-  const itempadding = nestedLevel > 0 ? 38 + nestedLevel * 16 : 16;
+  const itempadding = nestedLevel > 0 ? 12 : 14;
   const [remoteChildren, setRemoteChildren] = useState<FuseNavItemType[]>([]);
 
   const { data: remoteData } = item.useRemote

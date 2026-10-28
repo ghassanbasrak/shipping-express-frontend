@@ -1,3 +1,4 @@
+import type { AffiliateWithdrawViewFeature } from "../Utils";
 import { Alert, Button, Input, Paper, Typography } from "@mui/material";
 import { motion } from "framer-motion";
 import { useParams, useLocation } from "react-router-dom";
@@ -32,16 +33,23 @@ import {
   newAffiliateWithdrawRequestsInstance,
   setAffiliateWithdrawRequestsUpdatedByIdFilter,
 } from "../store/affiliateWithdrawRequestsSlice";
-export default function AffiliateWithdrawRequestsHeader() {
+export default function AffiliateWithdrawRequestsHeader({
+  fixedUserId,
+  viewFeature = "affiliate-withdraw-requests",
+}: {
+  fixedUserId?: string;
+  viewFeature?: AffiliateWithdrawViewFeature;
+}) {
   const { t } = useTranslation("affiliateWithdrawRequestsApp"),
     dispatch = useAppDispatch(),
     user = useAppSelector(selectUser);
-  const { userId = "all" } = useParams(),
+  const { userId: routeUserId = "all" } = useParams(),
+    userId = fixedUserId || routeUserId,
     location = useLocation();
   const filters = useSelector(
     selectAffiliateWithdrawRequestsFilters,
   ) as GetAffiliateWithdrawRequestsApiArg;
-  const canView = canViewAffiliateWithdrawRequests(user);
+  const canView = canViewAffiliateWithdrawRequests(user, viewFeature);
   const selectedUser = useGetAffiliateWithdrawRequestsUserQuery(
     filters.userIdFilter,
     {
@@ -52,7 +60,8 @@ export default function AffiliateWithdrawRequestsHeader() {
         filters.userIdFilter === "all",
     },
   );
-  const balanceId = user.role === "user" ? user.id : filters.userIdFilter;
+  const balanceId =
+    user.role === "user" ? user.id : fixedUserId || filters.userIdFilter;
   const balance = useGetAffiliateWithdrawBalanceQuery(balanceId, {
     skip: !canView || !balanceId || balanceId === "all",
     refetchOnMountOrArgChange: true,
@@ -101,7 +110,7 @@ export default function AffiliateWithdrawRequestsHeader() {
               children: <FuseSvgIcon>heroicons-outline:filter</FuseSvgIcon>,
             }}
             filters={[
-              ...(user.role !== "user"
+              ...(user.role !== "user" && !fixedUserId
                 ? [
                     {
                       type: FilterTypes.autocomplete as const,

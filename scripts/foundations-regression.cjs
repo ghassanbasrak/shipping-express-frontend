@@ -363,7 +363,12 @@ async function main() {
         .filter(
           (link) =>
             ![
+              "shipments",
+              "cancel-shipment-requests",
+              "shipments",
+              "cancel-shipment-requests",
               "verification-requests",
+              "withdraw-requests",
               "bank-transfers",
               "transactions",
               "cod-transactions",

@@ -132,21 +132,21 @@ export const defaultThemeOptions = {
 					// lineHeight: 1,
 				},
 				sizeMedium: {
-					borderRadius: 8,
+					borderRadius: 12,
 					height: 40,
 					minHeight: 40,
 					maxHeight: 40,
 				  },
 				  sizeSmall: {
-					borderRadius: "8px",
+					borderRadius: "10px",
 				  },
 				  sizeLarge: {
-					borderRadius: "8px",
+					borderRadius: "12px",
 				  },
 				contained: {
 					boxShadow: 'none',
 					'&:hover, &:focus': {
-						boxShadow: 'none'
+						boxShadow: '0 8px 18px -8px rgba(44, 94, 245, .55)'
 					}
 				}
 			}
@@ -157,7 +157,7 @@ export const defaultThemeOptions = {
 			},
 			styleOverrides: {
 			  contained: {
-				borderRadius: 8,
+				borderRadius: 12,
 			  },
 			},
 		  },
@@ -171,14 +171,15 @@ export const defaultThemeOptions = {
 		MuiDialog: {
 			styleOverrides: {
 			  paper: {
-				borderRadius: 8,
+				borderRadius: 20,
+				boxShadow: '0 30px 60px -20px rgba(15, 28, 80, .35)',
 			  },
 			},
 		  },
 		  MuiPaginationItem: {
 			styleOverrides: {
 			  root: {
-				borderRadius: 8,
+				borderRadius: 10,
 			  },
 			},
 		  },
@@ -188,17 +189,25 @@ export const defaultThemeOptions = {
 				backgroundImage: "none",
 			  },
 			  rounded: {
-				borderRadius: 8,
+				borderRadius: 16,
 			  },
 			},
 		  },
 		  MuiPopover: {
 			styleOverrides: {
 			  paper: {
-				borderRadius: 8,
+				borderRadius: 14,
 			  },
 			},
 		  },
+		MuiChip: {
+			styleOverrides: {
+				root: {
+					borderRadius: 10,
+					fontWeight: 500
+				}
+			}
+		},
 		MuiTextField: {
 			defaultProps: {
 				color: 'secondary'
@@ -217,6 +226,11 @@ export const defaultThemeOptions = {
 		MuiOutlinedInput: {
 			defaultProps: {
 				color: 'secondary'
+			},
+			styleOverrides: {
+				root: {
+					borderRadius: 12
+				}
 			}
 		},
 		MuiInputBase: {

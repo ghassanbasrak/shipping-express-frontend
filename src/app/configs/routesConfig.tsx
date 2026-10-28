@@ -32,18 +32,43 @@ import BankTransfersAppConfig from "../main/bank-transfers-app/BankTransfersAppC
 
 import AffiliateWithdrawRequestsAppConfig from "../main/affiliate-withdraw-requests-app/AffiliateWithdrawRequestsAppConfig";
 
-import PackageRequestsAppConfig from "../main/package-requests-app/PackageRequestsAppConfig";
-
 import MerchantStatisticsAppConfig from "../main/merchant-statistics-app/MerchantStatisticsAppConfig";
 import MerchantStatisticsNewAppConfig from "../main/merchant-statistics-new-app/MerchantStatisticsAppConfig";
 
 import TransactionsAppConfig from "../main/transactions-app/TransactionsAppConfig";
 import TransactionReportsAppConfig from "../main/transaction-reports-app/TransactionReportsAppConfig";
 
+import ShipmentsAppConfig from "../main/shipments-app/ShipmentsAppConfig";
+
+import CancelShipmentRequestsAppConfig from "../main/cancel-shipment-requests-app/CancelShipmentRequestsAppConfig";
+import MerchantDuesAppConfig from "../main/merchant-dues-app/MerchantDuesAppConfig";
+
+import WithdrawRequestsAppConfig from "../main/withdraw-requests-app/WithdrawRequestsAppConfig";
+import LogsConfig from "../main/logs-app/LogsConfig";
+
+import TopupRequestsAppConfig from "../main/topup-requests-app/TopupRequestsAppConfig";
+import PaymentAppConfig from "../main/payment-app/PaymentAppConfig";
+import MerchantsAppConfig from "../main/merchants-app/MerchantsAppConfig";
+import AffiliateMerchantsAppConfig from "../main/affiliate-merchants-app/AffiliateMerchantsAppConfig";
+import MerchantServicesConfig from "../main/merchant-services/MerchantServicesConfig";
+import BalanceErrorsAppConfig from "../main/balance-errors-app/BalanceErrorsAppConfig";
+import DashboardPageConfig from "../main/dashboard/DashboardPageConfig";
 const routeConfigs: FuseRouteConfigsType = [
+  DashboardPageConfig,
+  MerchantServicesConfig,
+  BalanceErrorsAppConfig,
+  AffiliateMerchantsAppConfig,
   ...CommonConfigs,
   ...AuthAppConfigs,
   HomeAppConfig,
+  MerchantsAppConfig,
+  TopupRequestsAppConfig,
+  PaymentAppConfig,
+  WithdrawRequestsAppConfig,
+  LogsConfig,
+  CancelShipmentRequestsAppConfig,
+  MerchantDuesAppConfig,
+  ShipmentsAppConfig,
   TransactionsAppConfig,
   TransactionReportsAppConfig,
   MerchantStatisticsAppConfig,
@@ -59,7 +84,6 @@ const routeConfigs: FuseRouteConfigsType = [
   ShipmentUsersAppConfig,
   ApplicationsAppConfig,
   BankTransfersAppConfig,
-  PackageRequestsAppConfig,
   AffiliateWithdrawRequestsAppConfig,
   AuthRequestsAppConfig,
   VerificationRequestsAppConfig,

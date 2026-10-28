@@ -1,0 +1,29 @@
+const locale = {
+  RETRY: "Tekrar dene",
+  RESET_FILTERS: "Filtreleri sıfırla",
+  INVALID_DATE_RANGE: "Geçerli bir tarih aralığı girin",
+  LOAD_ERROR: "Kayıtlar yüklenemedi",
+  CLOSE: "Kapat",
+  DETAILS: "Ayrıntılar",
+  RAW_JSON: "Ham JSON",
+  NO_LOGS: "Kayıt yok",
+  FILTER_LOGS: "Kayıtları filtrele",
+  HISTORICAL_SNAPSHOT: "Bu veriler kayıt oluşturulduğunda saklanmıştır.",
+  CREATE_OR_ELIGIBILITY_ERROR:
+    "Gönderilemedi. Bakiyeyi kontrol edin; uygunluk veya tutar değiştiyse gönderileri yeniden seçip tekrar deneyin.",
+  SHIPMENTS_LOAD_ERROR: "Uygun gönderiler yüklenemedi",
+  STALE_SHIPMENTS:
+    "Bazı seçili gönderiler artık uygun değil. Göndermeden önce kaldırın veya yeniden seçin.",
+  BALANCE_LOAD_ERROR: "Kullanılabilir bakiye yüklenemedi",
+  USER_LOOKUP_ERROR: "Satıcı bilgileri yüklenemedi",
+  READ_ONLY_REQUEST: "Gönderilen talepler salt okunurdur.",
+  REFRESH_ACCOUNT_ERROR: "Talep kaydedildi; hesap yenilenemedi.",
+  WITHDRAW_REQUEST_DETAILS: "Para çekme talebi ayrıntıları",
+  FILTER_REQUESTS: "Talepleri filtrele",
+  CREATE_ERROR: "Talep oluşturulamadı",
+  DECISION_UNAVAILABLE: "Bu talep artık incelenemez",
+  REQUEST_WITHDRAW_WALLET: "Cüzdana aktarım talebi",
+  REQUEST_WITHDRAW_BANK: "Banka çekim talebi",
+  END_DATE: "Bitiş tarihi",
+};
+export default locale;

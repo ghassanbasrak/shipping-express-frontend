@@ -62,6 +62,17 @@ async function evaluate(expression) {
     );
   return result.result.value;
 }
+async function assertTypographyFont(font) {
+  const families = await evaluate(`(async () => {
+    await document.fonts.ready;
+    return [...document.querySelectorAll('.MuiTypography-root')]
+      .map(element => getComputedStyle(element).fontFamily);
+  })()`);
+  assert.ok(families.length > 0, "Rendered MUI Typography is present");
+  assert.ok(families.every(family => family.startsWith(font) || family.startsWith('"' + font + '"')),
+    `Expected ${font} on every Typography, received ${JSON.stringify(families)}`);
+  assert.equal(await evaluate(`document.fonts.check('14px "${font}"')`), true);
+}
 async function until(expression, label) {
   for (let i = 0; i < 150; i++) {
     if (await evaluate(expression)) return;
@@ -338,6 +349,7 @@ async function main() {
     "protected-route redirect",
   );
   console.log("PASS Guest protected-route redirect");
+  await assertTypographyFont("Inter var");
   const screenshot = await send("Page.captureScreenshot", { format: "png" });
   fs.writeFileSync(
     path.join(output, "sign-in.png"),
@@ -527,6 +539,7 @@ async function main() {
     Buffer.from(mobile.data, "base64"),
   );
   console.log("PASS Arabic RTL and mobile sign-in");
+  await assertTypographyFont("LamaSans");
   assert.deepEqual(exceptions, []);
   fs.writeFileSync(
     path.join(output, "summary.json"),

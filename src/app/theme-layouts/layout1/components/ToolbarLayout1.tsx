@@ -1,9 +1,11 @@
-import { ThemeProvider } from "@mui/material/styles";
+import { alpha, styled, ThemeProvider } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Hidden from "@mui/material/Hidden";
 import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
 import clsx from "clsx";
-import { memo } from "react";
+import { memo, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import {
   selectFuseCurrentLayoutConfig,
   selectToolbarTheme,
@@ -12,15 +14,42 @@ import { Layout1ConfigDefaultsType } from "app/theme-layouts/layout1/Layout1Conf
 import NavbarToggleButton from "app/theme-layouts/shared-components/navbar/NavbarToggleButton";
 import { selectFuseNavbar } from "app/theme-layouts/shared-components/navbar/navbarSlice";
 import { useAppSelector } from "app/store/hooks";
+import { selectUser } from "src/app/auth/user/store/userSlice";
 import AdjustFontSize from "../../shared-components/AdjustFontSize";
 import FullScreenToggle from "../../shared-components/FullScreenToggle";
 import LanguageSwitcher from "../../shared-components/LanguageSwitcher";
-import NavigationShortcuts from "../../shared-components/navigation/NavigationShortcuts";
-import NavigationSearch from "../../shared-components/navigation/NavigationSearch";
 import UserMenu from "../../shared-components/UserMenu";
-import QuickPanelToggleButton from "../../shared-components/quickPanel/QuickPanelToggleButton";
-//! TODO: uncomment to implement FCM
-// import NotificationsIcon from "src/app/main/common/notifications-app/shared-components/NotificationsIcon";
+
+const ToggleWrapper = styled("div")(({ theme }) => ({
+  "& .MuiIconButton-root": {
+    width: 42,
+    height: 42,
+    borderRadius: 14,
+    backgroundColor: theme.palette.background.paper,
+    border: `1px solid ${theme.palette.divider}`,
+    boxShadow: "0 2px 6px -2px rgba(15, 28, 166, .12)",
+    transition: "all .2s ease",
+    "&:hover": {
+      backgroundColor: alpha(theme.palette.secondary.main, 0.08),
+      borderColor: alpha(theme.palette.secondary.main, 0.4),
+    },
+  },
+}));
+
+const ActionsCluster = styled("div")(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  gap: 2,
+  height: 48,
+  padding: "0 6px",
+  borderRadius: 16,
+  backgroundColor: theme.palette.background.paper,
+  border: `1px solid ${theme.palette.divider}`,
+  boxShadow: "0 2px 8px -4px rgba(15, 28, 166, .15)",
+  "& .MuiIconButton-root, & .MuiButton-root": {
+    borderRadius: 12,
+  },
+}));
 
 type ToolbarLayout1Props = {
   className?: string;
@@ -36,56 +65,79 @@ function ToolbarLayout1(props: ToolbarLayout1Props) {
   ) as Layout1ConfigDefaultsType;
   const navbar = useAppSelector(selectFuseNavbar);
   const toolbarTheme = useAppSelector(selectToolbarTheme);
+  const user = useAppSelector(selectUser);
+  const { t, i18n } = useTranslation("public");
+
+  const today = useMemo(() => {
+    try {
+      return new Date().toLocaleDateString(i18n.language, {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+      });
+    } catch {
+      return "";
+    }
+  }, [i18n.language]);
 
   return (
     <ThemeProvider theme={toolbarTheme}>
       <AppBar
         id="fuse-toolbar"
-        className={clsx("relative z-20 flex shadow", className)}
+        className={clsx("z-20 flex", className)}
         color="default"
         sx={{
           backgroundColor: (theme) =>
-            theme.palette.mode === "light"
-              ? toolbarTheme.palette.background.paper
-              : toolbarTheme.palette.background.default,
+            alpha(
+              theme.palette.mode === "light"
+                ? toolbarTheme.palette.background.default
+                : toolbarTheme.palette.background.paper,
+              0.72
+            ),
+          backdropFilter: "blur(16px) saturate(160%)",
+          WebkitBackdropFilter: "blur(16px) saturate(160%)",
+          borderBottom: (theme) => `1px solid ${alpha(theme.palette.divider, 0.7)}`,
+          boxShadow: "none",
         }}
-        position="static"
+        position={className?.includes("sticky") ? "sticky" : "static"}
         elevation={0}
       >
-        <Toolbar className="min-h-48 p-0 md:min-h-64">
-          <div className="flex flex-1 px-16">
+        <Toolbar className="min-h-64 gap-12 p-0 md:min-h-72">
+          <div className="flex min-w-0 flex-1 items-center gap-16 px-16">
             {config.navbar.display && config.navbar.position === "left" && (
-              <>
-                {/* <Hidden lgDown>
-                  {(config.navbar.style === "style-3" ||
-                    config.navbar.style === "style-3-dense") && (
-                    <NavbarToggleButton className="w-40 h-40 p-0 mx-0" />
-                  )}
-
-                  {config.navbar.style === "style-1" && !navbar.open && (
-                    <NavbarToggleButton className="w-40 h-40 p-0 mx-0" />
-                  )}
-                </Hidden> */}
-                <NavbarToggleButton className="w-40 h-40 p-0 mx-0" />
-
-                {/* <Hidden lgUp>
-                  <NavbarToggleButton className="w-40 h-40 p-0 mx-0 sm:mx-8" />
-                </Hidden> */}
-              </>
+              <ToggleWrapper>
+                <NavbarToggleButton />
+              </ToggleWrapper>
             )}
 
-            {/* <Hidden lgDown>
-              <NavigationShortcuts />
-            </Hidden> */}
+            <Hidden smDown>
+              <div className="flex min-w-0 flex-col">
+                <Typography
+                  className="truncate text-12 font-semibold uppercase tracking-wider"
+                  color="text.secondary"
+                >
+                  {today}
+                </Typography>
+                {user && (
+                  <Typography className="truncate text-18 font-bold leading-tight tracking-tight">
+                    {t("SIGNED_IN_WITH_JWT")}
+                    {user.firstName
+                      ? `${i18n.language === "ar" ? "،" : ","} ${user.firstName}`
+                      : ""}
+                  </Typography>
+                )}
+              </div>
+            </Hidden>
           </div>
 
-          <div className="flex h-full items-center overflow-x-auto px-8">
-            <LanguageSwitcher />
-            <AdjustFontSize />
-            <FullScreenToggle />
-            {/* <QuickPanelToggleButton /> */}
-            {/* //! TODO: uncomment to implement FCM <NotificationsIcon /> */}
-            <UserMenu />
+          <div className="flex h-full shrink-0 items-center px-16">
+            <ActionsCluster>
+              <LanguageSwitcher />
+              <AdjustFontSize />
+              <FullScreenToggle />
+              <span className="mx-4 h-24 w-1 bg-gray-200" />
+              <UserMenu />
+            </ActionsCluster>
           </div>
 
           {config.navbar.display && config.navbar.position === "right" && (

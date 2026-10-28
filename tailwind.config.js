@@ -667,7 +667,7 @@ module.exports = {
     },
     fontFamily: {
       sans: [
-        "Almarai",
+        "LamaSans",
         "Inter var",
         "Roboto",
         "-apple-system",

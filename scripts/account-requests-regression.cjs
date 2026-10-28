@@ -469,7 +469,7 @@ async function main() {
     }
   }
   check(
-    "inventory and navigation register both migrated areas without completing merchant profiles",
+    "inventory consistently records migrated request and merchant profile areas",
     () => {
       const ledger = JSON.parse(
         fs.readFileSync(path.join(target, "migration-status.json"), "utf8"),
@@ -482,7 +482,7 @@ async function main() {
         );
       assert.equal(
         ledger.features.find((x) => x.feature === "merchants-app").status,
-        "pending",
+        "migrated",
       );
       for (const status of ["migrated", "partial", "pending"])
         assert.equal(

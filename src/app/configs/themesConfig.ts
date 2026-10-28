@@ -53,7 +53,7 @@ export const themesConfig: FuseThemesType = {
       },
       background: {
         paper: "#FFFFFF",
-        default: "#f6f7f9",
+        default: "#f3f5fb",
       },
       error: {
         light: "#ffcdd2",

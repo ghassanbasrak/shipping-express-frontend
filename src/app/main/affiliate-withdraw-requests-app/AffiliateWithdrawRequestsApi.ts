@@ -133,6 +133,8 @@ export type GetAffiliateWithdrawRequestsApiArg = {
   searchText?: string;
   statusFilter?: string;
   userIdFilter?: string;
+  dateFromInvalid?: boolean;
+  dateToInvalid?: boolean;
   dateFromFilter?: string;
   dateToFilter?: string;
   updatedByIdFilter?: string;

@@ -277,6 +277,8 @@ async function intercept(event) {
       accessToken: "affiliate-withdraw-access",
       refreshToken: "affiliate-withdraw-refresh",
     };
+  } else if (url.pathname === "/v1/users/affiliates/summary") {
+    result={users:0,profits:0,pendingProfits:0};
   } else if (url.pathname.endsWith("/users/me")) {
     if (failRefresh) {
       status = 500;
@@ -1125,7 +1127,7 @@ async function main() {
   failRefresh = true;
   await click("[data-testid=send-affiliate-withdraw-request]");
   await until(
-    "location.pathname==='/affiliate-withdraw-requests/all'",
+    "location.pathname==='/affiliate-profile/withdraw-requests'",
     "create accepted",
   );
   await until(
@@ -1133,6 +1135,7 @@ async function main() {
     "post-submit account refresh failure",
   );
   failRefresh = false;
+  await navigate("/affiliate-profile/withdraw-requests");
   assert.equal(records.filter((x) => x.userId === "merchant-3").length, 1);
   const created = calls
     .filter((x) => x.method === "POST" && x.url === "/v1/requests")

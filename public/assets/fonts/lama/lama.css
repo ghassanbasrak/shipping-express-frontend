@@ -1,0 +1,49 @@
+@font-face {
+    font-family: 'LamaSans';
+    font-weight: 100 400;
+    font-display: swap;
+    font-style: normal;
+    font-named-instance: 'Regular';
+    src: url("LamaSans.otf");
+}
+@font-face {
+    font-family: 'LamaSans';
+    font-weight: 500;
+    font-display: swap;
+    font-style: normal;
+    font-named-instance: 'Medium';
+    src: url("LamaSans-Medium.otf");
+}
+@font-face {
+    font-family: 'LamaSans';
+    font-weight: 600;
+    font-display: swap;
+    font-style: normal;
+    font-named-instance: 'SemiBold';
+    src: url("LamaSans-SemiBold.otf");
+}
+@font-face {
+    font-family: 'LamaSans';
+    font-weight: 700;
+    font-display: swap;
+    font-style: normal;
+    font-named-instance: 'Bold';
+    src: url("LamaSans-Bold.otf");
+}
+@font-face {
+    font-family: 'LamaSans';
+    font-weight: 800 900;
+    font-display: swap;
+    font-style: normal;
+    font-named-instance: 'ExtraBold';
+    src: url("LamaSans-ExtraBold.otf");
+}
+
+@font-face {
+    font-family: 'LamaSans';
+    font-weight: 100 900;
+    font-display: swap;
+    font-style: italic;
+    font-named-instance: 'Italic';
+    src: url("LamaSans-Italic.otf");
+}

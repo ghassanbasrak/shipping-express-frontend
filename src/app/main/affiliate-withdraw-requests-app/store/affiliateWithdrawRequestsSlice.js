@@ -8,16 +8,12 @@ export const affiliateWithdrawRequestsInitialState = {
   searchText: "",
   statusFilter: "all",
   updatedByIdFilter: "",
+  dateFromInvalid: false,
+  dateToInvalid: false,
   dateFromFilter: "",
   dateToFilter: "",
 };
 const valueOf = (event) => event?.target?.value ?? event;
-const dateOf = (value) =>
-  value instanceof Date
-    ? Number.isNaN(value.getTime())
-      ? ""
-      : value.toISOString()
-    : value || "";
 export const affiliateWithdrawRequestsAppSlice = createSlice({
   name: "affiliateWithdrawRequestsApp",
   initialState: affiliateWithdrawRequestsInitialState,
@@ -72,17 +68,25 @@ export const affiliateWithdrawRequestsAppSlice = createSlice({
     },
     setAffiliateWithdrawRequestsDateFromFilter: {
       reducer: (state, action) => {
-        state.dateFromFilter = action.payload;
+        const input = valueOf(action.payload),
+          date = input ? new Date(input) : null;
+        state.dateFromInvalid = !!date && !Number.isFinite(date.getTime());
+        if (!state.dateFromInvalid)
+          state.dateFromFilter = date ? date.toISOString() : "";
         state.page = 0;
       },
-      prepare: (date) => ({ payload: dateOf(date) }),
+      prepare: (date) => ({ payload: date }),
     },
     setAffiliateWithdrawRequestsDateToFilter: {
       reducer: (state, action) => {
-        state.dateToFilter = action.payload;
+        const input = valueOf(action.payload),
+          date = input ? new Date(input) : null;
+        state.dateToInvalid = !!date && !Number.isFinite(date.getTime());
+        if (!state.dateToInvalid)
+          state.dateToFilter = date ? date.toISOString() : "";
         state.page = 0;
       },
-      prepare: (date) => ({ payload: dateOf(date) }),
+      prepare: (date) => ({ payload: date }),
     },
   },
   selectors: {

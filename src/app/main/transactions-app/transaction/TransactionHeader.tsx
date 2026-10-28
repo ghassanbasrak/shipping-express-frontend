@@ -1,3 +1,4 @@
+import { hasOperationPermission } from "src/app/auth/permissions";
 import { useRef, useState } from "react";
 import { Alert, Button, Typography } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
@@ -54,9 +55,14 @@ export default function TransactionHeader({
         isNew ? create(payload) : update({ id: value.id, value: payload })
       ).unwrap();
       setSaved(true);
-      navigate(`/transactions/${value.userId}/${value.relatedBalance}`, {
-        replace: true,
-      });
+      navigate(
+        hasOperationPermission("merchants", "view", user)
+          ? `/merchants/${value.userId}/view`
+          : `/transactions/${value.userId}/${value.relatedBalance}`,
+        {
+          replace: true,
+        },
+      );
     } catch {
       setFailed(true);
     } finally {
@@ -73,7 +79,11 @@ export default function TransactionHeader({
         >
           <Button
             component={Link}
-            to={`/transactions/${values.userId || "all"}/${values.relatedBalance || "wallet"}`}
+            to={
+              hasOperationPermission("merchants", "view", user) && values.userId
+                ? `/merchants/${values.userId}/view`
+                : `/transactions/${values.userId || "all"}/${values.relatedBalance || "wallet"}`
+            }
             color="inherit"
           >
             {t("TRANSACTIONS")}

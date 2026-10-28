@@ -32,12 +32,18 @@ import {
   setTransactionsDateToFilter,
   newTransactionsInstance,
 } from "../store/transactionsSlice";
-export default function TransactionsHeader() {
+export default function TransactionsHeader({
+  fixedUserId,
+  fixedBalance,
+}: { fixedUserId?: string; fixedBalance?: string } = {}) {
   const { t } = useTranslation("transactionsApp"),
     dispatch = useAppDispatch(),
     user = useAppSelector(selectUser),
     filters = useSelector(selectTransactionsFilters) as GetTransactionsApiArg;
-  const { userId = "all", relatedBalance = "wallet" } = useParams(),
+  const {
+      userId = fixedUserId || "all",
+      relatedBalance = fixedBalance || "wallet",
+    } = useParams(),
     location = useLocation(),
     allowed = availableTransactionBalances(user);
   const selected = useGetTransactionsAccountQuery(
@@ -70,7 +76,7 @@ export default function TransactionsHeader() {
               : "TRANSACTIONS",
           )}
           {selected.currentData && user.role !== "user"
-            ? ` — ${transactionUserLabel(selected.currentData)}`
+            ? ` â€” ${transactionUserLabel(selected.currentData)}`
             : ""}
         </Typography>
         <div className="flex flex-wrap items-center gap-8 w-full sm:w-auto">
@@ -82,7 +88,7 @@ export default function TransactionsHeader() {
               children: <FuseSvgIcon>heroicons-outline:filter</FuseSvgIcon>,
             }}
             filters={[
-              ...(user.role !== "user"
+              ...(user.role !== "user" && !fixedUserId
                 ? [
                     {
                       type: FilterTypes.autocomplete as const,
@@ -117,23 +123,29 @@ export default function TransactionsHeader() {
                     },
                   ]
                 : []),
-              {
-                type: FilterTypes.dropdown,
-                title: t("BALANCE_TYPE"),
-                value: filters.relatedBalanceTypeFilter,
-                onChange: (value) =>
-                  dispatch(setTransactionsRelatedBalanceTypeFilter(value)),
-                items: [
-                  ...(allowed.length === 2
-                    ? [{ label: t("ALL"), value: "all" }]
-                    : []),
-                  ...allowed.map((value) => ({
-                    label: t(toRelatedBalanceTypeTitle(value)),
-                    value,
-                  })),
-                ],
-                closeOnChange: false,
-              },
+              ...(fixedBalance
+                ? []
+                : [
+                    {
+                      type: FilterTypes.dropdown as const,
+                      title: t("BALANCE_TYPE"),
+                      value: filters.relatedBalanceTypeFilter,
+                      onChange: (value) =>
+                        dispatch(
+                          setTransactionsRelatedBalanceTypeFilter(value),
+                        ),
+                      items: [
+                        ...(allowed.length === 2
+                          ? [{ label: t("ALL"), value: "all" }]
+                          : []),
+                        ...allowed.map((value) => ({
+                          label: t(toRelatedBalanceTypeTitle(value)),
+                          value,
+                        })),
+                      ],
+                      closeOnChange: false,
+                    },
+                  ]),
               {
                 type: FilterTypes.multiChoice,
                 title: t("TRANSACTION_TYPE"),
@@ -220,6 +232,16 @@ export default function TransactionsHeader() {
               }}
             />
           </Paper>
+          {user.role === "user" && (
+            <Button
+              component={Link}
+              to="/topup-requests/all/new"
+              variant="contained"
+              data-testid="topup-wallet"
+            >
+              {t("TOPUP_BALANCE")}
+            </Button>
+          )}
           {canCreate && (
             <Button
               component={Link}

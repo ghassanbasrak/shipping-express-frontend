@@ -1,0 +1,141 @@
+import type { User } from "src/app/auth/user";
+import IAdmin from "../../admins-app/models/IAdmin";
+import IShippingCompany from "../../shipping-companies-app/models/IShippingCompany";
+import IShipmentUser from "../../shipment-users-app/models/IShipmentUser";
+import ICountry from "../../countries-app/models/ICountry";
+import IState from "../../states-app/models/IState";
+import ICity from "../../cities-app/models/ICity";
+import ICoupon from "../../coupons-app/models/ICoupon";
+export default interface IShipment extends IShipmentDetails {
+  id: string;
+  _id?: string;
+  reference?: string;
+  shippingCompanyId?: string;
+  shippingCompany?: IShippingCompany;
+  userId?: string;
+  user?: User;
+  updatedById?: string;
+  updatedBy?: IAdmin;
+  senderId?: string;
+  sender?: IShipmentUser;
+  receiverId?: string;
+  receiver?: IShipmentUser;
+  couponCodeId?: string;
+  coupon?: ICoupon;
+  method?: string;
+  status?: string;
+  type?: string;
+  trackingNumber?: string;
+  pickupRefNumber?: string;
+  trackingUrl?: string;
+  labelUrl?: string;
+  invoiceUrl?: string;
+  imageUrl?: string;
+  closeInvoiceNumber?: string;
+  invoiceNumber?: string;
+  qoyodInvoiceUrl?: string;
+  isCod?: boolean;
+  codPrice?: number;
+  codStatus?: string;
+  shipmentCod?: IShipmentCod;
+  shipmentDetails?: IShipmentDetails;
+  shipmentProducts?: IShipmentProduct[];
+  products?: IShipmentProduct[];
+  shipmentPrice?: IShipmentPrice;
+  price?: IShipmentPrice;
+  reason?: string;
+  trackingText?: string;
+  trackingStats?: IShipmentTrackingEvent[];
+  orderReturned?: boolean;
+  returnedFromShipmentId?: string;
+  returnedFromShipment?: IShipment;
+  returnedShipmentId?: string;
+  returnedShipment?: IShipment;
+  platform?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+export interface IShipmentDetails {
+  id?: string;
+  shipmentId?: string;
+  senderName?: string;
+  senderEmail?: string;
+  senderPhone?: string;
+  senderPhone1?: string;
+  senderCountryId?: string;
+  senderCountryName?: string;
+  senderCountryCode?: string;
+  senderStateId?: string;
+  senderStateName?: string;
+  senderCityId?: string;
+  senderCityName?: string;
+  senderStreet?: string;
+  senderZipCode?: string;
+  senderCountry?: ICountry;
+  senderState?: IState;
+  senderCity?: ICity;
+  receiverName?: string;
+  receiverEmail?: string;
+  receiverPhone?: string;
+  receiverPhone1?: string;
+  receiverCountryId?: string;
+  receiverCountryName?: string;
+  receiverCountryCode?: string;
+  receiverStateId?: string;
+  receiverStateName?: string;
+  receiverCityId?: string;
+  receiverCityName?: string;
+  receiverStreet?: string;
+  receiverZipCode?: string;
+  receiverCountry?: ICountry;
+  receiverState?: IState;
+  receiverCity?: ICity;
+
+  length?: number;
+  width?: number;
+  height?: number;
+  weight?: number;
+  packagesCount?: number;
+  description?: string;
+  isCommercial?: boolean;
+}
+export interface IShipmentProduct {
+  id?: string;
+  title?: string;
+  price?: number;
+  quantity?: number;
+}
+export interface IShipmentCod {
+  userId?: string;
+  user?: User;
+  updatedById?: string;
+  updatedBy?: IAdmin;
+  relatedRequestId?: string;
+  id?: string;
+  shipmentId?: string;
+  shipment?: IShipment;
+  codPrice?: number;
+  codStatus?: string;
+  reference?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+export interface IShipmentPrice {
+  shippingCompanyPrice?: number;
+  extraWeight?: number;
+  extraWeightPrice?: number;
+  maximumWeight?: number;
+  codPrice?: number;
+  subtotal?: number;
+  fuelTotal?: number;
+  internationalDiscount?: number;
+  internationalDiscountRate?: number;
+  couponDiscount?: number;
+  totalDiscount?: number;
+  total?: number;
+}
+export interface IShipmentTrackingEvent {
+  description?: string;
+  date?: string;
+  location?: string;
+}

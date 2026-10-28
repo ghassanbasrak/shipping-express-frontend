@@ -6,6 +6,7 @@ export default interface IShippingCompany {
   hasState?: boolean;
   isEnglish?: boolean;
   isActive?: boolean;
+  isAuthorizationRequired?: boolean;
   internationalProfitsRate?: number;
   internationalProfitsExtras?: number;
   localPrice?: number;

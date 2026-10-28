@@ -168,7 +168,7 @@ export const adminRelatedLinks = [
     feature: featureTypes.shipments,
     title: "VIEW_RELATED_SHIPMENTS",
     path: (id: string) => `/shipments/all/all?updatedById=${id}`,
-    available: false,
+    available: true,
   },
   {
     feature: featureTypes.transactions,
@@ -186,7 +186,7 @@ export const adminRelatedLinks = [
     feature: featureTypes.withdrawRequests,
     title: "VIEW_RELATED_WITHDRAW_REQUESTS",
     path: (id: string) => `/withdraw-requests/all?updatedById=${id}`,
-    available: false,
+    available: true,
   },
   {
     feature: featureTypes.bankTransfers,
@@ -198,7 +198,7 @@ export const adminRelatedLinks = [
     feature: featureTypes.cancelShipmentRequests,
     title: "VIEW_RELATED_CANCEL_SHIPMENT_REQUESTS",
     path: (id: string) => `/cancel-shipment-requests/all?updatedById=${id}`,
-    available: false,
+    available: true,
   },
   {
     feature: featureTypes.verificationRequests,

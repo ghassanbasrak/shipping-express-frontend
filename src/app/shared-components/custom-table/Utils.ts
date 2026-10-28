@@ -39,13 +39,15 @@ export const customTableValueGetter = <T>(
   field: TableFieldProps<T>,
   row: T,
   value: any,
-  t: TFunction
+  t: TFunction,
 ) => {
+  const resolvedValue =
+    value === undefined ? getFilterField(row, field.id) : value;
   return field.valueGetter
     ? field.valueGetter(row)
     : field.locale
-      ? localeString(value ?? { en: "", ar: "" })
-      : value;
+      ? localeString(resolvedValue ?? { en: "", ar: "" })
+      : resolvedValue;
 };
 
 export const customTableValueFormatter = <T>(
@@ -53,7 +55,7 @@ export const customTableValueFormatter = <T>(
   row: T & { id: string },
   value: any,
   data: (T & { id: string })[],
-  t: TFunction
+  t: TFunction,
 ) => {
   return field.valueFormatter
     ? field.valueFormatter(row)
@@ -97,18 +99,12 @@ export const customTableValueFormatter = <T>(
 };
 
 export function getFilterField<T>(row: T, id: string) {
-  if (!id.includes(".")) {
-    return row[id];
-  } else {
-    let field = row;
-    for (const f of id.split(".")) {
-      if (!field[f] && typeof field[f] !== "boolean") {
-        return undefined;
-      }
-      field = field[f];
-    }
-    return field;
+  let value: any = row;
+  for (const key of id.split(".")) {
+    if (value === null || value === undefined) return undefined;
+    value = value[key];
   }
+  return value;
 }
 
 export const tableDefaultLinkTarget = "_self";
@@ -291,7 +287,7 @@ export interface TableFieldProps<T> {
   isMoneyGetter?: (row: T) => boolean;
   locale?: boolean;
   renderCell?: (
-    params: GridRenderCellParams<T, any, any, GridTreeNodeWithRender>
+    params: GridRenderCellParams<T, any, any, GridTreeNodeWithRender>,
   ) => ReactNode;
   conditions?: ConditionProps[];
   actions?: ActionProps<T>[];
@@ -301,7 +297,7 @@ export interface TableFieldProps<T> {
   editable?: boolean;
   editType?: "textfield" | "dropdown" | "checkbox";
   renderEditCell?: (
-    params: GridRenderCellParams<T, any, any, GridTreeNodeWithRender>
+    params: GridRenderCellParams<T, any, any, GridTreeNodeWithRender>,
   ) => ReactNode;
   onConfirmEdit?: (newValue: any, row: T) => Promise<void>;
   onCancelEdit?: (row: T) => void;
@@ -327,7 +323,7 @@ export interface CustomTableProps<T> {
   fields: TableFieldProps<T>[];
   onChangePagination?: (
     model: GridPaginationModel,
-    details: GridCallbackDetails<any>
+    details: GridCallbackDetails<any>,
   ) => void;
   checkboxSelection?: boolean;
   estimatedRowHeight?: number;
@@ -345,7 +341,7 @@ export interface CustomTableProps<T> {
   exportedFileName?: string;
   paginationType?: "client" | "server";
   highlighter?: (
-    row: T
+    row: T,
   ) =>
     | "primary"
     | "secondary"
@@ -390,7 +386,7 @@ export interface TableToolbarSelectionButtonProps<T> {
   conditions?: ConditionProps[];
   data?: (T & { id: string })[];
   onClick?: (
-    selectedRows: T[]
+    selectedRows: T[],
   ) => void | Promise<{ data: T[]; fields: TableFieldProps<T>[] }>;
   size?: "small" | "medium" | "large";
   color?:
@@ -409,7 +405,13 @@ export interface TableToolbarSelectionButtonProps<T> {
   promiseButton?: boolean;
   unrelated?: boolean;
   exportedFileName?: string;
-  footer?: { sumField?: string; sumIsNotCurrency?: boolean; sumLabel?: string };
+  footer?: {
+    sumField?: string;
+    sumIsNotCurrency?: boolean;
+    sumLabel?: string;
+    countRows?: boolean;
+    countRowsLabel?: string;
+  };
 }
 
 export interface TableActionsMenuProps<T> {
@@ -433,7 +435,7 @@ export type EditableCellProps<T extends keyof typeof EditableCellTypes> = {
       : T extends "checkbox"
         ? boolean
         : any,
-    row: any
+    row: any,
   ) => Promise<void>;
   onCancelEdit?: (row: any) => void;
   type: T;
@@ -444,7 +446,7 @@ export type EditableCellProps<T extends keyof typeof EditableCellTypes> = {
       : T extends "checkbox"
         ? boolean
         : any,
-    row: any
+    row: any,
   ) => void;
   inputProps?: T extends "textfield"
     ? InputBaseProps

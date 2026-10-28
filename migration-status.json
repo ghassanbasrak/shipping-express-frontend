@@ -3,32 +3,53 @@
   "scope": "Feature areas registered by the legacy routesConfig; auth and common pages are tracked separately. Counts do not measure implementation effort.",
   "counts": {
     "featureAreas": 32,
-    "migrated": 19,
-    "partial": 1,
-    "pending": 12
+    "migrated": 32,
+    "partial": 0,
+    "pending": 0
   },
-  "completedThisBatch": ["transactions-app", "transaction-reports-app"],
+  "completedThisBatch": [
+    "dashboard",
+    "home-app"
+  ],
   "features": [
     {
       "feature": "admins-app",
       "status": "migrated",
-      "sourceConfigs": ["src/app/main/admins-app/AdminsAppConfig.js"],
-      "sourceRoutes": ["admins", "admins/:adminId/*"]
+      "sourceConfigs": [
+        "src/app/main/admins-app/AdminsAppConfig.js"
+      ],
+      "sourceRoutes": [
+        "admins",
+        "admins/:adminId/*"
+      ]
     },
     {
       "feature": "affiliate-merchants-app",
-      "status": "pending",
+      "status": "migrated",
       "sourceConfigs": [
         "src/app/main/affiliate-merchants-app/AffiliateMerchantsAppConfig.js"
       ],
       "sourceRoutes": [
         "affiliate-merchants",
         "affiliate-merchants/:affiliateMerchantId",
-        "edit-affiliate-profile",
-        "affiliate-merchants/:affiliateMerchantId",
         "affiliate-merchants/:affiliateMerchantId/:tab",
         "affiliate-profile",
         "affiliate-profile/:tab"
+      ],
+      "includes": [
+        "Original affiliate-only self-service /affiliate-profile/:tab and staff /affiliate-merchants directory and detail tabs; inactive creation/edit/delete routes stay unexposed",
+        "Root affiliate entity imports migrated merchant domain; separate core profit transaction and nested summary domain models, simple RTK Query APIs and affiliateMerchantsSlice.js",
+        "Role=user/isAffiliate=true directory, ten-row pagination, encoded search, balance/loyalty/active/verification/date filters, original wallet/COD sort precedence and page-zero/3000 filtered XLSX",
+        "Read-only identity/avatar/contact/address/tax and carrier costs, current-origin encoded referral link/copy and original customer/profit/pending/shipment summary counts with independent retry",
+        "Sixteen-card referredById customer pages, search/page reset, stored carrier rates and local pricing dialog using FormProvider/shared Zod validation",
+        "Affiliate/carrier base-cost precedence, editable local/COD markup with final-cost preview, valid zero markup, rejected negative/nonfinite/duplicate rows, preserved cached objects and failed-write drafts",
+        "Fresh customer ownership check; actual selected customer ID; custom loyalty and price-only payloads with authoritative affiliateId; retain stored carriers and noneditable international discount",
+        "Read-only affiliate profit ledger with original statement/status/amount/shipment/tracking fields, administrator creator/date/search scopes and fixed-owner page-zero/50000 filtered XLSX",
+        "Existing eligible shipment tracking sync with errors/retry and ledger refresh; shipment links obey owning shipment view grants",
+        "Canonical affiliate withdrawal list/reviews/receipts/create flow embedded through optional fixedUserId and explicit source withdrawal-view context; matching page-zero/500000 export and no standalone grant alias",
+        "Source customers, wallet-transactions and withdrawal tab view grants retained; staff price updates require explicit customers update rather than source unguarded write; standalone withdrawal view rules unchanged",
+        "Confirmed affiliate deactivation and administrator conversion reuse guarded merchant actions; profile/account/adjustment and post-withdrawal return links connected",
+        "English/Arabic/Turkish localization and Arabic mobile profile/pricing; no inactive store, Zoho, affiliate CRUD or ledger-write controls introduced"
       ]
     },
     {
@@ -58,8 +79,13 @@
     {
       "feature": "alerts-app",
       "status": "migrated",
-      "sourceConfigs": ["src/app/main/alerts-app/AlertsAppConfig.js"],
-      "sourceRoutes": ["/alerts", ":alertId/*"]
+      "sourceConfigs": [
+        "src/app/main/alerts-app/AlertsAppConfig.js"
+      ],
+      "sourceRoutes": [
+        "/alerts",
+        ":alertId/*"
+      ]
     },
     {
       "feature": "applications-app",
@@ -67,7 +93,10 @@
       "sourceConfigs": [
         "src/app/main/applications-app/ApplicationsAppConfig.js"
       ],
-      "sourceRoutes": ["/applications", ":applicationId/*"],
+      "sourceRoutes": [
+        "/applications",
+        ":applicationId/*"
+      ],
       "includes": [
         "Staff-only v1/applications CRUD, search/account/date filters and ten-row server pagination",
         "Root IApplication model with nested IApplicationScope and canonical auth User references",
@@ -99,11 +128,26 @@
     },
     {
       "feature": "balance-errors-app",
-      "status": "pending",
+      "status": "migrated",
       "sourceConfigs": [
         "src/app/main/balance-errors-app/BalanceErrorsAppConfig.js"
       ],
-      "sourceRoutes": ["/balance-duplication-errors"]
+      "sourceRoutes": [
+        "/balance-duplication-errors"
+      ],
+      "includes": [
+        "Original /balance-duplication-errors manual read-only audit with date filters, all grouped transactions and full historical details",
+        "Core IBalanceError imports migrated ITransaction; request/response wrappers remain in simple BalanceErrorsApi.ts; raw backend response is not normalized",
+        "Configured relative GET v1/transactions/balance-errors replaces the hardcoded legacy staging URL while preserving dd/MM/yyyy dateFrom/dateTo parameters",
+        "Shared Zod string validations plus strict calendar/range refinement; initial dates use local today, blank/invalid/reversed dates cannot broaden reads",
+        "Frozen successful range/results and independent editable dates; failed searches retain previous results and retry the failed request snapshot",
+        "Every repeated transaction occurrence remains visible under a distinct UI row ID; raw transactionNumber/id/_id are preserved inside readonly transaction data",
+        "Source signed/zero amounts, duplicate/completed boolean status, merchant identity and safe timestamp rendering; all nested groups accessible through client pagination",
+        "Readonly detail dialog retains account email, number, amount/type/date, previous/current balances, localized title/description, escaped notes and optional reference",
+        "Parent account population is used only when consistent with the transaction owner; no cached backend data is mutated",
+        "Staff-only route closes legacy merchant direct access to cross-account diagnostics; restricted staff need balance-duplication-errors view, with no new grants or wallet aliases",
+        "Simple reference wrapper/header/table, matched flex/minWidth, wrapped status labels, loading/errors/retry and English/Arabic mobile RTL; no monetary mutations or invented export endpoints"
+      ]
     },
     {
       "feature": "bank-transfers-app",
@@ -129,16 +173,33 @@
     },
     {
       "feature": "cancel-shipment-requests-app",
-      "status": "pending",
+      "status": "migrated",
       "sourceConfigs": [
         "src/app/main/cancel-shipment-requests-app/CancelShipmentRequestsAppConfig.js"
       ],
-      "sourceRoutes": ["cancel-shipment-requests/:userId"]
+      "sourceRoutes": [
+        "cancel-shipment-requests/:userId"
+      ],
+      "includes": [
+        "Original /cancel-shipment-requests/:userId list with fixed v1/requests?type=cancelShipment, ten-row server pagination and encoded search/account/reviewer/status/date filters",
+        "Root ICancelShipmentRequest imports canonical auth User, IAdmin and migrated IShipment populations; simple RTK API and cancelShipmentRequestsSlice.js",
+        "Pending-only confirmed/rejected status decisions with explicit cancellation-request view/update grants, confirmation, actual request ID, status-only payloads, failed-write recovery and duplicate-click guard",
+        "Shipment detail/tracking links and local transaction dialog using the independent original wallet transaction-view grant and actual request owner/tracking number",
+        "Shared ShipmentTransactionsTable shows all 100 fetched ledger records, with load/error/retry states",
+        "Staff filtered Excel export using the original page-zero pageSize=500000 scope and a worksheet-safe name",
+        "Merchant queries omit route-owner/reviewer overrides and staff decisions; administrator-only reviewer filter/column and updatedById audit scope",
+        "Selected-account fallback lookups, retryable reads, stable pagination totals, invalid-date guards and retained valid date bounds",
+        "Cancellation creation remains owned by shipments-app and now invalidates this list; decisions refresh shipment/COD/ledger caches",
+        "Staff cancellation audit link enabled; merchant profile links are enabled with merchant view permission; inactive creation/detail/deletion/receipt controls remain unexposed",
+        "English/Arabic, existing Turkish fallback and mobile RTL"
+      ]
     },
     {
       "feature": "cities-app",
       "status": "migrated",
-      "sourceConfigs": ["src/app/main/cities-app/CitiesConfig.js"],
+      "sourceConfigs": [
+        "src/app/main/cities-app/CitiesConfig.js"
+      ],
       "sourceRoutes": [
         "cities/:shippingCompanyId/:stateId",
         "cities/:shippingCompanyId/:stateId/:cityId/*"
@@ -147,7 +208,9 @@
     {
       "feature": "countries-app",
       "status": "migrated",
-      "sourceConfigs": ["src/app/main/countries-app/CountriesConfig.js"],
+      "sourceConfigs": [
+        "src/app/main/countries-app/CountriesConfig.js"
+      ],
       "sourceRoutes": [
         "countries/:shippingCompanyId",
         "countries/:shippingCompanyId/:countryId/*"
@@ -156,7 +219,9 @@
     {
       "feature": "coupons-app",
       "status": "migrated",
-      "sourceConfigs": ["src/app/main/coupons-app/CouponsAppConfig.js"],
+      "sourceConfigs": [
+        "src/app/main/coupons-app/CouponsAppConfig.js"
+      ],
       "sourceRoutes": [
         "coupons/:shippingCompanyId/:userId",
         "coupons/:shippingCompanyId/:userId/:couponId/*"
@@ -164,40 +229,110 @@
     },
     {
       "feature": "dashboard",
-      "status": "pending",
-      "sourceConfigs": ["src/app/main/dashboard/DashboardPageConfig.js"],
-      "sourceRoutes": ["/dashboard"]
+      "status": "migrated",
+      "sourceConfigs": [
+        "src/app/main/dashboard/DashboardPageConfig.js"
+      ],
+      "sourceRoutes": [
+        "/dashboard"
+      ],
+      "includes": [
+        "User-authorized redesign of /dashboard and administrator /home with responsive shared overview components, clearer metric hierarchy, shipment stage counts, attention panel, merchant ranking and recent activity",
+        "Administrator role and dashboard view checks before mounting any aggregate queries; restricted staff retain explicit grants and no default permissions are added",
+        "Plain RTK Query preserves eight original read endpoints; API request/response types stay colocated and core domain models stay focused",
+        "Operational today/yesterday/last_week/last_month scopes, carrier filter, source shipment status filter, ranking orders/sales/growth and five-to-twenty row limits",
+        "Revenue summary keeps separate day/week/month/quarter/year contract and returned currency; no unsupported period values or currency assumptions",
+        "COD-only stages, ranking and attention explicitly identify all-carrier scope where the original endpoint/UI does not support carrier filtering; activity describes its actual returned period",
+        "Real zeros remain zero, missing/invalid values stay unavailable, stages are counts rather than fabricated conversion rates, missing currencies are not invented",
+        "Independent loading/error/retry/last-updated feedback, last-successful refresh failures, currentData protection against stale filter responses and flow controls available during loading/errors",
+        "English desktop and Arabic mobile/RTL, shared themed cards, accessible native selects, permission-aware owning feature links and existing sign-out/demo tools"
+      ]
     },
     {
       "feature": "home-app",
-      "status": "partial",
-      "sourceConfigs": ["src/app/main/home-app/HomeAppConfig.js"],
-      "sourceRoutes": ["home"]
+      "status": "migrated",
+      "sourceConfigs": [
+        "src/app/main/home-app/HomeAppConfig.js"
+      ],
+      "sourceRoutes": [
+        "home"
+      ],
+      "includes": [
+        "Role-aware /home keeps existing authentication destination: administrator overview, merchant shipping workspace and permission-filtered staff workspace",
+        "Merchant redesign includes shipment/calculator actions, fresh wallet and COD balances, four all-time shipment totals, recent shipments, carrier options and useful account shortcuts",
+        "Plain GET v1/configs, v1/users/me and six-row v1/shipments reads use current-account cache keys without route owner parameters or new financial writes",
+        "Verify fresh account id/_id before displaying balances/custom carrier prices; exclude explicitly foreign-owned recent shipments and preserve owning shipment identity over nested metadata IDs",
+        "Money follows existing configured display currency without converting amounts; carrier starting prices use actual custom loyalty overrides/base fees and explain final-quote limitations",
+        "Retain zero/missing distinction, independent retries, stale-response/account isolation, owning mutation cache tags and one refresh including carrier lookup",
+        "Staff shortcuts require both page and operation view grants; employees and dashboard-denied administrators issue no administrator dashboard data requests",
+        "Profile, contacts, ledger, top-ups, withdrawals, affiliate membership, retained packaging and support links; sign-out/demo tools preserved",
+        "English/Arabic responsive layouts and language-correct navigation arrows; removed product shopping, integrations and comparison features remain excluded"
+      ]
     },
     {
       "feature": "logs-app",
-      "status": "pending",
-      "sourceConfigs": ["src/app/main/logs-app/LogsConfig.js"],
-      "sourceRoutes": ["/logs", "/logs/:logId"]
+      "status": "migrated",
+      "sourceConfigs": [
+        "src/app/main/logs-app/LogsConfig.js"
+      ],
+      "sourceRoutes": [
+        "/logs",
+        "/logs/:logId"
+      ],
+      "includes": [
+        "Original administrator-only /logs and /logs/:logId, read-only v1/logs GET contracts, simple LogsApi.ts and logsSlice.js; no log mutation endpoints",
+        "Root ILog and nested historical metadata/data interfaces reference migrated account/shipment owners without introducing placeholder pending-feature models",
+        "Ten-row pagination, encoded search, merchant/type/date filters, reset/retry states, source message/account/model/context/tracking/reference/time columns and local Excel export",
+        "Raw full-log JSON dialog/tab and read-only historical shipment/sender/receiver details; snapshot arrays, data fallback, separately stored phone dial codes, missing details and backend _id-only rows supported",
+        "Shipment links require explicit actual shipment identity and respect shipment-view grants; transaction links preserve the original wallet-ledger destination with its view permission",
+        "Payment/top-up history and merchant profile links now use migrated owning routes with their view permissions",
+        "Admin access retains legacy middleware exceptions, employees/merchants cannot read logs, invalid/reversed date scopes block queries; English/Arabic/Turkish labels, matched table widths and mobile RTL"
+      ]
     },
     {
       "feature": "merchant-dues-app",
-      "status": "pending",
+      "status": "migrated",
       "sourceConfigs": [
         "src/app/main/merchant-dues-app/MerchantDuesAppConfig.js"
       ],
       "sourceRoutes": [
         "merchant-dues/:shippingCompanyId/:userId",
         "merchant-dues/:userId/:merchantDueId/*"
+      ],
+      "includes": [
+        "Original /merchant-dues/:shippingCompanyId/:userId COD list using v1/shipments?isCod=true, ten-row server pagination and filtered page-zero pageSize=50000 Excel export",
+        "Root IMerchantDue references migrated shipment/account/staff entities; nested COD reviewer/related-request metadata retained in IShipmentCod; simple raw RTK API and merchantDuesSlice.js",
+        "Read-only UI projection of COD rows preserves distinct COD and shipment IDs without mutating cached shipment responses",
+        "Carrier, merchant or merchant-only receiver, admin reviewer, repeated shipment/payment status, search and date scopes with stable totals and query initialization",
+        "Independent v1/shipments/shipment-cods/summary scoped only by carrier/account/receiver, including zero values and separate loading/error/retry behavior",
+        "Pending nonreturned COD settlement with merchant balance breakdown, own merchant-dues update grant, actual COD IDs and partial batch recovery that skips successful records",
+        "Canceled/failed shipment reactivation, returned status requiring merchant-dues update/delete, and reviewed local/manual international extra-weight charges at actual shipment IDs",
+        "Source zero/negative numeric extra-weight fees retained; saved rows and summaries invalidate after successful shared operations",
+        "Tracking, shipment/receiver detail links and settlement reference/reviewer metadata; merchant profile links are enabled with merchant view permission",
+        "Selected-waybill PDF merging excludes returned/unlabeled shipments, rejects partial download failures and preserves selected rows for retry",
+        "Excel amount sum/count footer, matched column sizes, corrected actual nested status display and actual COD update timestamp",
+        "Typed owning carrier lookups retain All and selected-ID fallback in both this feature and the existing shipments filter",
+        "English/Arabic, Turkish fallback and mobile RTL; inactive CRUD/deletion/cancellation controls remain unexposed"
       ]
     },
     {
       "feature": "merchant-services",
-      "status": "pending",
+      "status": "migrated",
       "sourceConfigs": [
         "src/app/main/merchant-services/MerchantServicesConfig.js"
       ],
-      "sourceRoutes": ["store-authentication", "new-store", "store-integration"]
+      "sourceRoutes": [
+        "store-authentication",
+        "new-store",
+        "store-integration"
+      ],
+      "includes": [
+        "Original authenticated /store-authentication, /store-integration and /new-store informational routes with merchant navigation",
+        "Source support phone 00966501932466 retained with a usable tel link, current Ashamco Express branding and English/Arabic text",
+        "Store creation and Zid/WooCommerce integration remain explicitly unavailable coming-soon pages; no store/product/cart/order APIs or controls introduced",
+        "Responsive shared ServicePage, original coming-soon and platform images copied to the target with accessible alternative text",
+        "Source authenticated direct access and merchant-only navigation retained; existing middleware operation rules and staff defaults unchanged"
+      ]
     },
     {
       "feature": "merchant-statistics-app",
@@ -205,7 +340,9 @@
       "sourceConfigs": [
         "src/app/main/merchant-statistics-app/MerchantStatisticsAppConfig.js"
       ],
-      "sourceRoutes": ["merchant-statistics"],
+      "sourceRoutes": [
+        "merchant-statistics"
+      ],
       "includes": [
         "Original staff-only /merchant-statistics aggregate report using POST v1/users/statistics; canonical auth User references and all four original financial/obligation/bank-transfer/COD sections",
         "Searchable merchant selection, current remote search parameters, retained selected accounts, six-month initial range, optional date bounds and range validation",
@@ -221,7 +358,9 @@
       "sourceConfigs": [
         "src/app/main/merchant-statistics-new-app/MerchantStatisticsAppConfig.js"
       ],
-      "sourceRoutes": ["merchant-statistics-new"],
+      "sourceRoutes": [
+        "merchant-statistics-new"
+      ],
       "includes": [
         "Original staff-only /merchant-statistics-new aggregate report using POST v1/users/statistics-new; dependency on migrated base statistics controls and auth User, without fabricated shipment entities",
         "Required bankTransferTotals/otherFees inputs preserve zero and signed source values; send only the account, optional ISO date bounds and those two adjustments",
@@ -234,14 +373,30 @@
     },
     {
       "feature": "merchants-app",
-      "status": "pending",
-      "sourceConfigs": ["src/app/main/merchants-app/MerchantsAppConfig.js"],
+      "status": "migrated",
+      "sourceConfigs": [
+        "src/app/main/merchants-app/MerchantsAppConfig.js"
+      ],
       "sourceRoutes": [
         "merchants",
         "merchants/:merchantId",
         "edit-profile",
         "merchants/:merchantId/view",
         "profile"
+      ],
+      "includes": [
+        "Original staff /merchants, /merchants/:merchantId and /merchants/:merchantId/view plus merchant-only /profile and /edit-profile routes",
+        "Core IMerchant extends canonical auth User, nested address/price interfaces import migrated geographic, carrier and plan entities; simple RTK API, shared Zod validation and merchantsSlice.js",
+        "Ten-row role=user directory, search, balance/loyalty/active/verification/store/date filters, original independent wallet/COD sorting and page-zero/3000 filtered XLSX export",
+        "Canonical FormProvider/header/tabs/BasicInfoTab, source phone serialization, optional fifteen-character tax number with conditional street and scoped geographic lookups/fallbacks",
+        "Normal/custom carrier pricing, positive overrides, stored carriers absent from lookups and preserved drafts during refetches and failed writes",
+        "Staff edit/direct-new route and separate authenticated me self-edit; self payload excludes staff-only pricing/loyalty; successful creation handles id/_id/message-only responses without repeated POST",
+        "Read-only identity/avatar, account flags, balances, subscription/prices and metadata; confirmed blocking/affiliate toggles, administrator conversion, plan subscription/cancellation and wallet/COD closing",
+        "Merchant update plus original delete grants for block/affiliate, separate wallet/COD grants for closing/adjusting, and view/update on administrator conversion; no new default grants",
+        "Existing shipment, wallet, COD and merchant-dues operations reused with fixed account/balance scopes for reads, summaries and exports; own sender/receiver contact lists retain original filtered export",
+        "Previously deferred merchant links enabled in requests, shipments, ledgers, dues and logs; statistics returns and authorized adjustment returns now use merchant destinations",
+        "Self-service authorization/verification, top-up/withdrawal, contacts and sign-out links; affiliate profile destinations now use migrated owning routes",
+        "English/Arabic/Turkish labels and mobile RTL; inactive merchant deletion, Zoho creation, store tab and commented list creation button remain unexposed"
       ]
     },
     {
@@ -271,15 +426,33 @@
     },
     {
       "feature": "payment-app",
-      "status": "pending",
-      "sourceConfigs": ["src/app/main/payment-app/PaymentAppConfig.js"],
-      "sourceRoutes": ["payment/:userId/:topupRequestId/:result"]
+      "status": "migrated",
+      "sourceConfigs": [
+        "src/app/main/payment-app/PaymentAppConfig.js"
+      ],
+      "sourceRoutes": [
+        "payment/:userId/:topupRequestId/:result"
+      ],
+      "includes": [
+        "Original merchant-only /payment/:userId/:topupRequestId/:result legacy MyFatoorah callback, full-screen Fuse layout, current branding, language control, loading/error/success states and working home/history/retry/sign-out actions",
+        "Reads actual payment by plain ID, validates current route/stored ownership, verifies gateway CustomerReference through backend POST v1/payments/payment-status with original keyType/key shape",
+        "Confirms only verified Paid status; URL success/error result label cannot change the payment outcome; pending/canceled/error codes preserve original backend status and translations",
+        "Limited confirmation PATCH contains transactionId/status/reference only; failed confirmation retries provider verification, successful callback replay skips repeated confirmation and later nonpaid responses never downgrade stored success",
+        "Async route changes and Strict Mode duplicate effects reuse in-flight work; optional account-refresh failure cannot repeat financial writes",
+        "Fuse setUser settings reducer now preserves active route layout overrides when generated defaults are unchanged, preventing account refresh from remounting/rechecking callbacks indefinitely; changed settings/sign-out still work",
+        "Only backend payment proxies are used; inactive client-side gateway initiation and card-widget controls are not restored; no new packages or live payments were used for migration validation"
+      ]
     },
     {
       "feature": "plans-app",
       "status": "migrated",
-      "sourceConfigs": ["src/app/main/plans-app/PlansAppConfig.js"],
-      "sourceRoutes": ["plans", "plans/:planId"]
+      "sourceConfigs": [
+        "src/app/main/plans-app/PlansAppConfig.js"
+      ],
+      "sourceRoutes": [
+        "plans",
+        "plans/:planId"
+      ]
     },
     {
       "feature": "shipment-users-app",
@@ -287,7 +460,10 @@
       "sourceConfigs": [
         "src/app/main/shipment-users-app/ShipmentUsersAppConfig.js"
       ],
-      "sourceRoutes": ["shipment-users/:type", ":shipmentUserId"],
+      "sourceRoutes": [
+        "shipment-users/:type",
+        ":shipmentUserId"
+      ],
       "includes": [
         "Sender/receiver/all card lists, search and 16-item pagination",
         "Route-driven responsive side editor with separate header, tabs and basic information",
@@ -299,12 +475,32 @@
     },
     {
       "feature": "shipments-app",
-      "status": "pending",
-      "sourceConfigs": ["src/app/main/shipments-app/ShipmentsAppConfig.js"],
+      "status": "migrated",
+      "sourceConfigs": [
+        "src/app/main/shipments-app/ShipmentsAppConfig.js"
+      ],
       "sourceRoutes": [
         "shipments/:shippingCompanyId/:shippingType",
         "shipments/:shippingCompanyId/:shippingType/:shipmentId/*",
         "shipping-price-calculator"
+      ],
+      "includes": [
+        "Original scoped list/detail/new shipment routes and standalone shipping-price-calculator",
+        "Root IShipment with nested detail, COD, price, commodity and tracking interfaces; canonical migrated account, staff, carrier, geography, contact and coupon references",
+        "Simple raw RTK Query API, JavaScript shipmentsSlice.js, reference list wrapper/header/table and detail FormProvider/header/tabs/BasicInfoTab",
+        "Ten-row server pagination with stable totals, search, carrier/method/COD/parcel/status/payment/account/reviewer/contact/invoice/return/date filters and URL initialization",
+        "Account-scoped carrier/method/staff merchant analytics and filtered 50000-row Excel export with nested price total and shipment count",
+        "Six-step creation with active/authorized carrier selection, saved/new sender and multiple receivers, geography mappings/fallback lookups, phones and national addresses",
+        "Parcel dimensions, carrier volumetric weight, normal six-package versus return/calculator two-package limits, image upload, customs commodities and extra-weight consent",
+        "Local COD eligibility, coupon lookup/validation/removal, per-receiver price reviews and stale quote protection",
+        "Fresh wallet balance guard, sequential creates, preserved new contact IDs after shipment failure, explicit per-receiver outcomes and retries excluding successful/accepted shipments",
+        "Read-only shipment details, tracking synchronization/timeline and update-grant scoped transaction ledger",
+        "Merchant-owned cancellation requests and return creation with swapped complete contacts/phone codes, new carrier mapping, original linkage and no COD/contact writes",
+        "Confirmed staff status changes, pending COD settlement with merchant balance breakdown, invoice attachment and local reviewed/international manual extra-weight charges",
+        "Bulk non-COD delivered and pending COD settlement with partial-failure retry recovery",
+        "Missing-waybill lookup/fallback, individual PDF/image preview, strict complete PDF merging/download, international invoice URL/generated customs PDF and shipment image download",
+        "Carrier shipment-summary and staff shipment-audit integrations enabled; English/Arabic localization and mobile RTL",
+        "Inactive deletion, Qoyod/main invoice controls and return COD stay unexposed; excluded e-commerce and integrations remain removed"
       ]
     },
     {
@@ -321,7 +517,9 @@
     {
       "feature": "states-app",
       "status": "migrated",
-      "sourceConfigs": ["src/app/main/states-app/StatesConfig.js"],
+      "sourceConfigs": [
+        "src/app/main/states-app/StatesConfig.js"
+      ],
       "sourceRoutes": [
         "states/:shippingCompanyId/:countryId",
         "states/:shippingCompanyId/:countryId/:stateId/*"
@@ -329,13 +527,24 @@
     },
     {
       "feature": "topup-requests-app",
-      "status": "pending",
+      "status": "migrated",
       "sourceConfigs": [
         "src/app/main/topup-requests-app/TopupRequestsAppConfig.js"
       ],
       "sourceRoutes": [
         "topup-requests/:userId",
         "topup-requests/:userId/:topupRequestId/*"
+      ],
+      "includes": [
+        "Original /topup-requests/:userId history and merchant-only /topup-requests/:userId/:topupRequestId/* creation/results, simple RTK Query API, topupRequestsSlice.js, root ITopupRequest and canonical header/tabs/BasicInfoTab structure",
+        "Existing payments view permission identifier, ten-row server pagination, account/status/date/encoded-search filters, original page-zero/500000 filtered Excel export, stable totals and read-error retries",
+        "Source gateway response/reference/platform, accounting zohoCreditId, transaction/error/notes, method icons, net/gross amount, stored plan name, status and timestamp fields preserved",
+        "Active PayTabs hosted checkout POST v1/payments/paytabs with fixed current owner, isPlan=false, zero fees, inclusive 15-percent tax and net wallet credit; standard gross minimum 100 and both original account exceptions",
+        "Draft-preserving creation failure, retained backend id/_id, duplicate-create guard, validated web redirect link, missing-link recovery and recreation at the original payment ID without creating another payment",
+        "Owning-merchant pending/failed recreation checks fresh stored status; successful/foreign payments cannot be recreated; status verification uses original check-status endpoint and optional legacy resourcePath without undefined checkout paths",
+        "Existing staff ledger adjustment route remains separately gated by merchant update plus wallet/COD view/create; merchant history ignores route owner overrides; no staff payment-create forms or source-inactive manual confirmations/deletions",
+        "Gateway PayTabs and historical Hyperpay error descriptions retained in English/Arabic; English/Arabic/Turkish feature resources, responsive RTL, matching table widths and real local workbook export",
+        "Previously deferred merchant-ledger top-up and logs View Payment links now point to migrated routes; merchant profile links are enabled with merchant view permission"
       ]
     },
     {
@@ -344,7 +553,9 @@
       "sourceConfigs": [
         "src/app/main/transaction-reports-app/TransactionReportsAppConfig.js"
       ],
-      "sourceRoutes": ["transaction-reports/:userId"],
+      "sourceRoutes": [
+        "transaction-reports/:userId"
+      ],
       "includes": [
         "Original /transaction-reports/:userId uses the migrated transaction domain with independent transactionReportsSlice.js and simple RTK Query",
         "Staff must select a merchant before querying/exporting; merchant route IDs are ignored and backend current-account scope is retained",
@@ -387,7 +598,9 @@
       "sourceConfigs": [
         "src/app/main/verification-requests-app/VerificationRequestsAppConfig.js"
       ],
-      "sourceRoutes": ["verification-requests/:userId"],
+      "sourceRoutes": [
+        "verification-requests/:userId"
+      ],
       "includes": [
         "Staff review table with account/reviewer/status/date filters, pagination and filtered Excel export",
         "Tax/registration fields and all active legacy document-download columns",
@@ -399,13 +612,24 @@
     },
     {
       "feature": "withdraw-requests-app",
-      "status": "pending",
+      "status": "migrated",
       "sourceConfigs": [
         "src/app/main/withdraw-requests-app/WithdrawRequestsAppConfig.js"
       ],
       "sourceRoutes": [
         "withdraw-requests/:userId",
         "withdraw-requests/:userId/:withdrawRequestId/*"
+      ],
+      "includes": [
+        "Original /withdraw-requests/:userId list and merchant-only /withdraw-requests/:userId/:withdrawRequestId/* routes, simple RTK Query API, withdrawRequestsSlice.js, canonical detail/header/tabs layout and shared Zod validations",
+        "Root IWithdrawRequest references migrated account/staff/shipment entities; request/response/filter types remain in WithdrawRequestsApi.ts",
+        "Repeated type=withdrew&type=walletCharge, ten-row pagination, search/account/reviewer/status/date filters, updatedById audit scope and original filtered 500000-row Excel export",
+        "Dedicated available-for-withdrew account balance and current-account first-1000 paid COD shipment selection, retaining owning shipment IDs rather than nested COD IDs",
+        "Read-only amount computed from selected eligible shipments, optional bank notes, inclusive 15-percent net wallet preview and unchanged gross amount submitted for both bank and wallet types",
+        "Fresh balance/eligibility checks before creation, fixed current ownership/pending status, no affiliate-only or single-pending restriction, duplicate-submit guard and draft-preserving read/write retries",
+        "Staff pending-only decisions require withdrawal view/update; bank approval validates bank/reference and supports presigned receipt upload, preview/download; wallet approval and refusals submit status only",
+        "Existing merchant details are read-only, cross-owner/type records rejected, success navigation remains safe if account refresh fails and related shipment/COD balance caches refresh after mutations",
+        "Staff withdrawal audit link enabled; invalid/reversed date scopes block reads/exports; matched flex/minWidth columns, English/Arabic/Turkish labels and mobile RTL; inactive deletion stays unexposed"
       ]
     }
   ],
@@ -424,37 +648,30 @@
       "error pages",
       "maintenance page from authentication foundation"
     ],
-    "pending": ["legacy coming-soon page and final route parity review"]
+    "pending": [
+      "legacy coming-soon page and final route parity review"
+    ]
   },
   "sharedComponents": {
     "status": "provided-by-user",
     "note": "Shared components were already migrated by the user; validate each component when its consuming feature is migrated.",
     "verifiedThisBatch": [
-      "CustomTable ten-row server pagination, matched column sizes, active invoice links and filtered Excel export workbook content",
-      "FilterIcon account/staff lookup, repeated transaction-title selection and optional date scopes",
-      "Existing MUI DatePicker, local report/adjustment controls and mobile RTL sizing",
-      "ShipmentTransactionsTable.tsx restored as a typed consumer of the migrated transaction domain at its original shared path"
+      "Reusable themed FusePageSimple overview shell, cards, query feedback, permission-aware actions and responsive grid",
+      "Locale-aware counts, reported currency formatting, finite number validation and missing versus zero handling",
+      "English desktop and Arabic mobile RTL; language-specific arrows independent of stale ancestor direction",
+      "Canonical shipment decomposition preserves owning IDs and immutable cached records",
+      "Existing carrier/entity queries, owning permission helpers, current-account authentication and sign-out controls"
     ]
   },
   "home": {
-    "status": "partial",
-    "note": "Only the welcome/sign-out landing page exists. Original merchant/home content and the separate administrator dashboard remain pending."
+    "status": "migrated",
+    "note": "Complete redesigned merchant and permission-filtered staff landing, plus authorized administrator dashboard at /home. The canonical administrator route remains /dashboard."
   },
-  "deferredIntegrationLinks": [
-    "shipping-company shipment summary (packaging-request summary is now available)",
-    "request-table merchant profile links until merchants-app is available",
-    "affiliate withdrawal return link uses /affiliate-withdraw-requests/all until affiliate-profile/withdraw-requests is owned by migrated affiliate-merchants-app",
-    "Statistics header returns to /home until merchants-app owns the original /merchants destination",
-    "remaining staff shipment/withdrawal/cancellation audit links; verification, bank-transfer and wallet/COD transaction audit links are now available",
-    "transaction-table merchant profile links until merchants-app is available",
-    "transaction adjustment success/back destinations use account-scoped ledger routes until merchants-app owns /merchants/:userId/view",
-    "merchant transaction-list top-up link to /topup-requests/all/new until topup-requests-app is available"
-  ],
+  "deferredIntegrationLinks": [],
   "nextCandidates": [
-    "shipments-app: transaction enums/domain and shared shipment ledger are now available; migrate the root shipment workflow before cancellation and COD withdrawal consumers",
-    "topup-requests-app and payment-app after the transaction foundation, preserving actual payment gateway contracts",
-    "merchants-app and affiliate-merchants-app operational/profile tabs after their owning shipping and remaining finance workflows",
-    "logs-app after shipment-detail domain dependencies are available"
+    "Common-page legacy coming-soon and final route parity review",
+    "Audit imports of the eight dormant source directories before deciding whether to migrate or retire them",
+    "Final cross-feature integration and live backend acceptance review; counted route-area completion does not imply this review is complete"
   ],
   "excludedByUser": [
     "Salla",
@@ -490,40 +707,48 @@
       "shipmentUsers": 18,
       "accountRequests": 26,
       "applications": 20,
-      "total": 262,
+      "total": 481,
       "bankTransfers": 12,
       "affiliateWithdraw": 17,
       "packaging": 19,
       "statistics": 22,
-      "transactions": 29
+      "transactions": 29,
+      "shipments": 29,
+      "codOperations": 27,
+      "withdrawLogs": 23,
+      "topups": 27,
+      "merchants": 29,
+      "affiliates": 27,
+      "servicesBalance": 23,
+      "overviews": 34
     },
     "browserChecksThisBatch": {
-      "transactionsAndReports": 31,
+      "overviews": 32,
+      "total": 47,
       "uncaughtExceptions": 0,
-      "fixtures": "Mock account/auth/transaction/report services with real local Excel/PDF downloads and isolated list/write/account/file failures; no live backend writes",
+      "fixtures": "Isolated mocked administrator, employee and merchant accounts. Role/view guards, exact operational/financial query contracts, scope labels, stale/delayed responses, last-successful errors, zero/missing data, account ownership, immutable shipment identity, active carrier/custom prices, refresh, English desktop and Arabic mobile RTL. No live backend writes or invented production metrics. Includes an incomplete carrier/shipment list response recovery check, plus the existing authentication suite: password and phone login, session restoration, sign-out, account gates, required email linking/OTP, password reset, registration, verification upload and Arabic mobile sign-in.",
       "screenshots": [
-        "test-results/transactions-browser/transactions-desktop.png",
-        "test-results/transactions-browser/transaction-reports-desktop.png",
-        "test-results/transactions-browser/transactions-ar-mobile.png",
-        "test-results/transactions-browser/transaction-reports-ar-mobile.png",
-        "test-results/transactions-browser/transaction-form-ar-mobile.png"
-      ]
+        "test-results/overviews-browser/administrator-dashboard-en-desktop.png",
+        "test-results/overviews-browser/administrator-insights-en-desktop.png",
+        "test-results/overviews-browser/merchant-home-en-desktop.png",
+        "test-results/overviews-browser/administrator-dashboard-ar-mobile.png",
+        "test-results/overviews-browser/administrator-ranking-ar-mobile.png",
+        "test-results/overviews-browser/merchant-home-ar-mobile.png",
+        "test-results/overviews-browser/merchant-activity-ar-mobile.png"
+      ],
+      "authenticationRecheck": 15
     },
     "scope": "Active application typecheck and production build. Browser contracts use fixtures; live backend acceptance is not verified. The full unused-template/shared-component source check is not the active migration gate."
   },
   "notesThisBatch": [
-    "The shipment transaction view imports transaction types and consumes ledger rows. This batch migrates that dependency and the transaction report consumer before building the main shipment workflow",
-    "Root ITransaction contains only ledger fields, canonical account/staff references and nested invoice metadata. Filters and request/response wrappers stay in Api.ts; no shipment or merchant stub model was introduced",
-    "JavaScript feature slices retain list state only. Each list wrapper remains simple while its table owns query initialization/pagination and its header owns filter controls",
-    "Wallet and COD queries/controls honor their own view grants; all-balance reads require both scopes. New writes require create and existing edits require update; create-only staff cannot edit existing records",
-    "The legacy detail save button reused create permission for edits. The migration applies the explicit update grant to PATCH operations while keeping separate wallet/COD grants and the merchant-update requirement on the original all/new entry route",
-    "Custom operation is a valid original default/submittable value even though the old select omitted its label. It is now displayed explicitly without enabling inactive reset or accounting generation controls",
-    "Inclusive deposit tax is removed from gross amounts before balance credit; the separate historical amount-with-tax column retains its original cutoff and invoice/taxable conditions. Stored records do not inherit a new tax flag when one was absent",
-    "Operation label prefixes are added only to the outgoing notes. Failed saves preserve raw notes, and already prefixed notes do not receive a duplicate prefix when an existing record is saved",
-    "Successful creation returns to the migrated account ledger before optional balance refresh can fail; retries cannot duplicate the successful monetary write",
-    "Server PDF/XLSX exports previously used the visible list page with a 50000-row page size and could skip records. Exports now start at zero and preserve all active filters",
-    "Missing report URLs and HTTP download errors now reject visibly and release loading. Temporary links/object URLs are cleaned; merchant exports retain backend current-account ownership",
-    "Staff wallet/COD audit links are enabled. The earlier foundations regression was updated to recognize these newly migrated owning features; no default grants or excluded features were added",
-    "Merchant profile navigation and top-up entry points remain deferred to their pending owning features rather than opening unavailable routes"
+    "User explicitly authorized redesign and changes to displayed data. Reorganized original dashboard/home information while retaining actual backend data and read contracts; production does not use fabricated example metrics",
+    "All 32 route-backed feature areas are migrated, including dashboard and home. Foundation/auth is complete; common-page parity and the eight dormant-source import audits remain separate unfinished work",
+    "Independent revenue period fixes the legacy mismatch between operational period controls and the financial endpoint; reported revenue currency and configured merchant display currency are identified explicitly",
+    "Counts, errors, empty responses and stale responses have distinct presentations. Unsupported all-carrier scope is labeled and source activity period is shown accurately",
+    "Merchant balances/custom pricing require matching current-account identity, recent shipment IDs remain canonical and failed data reads have independent retries",
+    "Employees retain a usable permission-filtered landing instead of the source redirect into an administrator-only dashboard; no administrator aggregates are fetched for unauthorized accounts",
+    "Active application typecheck/build, all 481 regression checks and 32 overview and 15 authentication browser fixture checks pass; source/provider live acceptance is not established by fixtures",
+    "No new dependencies or live backend/financial writes. Salla, Odoo, product ecommerce and comparisons stay excluded; packaging requests stay available",
+    "Authentication integration testing exposed an incomplete carrier response crashing the home render and hiding email linking. Carrier and recent-shipment payload shapes are now checked independently; unavailable data remains local to its panel and refresh recovers without blocking authentication."
   ]
 }

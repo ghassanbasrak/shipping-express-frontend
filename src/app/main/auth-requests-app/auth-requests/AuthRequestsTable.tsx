@@ -1,3 +1,4 @@
+import { hasOperationPermission as merchantProfilePermission } from "src/app/auth/permissions";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Alert, Button } from "@mui/material";
@@ -117,6 +118,11 @@ export default function AuthRequestsTable() {
       ? [
           {
             id: "user.firstName" as const,
+            link: merchantProfilePermission("merchants", "view", user),
+            linkGetter: (row) =>
+              row.userId || row.user?.id
+                ? `/merchants/${encodeURIComponent(row.userId || row.user?.id)}/view`
+                : "/merchants",
             label: t("MERCHANT"),
             type: TableDataTypes.normal,
             valueGetter: (row) =>

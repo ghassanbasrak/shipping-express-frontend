@@ -32,7 +32,7 @@ export default function AffiliateWithdrawRequestHeader({
     navigate = useNavigate();
   const { affiliateWithdrawRequestId } = useParams(),
     isNew = affiliateWithdrawRequestId === "new";
-  const { handleSubmit, watch } =
+  const { handleSubmit, watch, setValue } =
       useFormContext<AffiliateWithdrawRequestForm>(),
     [createRequest, creating] = useCreateAffiliateWithdrawRequestMutation(),
     sent = useRef(false);
@@ -62,8 +62,8 @@ export default function AffiliateWithdrawRequestHeader({
         variant: "success",
       }),
     );
-    // The affiliate profile belongs to a pending feature. Use this feature's working list until it is migrated.
-    navigate("/affiliate-withdraw-requests/all");
+    // Return to the migrated affiliate profile withdrawal tab.
+    navigate("/affiliate-profile/withdraw-requests");
     try {
       await auth.getUser();
     } catch {
@@ -77,7 +77,7 @@ export default function AffiliateWithdrawRequestHeader({
       <div className="flex flex-col items-center sm:items-start min-w-0">
         <Typography
           component={Link}
-          to="/affiliate-withdraw-requests/all"
+          to="/affiliate-profile/withdraw-requests"
           color="inherit"
           className="flex items-center mb-12"
         >
@@ -113,14 +113,20 @@ export default function AffiliateWithdrawRequestHeader({
             color="secondary"
             loading={creating.isLoading}
             disabled={blocked || creating.isLoading}
-            onClick={() => submit()}
+            onClick={() => {
+              // Validate against the latest recovered balance, preserving the editable draft.
+              setValue("availableBalance", balance ?? 0, {
+                shouldDirty: false,
+              });
+              submit();
+            }}
             data-testid="send-affiliate-withdraw-request"
             startIcon={<FuseSvgIcon>material-outline:save</FuseSvgIcon>}
           >
             {t("SAVE_WITHDRAW_REQUEST")}
           </LoadingButton>
         )}
-        <Button component={Link} to="/affiliate-withdraw-requests/all">
+        <Button component={Link} to="/affiliate-profile/withdraw-requests">
           {t("CANCEL")}
         </Button>
       </div>
