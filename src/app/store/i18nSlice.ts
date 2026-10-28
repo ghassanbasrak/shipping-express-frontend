@@ -24,9 +24,9 @@ export const changeLanguage =
 		/*
 		Change Language
 		 */
-		return i18n.changeLanguage(languageId).then(() => {
-			dispatch(i18nSlice.actions.languageChanged(languageId));
-		});
+		await i18n.changeLanguage(languageId);
+		localStorage.setItem('my-language', languageId);
+		dispatch(i18nSlice.actions.languageChanged(languageId));
 	};
 
 /**
