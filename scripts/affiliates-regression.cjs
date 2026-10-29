@@ -392,7 +392,7 @@ async function main() {
   }
   try {
     await check(
-      "Affiliate directory fixes role and affiliate scopes for queries",
+      "Affiliate directory fixes account scopes and ignores retired store filters",
       async () => {
         await request("getAffiliateMerchants", {
           page: 1,
@@ -412,7 +412,6 @@ async function main() {
           search: "A & #",
           active: "false",
           loyaltyType: "custom",
-          hasStore: "true",
           balanceType: "negative",
           verificationStatus: "approved",
         });

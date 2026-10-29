@@ -14,7 +14,6 @@ import ExtendedMockAdapter from "./ExtendedMockAdapter";
 // import { iconsApiMocks } from './api/ui/icons-api';
 // import { academyApiMocks } from './api/academy-api';
 // import { countriesApiMocks } from './api/countries-api';
-// import { eCommerceApiMocks } from './api/ecommerce-api';
 // import { fileManagerApiMocks } from './api/file-manager-api';
 // import { helpCenterApiMocks } from './api/help-center-api';
 // import { mailBoxApiMocks } from './api/mailbox-api';
@@ -155,7 +154,6 @@ function MockAdapterProvider(props: MockAdapterProviderProps) {
         // calendarApiMocks,
         // contactsApiMocks,
         // countriesApiMocks,
-        // eCommerceApiMocks,
         // fileManagerApiMocks,
         // helpCenterApiMocks,
         // mailBoxApiMocks,

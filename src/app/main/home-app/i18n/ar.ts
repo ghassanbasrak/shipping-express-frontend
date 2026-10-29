@@ -70,8 +70,6 @@ const locale = {
   MY_ACCOUNT_HINT: "عرض البيانات والمستندات والأسعار",
   PACKAGING_REQUESTS: "مستلزمات التغليف",
   PACKAGING_HINT: "طلب مستلزمات عمليات التسليم القادمة",
-  SUPPORT: "توثيق المتجر والدعم",
-  SUPPORT_HINT: "إرشادات التوثيق ومعلومات التواصل مع الدعم",
   STAFF_WORKSPACE: "مساحة الفريق",
   STAFF_INTRO: "عملك اليومي منظم حسب الصلاحيات الممنوحة لحسابك.",
   ADMINISTRATOR: "مدير النظام",

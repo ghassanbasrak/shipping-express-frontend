@@ -1,7 +1,6 @@
 const locale = {
   EDIT_CUSTOMER_PRICES_MESSAGE:
     "Her kargo şirketi için taban maliyetin üzerindeki kârı belirleyin. Taban fiyat için sıfır girin.",
-  HAS_STORE: "Mağazası var",
   VERIFY_ACCOUNT: "Hesabı doğrula",
   IS_REGISTERED: "Kayıtlı",
   IS_BLOCKED: "Engelli",

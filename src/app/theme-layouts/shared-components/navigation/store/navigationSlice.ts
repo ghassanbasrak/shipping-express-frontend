@@ -155,23 +155,31 @@ export const selectNavigation = createSelector(
       FuseNavigationHelper.unflattenNavigation(navigationSimple);
 
     function setAdditionalData(data: FuseNavItemType[]): FuseNavItemType[] {
-      return data?.map((item) => ({
-        ...item,
-        hasPermission: Boolean(
-          FuseUtils.hasPermission(item.auth, user?.role) &&
-            (!item.url || FuseUtils.hasPagePermission(item.url, user)) &&
-            (!item.hasPermissionGetter || item.hasPermissionGetter(user)),
-        ),
-        ...(item?.translate && item?.title
-          ? { title: i18next.t(`navigation:${item?.translate}`) }
-          : {}),
-        ...(item?.subTranslate && item?.subtitle
-          ? { subtitle: i18next.t(`navigation:${item?.subTranslate}`) }
-          : {}),
-        ...(item?.children
-          ? { children: setAdditionalData(item?.children) }
-          : {}),
-      }));
+      return data?.map((item) => {
+        const children = item.children
+          ? setAdditionalData(item.children)
+          : undefined;
+        const hasVisibleChildren =
+          !["group", "collapse"].includes(item.type) ||
+          item.remote ||
+          children?.some((child) => child.hasPermission);
+        return {
+          ...item,
+          hasPermission: Boolean(
+            FuseUtils.hasPermission(item.auth, user?.role) &&
+              (!item.url || FuseUtils.hasPagePermission(item.url, user)) &&
+              (!item.hasPermissionGetter || item.hasPermissionGetter(user)) &&
+              hasVisibleChildren,
+          ),
+          ...(item?.translate && item?.title
+            ? { title: i18next.t(`navigation:${item?.translate}`) }
+            : {}),
+          ...(item?.subTranslate && item?.subtitle
+            ? { subtitle: i18next.t(`navigation:${item?.subTranslate}`) }
+            : {}),
+          ...(children ? { children } : {}),
+        };
+      });
     }
 
     const translatedValues = setAdditionalData(navigation);

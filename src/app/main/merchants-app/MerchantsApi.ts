@@ -50,9 +50,6 @@ const MerchantsApi = api.enhanceEndpoints({ addTagTypes }).injectEndpoints({
           filters.verificationStatusFilter !== "all"
             ? { verificationStatus: filters.verificationStatusFilter }
             : {}),
-          ...(filters.hasStoreFilter && filters.hasStoreFilter !== "all"
-            ? { hasStore: filters.hasStoreFilter }
-            : {}),
           ...(filters.dateFromFilter
             ? { dateFrom: filters.dateFromFilter }
             : {}),
@@ -208,7 +205,6 @@ export type GetMerchantsApiArg = {
   balanceTypeFilter?: string;
   statusFilter?: string;
   verificationStatusFilter?: string;
-  hasStoreFilter?: string;
   balanceSorting?: string;
   codBalanceSorting?: string;
   dateFromFilter?: string;

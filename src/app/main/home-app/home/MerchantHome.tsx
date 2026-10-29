@@ -225,12 +225,6 @@ export default function MerchantHome() {
               description={t("PACKAGING_HINT")}
               icon="inventory_2"
             />
-            <QuickAction
-              to="/store-authentication"
-              title={t("SUPPORT")}
-              description={t("SUPPORT_HINT")}
-              icon="contact_phone"
-            />
           </div>
         </OverviewSection>
       </div>

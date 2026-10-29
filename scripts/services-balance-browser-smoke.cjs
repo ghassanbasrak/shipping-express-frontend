@@ -399,54 +399,17 @@ async function main() {
   );
   assert.equal(audits().length, 0);
   pass("Merchants cannot read cross-account balance diagnostics");
-  const service = async (route) => {
+  for (const route of [
+    "/store-authentication",
+    "/store-integration",
+    "/new-store",
+  ]) {
     await navigate(route);
-    await until(exists("[data-testid=merchant-service]"), "merchant service");
-  };
-  await service("/store-authentication");
-  assert.equal(
-    await evaluate(
-      "document.querySelector('a[href=\"tel:00966501932466\"]')?.textContent.trim()",
-    ),
-    "00966501932466",
-  );
-  assert(
-    (await evaluate("document.body.innerText")).includes("Ashamco Express"),
-  );
-  pass(
-    "Store authentication retains branded support information and the source phone number",
-  );
-  await service("/new-store");
-  assert.equal(
-    await evaluate(
-      "document.querySelectorAll('[data-testid=merchant-service] input,[data-testid=merchant-service] form').length",
-    ),
-    0,
-  );
-  await until(
-    "[...document.querySelectorAll('[data-testid=merchant-service] img')].every(i=>i.complete&&i.naturalWidth>0)",
-    "new store image",
-  );
-  assert(
-    (await evaluate("document.body.innerText")).includes("not available yet"),
-  );
-  pass(
-    "New store remains an informational coming-soon page without commerce controls",
-  );
-  await service("/store-integration");
-  await until(
-    "[...document.querySelectorAll('[data-testid=merchant-service] img')].length===3 && [...document.querySelectorAll('[data-testid=merchant-service] img')].every(i=>i.complete&&i.naturalWidth>0)",
-    "integration assets",
-  );
-  const serviceText = await evaluate("document.body.innerText");
-  assert(serviceText.includes("Zid") && serviceText.includes("WooCommerce"));
-  assert(!/Salla|Odoo|Ghaya/i.test(serviceText));
-  pass(
-    "Integration placeholder retains Zid/WooCommerce images without restoring removed integrations",
-  );
-  await reset("/store-authentication");
-  await until("location.pathname==='/sign-in'", "guest service denied");
-  pass("Merchant service routes remain authenticated");
+    await until("location.pathname==='/error/404'", "removed route: " + route);
+  }
+  pass("Removed store routes resolve to not found for authenticated merchants");
+  await reset("/home");
+  await until("location.pathname==='/sign-in'", "guest home denied");
   await login("denied@example.test");
   await until("location.pathname==='/home'", "unrelated staff");
   await navigate("/balance-duplication-errors");
@@ -727,21 +690,6 @@ async function main() {
   pass(
     "Arabic audit filters and read-only details fit the mobile viewport with RTL",
   );
-  await login("merchant@example.test");
-  await until("location.pathname==='/home'", "mobile merchant");
-  await evaluate("localStorage.setItem('my-language','ar')");
-  await service("/store-integration");
-  await until(
-    "[...document.querySelectorAll('[data-testid=merchant-service] img')].every(i=>i.complete&&i.naturalWidth>0)",
-    "mobile service images",
-  );
-  assert(
-    await evaluate(
-      "[...document.querySelectorAll('[data-testid=merchant-service] img')].every(i=>i.getBoundingClientRect().right<=innerWidth)",
-    ),
-  );
-  await screenshot("merchant-service-ar-mobile");
-  pass("Arabic merchant service assets and text remain responsive");
   assert.deepEqual(exceptions, []);
   fs.writeFileSync(
     path.join(output, "summary.json"),

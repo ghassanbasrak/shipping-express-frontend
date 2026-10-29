@@ -29,7 +29,7 @@ const Root = styled(ListItem)<ListItemButtonComponentProps>(
     color: alpha(theme.palette.text.primary, 0.7),
     fontWeight: 600,
     letterSpacing: "0.025em",
-  })
+  }),
 );
 
 /**
@@ -51,18 +51,18 @@ function FuseNavVerticalGroup(props: FuseNavItemComponentProps) {
   function getRemoteItemValue(
     keyName: string,
     item: object,
-    isLocale?: boolean | null
+    isLocale?: boolean | null,
   ) {
     const value: any = keyName?.includes("%")
       ? keyName
           .replace(
             `%{${keyName.substring(
               keyName.indexOf("{") + 1,
-              keyName.indexOf("}")
+              keyName.indexOf("}"),
             )}`,
             item[
               keyName.substring(keyName.indexOf("{") + 1, keyName.indexOf("}"))
-            ]
+            ],
           )
           .replace("}", "")
       : item[keyName];
@@ -107,7 +107,7 @@ function FuseNavVerticalGroup(props: FuseNavItemComponentProps) {
           metadata: remoteItem,
         }));
         setRemoteChildren(
-          list.map((item) => convertRemoteItemToLocalItem(item))
+          list.map((item) => convertRemoteItemToLocalItem(item)),
         );
       }
     }
@@ -145,18 +145,18 @@ function FuseNavVerticalGroup(props: FuseNavItemComponentProps) {
       role: "button",
     };
   }
-  if (
-    (checkPermission && !item?.hasPermission) ||
-    (item.hasPermissionGetter && !item.hasPermissionGetter(user))
-  ) {
-    return null;
-  }
   return useMemo(() => {
+    if (
+      (checkPermission && !item.hasPermission) ||
+      (item.hasPermissionGetter && !item.hasPermissionGetter(user))
+    ) {
+      return null;
+    }
     const children =
       item.children || remoteChildren.length > 0
         ? [
             ...(!item.childrenPosition || item.childrenPosition === "before"
-              ? item.children
+              ? item.children ?? []
               : []),
             ...remoteChildren,
             ...(item.childrenPosition === "after" ? item.children : []),
@@ -170,7 +170,7 @@ function FuseNavVerticalGroup(props: FuseNavItemComponentProps) {
           itempadding={itempadding}
           className={clsx(
             "fuse-list-subheader flex items-center  py-10",
-            !item.url ? "cursor-default" : ""
+            !item.url ? "cursor-default" : "",
           )}
           onClick={() => onItemClick && onItemClick(item)}
           sx={item.sx}
@@ -221,7 +221,15 @@ function FuseNavVerticalGroup(props: FuseNavItemComponentProps) {
         )}
       </>
     );
-  }, [item, itempadding, nestedLevel, onItemClick, remoteChildren]);
+  }, [
+    item,
+    itempadding,
+    nestedLevel,
+    onItemClick,
+    remoteChildren,
+    checkPermission,
+    user,
+  ]);
 }
 
 const NavVerticalGroup = FuseNavVerticalGroup;

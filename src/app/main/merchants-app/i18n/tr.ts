@@ -1,6 +1,5 @@
 const locale = {
   AFFILIATE_PROFILE: "Ortak hesabı",
-  HAS_STORE: "Mağazası var",
   VERIFY_ACCOUNT: "Hesabı doğrula",
   IS_REGISTERED: "Kayıtlı",
   IS_BLOCKED: "Engelli",

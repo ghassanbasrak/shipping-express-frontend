@@ -452,7 +452,7 @@ async function main() {
       },
     );
     await check(
-      "directory export retains original page-zero/3000 limit and excludes all sentinels",
+      "directory export retains page-zero/3000 limit and ignores retired store filters",
       async () => {
         await request("getMerchants", {
           page: 0,
@@ -461,7 +461,7 @@ async function main() {
           typeFilter: "all",
           statusFilter: "all",
           verificationStatusFilter: "all",
-          hasStoreFilter: "all",
+          hasStoreFilter: "true",
         });
         assert.deepEqual(plain(captured.at(-1).params), {
           role: "user",

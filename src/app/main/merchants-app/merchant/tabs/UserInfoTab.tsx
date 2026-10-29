@@ -180,12 +180,11 @@ export default function UserInfoTab({ merchant }: { merchant: IMerchant }) {
           "isAuthorized",
           "emailVerified",
           "phoneVerified",
-          "hasStore",
           "isAffiliate",
         ].map((key) => (
           <Chip
             key={key}
-            label={`${t({ isBlocked: "IS_BLOCKED", isRegistered: "IS_REGISTERED", isAuthorized: "ACCOUNT_AUTHORIZATION", emailVerified: "EMAIL_VERIFIED", phoneVerified: "PHONE_VERIFIED", hasStore: "HAS_STORE", isAffiliate: "IS_AFFILIATE" }[key])}: ${t(merchant[key] ? "YES" : "NO")}`}
+            label={`${t({ isBlocked: "IS_BLOCKED", isRegistered: "IS_REGISTERED", isAuthorized: "ACCOUNT_AUTHORIZATION", emailVerified: "EMAIL_VERIFIED", phoneVerified: "PHONE_VERIFIED", isAffiliate: "IS_AFFILIATE" }[key])}: ${t(merchant[key] ? "YES" : "NO")}`}
           />
         ))}
       </div>

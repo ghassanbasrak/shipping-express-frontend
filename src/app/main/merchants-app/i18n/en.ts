@@ -1,6 +1,5 @@
 const locale = {
   AFFILIATE_PROFILE: "Affiliate Account",
-  HAS_STORE: "Has store",
   VERIFY_ACCOUNT: "Verify account",
   IS_REGISTERED: "Registered",
   IS_BLOCKED: "Blocked",

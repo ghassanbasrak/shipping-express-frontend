@@ -3,14 +3,22 @@
   "scope": "Feature areas registered by the legacy routesConfig; auth and common pages are tracked separately. Counts do not measure implementation effort.",
   "counts": {
     "featureAreas": 32,
-    "migrated": 32,
+    "migrated": 31,
+    "excluded": 1,
     "partial": 0,
     "pending": 0
   },
-  "completedThisBatch": [
-    "dashboard",
-    "home-app"
+  "completedThisBatch": [],
+  "removedThisBatch": [
+    "merchant-services",
+    "unused e-commerce template mocks and merchant store-status fields/filters"
   ],
+  "storeRemovalAudit": {
+    "date": "2026-10-29",
+    "source": "Store pages, route registration, sidebar section, home shortcut, translations, merchant store-status fields/filters, unused e-commerce mock endpoints/data and platform assets removed. Redux state management and payment-provider error messages are not store implementations and remain.",
+    "packaging": "Existing packaging fixtures and links were not changed. This checkout already lacks a packaging page/config despite the historical migrated inventory; restoring that feature is outside this removal task.",
+    "validation": "126 focused regression checks passed: removal 5, navigation 8, merchants 29, affiliates 27, overviews 34, balance audit 23. Active application typecheck and production build passed. All three retired URLs verified as standard 404 responses for both merchant and administrator demo accounts; English merchant home and Arabic administrator navigation contain no store links. Production chunks contain no removed feature identifiers or platform assets. Existing Browserslist, CSS minification and large-chunk warnings remain."
+  },
   "features": [
     {
       "feature": "admins-app",
@@ -317,7 +325,7 @@
     },
     {
       "feature": "merchant-services",
-      "status": "migrated",
+      "status": "excluded",
       "sourceConfigs": [
         "src/app/main/merchant-services/MerchantServicesConfig.js"
       ],
@@ -326,13 +334,7 @@
         "new-store",
         "store-integration"
       ],
-      "includes": [
-        "Original authenticated /store-authentication, /store-integration and /new-store informational routes with merchant navigation",
-        "Source support phone 00966501932466 retained with a usable tel link, current Ashamco Express branding and English/Arabic text",
-        "Store creation and Zid/WooCommerce integration remain explicitly unavailable coming-soon pages; no store/product/cart/order APIs or controls introduced",
-        "Responsive shared ServicePage, original coming-soon and platform images copied to the target with accessible alternative text",
-        "Source authenticated direct access and merchant-only navigation retained; existing middleware operation rules and staff defaults unchanged"
-      ]
+      "removalReason": "User requested complete removal of store functionality on 2026-10-29. Pages, route registration, navigation, home shortcut, translations, platform assets and merchant store-status fields/filters removed. Legacy URLs resolve to the standard 404 page."
     },
     {
       "feature": "merchant-statistics-app",
@@ -674,6 +676,8 @@
     "Final cross-feature integration and live backend acceptance review; counted route-area completion does not imply this review is complete"
   ],
   "excludedByUser": [
+    "merchant-services: store-authentication, store-integration and new-store",
+    "Storefront/store integrations, shopping carts, order management and unused e-commerce template mocks",
     "Salla",
     "Odoo",
     "products-app and product e-commerce",
@@ -722,7 +726,7 @@
       "servicesBalance": 23,
       "overviews": 34
     },
-    "browserChecksThisBatch": {
+    "previousFeatureBatchBrowserChecks": {
       "overviews": 32,
       "total": 47,
       "uncaughtExceptions": 0,
@@ -738,17 +742,19 @@
       ],
       "authenticationRecheck": 15
     },
+    "browserChecksThisBatch": {
+      "retiredRoute404Checks": 6,
+      "menuAndHomeChecks": 2,
+      "scope": "Demo merchant in English and administrator in Arabic. Each of the three removed URLs resolves to /error/404; store section/home links absent. No live backend acceptance claimed."
+    },
     "scope": "Active application typecheck and production build. Browser contracts use fixtures; live backend acceptance is not verified. The full unused-template/shared-component source check is not the active migration gate."
   },
   "notesThisBatch": [
-    "User explicitly authorized redesign and changes to displayed data. Reorganized original dashboard/home information while retaining actual backend data and read contracts; production does not use fabricated example metrics",
-    "All 32 route-backed feature areas are migrated, including dashboard and home. Foundation/auth is complete; common-page parity and the eight dormant-source import audits remain separate unfinished work",
-    "Independent revenue period fixes the legacy mismatch between operational period controls and the financial endpoint; reported revenue currency and configured merchant display currency are identified explicitly",
-    "Counts, errors, empty responses and stale responses have distinct presentations. Unsupported all-carrier scope is labeled and source activity period is shown accurately",
-    "Merchant balances/custom pricing require matching current-account identity, recent shipment IDs remain canonical and failed data reads have independent retries",
-    "Employees retain a usable permission-filtered landing instead of the source redirect into an administrator-only dashboard; no administrator aggregates are fetched for unauthorized accounts",
-    "Active application typecheck/build, all 481 regression checks and 32 overview and 15 authentication browser fixture checks pass; source/provider live acceptance is not established by fixtures",
-    "No new dependencies or live backend/financial writes. Salla, Odoo, product ecommerce and comparisons stay excluded; packaging requests stay available",
-    "Authentication integration testing exposed an incomplete carrier response crashing the home render and hiding email linking. Carrier and recent-shipment payload shapes are now checked independently; unavailable data remains local to its panel and refresh recovers without blocking authentication."
+    "Removed all three merchant-services pages and their route registration, sidebar group, home shortcut, translations and exclusive assets at user request.",
+    "Removed merchant/affiliate store-status fields and filters, unused template e-commerce endpoints/schemas/fixtures and commerce images. The shared table image fallback was moved to a generic asset path.",
+    "The 32-area historical inventory now records 31 migrated areas and one explicit exclusion; no partial or pending counted migration areas. Foundation/auth remain complete, with common-page parity and eight dormant-source import audits still separately unfinished.",
+    "Packaging fixtures and links were preserved. This checkout already lacks its page/config despite the historical migrated inventory; that discrepancy is not fixed or concealed by this store removal.",
+    "126 focused regression checks, active application typecheck and production build passed. Browser checks cover six retired-route redirects and English merchant/Arabic administrator menu cleanup. Production assets/chunks were audited for removed identifiers.",
+    "No new dependencies, backend writes or payment-contract changes. Redux state management and historical gateway error mappings remain. Previous full-feature regression/browser counts are historical, not rerun in this batch."
   ]
 }

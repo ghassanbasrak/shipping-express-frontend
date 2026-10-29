@@ -13,6 +13,37 @@ reloads the page with the selected account's permissions.
 local `.env` file when that backend is available. Demo mode never forwards API
 requests to the backend.
 
+## Sidebar navigation
+
+The sidebar combines persistent `group` headings with expandable `collapse`
+submenus:
+
+- **Overview:** Home and the operations dashboard as direct links.
+- **Daily Operations:** Shipping & Delivery, Finance & Payments, Accounts & Approvals.
+- **Insights & Engagement:** Reports & Statistics, Marketing & Alerts.
+- **Management:** Shipping Configuration, Administration & Audit.
+
+Headings and submenu labels support English and Arabic. Existing role and
+feature permissions still control each page; empty submenus and their headings
+are hidden recursively. Submenus open automatically for the current page and
+can also be toggled with the keyboard.
+
+Run `node scripts/navigation-regression.cjs` to check grouping, translations,
+and role/feature visibility.
+
+## Excluded store functionality
+
+Store authentication, store integration and new-store pages have been removed,
+including their routes, navigation, home shortcuts, platform assets and
+merchant store-status fields/filters. Old URLs resolve to the standard 404 page.
+No storefront, store integration, product-commerce, shopping-cart or order
+management implementation is included; unused e-commerce template mocks were
+also removed. Redux stores remain for application state management. Existing
+packaging fixtures and links are unchanged; this checkout does not currently
+contain a packaging page/route implementation.
+
+Run `node scripts/store-removal-regression.cjs` to verify these exclusions.
+
 ## Commands
 
 | Command | Purpose |

@@ -1,5 +1,4 @@
 const locale = {
-  HAS_STORE: "Has store",
   VERIFY_ACCOUNT: "Verify account",
   IS_REGISTERED: "Registered",
   IS_BLOCKED: "Blocked",

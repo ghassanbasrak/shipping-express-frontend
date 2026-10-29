@@ -1,5 +1,4 @@
 const locale = {
-  HAS_STORE: "لديه متجر",
   VERIFY_ACCOUNT: "توثيق الحساب",
   IS_REGISTERED: "مسجل",
   IS_BLOCKED: "محظور",

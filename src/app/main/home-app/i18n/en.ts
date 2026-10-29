@@ -72,8 +72,6 @@ const locale = {
   MY_ACCOUNT_HINT: "View your details, documents and pricing",
   PACKAGING_REQUESTS: "Packaging supplies",
   PACKAGING_HINT: "Request supplies for your next deliveries",
-  SUPPORT: "Store authentication & support",
-  SUPPORT_HINT: "Find authentication guidance and support details",
   STAFF_WORKSPACE: "Team workspace",
   STAFF_INTRO:
     "Your daily work, organized around the access assigned to your account.",

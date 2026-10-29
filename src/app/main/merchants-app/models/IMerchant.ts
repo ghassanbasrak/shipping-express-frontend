@@ -22,7 +22,6 @@ export default interface IMerchant extends User {
   referredById?: string;
   referredBy?: User;
   affiliateCode?: string;
-  hasStore?: boolean;
   zohoContactId?: string;
   zohoId?: string;
   walletBalanceStatus?: boolean;

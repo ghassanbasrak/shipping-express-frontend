@@ -1,6 +1,5 @@
 const locale = {
   AFFILIATE_PROFILE: "حساب التسويق بالعمولة",
-  HAS_STORE: "لديه متجر",
   VERIFY_ACCOUNT: "توثيق الحساب",
   IS_REGISTERED: "مسجل",
   IS_BLOCKED: "محظور",

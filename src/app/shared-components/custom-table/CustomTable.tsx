@@ -684,7 +684,7 @@ function CustomTable<T extends object>({
                               e.placeholder ?? (
                                 <img
                                   className="rounded max-w-full max-h-full"
-                                  src="assets/images/apps/ecommerce/product-image-placeholder.png"
+                                  src="assets/images/image-placeholder.png"
                                   alt={dataValue}
                                 />
                               )
