@@ -155,7 +155,9 @@ export const toShipmentPaymentStatusColor = (type: string) => {
 };
 
 export const defaultCountryId =
-  import.meta.env.VITE_DEFAULT_COUNTRY_ID || "65fd1a1c1fdbc094e3369b29";
+  import.meta.env.VITE_DEMO_MODE === "true"
+    ? "demo-country-sa"
+    : import.meta.env.VITE_DEFAULT_COUNTRY_ID || "65fd1a1c1fdbc094e3369b29";
 export const defaultCountryCode =
   import.meta.env.VITE_DEFAULT_COUNTRY_CODE || "SA";
 export const defaultCountry = {

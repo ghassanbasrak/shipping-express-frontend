@@ -23,7 +23,7 @@ export type DemoDbForExtras = DemoExtraDb & {
   cities: DemoRow[];
 };
 type Response = [number, unknown];
-type Context = {
+export type Context = {
   db: DemoDbForExtras;
   config: AxiosRequestConfig;
   path: string;
@@ -58,9 +58,10 @@ export function createDemoExtras(base: {
   states: DemoRow[];
   cities: DemoRow[];
 }): DemoExtraDb {
-  const egypt = base.countries.find((row) => row.code === "EG")!;
-  const state = base.states.find((row) => row.countryId === egypt.id)!;
-  const city = base.cities.find((row) => row.stateId === state.id)!;
+  const egypt =
+    base.countries.find((row) => row.code === "EG") || base.countries[0] || {};
+  const state = base.states.find((row) => row.countryId === egypt.id) || {};
+  const city = base.cities.find((row) => row.stateId === state.id) || {};
   const users: DemoRow[] = [
     {
       id: "demo-admin",
@@ -99,14 +100,14 @@ export function createDemoExtras(base: {
             : `demo-merchant-${n + 1}`,
       role: "user",
       type: "user",
-      firstName: ["Nour", "Khaled", "Sara", "Omar"][n % 4],
-      lastName: `Store ${n + 1}`,
+      firstName: n < 2 ? "Demo" : ["Nour", "Khaled", "Sara", "Omar"][n % 4],
+      lastName: n < 2 ? (n === 0 ? "Merchant" : "Affiliate") : `Store ${n + 1}`,
       companyName: `Demo Store ${n + 1}`,
       email: `merchant${n + 1}@ashamco.local`,
       phone: `+20-100000${String(n).padStart(4, "0")}`,
-      isAffiliate: n === 1 || n % 5 === 0,
+      isAffiliate: n === 1 || (n > 1 && n % 5 === 0),
       balance: n === 0 ? 5000 : n === 1 ? 4500 : 1000 + n * 170,
-      walletBalance: n === 0 ? 5000 : 1000 + n * 170,
+      walletBalance: n === 0 ? 5000 : n === 1 ? 4500 : 1000 + n * 170,
       codBalance: n === 0 ? 1800 : 600 + n * 90,
       address: { countryId: egypt.id, stateId: state.id, cityId: city.id },
       createdAt: date(n),
@@ -119,7 +120,7 @@ export function createDemoExtras(base: {
   ];
   const merchants = users.filter((row) => row.role === "user");
   const shipmentStates = base.states.flatMap((row) =>
-    row.shippingCompanyIds.map((shippingCompanyId: string) => ({
+    (row.shippingCompanyIds || []).map((shippingCompanyId: string) => ({
       id: `demo-shipment-state-${row.id}-${shippingCompanyId}`,
       stateId: row.id,
       shippingCompanyId,
@@ -409,6 +410,25 @@ function populated(ctx: Context, resource: string, row: DemoRow): DemoRow {
         (item) => item.id === row.shippingCompanyId,
       ),
     };
+  if (resource === "users")
+    return {
+      ...row,
+      paymentPlan:
+        db.plans.find((plan) => plan.id === row.paymentPlanId) ||
+        row.paymentPlan,
+      prices: (row.prices || []).map((price: DemoRow) => ({
+        ...price,
+        shippingCompany: db.shippingCompanies.find(
+          (c) => c.id === price.shippingCompanyId,
+        ),
+      })),
+      address: {
+        ...row.address,
+        country: db.countries.find((c) => c.id === row.address?.countryId),
+        state: db.states.find((s) => s.id === row.address?.stateId),
+        city: db.cities.find((c) => c.id === row.address?.cityId),
+      },
+    };
   if (resource === "shipping-users")
     return {
       ...row,
@@ -458,119 +478,148 @@ function populated(ctx: Context, resource: string, row: DemoRow): DemoRow {
 function listFilter(ctx: Context, resource: string, rows: DemoRow[]) {
   const { params } = ctx;
   const identity = getDemoUser();
-  return rows.filter((row) => {
-    if (
-      identity.role === "user" &&
-      ["requests", "transactions", "shipping-users"].includes(resource) &&
-      row.userId !== identity.id
-    )
-      return false;
-    if (resource === "users") {
-      if (params.type === "user" && row.role !== "user") return false;
+  return rows
+    .filter((row) => {
       if (
-        params.isAffiliate !== undefined &&
-        String(Boolean(row.isAffiliate)) !== String(params.isAffiliate)
+        identity.role === "user" &&
+        ["requests", "transactions", "shipping-users"].includes(resource) &&
+        row.userId !== identity.id
       )
         return false;
-      if (params.role && !oneOf(row.role, params.role)) return false;
-    }
-    if (
-      resource === "states" &&
-      params.countryId &&
-      row.countryId !== params.countryId
-    )
-      return false;
-    if (
-      resource === "cities" &&
-      params.countryId &&
-      row.countryId !== params.countryId
-    )
-      return false;
-    if (
-      resource === "cities" &&
-      params.stateId &&
-      row.stateId !== params.stateId
-    )
-      return false;
-    if (
-      resource === "shipment-states" &&
-      params.stateId &&
-      row.stateId !== params.stateId
-    )
-      return false;
-    if (
-      resource === "shipment-cities" &&
-      params.cityId &&
-      row.cityId !== params.cityId
-    )
-      return false;
-    if (params.shippingCompanyId && params.shippingCompanyId !== "all") {
+      if (resource === "users") {
+        if (params.type === "user" && row.role !== "user") return false;
+        if (
+          params.isAffiliate !== undefined &&
+          String(Boolean(row.isAffiliate)) !== String(params.isAffiliate)
+        )
+          return false;
+        if (params.role && !oneOf(row.role, params.role)) return false;
+        if (
+          !oneOf(row.referredById, params.referredById) ||
+          !oneOf(row.loyaltyType || "normal", params.loyaltyType) ||
+          !oneOf(row.verificationStatus, params.verificationStatus)
+        )
+          return false;
+        if (
+          params.active !== undefined &&
+          !oneOf(!row.isBlocked, String(params.active) === "true")
+        )
+          return false;
+        if (params.balanceType === "positive" && !(Number(row.balance) > 0))
+          return false;
+        if (params.balanceType === "zero" && Number(row.balance) !== 0)
+          return false;
+        if (params.balanceType === "negative" && !(Number(row.balance) < 0))
+          return false;
+      }
       if (
         resource === "states" &&
-        !ctx.db.shipmentStates.some(
-          (item) =>
-            item.stateId === row.id &&
-            item.shippingCompanyId === params.shippingCompanyId,
-        )
+        params.countryId &&
+        row.countryId !== params.countryId
       )
         return false;
       if (
         resource === "cities" &&
-        !ctx.db.shipmentCities.some(
-          (item) =>
-            item.cityId === row.id &&
-            item.shippingCompanyId === params.shippingCompanyId,
-        )
+        params.countryId &&
+        row.countryId !== params.countryId
       )
         return false;
       if (
-        ["coupons", "shipment-states", "shipment-cities"].includes(resource) &&
-        row.shippingCompanyId !== params.shippingCompanyId
+        resource === "cities" &&
+        params.stateId &&
+        row.stateId !== params.stateId
       )
         return false;
-    }
-    if (
-      !["requests", "transactions"].includes(resource) &&
-      params.type &&
-      resource !== "users" &&
-      !oneOf(row.type, params.type)
-    )
-      return false;
-    if (resource === "requests" && !oneOf(row.type, params.type)) return false;
-    if (resource === "transactions" && !oneOf(row.type, params.type))
-      return false;
-    if (
-      !oneOf(row.status, params.status) ||
-      !oneOf(row.userId, params.userId) ||
-      !oneOf(row.updatedById, params.updatedById) ||
-      !oneOf(row.createdById, params.createdById)
-    )
-      return false;
-    if (
-      !oneOf(row.relatedBalance, params.relatedBalance) ||
-      !oneOf(row.transactionTitle, params.transactionTitle)
-    )
-      return false;
-    if (!dateMatches(row, params)) return false;
-    return has(
-      [
-        row.name,
-        row.code,
-        row.title,
-        row.description,
-        row.fullName,
-        row.firstName,
-        row.lastName,
-        row.companyName,
-        row.email,
-        row.phone,
-        row.reference,
-        row.clientName,
-        row.userId,
-      ],
-      params.search,
+      if (
+        resource === "shipment-states" &&
+        params.stateId &&
+        row.stateId !== params.stateId
+      )
+        return false;
+      if (
+        resource === "shipment-cities" &&
+        params.cityId &&
+        row.cityId !== params.cityId
+      )
+        return false;
+      if (params.shippingCompanyId && params.shippingCompanyId !== "all") {
+        if (
+          resource === "states" &&
+          !ctx.db.shipmentStates.some(
+            (item) =>
+              item.stateId === row.id &&
+              item.shippingCompanyId === params.shippingCompanyId,
+          )
+        )
+          return false;
+        if (
+          resource === "cities" &&
+          !ctx.db.shipmentCities.some(
+            (item) =>
+              item.cityId === row.id &&
+              item.shippingCompanyId === params.shippingCompanyId,
+          )
+        )
+          return false;
+        if (
+          ["coupons", "shipment-states", "shipment-cities"].includes(
+            resource,
+          ) &&
+          row.shippingCompanyId !== params.shippingCompanyId
+        )
+          return false;
+      }
+      if (
+        !["requests", "transactions"].includes(resource) &&
+        params.type &&
+        resource !== "users" &&
+        !oneOf(row.type, params.type)
+      )
+        return false;
+      if (resource === "requests" && !oneOf(row.type, params.type))
+        return false;
+      if (resource === "transactions" && !oneOf(row.type, params.type))
+        return false;
+      if (
+        !oneOf(row.status, params.status) ||
+        !oneOf(row.userId, params.userId) ||
+        !oneOf(row.updatedById, params.updatedById) ||
+        !oneOf(row.createdById, params.createdById)
+      )
+        return false;
+      if (
+        !oneOf(row.relatedBalance, params.relatedBalance) ||
+        !oneOf(row.transactionTitle, params.transactionTitle)
+      )
+        return false;
+      if (!dateMatches(row, params) || !oneOf(row.code, params.code))
+        return false;
+      return has(
+        [
+          row.name,
+          row.code,
+          row.title,
+          row.description,
+          row.fullName,
+          row.firstName,
+          row.lastName,
+          row.companyName,
+          row.email,
+          row.phone,
+          row.reference,
+          row.clientName,
+          row.userId,
+        ],
+        params.search,
+      );
+    })
+    .sort((a, b) =>
+      params.orderColumn &&
+      ["balance", "codBalance"].includes(params.orderColumn)
+        ? (Number(a[params.orderColumn]) - Number(b[params.orderColumn])) *
+          (params.orderDirection === "desc" ? -1 : 1)
+        : 0,
     );
-  });
 }
 
 async function reportUrl(
@@ -655,7 +704,11 @@ export async function handleDemoExtra(ctx: Context): Promise<Response | null> {
     id === "balance" &&
     method === "get"
   ) {
-    const account = db.users.find((row) => row.id === params.affiliateId);
+    const account = db.users.find(
+      (row) =>
+        row.id ===
+        (getDemoUser().role === "user" ? getDemoUser().id : params.affiliateId),
+    );
     return account
       ? [
           200,
@@ -669,7 +722,9 @@ export async function handleDemoExtra(ctx: Context): Promise<Response | null> {
     return [200, statistics(ctx)];
   if (resource === "users" && id === "me" && method === "get") {
     const account = db.users.find((row) => row.id === getDemoUser().id);
-    return account ? [200, account] : [404, { message: "Account not found" }];
+    return account
+      ? [200, populated(ctx, "users", account)]
+      : [404, { message: "Account not found" }];
   }
   const collections: Record<string, keyof DemoDbForExtras> = {
     states: "states",
@@ -763,9 +818,12 @@ export async function handleDemoExtra(ctx: Context): Promise<Response | null> {
       }
     }
     if (resource === "transactions") {
+      if (getDemoUser().role === "user")
+        return [403, { message: "Staff access required" }];
       const account = db.users.find((row) => row.id === data.userId);
       if (!account) return [400, { message: "Select an account" }];
       record.createdById = getDemoUser().id;
+      record.transactionTitle = "balance update";
       record.previousBalance =
         Number(
           account[data.relatedBalance === "cod" ? "codBalance" : "balance"],
@@ -809,6 +867,11 @@ export async function handleDemoExtra(ctx: Context): Promise<Response | null> {
     return [201, populated(ctx, resource, record)];
   }
   if (index < 0) return [404, { message: `${resource} not found` }];
+  if (
+    getDemoUser().role === "user" &&
+    ["requests", "transactions"].includes(resource)
+  )
+    return [403, { message: "Staff access required" }];
   if (method === "patch") {
     const before = rows[index];
     const update: DemoRow = { ...data };
@@ -842,22 +905,27 @@ export async function handleDemoExtra(ctx: Context): Promise<Response | null> {
       }
     }
     if (resource === "transactions") {
-      const account = db.users.find((row) => row.id === before.userId);
-      if (account) {
-        const field =
-          before.relatedBalance === "cod" ? "codBalance" : "balance";
-        const oldDelta =
-          before.type === "deposit"
-            ? Number(before.amount)
-            : -Number(before.amount);
-        const newDelta =
-          (update.type || before.type) === "deposit"
-            ? Number(update.amount ?? before.amount)
-            : -Number(update.amount ?? before.amount);
-        account[field] = Number(account[field]) - oldDelta + newDelta;
-        if (field === "balance") account.walletBalance = account.balance;
-        update.currentBalance = account[field];
-      }
+      const next = { ...before, ...update };
+      const oldAccount = db.users.find((row) => row.id === before.userId);
+      const nextAccount = db.users.find((row) => row.id === next.userId);
+      if (!oldAccount || !nextAccount)
+        return [400, { message: "Select an account" }];
+      const field = (row: DemoRow) =>
+        row.relatedBalance === "cod" ? "codBalance" : "balance";
+      const delta = (row: DemoRow) =>
+        (row.type === "deposit" ? Number(row.amount) : -Number(row.amount)) /
+        (row.relatedBalance === "wallet" &&
+        row.type === "deposit" &&
+        row.applyTax
+          ? 1.15
+          : 1);
+      oldAccount[field(before)] =
+        Number(oldAccount[field(before)]) - delta(before);
+      update.previousBalance = Number(nextAccount[field(next)]);
+      nextAccount[field(next)] = update.previousBalance + delta(next);
+      oldAccount.walletBalance = oldAccount.balance;
+      nextAccount.walletBalance = nextAccount.balance;
+      update.currentBalance = nextAccount[field(next)];
     }
     rows[index] = {
       ...before,
