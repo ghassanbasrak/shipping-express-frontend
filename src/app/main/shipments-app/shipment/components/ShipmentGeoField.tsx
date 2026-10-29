@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Alert, Autocomplete, Button, TextField } from "@mui/material";
+import { Autocomplete, Button, TextField } from "@mui/material";
 import { Controller, useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import {
@@ -49,7 +49,7 @@ export default function ShipmentGeoField({
       searchText: search,
       shippingCompanyIdFilter: carrier,
     },
-    { skip: kind !== "country" || !carrier },
+    { skip: kind !== "country" },
   );
   const states = useGetStatesQuery(
     {
@@ -59,7 +59,7 @@ export default function ShipmentGeoField({
       shippingCompanyIdFilter: carrier,
       countryIdFilter: countryId,
     },
-    { skip: kind !== "state" || !carrier || !countryId },
+    { skip: kind !== "state" || !countryId },
   );
   const cities = useGetCitiesQuery(
     {
@@ -68,9 +68,9 @@ export default function ShipmentGeoField({
       searchText: search,
       shippingCompanyIdFilter: carrier,
       countryIdFilter: countryId,
-      stateIdFilter: company?.hasState ? stateId : undefined,
+      stateIdFilter: !company || company.hasState ? stateId : undefined,
     },
-    { skip: kind !== "city" || !carrier || !countryId },
+    { skip: kind !== "city" || !countryId },
   );
   const country = useGetCountryQuery(id, { skip: kind !== "country" || !id });
   const state = useGetStateQuery(id, { skip: kind !== "state" || !id });
@@ -107,29 +107,13 @@ export default function ShipmentGeoField({
     }
   }, [entity, carrier, kind, name, path, prefix, suffix, getValues, setValue]);
   const mappingMissing =
-    !!entity && kind !== "country" && !shippingGeoName(entity, carrier, kind);
+    !!entity &&
+    !!carrier &&
+    (kind === "city" || (kind === "state" && !!company?.hasState)) &&
+    !shippingGeoName(entity, carrier, kind);
+  const lookupFailed = list.isError || selected.isError;
   return (
-    <div className="space-y-8">
-      {(list.isError || selected.isError) && (
-        <Alert
-          severity="error"
-          action={
-            <Button
-              onClick={() => {
-                if (list.isError) list.refetch();
-                if (selected.isError) selected.refetch();
-              }}
-            >
-              {t("RETRY")}
-            </Button>
-          }
-        >
-          {t("ADDRESS_LOOKUP_ERROR")}
-        </Alert>
-      )}
-      {mappingMissing && (
-        <Alert severity="warning">{t("CITY_NOT_AVAILABLE_FOR_CARRIER")}</Alert>
-      )}
+    <div className="min-w-0">
       <Controller
         name={name}
         control={control}
@@ -141,7 +125,6 @@ export default function ShipmentGeoField({
             disabled={
               disabled ||
               (kind === "country" && local) ||
-              !carrier ||
               (kind !== "country" && !countryId)
             }
             loading={list.isFetching || selected.isFetching}
@@ -190,7 +173,7 @@ export default function ShipmentGeoField({
                 {...params}
                 fullWidth
                 name={name}
-                required
+                required={kind !== "state" || !!company?.hasState}
                 label={t(
                   kind === "country"
                     ? "COUNTRY"
@@ -198,8 +181,27 @@ export default function ShipmentGeoField({
                       ? "STATE"
                       : "CITY",
                 )}
-                error={!!fieldState.error || mappingMissing}
-                helperText={fieldState.error?.message}
+                error={!!fieldState.error || mappingMissing || lookupFailed}
+                helperText={
+                  fieldState.error?.message ||
+                  (lookupFailed ? (
+                    <>
+                      {t("ADDRESS_LOOKUP_ERROR")}{" "}
+                      <Button
+                        size="small"
+                        sx={{ minWidth: 0, p: 0, verticalAlign: "baseline" }}
+                        onClick={() => {
+                          if (list.isError) list.refetch();
+                          if (selected.isError) selected.refetch();
+                        }}
+                      >
+                        {t("RETRY")}
+                      </Button>
+                    </>
+                  ) : mappingMissing ? (
+                    t("CITY_NOT_AVAILABLE_FOR_CARRIER")
+                  ) : undefined)
+                }
               />
             )}
           />

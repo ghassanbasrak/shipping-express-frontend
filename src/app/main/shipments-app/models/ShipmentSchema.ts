@@ -181,7 +181,7 @@ export const shipmentSchema = (
               ? "SENDER_ZIP_CODE_REQUIRED"
               : "RECEIVER_ZIP_CODE_REQUIRED",
           );
-        if (get("CityId") && !get("CityName"))
+        if (form.shippingCompany && get("CityId") && !get("CityName"))
           issue([...path, `${prefix}CityId`], "CITY_NOT_AVAILABLE_FOR_CARRIER");
         if (
           form.shippingCompany?.hasState &&

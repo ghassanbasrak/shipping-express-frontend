@@ -11,7 +11,14 @@ import { selectUser } from "src/app/auth/user/store/userSlice";
 import { useAppSelector } from "app/store/hooks";
 import Icon from "app/shared-components/Icon";
 import { useTranslation } from "react-i18next";
-import { getDemoIdentity, isDemoMode, resetDemoData, switchDemoIdentity, type DemoIdentity } from "src/app/demo/demoMode";
+import {
+  getDemoIdentity,
+  isDemoMode,
+  resetDemoData,
+  switchDemoIdentity,
+  type DemoIdentity,
+} from "src/app/demo/demoMode";
+import { alpha } from "@mui/material";
 
 /**
  * The user menu.
@@ -63,8 +70,10 @@ function UserMenu() {
             height: 36,
             fontWeight: 700,
             color: "#fff",
-            background: "linear-gradient(135deg, #2c5ef5, #7c4dff)",
-            boxShadow: "0 0 0 2px #fff, 0 0 0 3px rgba(44,94,245,.35)",
+            background: (theme) =>
+              `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
+            boxShadow: (theme) =>
+              `0 0 0 2px #fff, 0 0 0 3px ${alpha(theme.palette.primary.main, 0.35)}`,
           }}
           alt="user photo"
           src={user?.avatarUrl}
@@ -105,7 +114,8 @@ function UserMenu() {
               src={user.avatarUrl}
               sx={{
                 color: "#fff",
-                background: "linear-gradient(135deg, #2c5ef5, #7c4dff)",
+                background: (theme) =>
+                  `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
               }}
             >
               {(user.firstName?.[0] ?? user.email?.[0] ?? "").toUpperCase()}
@@ -141,11 +151,17 @@ function UserMenu() {
           <>
             {isDemoMode ? (
               <>
-                {(["admin", "merchant", "affiliate"] as DemoIdentity[]).map((identity) => (
-                  <MenuItem key={identity} selected={getDemoIdentity() === identity} onClick={() => switchDemoIdentity(identity)}>
-                    <ListItemText primary={`Demo ${identity}`} />
-                  </MenuItem>
-                ))}
+                {(["admin", "merchant", "affiliate"] as DemoIdentity[]).map(
+                  (identity) => (
+                    <MenuItem
+                      key={identity}
+                      selected={getDemoIdentity() === identity}
+                      onClick={() => switchDemoIdentity(identity)}
+                    >
+                      <ListItemText primary={`Demo ${identity}`} />
+                    </MenuItem>
+                  ),
+                )}
                 <MenuItem onClick={resetDemoData}>
                   <ListItemText primary="Reset demo data" />
                 </MenuItem>

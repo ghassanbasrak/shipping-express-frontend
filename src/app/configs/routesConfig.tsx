@@ -50,11 +50,9 @@ import TopupRequestsAppConfig from "../main/topup-requests-app/TopupRequestsAppC
 import PaymentAppConfig from "../main/payment-app/PaymentAppConfig";
 import MerchantsAppConfig from "../main/merchants-app/MerchantsAppConfig";
 import AffiliateMerchantsAppConfig from "../main/affiliate-merchants-app/AffiliateMerchantsAppConfig";
-import BalanceErrorsAppConfig from "../main/balance-errors-app/BalanceErrorsAppConfig";
 import DashboardPageConfig from "../main/dashboard/DashboardPageConfig";
 const routeConfigs: FuseRouteConfigsType = [
   DashboardPageConfig,
-  BalanceErrorsAppConfig,
   AffiliateMerchantsAppConfig,
   ...CommonConfigs,
   ...AuthAppConfigs,

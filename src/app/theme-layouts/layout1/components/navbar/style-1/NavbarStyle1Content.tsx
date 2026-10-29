@@ -17,7 +17,7 @@ const Root = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: 24,
   color: theme.palette.text.primary,
-  background: "linear-gradient(165deg, #0d1b6b 0%, #0a2078 38%, #07154f 100%)",
+  background: `linear-gradient(165deg, ${theme.palette.primary.light} 0%, ${theme.palette.primary.main} 38%, ${theme.palette.primary.dark} 100%)`,
   border: `1px solid ${alpha("#ffffff", 0.1)}`,
   boxShadow:
     "0 24px 48px -16px rgba(9, 20, 80, .55), inset 0 1px 0 rgba(255,255,255,.08)",
@@ -88,10 +88,10 @@ function NavbarStyle1Content(props: NavbarStyle1ContentProps) {
     >
       <div className="navbar-dots" />
 
-      <div className="relative z-10 flex h-72 shrink-0 items-center px-20">
-        <div className="flex items-center rounded-16 bg-white px-16 py-6 shadow-lg shadow-black/20">
+      <div className="relative z-10 flex h-72 shrink-0 items-center px-20 -mx-6">
+        <div className="flex items-center justify-center rounded-16 bg-white/20 ring-1 ring-white/10 px-16 py-6  backdrop-blur-md w-full">
           <img
-            className="w-full max-w-112"
+            className="w-full max-w-120"
             src={"assets/images/logo/logo-text-dark.png"}
             alt="logo"
           />
@@ -116,7 +116,8 @@ function NavbarStyle1Content(props: NavbarStyle1ContentProps) {
                 height: 40,
                 fontWeight: 700,
                 color: "#fff",
-                background: "linear-gradient(135deg, #2c5ef5, #7c4dff)",
+                background: (theme) =>
+                  `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
               }}
             >
               {(user.firstName?.[0] ?? user.email?.[0] ?? "").toUpperCase()}

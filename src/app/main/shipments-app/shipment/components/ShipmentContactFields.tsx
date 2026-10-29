@@ -1,11 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  Alert,
-  Autocomplete,
-  Button,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Alert, Autocomplete, Button, TextField } from "@mui/material";
 import { Controller, useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import PhoneInput from "mui-phone-input";
@@ -87,7 +81,7 @@ export default function ShipmentContactFields({
           name={code}
           control={control}
           render={({ field: country }) => (
-            <div dir="ltr">
+            <div dir="ltr" className="min-w-0">
               <PhoneInput
                 name={name}
                 value={`${country.value || "+966"}${field.value || ""}`}
@@ -117,168 +111,178 @@ export default function ShipmentContactFields({
       )}
     />
   );
+  const showState = !company || company.hasState,
+    isNewSender = prefix === "sender" && id === "new";
   return (
-    <div
-      className="w-full min-w-0 space-y-16"
-      data-testid={`${path}${prefix}-contact`}
-    >
-      <Typography className="text-18 font-semibold">
-        {t(prefix === "sender" ? "SENDER_DETAILS" : "RECEIVER_DETAILS")}
-      </Typography>
-      {!calculator && (
-        <>
-          {(users.isError || selected.isError) && (
-            <Alert
-              severity="error"
-              action={
-                <Button
-                  onClick={() => {
-                    if (users.isError) users.refetch();
-                    if (selected.isError) selected.refetch();
-                  }}
-                >
-                  {t("RETRY")}
-                </Button>
-              }
+    <div className="w-full min-w-0" data-testid={`${path}${prefix}-contact`}>
+      {!calculator && (users.isError || selected.isError) && (
+        <Alert
+          severity="error"
+          className="mb-16"
+          action={
+            <Button
+              onClick={() => {
+                if (users.isError) users.refetch();
+                if (selected.isError) selected.refetch();
+              }}
             >
-              {t("CONTACT_LOOKUP_ERROR")}
-            </Alert>
-          )}
-          <Autocomplete
-            fullWidth
-            disabled={disabled}
-            options={
-              options.some((item) => item.id === current.id)
-                ? options
-                : [current, ...options]
-            }
-            value={current}
-            loading={users.isFetching || selected.isFetching}
-            getOptionLabel={(item) => item.fullName || item.id}
-            isOptionEqualToValue={(a, b) => a.id === b.id}
-            filterOptions={(items) => items}
-            onInputChange={(_, text, reason) => {
-              if (reason === "input") setSearch(text);
-              else if (reason === "clear") setSearch("");
-            }}
-            onChange={(_, value) => {
-              const selectedId = value?.id || "new";
-              setValue(`${path}${prefix}Id`, selectedId, { shouldDirty: true });
-              setSearch("");
-              setChosen(selectedId);
-              applied.current = undefined;
-              if (selectedId === "new") {
-                for (const key of [
-                  "Name",
-                  "Email",
-                  "Phone",
-                  "Phone1",
-                  "StateId",
-                  "StateName",
-                  "CityId",
-                  "CityName",
-                  "Street",
-                  "ZipCode",
-                  "NationalAddress",
-                ])
-                  setValue(`${path}${prefix}${key}`, "");
-                for (const key of ["CountryId", "CountryName", "CountryCode"])
-                  setValue(
-                    `${path}${prefix}${key}`,
-                    local
-                      ? key === "CountryId"
-                        ? defaultCountry.id
-                        : key === "CountryName"
-                          ? defaultCountry.name.en
-                          : defaultCountryCode
-                      : "",
-                  );
+              {t("RETRY")}
+            </Button>
+          }
+        >
+          {t("CONTACT_LOOKUP_ERROR")}
+        </Alert>
+      )}
+      <div className="grid grid-cols-1 gap-16 sm:grid-cols-2">
+        {!calculator && (
+          <>
+            <Autocomplete
+              className="sm:col-span-2"
+              fullWidth
+              disabled={disabled}
+              options={
+                options.some((item) => item.id === current.id)
+                  ? options
+                  : [current, ...options]
               }
-            }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                fullWidth
-                name={`${path}${prefix}Id`}
-                label={t(
-                  prefix === "sender"
-                    ? "SELECT_SINGLE_SENDER"
-                    : "SELECT_SINGLE_RECEIVER",
-                )}
+              value={current}
+              loading={users.isFetching || selected.isFetching}
+              getOptionLabel={(item) => item.fullName || item.id}
+              isOptionEqualToValue={(a, b) => a.id === b.id}
+              filterOptions={(items) => items}
+              onInputChange={(_, text, reason) => {
+                if (reason === "input") setSearch(text);
+                else if (reason === "clear") setSearch("");
+              }}
+              onChange={(_, value) => {
+                const selectedId = value?.id || "new";
+                setValue(`${path}${prefix}Id`, selectedId, {
+                  shouldDirty: true,
+                });
+                setSearch("");
+                setChosen(selectedId);
+                applied.current = undefined;
+                if (selectedId === "new") {
+                  for (const key of [
+                    "Name",
+                    "Email",
+                    "Phone",
+                    "Phone1",
+                    "StateId",
+                    "StateName",
+                    "CityId",
+                    "CityName",
+                    "Street",
+                    "ZipCode",
+                    "NationalAddress",
+                  ])
+                    setValue(`${path}${prefix}${key}`, "");
+                  for (const key of ["CountryId", "CountryName", "CountryCode"])
+                    setValue(
+                      `${path}${prefix}${key}`,
+                      local
+                        ? key === "CountryId"
+                          ? defaultCountry.id
+                          : key === "CountryName"
+                            ? defaultCountry.name.en
+                            : defaultCountryCode
+                        : "",
+                    );
+                }
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  fullWidth
+                  name={`${path}${prefix}Id`}
+                  label={t(
+                    prefix === "sender"
+                      ? "SELECT_SINGLE_SENDER"
+                      : "SELECT_SINGLE_RECEIVER",
+                  )}
+                  helperText={t("SAVED_CONTACT_HINT")}
+                />
+              )}
+            />
+            {isNewSender && (
+              <ShipmentField
+                name="senderNamePrefix"
+                label={t("SENDER_NAME_PREFIX")}
+                disabled={disabled}
               />
             )}
-          />
-          {prefix === "sender" && id === "new" && (
             <ShipmentField
-              name="senderNamePrefix"
-              label={t("SENDER_NAME_PREFIX")}
+              name={`${path}${prefix}Name`}
+              label={t("NAME")}
+              icon="heroicons-outline:user"
+              className={isNewSender ? undefined : "sm:col-span-2"}
+              required
+              disabled={disabled}
+            />
+            {phone(
+              `${path}${prefix}Phone`,
+              `${path}${prefix}PhoneCountry`,
+              t("PHONE_NUMBER"),
+              true,
+            )}
+            {phone(
+              `${path}${prefix}Phone1`,
+              `${path}${prefix}PhoneCountry1`,
+              t("SECOND_PHONE_NUMBER"),
+            )}
+            <ShipmentField
+              name={`${path}${prefix}Email`}
+              label={t("EMAIL")}
+              icon="heroicons-outline:mail"
+              disabled={disabled}
+            />
+            <ShipmentField
+              name={`${path}${prefix}NationalAddress`}
+              label={t("NATIONAL_ADDRESS")}
+              icon="heroicons-outline:identification"
+              required
+              disabled={disabled}
+            />
+          </>
+        )}
+        <div
+          className={`grid grid-cols-1 gap-16 sm:col-span-2 ${showState ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}
+        >
+          <ShipmentGeoField
+            prefix={prefix}
+            path={path}
+            kind="country"
+            disabled={disabled}
+          />
+          {showState && (
+            <ShipmentGeoField
+              prefix={prefix}
+              path={path}
+              kind="state"
               disabled={disabled}
             />
           )}
-          <ShipmentField
-            name={`${path}${prefix}Name`}
-            label={t("NAME")}
-            required
+          <ShipmentGeoField
+            prefix={prefix}
+            path={path}
+            kind="city"
             disabled={disabled}
           />
-          <ShipmentField
-            name={`${path}${prefix}Email`}
-            label={t("EMAIL")}
-            disabled={disabled}
-          />
-          {phone(
-            `${path}${prefix}Phone`,
-            `${path}${prefix}PhoneCountry`,
-            t("PHONE_NUMBER"),
-            true,
-          )}
-          {phone(
-            `${path}${prefix}Phone1`,
-            `${path}${prefix}PhoneCountry1`,
-            t("SECOND_PHONE_NUMBER"),
-          )}
-        </>
-      )}
-      <ShipmentGeoField
-        prefix={prefix}
-        path={path}
-        kind="country"
-        disabled={disabled}
-      />
-      {company?.hasState && (
-        <ShipmentGeoField
-          prefix={prefix}
-          path={path}
-          kind="state"
-          disabled={disabled}
-        />
-      )}
-      <ShipmentGeoField
-        prefix={prefix}
-        path={path}
-        kind="city"
-        disabled={disabled}
-      />
-      <ShipmentField
-        name={`${path}${prefix}Street`}
-        label={t("STREET")}
-        required
-        disabled={disabled}
-      />
-      <ShipmentField
-        name={`${path}${prefix}ZipCode`}
-        label={t("ZIP_CODE")}
-        required={!local}
-        disabled={disabled}
-      />
-      {!calculator && (
+        </div>
         <ShipmentField
-          name={`${path}${prefix}NationalAddress`}
-          label={t("NATIONAL_ADDRESS")}
+          name={`${path}${prefix}Street`}
+          label={t("STREET")}
+          icon="heroicons-outline:location-marker"
           required
           disabled={disabled}
         />
-      )}
+        <ShipmentField
+          name={`${path}${prefix}ZipCode`}
+          label={t("ZIP_CODE")}
+          required={!local}
+          disabled={disabled}
+        />
+      </div>
     </div>
   );
 }

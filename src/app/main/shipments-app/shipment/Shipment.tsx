@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Alert, Button, Tab, Tabs, Typography } from "@mui/material";
-import { LoadingButton } from "@mui/lab";
+import { Alert, Box, Button } from "@mui/material";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -38,50 +37,24 @@ import ShipmentModel from "../models/ShipmentModel";
 import { ShipmentFormValues, shipmentSchema } from "../models/ShipmentSchema";
 import ShipmentHeader from "./ShipmentHeader";
 import ShipmentView from "./ShipmentView";
-import BasicInfoTab from "./tabs/BasicInfoTab";
-import ReceiversTab from "./tabs/ReceiversTab";
-import ParcelTab from "./tabs/ParcelTab";
-import PaymentTab from "./tabs/PaymentTab";
-import ReviewTab, { ShipmentQuote, ShipmentOutcome } from "./tabs/ReviewTab";
+import ShipmentSection, {
+  ShipmentSectionStatus,
+} from "./components/ShipmentSection";
 import ShipmentContactFields from "./components/ShipmentContactFields";
-const stepFields = [
-  ["shippingCompanyId", "method"],
-  [
-    "senderId",
-    "senderName",
-    "senderPhone",
-    "senderCountryId",
-    "senderStateId",
-    "senderCityId",
-    "senderStreet",
-    "senderZipCode",
-    "senderNationalAddress",
-  ],
-  [
-    "receivers",
-    "receiverId",
-    "receiverName",
-    "receiverPhone",
-    "receiverCountryId",
-    "receiverStateId",
-    "receiverCityId",
-    "receiverStreet",
-    "receiverZipCode",
-    "receiverNationalAddress",
-  ],
-  [
-    "length",
-    "width",
-    "height",
-    "weight",
-    "packagesCount",
-    "description",
-    "products",
-    "imageUrl",
-    "acceptExtraWeightTerms",
-  ],
-  ["isCod", "codPrice", "couponCode"],
-];
+import ShippingTypeSection from "./sections/ShippingTypeSection";
+import ReceiversSection from "./sections/ReceiversSection";
+import CarrierSection from "./sections/CarrierSection";
+import ParcelSection from "./sections/ParcelSection";
+import PaymentSection from "./sections/PaymentSection";
+import ShipmentSummary, {
+  ShipmentQuote,
+  ShipmentOutcome,
+} from "./sections/ShipmentSummary";
+import {
+  ShipmentSectionId,
+  sectionOfField,
+  shipmentSectionIds,
+} from "./sectionUtils";
 export default function Shipment({
   calculator = false,
 }: {
@@ -125,10 +98,10 @@ export default function Shipment({
       resolver: zodResolver(schema),
     }),
     form = methods.watch();
-  const [step, setStep] = useState(0),
-    [ready, setReady] = useState<string>(),
+  const [ready, setReady] = useState<string>(),
     initialized = useRef<string>(),
     [busy, setBusy] = useState(false),
+    [action, setAction] = useState<"review" | "create">(),
     busyRef = useRef(false),
     [uploading, setUploading] = useState(false),
     [error, setError] = useState<string>(),
@@ -169,7 +142,6 @@ export default function Shipment({
     methods.reset(values);
     initialized.current = key;
     setReady(key);
-    setStep(0);
     setQuotes([]);
     setOutcomes([]);
     setQuoteSignature(undefined);
@@ -201,6 +173,7 @@ export default function Shipment({
     if (busyRef.current || uploading || !permitted) return;
     busyRef.current = true;
     setBusy(true);
+    setAction("review");
     setError(undefined);
     const snapshot = structuredClone(inputs(values)),
       fingerprint = JSON.stringify(
@@ -236,6 +209,7 @@ export default function Shipment({
     } finally {
       busyRef.current = false;
       setBusy(false);
+      setAction(undefined);
     }
   }
   async function submit(values: ShipmentFormValues) {
@@ -255,6 +229,7 @@ export default function Shipment({
     }
     busyRef.current = true;
     setBusy(true);
+    setAction("create");
     setError(undefined);
     const results = [...outcomes.filter((item) => item.success)];
     try {
@@ -339,20 +314,20 @@ export default function Shipment({
     } finally {
       busyRef.current = false;
       setBusy(false);
+      setAction(undefined);
     }
   }
-  async function next() {
-    if (await methods.trigger(stepFields[step] as never))
-      setStep(Math.min(5, step + 1));
+  function goToSection(id: string) {
+    document
+      .getElementById(`shipment-section-${id}`)
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
   const invalid = (errors: typeof methods.formState.errors) => {
     setError(t("CHECK_REQUIRED_FIELDS"));
-    if (!calculator) {
-      const index = stepFields.findIndex((fields) =>
-        fields.some((field) => field in errors),
-      );
-      if (index >= 0) setStep(index);
-    }
+    const first = shipmentSectionIds.find((id) =>
+      Object.keys(errors).some((field) => sectionOfField(field) === id),
+    );
+    if (first) goToSection(first);
   };
   const reviewNow = methods.handleSubmit(review, invalid),
     createNow = methods.handleSubmit(submit, invalid);
@@ -374,76 +349,55 @@ export default function Shipment({
   if (returnId && existing && !canGenerateReturnedShipment(user, existing))
     return <Navigate to="/home" replace />;
   if (ready !== key) return <FuseLoading />;
-  const labels = [
-    "SHIPPING_COMPANY",
-    "SENDER_DETAILS",
-    "RECEIVER_DETAILS",
-    "SHIPMENT_DETAILS",
-    "PAYMENT_DETAILS",
-    "PREVIEW_SHIPMENT",
-  ];
-  const content = calculator ? (
-    <div className="space-y-24">
-      <BasicInfoTab disabled={busy || uploading} />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-24">
-        <ShipmentContactFields
-          prefix="sender"
-          calculator
-          disabled={busy || uploading}
-        />
-        <ShipmentContactFields
-          prefix="receiver"
-          calculator
-          disabled={busy || uploading}
-        />
-      </div>
-      <ParcelTab
-        calculator
-        disabled={busy || uploading}
-        onUploadBusy={setUploading}
-      />
-      <PaymentTab disabled={busy || uploading} />
-      <ReviewTab
-        form={form}
-        quotes={quotes}
-        outcomes={[]}
-        stale={stale && quotes.length > 0}
-        busy={busy || uploading}
-        onReview={reviewNow}
-      />
-    </div>
-  ) : (
-    <>
-      {step === 0 && <BasicInfoTab disabled={busy || uploading} />}
-      {step === 1 && (
-        <ShipmentContactFields prefix="sender" disabled={busy || uploading} />
-      )}
-      {step === 2 &&
-        (mode === "return" ? (
-          <ShipmentContactFields
-            prefix="receiver"
-            disabled={busy || uploading}
-          />
-        ) : (
-          <ReceiversTab disabled={busy || uploading} completed={completed} />
-        ))}
-      {step === 3 && (
-        <ParcelTab disabled={busy || uploading} onUploadBusy={setUploading} />
-      )}{" "}
-      {step === 4 && (
-        <PaymentTab returned={mode === "return"} disabled={busy || uploading} />
-      )}{" "}
-      {step === 5 && (
-        <ReviewTab
-          form={form}
-          quotes={quotes}
-          outcomes={outcomes}
-          stale={stale && quotes.length > 0}
-          busy={busy || uploading}
-          onReview={reviewNow}
-        />
-      )}
-    </>
+  const busyOrUploading = busy || uploading,
+    issues = schema.safeParse(form),
+    failing = new Set(
+      issues.success === false
+        ? issues.error.issues.map((issue) =>
+            sectionOfField(String(issue.path[0] ?? "")),
+          )
+        : [],
+    ),
+    shown = new Set(
+      Object.keys(methods.formState.errors).map((field) =>
+        sectionOfField(field),
+      ),
+    ),
+    statusOf = (id: ShipmentSectionId): ShipmentSectionStatus =>
+      shown.has(id) ? "error" : failing.has(id) ? "pending" : "complete";
+  const checklist = (["sender", "receiver", "carrier", "parcel"] as const).map(
+      (id) => ({
+        id,
+        label: t(
+          {
+            sender: "SENDER_DETAILS",
+            receiver: "RECEIVER_DETAILS",
+            carrier: "SHIPPING_COMPANY",
+            parcel: "SHIPMENT_DETAILS",
+          }[id],
+        ),
+        status: statusOf(id),
+      }),
+    ),
+    quotesReady =
+      !!quotes.length && !stale && quotes.every((item) => !item.error);
+  const sectionNumber = (id: ShipmentSectionId) =>
+    shipmentSectionIds.indexOf(id);
+  const summary = (
+    <ShipmentSummary
+      form={form}
+      quotes={quotes}
+      outcomes={calculator ? [] : outcomes}
+      stale={stale}
+      busy={busyOrUploading}
+      action={action}
+      checklist={checklist}
+      calculator={calculator}
+      canCreate={!uploading && !busy && accountReady && quotesReady}
+      onReview={reviewNow}
+      onCreate={createNow}
+      onGoTo={goToSection}
+    />
   );
   return (
     <FormProvider {...methods}>
@@ -452,35 +406,17 @@ export default function Shipment({
           <ShipmentHeader calculator={calculator} returned={!!returnId} />
         }
         content={
-          <>
-            {!calculator && (
-              <Tabs
-                value={step}
-                onChange={(_, value) => {
-                  if (busy || uploading) return;
-                  if (value <= step) setStep(value);
-                  else next();
-                }}
-                variant="scrollable"
-                scrollButtons="auto"
-                indicatorColor="secondary"
-                textColor="secondary"
-                classes={{ root: "w-full h-64 border-b-1" }}
-              >
-                {labels.map((label, index) => (
-                  <Tab
-                    key={label}
-                    className="h-64"
-                    label={`${index + 1}. ${t(label)}`}
-                    disabled={busy || uploading}
-                  />
-                ))}
-              </Tabs>
-            )}
-            <div
-              className="w-full min-w-0 p-16 sm:p-24 max-w-6xl space-y-24"
-              data-testid="shipment-editor"
-            >
+          <Box
+            data-testid="shipment-editor"
+            sx={(theme) => ({
+              width: "100%",
+              minWidth: 0,
+              p: { xs: 2, sm: 3, lg: 4 },
+              background: theme.palette.background.default,
+              "& .MuiOutlinedInput-root": { borderRadius: "12px" },
+            })}
+          >
+            <div className="mx-auto w-full max-w-7xl space-y-16">
               {account.isError && (
                 <Alert
                   severity="error"
@@ -494,46 +430,94 @@ export default function Shipment({
                 </Alert>
               )}
               {error && <Alert severity="error">{error}</Alert>}
-              {content}
-              {!calculator && (
-                <div className="flex flex-wrap justify-between gap-16">
-                  <Button
-                    disabled={busy || uploading || step === 0}
-                    onClick={() => setStep(step - 1)}
-                    data-testid="shipment-back"
+              <div className="grid grid-cols-1 items-start gap-24 lg:grid-cols-[minmax(0,1fr)_340px]">
+                <div className="min-w-0 space-y-24">
+                  <ShipmentSection
+                    id="type"
+                    index={1}
+                    icon="heroicons-outline:globe-alt"
+                    title={t("SHIPPING_TYPE")}
+                    subtitle={t("SHIPPING_TYPE_SECTION_HINT")}
                   >
-                    {t("BACK")}
-                  </Button>
-                  {step < 5 ? (
-                    <Button
-                      variant="contained"
-                      disabled={busy || uploading}
-                      onClick={next}
-                      data-testid="shipment-next"
-                    >
-                      {t("NEXT")}
-                    </Button>
-                  ) : (
-                    <LoadingButton
-                      variant="contained"
-                      loading={busy}
-                      disabled={
-                        uploading ||
-                        stale ||
-                        !accountReady ||
-                        !quotes.length ||
-                        quotes.some((item) => !!item.error)
-                      }
-                      onClick={createNow}
-                      data-testid="create-shipments"
-                    >
-                      {t("CREATE_SHIPMENT")}
-                    </LoadingButton>
-                  )}
+                    <ShippingTypeSection disabled={busyOrUploading} />
+                  </ShipmentSection>
+                  <ShipmentSection
+                    id="sender"
+                    index={sectionNumber("sender") + 1}
+                    icon="heroicons-outline:upload"
+                    title={t(calculator ? "SHIPPING_FROM" : "SENDER_DETAILS")}
+                    subtitle={t("SENDER_SECTION_HINT")}
+                    status={statusOf("sender")}
+                  >
+                    <ShipmentContactFields
+                      prefix="sender"
+                      calculator={calculator}
+                      disabled={busyOrUploading}
+                    />
+                  </ShipmentSection>
+                  <ShipmentSection
+                    id="receiver"
+                    index={sectionNumber("receiver") + 1}
+                    icon="heroicons-outline:download"
+                    title={t(calculator ? "SHIPPING_TO" : "RECEIVER_DETAILS")}
+                    subtitle={t("RECEIVER_SECTION_HINT")}
+                    status={statusOf("receiver")}
+                  >
+                    {calculator || mode === "return" ? (
+                      <ShipmentContactFields
+                        prefix="receiver"
+                        calculator={calculator}
+                        disabled={busyOrUploading}
+                      />
+                    ) : (
+                      <ReceiversSection
+                        disabled={busyOrUploading}
+                        completed={completed}
+                      />
+                    )}
+                  </ShipmentSection>
+                  <ShipmentSection
+                    id="carrier"
+                    index={sectionNumber("carrier") + 1}
+                    icon="heroicons-outline:truck"
+                    title={t("SHIPPING_COMPANY")}
+                    subtitle={t("CARRIER_SECTION_HINT")}
+                    status={statusOf("carrier")}
+                  >
+                    <CarrierSection disabled={busyOrUploading} />
+                  </ShipmentSection>
+                  <ShipmentSection
+                    id="parcel"
+                    index={sectionNumber("parcel") + 1}
+                    icon="heroicons-outline:cube"
+                    title={t("SHIPMENT_DETAILS")}
+                    subtitle={t("PARCEL_SECTION_HINT")}
+                    status={statusOf("parcel")}
+                  >
+                    <ParcelSection
+                      calculator={calculator}
+                      disabled={busyOrUploading}
+                      onUploadBusy={setUploading}
+                    />
+                  </ShipmentSection>
+                  <ShipmentSection
+                    id="payment"
+                    index={sectionNumber("payment") + 1}
+                    icon="heroicons-outline:credit-card"
+                    title={t("PAYMENT_DETAILS")}
+                    subtitle={t("PAYMENT_SECTION_HINT")}
+                    optional
+                  >
+                    <PaymentSection
+                      returned={mode === "return"}
+                      disabled={busyOrUploading}
+                    />
+                  </ShipmentSection>
                 </div>
-              )}
+                <aside className="min-w-0 lg:sticky lg:top-16">{summary}</aside>
+              </div>
             </div>
-          </>
+          </Box>
         }
         scroll={isMobile ? "normal" : "content"}
       />

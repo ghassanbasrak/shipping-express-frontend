@@ -489,10 +489,10 @@
       "includes": [
         "Original scoped list/detail/new shipment routes and standalone shipping-price-calculator",
         "Root IShipment with nested detail, COD, price, commodity and tracking interfaces; canonical migrated account, staff, carrier, geography, contact and coupon references",
-        "Simple raw RTK Query API, JavaScript shipmentsSlice.js, reference list wrapper/header/table and detail FormProvider/header/tabs/BasicInfoTab",
+        "Simple raw RTK Query API, JavaScript shipmentsSlice.js, reference list wrapper/header/table and a single-page sectioned detail/creation form (FormProvider, header, sections/ components)",
         "Ten-row server pagination with stable totals, search, carrier/method/COD/parcel/status/payment/account/reviewer/contact/invoice/return/date filters and URL initialization",
         "Account-scoped carrier/method/staff merchant analytics and filtered 50000-row Excel export with nested price total and shipment count",
-        "Six-step creation with active/authorized carrier selection, saved/new sender and multiple receivers, geography mappings/fallback lookups, phones and national addresses",
+        "Single-page creation redesign: shipping type, sender, receivers, carrier, parcel and payment sections with a sticky summary/review panel; carrier is chosen after the addresses and cards flag cities it does not cover; geography lookups work before a carrier is selected and carrier names refresh on carrier change; active carrier selection, saved/new sender and multiple receivers, geography mappings/fallback lookups, phones and national addresses",
         "Parcel dimensions, carrier volumetric weight, normal six-package versus return/calculator two-package limits, image upload, customs commodities and extra-weight consent",
         "Local COD eligibility, coupon lookup/validation/removal, per-receiver price reviews and stale quote protection",
         "Fresh wallet balance guard, sequential creates, preserved new contact IDs after shipment failure, explicit per-receiver outcomes and retries excluding successful/accepted shipments",

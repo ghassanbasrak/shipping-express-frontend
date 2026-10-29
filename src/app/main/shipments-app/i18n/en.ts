@@ -585,5 +585,43 @@ const locale = {
   PREVIOUS_BALANCE: "Previous balance",
   BALANCE_AFTER_SETTLEMENT: "Balance after settlement",
   BALANCE_ERROR: "Unable to load merchant balance",
+  SECTION_COMPLETE: "Completed",
+  SECTION_NEEDS_ATTENTION: "Needs attention",
+  OPTIONAL: "Optional",
+  SHIPPING_TYPE_SECTION_HINT:
+    "Choose whether the shipment stays in your country or goes abroad",
+  SHIPPING_TYPE_LOCAL_HINT: "Deliver within your country",
+  SHIPPING_TYPE_INTERNATIONAL_HINT: "Ship to another country",
+  SENDER_SECTION_HINT: "Who is sending the shipment and where it is picked up",
+  RECEIVER_SECTION_HINT: "Who receives the shipment and where it is delivered",
+  CARRIER_SECTION_HINT: "Pick the company that will carry the shipment",
+  PARCEL_SECTION_HINT: "Type, size, weight and contents of the parcel",
+  PAYMENT_SECTION_HINT: "Cash on delivery and discount coupon",
+  SHIPPING_FROM: "Ship from",
+  SHIPPING_TO: "Ship to",
+  SAVED_CONTACT_HINT: "Pick a saved contact or add a new one below",
+  RECEIVER_NUMBER: "Receiver {{number}}",
+  CARRIER_AFTER_ADDRESS_HINT:
+    "Choose the shipping company after entering the sender and receiver addresses so its coverage can be checked.",
+  NO_CARRIERS_FOR_TYPE:
+    "No shipping company is available for this shipping type",
+  CARRIER_DOES_NOT_COVER_ADDRESS: "Does not cover the selected cities",
+  SHIPMENT_TYPE_BOXES_HINT: "Parcels and boxes",
+  SHIPMENT_TYPE_DOCUMENT_HINT: "Papers and documents",
+  PACKAGE_SIZE_AND_WEIGHT: "Size and weight",
+  IS_COMMERCIAL_HINT: "Add the products for customs and invoice",
+  CASH_ON_DELIVERY_HINT: "The carrier collects the amount from the receiver",
+  COD_AFTER_CARRIER_HINT:
+    "Select a shipping company to see cash on delivery availability",
+  SHIPMENT_SUMMARY: "Shipment summary",
+  SHIPMENT_SUMMARY_HINT: "Review the details and costs before creating",
+  NOT_SELECTED_YET: "Not selected yet",
+  SENDER_AND_RECEIVERS: "Sender → Receivers",
+  SHIPMENT_FORM_SUBTITLE_NEW:
+    "Fill in the details once and review the cost before you create",
+  SHIPMENT_FORM_SUBTITLE_RETURN:
+    "Sender and receiver are swapped from the original shipment",
+  SHIPMENT_FORM_SUBTITLE_CALCULATOR:
+    "Estimate the shipping cost without creating a shipment",
 };
 export default locale;

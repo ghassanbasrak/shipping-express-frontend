@@ -34,8 +34,8 @@ const Root = styled(ListItemButton)<ListItemButtonStyleProps>(
     },
     "&.active": {
       color: "#fff",
-      background: "linear-gradient(135deg, #2c5ef5 0%, #7c4dff 100%)",
-      boxShadow: "0 10px 22px -10px rgba(76, 99, 255, .9)",
+      background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+      boxShadow: `0 10px 22px -10px ${alpha(theme.palette.primary.main, 0.9)}`,
       pointerEvents: "none",
       "& > .fuse-list-item-text-primary": {
         color: "inherit",
@@ -49,7 +49,7 @@ const Root = styled(ListItemButton)<ListItemButtonStyleProps>(
       color: "inherit",
     },
     "& > .fuse-list-item-text": {},
-  })
+  }),
 );
 
 /**
@@ -123,7 +123,7 @@ function FuseNavVerticalItem(props: FuseNavItemComponentProps) {
         {item.badge && <FuseNavBadge badge={item.badge} />}
       </Root>
     ),
-    [item, itempadding, onItemClick]
+    [item, itempadding, onItemClick],
   );
 }
 
