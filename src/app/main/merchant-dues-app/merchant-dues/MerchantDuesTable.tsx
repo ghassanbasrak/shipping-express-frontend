@@ -133,15 +133,7 @@ export default function MerchantDuesTable({
       {isError && (
         <Alert
           severity="error"
-          action={
-            <Button
-              color="primary"
-              variant="outlined"
-              onClick={() => refetch()}
-            >
-              {t("RETRY")}
-            </Button>
-          }
+          action={<Button onClick={() => refetch()}>{t("RETRY")}</Button>}
         >
           {t("LOAD_ERROR")}
         </Alert>

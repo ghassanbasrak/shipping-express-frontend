@@ -86,13 +86,7 @@ export default function AffiliateInfoTab({
         <Alert
           severity="error"
           action={
-            <Button
-              color="primary"
-              variant="outlined"
-              onClick={() => summary.refetch()}
-            >
-              {t("RETRY")}
-            </Button>
+            <Button onClick={() => summary.refetch()}>{t("RETRY")}</Button>
           }
         >
           {t("SUMMARY_ERROR")}
@@ -260,13 +254,7 @@ export default function AffiliateInfoTab({
             <Alert
               severity="error"
               action={
-                <Button
-                  color="primary"
-                  variant="outlined"
-                  onClick={() => carriers.refetch()}
-                >
-                  {t("RETRY")}
-                </Button>
+                <Button onClick={() => carriers.refetch()}>{t("RETRY")}</Button>
               }
             >
               {t("LOAD_CARRIERS_ERROR")}

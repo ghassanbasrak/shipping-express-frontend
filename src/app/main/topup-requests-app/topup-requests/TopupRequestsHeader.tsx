@@ -270,13 +270,7 @@ export default function TopupRequestsHeader() {
         <Alert
           severity="error"
           action={
-            <Button
-              color="primary"
-              variant="outlined"
-              onClick={() => selected.refetch()}
-            >
-              {t("RETRY")}
-            </Button>
+            <Button onClick={() => selected.refetch()}>{t("RETRY")}</Button>
           }
         >
           {t("USER_LOOKUP_ERROR")}

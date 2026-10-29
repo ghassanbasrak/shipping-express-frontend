@@ -842,6 +842,23 @@ async function main() {
   pass("Guests cannot read merchant accounts");
   await login("admin@example.test");
   await until("location.pathname==='/home'", "admin");
+  for (const route of [
+    "/merchant-statistics-new",
+    "/auth-requests/all",
+    "/auth-requests/all/new",
+  ]) {
+    await navigate(route);
+    await until(
+      "location.pathname==='/error/404'",
+      "retired staff feature route",
+    );
+  }
+  assert(
+    !(await evaluate(
+      'Boolean(document.querySelector(\'a[href^="/auth-requests"],a[href="/merchant-statistics-new"]\'))',
+    )),
+  );
+  pass("Retired feature routes return 404 and have no staff navigation links");
   await merchantList();
   assert.equal(
     await evaluate("document.querySelectorAll('[role=row][data-id]').length"),
@@ -1224,6 +1241,30 @@ async function main() {
   await until("location.pathname==='/home'", "merchant");
   await navigate("/profile");
   await until(exists("[data-testid=merchant-info]"), "self profile");
+  assert(
+    !(await evaluate(
+      "Boolean(document.querySelector('a[href^=\"/auth-requests\"]'))",
+    )),
+  );
+  for (const route of [
+    "/merchant-statistics-new",
+    "/auth-requests/all",
+    "/auth-requests/all/new",
+  ]) {
+    await navigate(route);
+    await until(
+      "location.pathname==='/error/404'",
+      "retired merchant feature route",
+    );
+  }
+  await navigate("/profile");
+  await until(
+    exists("[data-testid=merchant-info]"),
+    "self profile after retired routes",
+  );
+  pass(
+    "Removed feature links stay absent for merchants and direct URLs return 404",
+  );
   assert.equal(
     await evaluate(
       `document.querySelectorAll('a[href="/withdraw-requests/all/new"]').length`,

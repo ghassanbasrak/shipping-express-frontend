@@ -1,12 +1,11 @@
-import {
-  Button,
-  Input,
-  Paper,
-  TextField,
-  MenuItem,
-  Typography,
-} from "@mui/material";
-import { motion } from "framer-motion";
+import FeatureHeader, {
+  FeatureHeaderRow,
+  FeatureHeaderHeading,
+  FeatureHeaderActions,
+  FeatureHeaderToolbar,
+} from "app/shared-components/feature-header/FeatureHeader";
+import { Button, Input, TextField, MenuItem } from "@mui/material";
+
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
@@ -36,27 +35,62 @@ export default function ShipmentUsersHeader({
   const { type = "all" } = useParams();
   const searchText = useSelector(selectShipmentUsersSearchText) as string;
   return (
-    <div
-      className={`flex ${rightSidebarOpen ? "flex-col" : "flex-col sm:flex-row"} gap-16 p-24 sm:p-32 w-full items-center`}
-    >
-      <motion.div
-        className={`flex flex-1 min-w-0 ${rightSidebarOpen ? "w-full" : ""}`}
-        initial={{ x: -20 }}
-        animate={{ x: 0, transition: { delay: 0.3 } }}
+    <FeatureHeader>
+      <FeatureHeaderRow>
+        <div className="flex-1 min-w-0">
+          <FeatureHeaderHeading feature="shipment-users-app">
+            {t("SHIPMENT_USERS")}
+          </FeatureHeaderHeading>
+        </div>
+        <FeatureHeaderActions>
+          {!rightSidebarOpen &&
+            hasOperationPermission("shipment-users", "create", user) && (
+              <>
+                <Button
+                  component={Link}
+                  to={`${shipmentUsersPath(type)}/new`}
+                  variant="contained"
+                  color="secondary"
+                  className="rounded-[10px] shadow-none whitespace-nowrap min-h-44"
+                  data-testid="add-shipment-user"
+                  startIcon={<FuseSvgIcon>heroicons-outline:plus</FuseSvgIcon>}
+                >
+                  {t(
+                    type === "all"
+                      ? "ADD_NEW_SHIPMENT_USER"
+                      : `ADD_NEW_${toShipmentUserTypeTitle(type)}`,
+                  )}
+                </Button>
+              </>
+            )}
+        </FeatureHeaderActions>
+      </FeatureHeaderRow>
+      <FeatureHeaderToolbar
+        search={
+          <>
+            <Input
+              className="text-12 min-h-36 flex-1"
+              fullWidth={true}
+              disableUnderline
+              placeholder={t("SEARCH_SHIPMENT_USERS")}
+              value={searchText}
+              onChange={(event) => dispatch(setShipmentUsersSearchText(event))}
+              inputProps={{
+                "aria-label": t("SEARCH_SHIPMENT_USERS"),
+                "data-testid": "shipment-users-search",
+              }}
+            />
+          </>
+        }
       >
-        <Typography className="text-24 md:text-32 font-bold">
-          {t("SHIPMENT_USERS")}
-        </Typography>
-      </motion.div>
-      <div className="flex flex-wrap gap-8 items-center justify-end w-full sm:w-auto">
         <TextField
+          className="min-w-[112px] max-w-full"
           select
           size="small"
           label={t("TYPE")}
           value={type}
           onChange={(event) => navigate(shipmentUsersPath(event.target.value))}
           inputProps={{ "data-testid": "shipment-users-type" }}
-          sx={{ minWidth: 112 }}
         >
           <MenuItem value="all">{t("ALL")}</MenuItem>
           {Object.values(shipmentUserTypes).map((value) => (
@@ -65,39 +99,7 @@ export default function ShipmentUsersHeader({
             </MenuItem>
           ))}
         </TextField>
-        <Paper className="flex items-center flex-1 gap-8 px-16 rounded-8 border-1 shadow-0 sm:max-w-256">
-          <FuseSvgIcon color="disabled">heroicons-solid:search</FuseSvgIcon>
-          <Input
-            fullWidth
-            disableUnderline
-            placeholder={t("SEARCH_SHIPMENT_USERS")}
-            value={searchText}
-            onChange={(event) => dispatch(setShipmentUsersSearchText(event))}
-            inputProps={{
-              "aria-label": t("SEARCH_SHIPMENT_USERS"),
-              "data-testid": "shipment-users-search",
-            }}
-          />
-        </Paper>
-        {!rightSidebarOpen &&
-          hasOperationPermission("shipment-users", "create", user) && (
-            <Button
-              component={Link}
-              to={`${shipmentUsersPath(type)}/new`}
-              variant="contained"
-              color="secondary"
-              className="whitespace-nowrap"
-              data-testid="add-shipment-user"
-              startIcon={<FuseSvgIcon>heroicons-outline:plus</FuseSvgIcon>}
-            >
-              {t(
-                type === "all"
-                  ? "ADD_NEW_SHIPMENT_USER"
-                  : `ADD_NEW_${toShipmentUserTypeTitle(type)}`,
-              )}
-            </Button>
-          )}
-      </div>
-    </div>
+      </FeatureHeaderToolbar>
+    </FeatureHeader>
   );
 }

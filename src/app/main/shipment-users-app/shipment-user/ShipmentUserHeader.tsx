@@ -1,6 +1,11 @@
+import FeatureHeader, {
+  FeatureHeaderRow,
+  FeatureHeaderHeading,
+  FeatureHeaderActions,
+} from "app/shared-components/feature-header/FeatureHeader";
 import { IconButton, Typography } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
-import { motion } from "framer-motion";
+
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -101,8 +106,8 @@ export default function ShipmentUserHeader() {
     );
   }
   return (
-    <div className="flex flex-col gap-12 py-24 px-16 sm:px-24 w-full">
-      <div className="flex items-center gap-8 min-w-0">
+    <FeatureHeader>
+      <div className="flex items-center justify-between gap-8 min-w-0">
         <IconButton
           color="primary"
           component={Link}
@@ -112,52 +117,56 @@ export default function ShipmentUserHeader() {
         >
           <FuseSvgIcon>heroicons-outline:x</FuseSvgIcon>
         </IconButton>
-        <motion.div
-          className="flex flex-col min-w-0"
-          initial={{ x: -20 }}
-          animate={{ x: 0, transition: { delay: 0.3 } }}
-        >
-          <Typography className="text-18 font-semibold">
-            {t(`${id ? "EDIT" : "ADD_NEW"}_${title}`)}
-          </Typography>
-          <Typography variant="caption" className="truncate">
-            {fullName}
-          </Typography>
-        </motion.div>
       </div>
-      <motion.div
-        className="flex flex-wrap gap-8 justify-end"
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0, transition: { delay: 0.3 } }}
-      >
-        {id && hasOperationPermission("shipment-users", "delete", user) && (
-          <LoadingButton
-            className="whitespace-nowrap"
-            variant="outlined"
-            color="error"
-            onClick={handleRemoveShipmentUser}
-            loading={removing.isLoading}
-            disabled={busy}
-            data-testid="remove-shipment-user"
-          >
-            {t(`REMOVE_${title}`)}
-          </LoadingButton>
-        )}
-        {canEdit && (
-          <LoadingButton
-            className="whitespace-nowrap"
-            variant="contained"
-            color="secondary"
-            onClick={() => handleSaveShipmentUser()}
-            loading={creating.isLoading || updating.isLoading}
-            disabled={busy || Boolean(id && !formState.isDirty)}
-            data-testid="save-shipment-user"
-            startIcon={<FuseSvgIcon>material-outline:save</FuseSvgIcon>}
-          >
-            {t(`${id ? "SAVE" : "ADD"}_${title}`)}
-          </LoadingButton>
-        )}
-      </motion.div>
-    </div>
+      <FeatureHeaderRow>
+        <div className="flex-1 min-w-0">
+          <FeatureHeaderHeading feature="shipment-users-app">
+            {t(`${id ? "EDIT" : "ADD_NEW"}_${title}`)}
+          </FeatureHeaderHeading>
+          <div className="flex flex-wrap items-center gap-8 mt-8 sm:ps-[72px]">
+            <Typography
+              color="text.secondary"
+              variant="caption"
+              className="text-13 leading-relaxed [overflow-wrap:anywhere]"
+            >
+              {fullName}
+            </Typography>
+          </div>
+        </div>
+        <FeatureHeaderActions>
+          {id && hasOperationPermission("shipment-users", "delete", user) && (
+            <>
+              <LoadingButton
+                className="rounded-[10px] shadow-none whitespace-nowrap min-h-44"
+                variant="outlined"
+                color="error"
+                onClick={handleRemoveShipmentUser}
+                loading={removing.isLoading}
+                disabled={busy}
+                data-testid="remove-shipment-user"
+              >
+                {t(`REMOVE_${title}`)}
+              </LoadingButton>
+            </>
+          )}
+          {canEdit && (
+            <>
+              <LoadingButton
+                className="rounded-[10px] shadow-none whitespace-nowrap min-h-44"
+                variant="contained"
+                color="secondary"
+                onClick={() => handleSaveShipmentUser()}
+                loading={creating.isLoading || updating.isLoading}
+                disabled={busy || Boolean(id && !formState.isDirty)}
+                data-testid="save-shipment-user"
+                startIcon={<FuseSvgIcon>material-outline:save</FuseSvgIcon>}
+              >
+                {t(`${id ? "SAVE" : "ADD"}_${title}`)}
+              </LoadingButton>
+            </>
+          )}
+        </FeatureHeaderActions>
+      </FeatureHeaderRow>
+    </FeatureHeader>
   );
 }

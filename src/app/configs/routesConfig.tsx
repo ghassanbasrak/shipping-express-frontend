@@ -23,7 +23,6 @@ import AlertsAppConfig from "../main/alerts-app/AlertsAppConfig";
 
 import ShipmentUsersAppConfig from "../main/shipment-users-app/ShipmentUsersAppConfig";
 
-import AuthRequestsAppConfig from "../main/auth-requests-app/AuthRequestsAppConfig";
 import VerificationRequestsAppConfig from "../main/verification-requests-app/VerificationRequestsAppConfig";
 
 import ApplicationsAppConfig from "../main/applications-app/ApplicationsAppConfig";
@@ -33,7 +32,6 @@ import BankTransfersAppConfig from "../main/bank-transfers-app/BankTransfersAppC
 import AffiliateWithdrawRequestsAppConfig from "../main/affiliate-withdraw-requests-app/AffiliateWithdrawRequestsAppConfig";
 
 import MerchantStatisticsAppConfig from "../main/merchant-statistics-app/MerchantStatisticsAppConfig";
-import MerchantStatisticsNewAppConfig from "../main/merchant-statistics-new-app/MerchantStatisticsAppConfig";
 
 import TransactionsAppConfig from "../main/transactions-app/TransactionsAppConfig";
 import TransactionReportsAppConfig from "../main/transaction-reports-app/TransactionReportsAppConfig";
@@ -68,7 +66,6 @@ const routeConfigs: FuseRouteConfigsType = [
   TransactionsAppConfig,
   TransactionReportsAppConfig,
   MerchantStatisticsAppConfig,
-  MerchantStatisticsNewAppConfig,
   CountriesAppConfig,
   StatesAppConfig,
   CitiesAppConfig,
@@ -81,7 +78,6 @@ const routeConfigs: FuseRouteConfigsType = [
   ApplicationsAppConfig,
   BankTransfersAppConfig,
   AffiliateWithdrawRequestsAppConfig,
-  AuthRequestsAppConfig,
   VerificationRequestsAppConfig,
 ];
 

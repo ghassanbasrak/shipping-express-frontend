@@ -1,10 +1,17 @@
-import { motion } from "framer-motion";
-import { Alert, Button, Input, Paper, Typography } from "@mui/material";
+import FeatureHeader, {
+  FeatureHeaderRow,
+  FeatureHeaderHeading,
+  FeatureHeaderActions,
+  FeatureHeaderToolbar,
+  FeatureHeaderFilter,
+} from "app/shared-components/feature-header/FeatureHeader";
+
+import { Alert, Button, Input } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useAppDispatch } from "app/store/hooks";
 import { useTranslation } from "react-i18next";
-import FilterIcon from "app/shared-components/filter-icon/FilterIcon";
+
 import { FilterTypes } from "app/shared-components/filter-icon/Utils";
 import FuseSvgIcon from "@fuse/core/FuseSvgIcon";
 import {
@@ -26,101 +33,16 @@ export default function CountriesHeader() {
   const filters = useSelector(selectCountriesFilters) as GetCountriesApiArg;
   const companies = useGetCountriesShippingCompaniesQuery();
   return (
-    <div
-      className="flex flex-col space-y-12 sm:space-y-0 flex-1 w-full justify-between py-8 sm:py-16 px-16 md:px-24"
-      data-testid="countries-header"
-    >
-      <div className="flex flex-wrap gap-16 items-center justify-between w-full">
-        <motion.span
-          initial={{ x: -20 }}
-          animate={{ x: 0, transition: { delay: 0.2 } }}
-        >
-          <Typography className="text-24 md:text-32 font-extrabold tracking-tight">
+    <FeatureHeader data-testid="countries-header">
+      <FeatureHeaderRow>
+        <div className="flex-1 min-w-0">
+          <FeatureHeaderHeading feature="countries-app">
             {t("COUNTRIES")}
-          </Typography>
-        </motion.span>
-        <div className="flex flex-1 flex-wrap items-center justify-end gap-8">
-          <FilterIcon
-            filters={[
-              {
-                type: FilterTypes.dropdown,
-                title: t("SHIPPING_COMPANY"),
-                value: filters.shippingCompanyIdFilter,
-                onChange: (value) =>
-                  dispatch(setCountriesShippingCompanyIdFilter(value)),
-                items: [
-                  { label: t("ALL"), value: "all" },
-                  ...(companies.data?.results || []).map((company) => ({
-                    label: displayName(company.name),
-                    value: company.id,
-                  })),
-                ],
-                closeOnChange: false,
-              },
-              {
-                type: FilterTypes.dateTime,
-                title: t("START_DATE"),
-                value: filters.dateFromFilter
-                  ? new Date(filters.dateFromFilter)
-                  : null,
-                maxDate: filters.dateToFilter
-                  ? new Date(filters.dateToFilter)
-                  : undefined,
-                onChange: (date) => dispatch(setCountriesDateFromFilter(date)),
-                disableTime: true,
-                closeOnChange: false,
-              },
-              {
-                type: FilterTypes.dateTime,
-                title: t("END_DATE"),
-                value: filters.dateToFilter
-                  ? new Date(filters.dateToFilter)
-                  : null,
-                minDate: filters.dateFromFilter
-                  ? new Date(filters.dateFromFilter)
-                  : undefined,
-                onChange: (date) => dispatch(setCountriesDateToFilter(date)),
-                disableTime: true,
-                closeOnChange: false,
-              },
-            ]}
-            changesCount={
-              [
-                filters.shippingCompanyIdFilter !== "all",
-                !!filters.dateFromFilter,
-                !!filters.dateToFilter,
-              ].filter(Boolean).length
-            }
-          />
+          </FeatureHeaderHeading>
+        </div>
+        <FeatureHeaderActions>
           <Button
-            color="primary"
-            variant="outlined"
-            onClick={() =>
-              dispatch(newCountriesInstance({ shippingCompanyIdFilter: "all" }))
-            }
-          >
-            {t("RESET_FILTERS")}
-          </Button>
-          <Paper
-            component={motion.div}
-            initial={{ y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1, transition: { delay: 0.2 } }}
-            className="flex items-center w-full sm:max-w-256 space-x-8 px-16 rounded-8 border-1 shadow-0"
-          >
-            <FuseSvgIcon color="disabled">heroicons-solid:search</FuseSvgIcon>
-            <Input
-              disableUnderline
-              fullWidth
-              placeholder={t("SEARCH_COUNTRIES")}
-              value={filters.searchText}
-              onChange={(event) => dispatch(setCountriesSearchText(event))}
-              inputProps={{
-                "aria-label": t("SEARCH_COUNTRIES"),
-                "data-testid": "countries-search",
-              }}
-            />
-          </Paper>
-          <Button
+            className="rounded-[10px] shadow-none whitespace-nowrap min-h-44"
             component={Link}
             to={`${countriesPath(filters.shippingCompanyIdFilter)}/new`}
             variant="contained"
@@ -129,24 +51,105 @@ export default function CountriesHeader() {
           >
             {t("ADD_COUNTRY")}
           </Button>
-        </div>
-      </div>
-      {companies.isError && (
-        <Alert
-          severity="error"
-          action={
-            <Button
-              color="primary"
-              variant="outlined"
-              onClick={() => companies.refetch()}
-            >
-              {t("RETRY")}
-            </Button>
+        </FeatureHeaderActions>
+      </FeatureHeaderRow>
+      <FeatureHeaderToolbar
+        search={
+          <>
+            <Input
+              className="text-12 min-h-36 flex-1"
+              disableUnderline
+              fullWidth={true}
+              placeholder={t("SEARCH_COUNTRIES")}
+              value={filters.searchText}
+              onChange={(event) => dispatch(setCountriesSearchText(event))}
+              inputProps={{
+                "aria-label": t("SEARCH_COUNTRIES"),
+                "data-testid": "countries-search",
+              }}
+            />
+          </>
+        }
+      >
+        <FeatureHeaderFilter
+          filters={[
+            {
+              type: FilterTypes.dropdown,
+              title: t("SHIPPING_COMPANY"),
+              value: filters.shippingCompanyIdFilter,
+              onChange: (value) =>
+                dispatch(setCountriesShippingCompanyIdFilter(value)),
+              items: [
+                { label: t("ALL"), value: "all" },
+                ...(companies.data?.results || []).map((company) => ({
+                  label: displayName(company.name),
+                  value: company.id,
+                })),
+              ],
+              closeOnChange: false,
+            },
+            {
+              type: FilterTypes.dateTime,
+              title: t("START_DATE"),
+              value: filters.dateFromFilter
+                ? new Date(filters.dateFromFilter)
+                : null,
+              maxDate: filters.dateToFilter
+                ? new Date(filters.dateToFilter)
+                : undefined,
+              onChange: (date) => dispatch(setCountriesDateFromFilter(date)),
+              disableTime: true,
+              closeOnChange: false,
+            },
+            {
+              type: FilterTypes.dateTime,
+              title: t("END_DATE"),
+              value: filters.dateToFilter
+                ? new Date(filters.dateToFilter)
+                : null,
+              minDate: filters.dateFromFilter
+                ? new Date(filters.dateFromFilter)
+                : undefined,
+              onChange: (date) => dispatch(setCountriesDateToFilter(date)),
+              disableTime: true,
+              closeOnChange: false,
+            },
+          ]}
+          changesCount={
+            [
+              filters.shippingCompanyIdFilter !== "all",
+              !!filters.dateFromFilter,
+              !!filters.dateToFilter,
+            ].filter(Boolean).length
+          }
+        />
+        <Button
+          startIcon={
+            <FuseSvgIcon size={16}>heroicons-outline:refresh</FuseSvgIcon>
+          }
+          size="small"
+          className="rounded-8 min-h-36 px-12 text-12 flex-1 sm:flex-initial whitespace-nowrap"
+          color="primary"
+          variant="outlined"
+          onClick={() =>
+            dispatch(newCountriesInstance({ shippingCompanyIdFilter: "all" }))
           }
         >
-          {t("LOOKUP_ERROR")}
-        </Alert>
+          {t("RESET_FILTERS")}
+        </Button>
+      </FeatureHeaderToolbar>
+      {companies.isError && (
+        <>
+          <Alert
+            severity="error"
+            action={
+              <Button onClick={() => companies.refetch()}>{t("RETRY")}</Button>
+            }
+          >
+            {t("LOOKUP_ERROR")}
+          </Alert>
+        </>
       )}
-    </div>
+    </FeatureHeader>
   );
 }

@@ -1,3 +1,8 @@
+import FeatureHeader, {
+  FeatureHeaderRow,
+  FeatureHeaderHeading,
+  FeatureHeaderActions,
+} from "app/shared-components/feature-header/FeatureHeader";
 import FuseSvgIcon from "@fuse/core/FuseSvgIcon";
 import { useTheme } from "@mui/material/styles";
 import { Avatar, Typography } from "@mui/material";
@@ -24,10 +29,10 @@ export default function MerchantHeader({
   const theme = useTheme();
   const { t } = useTranslation("merchantsApp");
   return (
-    <div className="flex flex-wrap items-center justify-between gap-16 p-24 sm:p-32 w-full">
-      <div>
+    <FeatureHeader>
+      <div className="flex items-center justify-between gap-8 min-w-0">
         <Typography
-          className="flex items-center sm:mb-12"
+          className="flex items-center self-start gap-4 text-12 font-medium hover:underline"
           component={Link}
           role="button"
           to={self ? "/profile" : "/merchants"}
@@ -42,26 +47,39 @@ export default function MerchantHeader({
             {t(self ? "MY_ACCOUNT" : "MERCHANTS")}
           </span>
         </Typography>
-        <div className="flex items-center gap-12">
-          {view && (
-            <Avatar src={image} alt={title}>
-              {title?.[0]}
-            </Avatar>
-          )}
-          <Typography className="text-24 font-bold">{title}</Typography>
-        </div>
       </div>
-      {!view && canSave && (
-        <LoadingButton
-          color="primary"
-          variant="contained"
-          loading={busy}
-          onClick={onSave}
-          data-testid="save-merchant"
-        >
-          {t("SAVE")}
-        </LoadingButton>
-      )}
-    </div>
+      <FeatureHeaderRow>
+        <div className="flex-1 min-w-0">
+          <FeatureHeaderHeading
+            feature="merchants-app"
+            leading={
+              view && (
+                <Avatar src={image} alt={title}>
+                  {title?.[0]}
+                </Avatar>
+              )
+            }
+          >
+            {title}
+          </FeatureHeaderHeading>
+        </div>
+        <FeatureHeaderActions>
+          {!view && canSave && (
+            <>
+              <LoadingButton
+                className="rounded-[10px] shadow-none whitespace-nowrap min-h-44"
+                color="primary"
+                variant="contained"
+                loading={busy}
+                onClick={onSave}
+                data-testid="save-merchant"
+              >
+                {t("SAVE")}
+              </LoadingButton>
+            </>
+          )}
+        </FeatureHeaderActions>
+      </FeatureHeaderRow>
+    </FeatureHeader>
   );
 }

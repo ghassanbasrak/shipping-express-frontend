@@ -1,3 +1,7 @@
+import FeatureHeader, {
+  FeatureHeaderRow,
+  FeatureHeaderHeading,
+} from "app/shared-components/feature-header/FeatureHeader";
 import FuseSvgIcon from "@fuse/core/FuseSvgIcon";
 import { useTheme } from "@mui/material/styles";
 import { Typography } from "@mui/material";
@@ -8,10 +12,10 @@ export default function LogHeader({ log }: { log?: ILog }) {
   const theme = useTheme();
   const { t } = useTranslation("logsApp");
   return (
-    <div className="flex flex-wrap justify-between items-center gap-16 w-full p-24 sm:p-32">
-      <div>
+    <FeatureHeader>
+      <div className="flex items-center justify-between gap-8 min-w-0">
         <Typography
-          className="flex items-center sm:mb-12"
+          className="flex items-center self-start gap-4 text-12 font-medium hover:underline"
           component={Link}
           role="button"
           to="/logs"
@@ -24,10 +28,16 @@ export default function LogHeader({ log }: { log?: ILog }) {
           </FuseSvgIcon>
           <span className="flex mx-4 font-medium">{t("GO_TO_LOGS")}</span>
         </Typography>
-        <Typography className="text-24 font-bold break-words">
-          {t("LOG")} {log?.message}
-        </Typography>
       </div>
-    </div>
+      <FeatureHeaderRow>
+        <div className="flex-1 min-w-0">
+          <FeatureHeaderHeading feature="logs-app">
+            {t("LOG")}
+
+            {log?.message}
+          </FeatureHeaderHeading>
+        </div>
+      </FeatureHeaderRow>
+    </FeatureHeader>
   );
 }

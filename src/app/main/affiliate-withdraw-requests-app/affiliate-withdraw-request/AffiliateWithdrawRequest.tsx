@@ -139,11 +139,7 @@ export default function AffiliateWithdrawRequest() {
                 <Alert
                   severity="error"
                   action={
-                    <Button
-                      color="primary"
-                      variant="outlined"
-                      onClick={() => balance.refetch()}
-                    >
+                    <Button onClick={() => balance.refetch()}>
                       {t("RETRY")}
                     </Button>
                   }
@@ -155,11 +151,7 @@ export default function AffiliateWithdrawRequest() {
                 <Alert
                   severity="error"
                   action={
-                    <Button
-                      color="primary"
-                      variant="outlined"
-                      onClick={() => pending.refetch()}
-                    >
+                    <Button onClick={() => pending.refetch()}>
                       {t("RETRY")}
                     </Button>
                   }

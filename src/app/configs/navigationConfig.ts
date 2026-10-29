@@ -217,15 +217,6 @@ const navigationConfig: FuseNavItemType[] = [
         url: "/verification-requests/all",
         auth: authRoles.staff,
       },
-      {
-        id: "auth-requests",
-        title: "Authorization Requests",
-        translate: "AUTH_REQUESTS",
-        type: "item",
-        icon: "heroicons-outline:shield-check",
-        url: "/auth-requests/all",
-        auth: authRoles.user,
-      },
     ],
   },
   {
@@ -241,15 +232,6 @@ const navigationConfig: FuseNavItemType[] = [
         type: "item",
         icon: "heroicons-outline:chart-bar",
         url: "/merchant-statistics",
-        auth: authRoles.staff,
-      },
-      {
-        id: "merchant-statistics-new",
-        title: "Merchant Statistics (New)",
-        translate: "MERCHANT_STATISTICS_NEW",
-        type: "item",
-        icon: "heroicons-outline:chart-square-bar",
-        url: "/merchant-statistics-new",
         auth: authRoles.staff,
       },
       {

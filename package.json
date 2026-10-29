@@ -235,6 +235,7 @@
     "audit": "npm audit --production",
     "typecheck": "tsc --project tsconfig.app.json --noEmit",
     "test:auth": "node scripts/auth-regression.cjs",
+    "test:feature-retirement": "node scripts/feature-retirement-regression.cjs",
     "typecheck:app": "tsc --project tsconfig.app.json --noEmit",
     "typecheck:all": "tsc --noEmit",
     "test:auth:browser": "npm run build && node scripts/auth-browser-smoke.cjs",

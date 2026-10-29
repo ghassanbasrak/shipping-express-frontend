@@ -140,11 +140,7 @@ export default function Transaction() {
                 <Alert
                   severity="error"
                   action={
-                    <Button
-                      color="primary"
-                      variant="outlined"
-                      onClick={() => selected.refetch()}
-                    >
+                    <Button onClick={() => selected.refetch()}>
                       {t("RETRY")}
                     </Button>
                   }

@@ -128,11 +128,7 @@ export default function WithdrawRequest() {
                 <Alert
                   severity="error"
                   action={
-                    <Button
-                      color="primary"
-                      variant="outlined"
-                      onClick={() => balance.refetch()}
-                    >
+                    <Button onClick={() => balance.refetch()}>
                       {t("RETRY")}
                     </Button>
                   }

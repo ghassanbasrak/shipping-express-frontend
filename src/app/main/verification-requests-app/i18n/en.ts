@@ -56,7 +56,6 @@ const locale = {
   LOAD_ERROR: "Unable to load requests. Please retry.",
   USER_LOOKUP_ERROR: "Unable to load the selected account. Please retry.",
   RESET_FILTERS: "Reset filters",
-  NO_AUTH_REQUESTS: "No authorization requests",
   FILTER_REQUESTS: "Filter requests",
 };
 export default locale;

@@ -41,8 +41,6 @@ export default function StatisticsMerchantField({
           severity="error"
           action={
             <Button
-              color="primary"
-              variant="outlined"
               onClick={() => {
                 if (users.isError) users.refetch();
                 if (selected.isError) selected.refetch();

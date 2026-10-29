@@ -46,15 +46,7 @@ export default function BasicInfoTab({ disabled }: { disabled: boolean }) {
       {!disabled && query.isError && (
         <Alert
           severity="error"
-          action={
-            <Button
-              color="primary"
-              variant="outlined"
-              onClick={() => query.refetch()}
-            >
-              {t("RETRY")}
-            </Button>
-          }
+          action={<Button onClick={() => query.refetch()}>{t("RETRY")}</Button>}
         >
           {t("SHIPMENTS_LOAD_ERROR")}
         </Alert>

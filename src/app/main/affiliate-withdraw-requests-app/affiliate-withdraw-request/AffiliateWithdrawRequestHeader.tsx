@@ -1,3 +1,9 @@
+import FeatureHeader, {
+  FeatureHeaderRow,
+  FeatureHeaderHeading,
+  FeatureHeaderActions,
+  FeatureHeaderMeta,
+} from "app/shared-components/feature-header/FeatureHeader";
 import { useRef } from "react";
 import { Button, Chip, Typography } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
@@ -73,13 +79,13 @@ export default function AffiliateWithdrawRequestHeader({
     }
   });
   return (
-    <div className="flex flex-col sm:flex-row gap-16 flex-1 w-full items-center justify-between py-32 px-24 md:px-32">
-      <div className="flex flex-col items-center sm:items-start min-w-0">
+    <FeatureHeader>
+      <div className="flex items-center justify-between gap-8 min-w-0">
         <Typography
           component={Link}
           to="/affiliate-profile/withdraw-requests"
           color="inherit"
-          className="flex items-center mb-12"
+          className="flex items-center self-start gap-4 text-12 font-medium hover:underline"
         >
           <FuseSvgIcon size={20}>
             {theme.direction === "ltr"
@@ -88,53 +94,72 @@ export default function AffiliateWithdrawRequestHeader({
           </FuseSvgIcon>
           <span className="mx-4 font-medium">{t("WITHDRAW_REQUESTS")}</span>
         </Typography>
-        <Typography className="text-20 font-semibold">
-          {t(isNew ? "ADD_NEW_WITHDRAW_REQUEST" : "WITHDRAW_REQUEST_DETAILS")}
-        </Typography>
       </div>
-      <div className="flex flex-wrap justify-end items-center gap-8">
-        {balance !== undefined && (
-          <Typography className="font-semibold" data-testid="affiliate-balance">
-            {t("CURRENT_AFFILIATE_BALANCE")}: {Currency(balance)}
-          </Typography>
-        )}
-        {!isNew && (
-          <Chip
-            label={t(toAffiliateWithdrawRequestStatusTitle(watch("status")))}
-            className={
-              toAffiliateWithdrawRequestStatusColor(watch("status")) +
-              " text-white"
-            }
-          />
-        )}
-        {canCreate && (
-          <LoadingButton
-            variant="contained"
-            color="secondary"
-            loading={creating.isLoading}
-            disabled={blocked || creating.isLoading}
-            onClick={() => {
-              // Validate against the latest recovered balance, preserving the editable draft.
-              setValue("availableBalance", balance ?? 0, {
-                shouldDirty: false,
-              });
-              submit();
-            }}
-            data-testid="send-affiliate-withdraw-request"
-            startIcon={<FuseSvgIcon>material-outline:save</FuseSvgIcon>}
+      <FeatureHeaderRow>
+        <div className="flex-1 min-w-0">
+          <FeatureHeaderHeading feature="affiliate-withdraw-requests-app">
+            {t(isNew ? "ADD_NEW_WITHDRAW_REQUEST" : "WITHDRAW_REQUEST_DETAILS")}
+          </FeatureHeaderHeading>
+        </div>
+        <FeatureHeaderActions>
+          {balance !== undefined && (
+            <>
+              <FeatureHeaderMeta>
+                <Typography
+                  className="font-semibold"
+                  data-testid="affiliate-balance"
+                >
+                  {t("CURRENT_AFFILIATE_BALANCE")}: {Currency(balance)}
+                </Typography>
+              </FeatureHeaderMeta>
+            </>
+          )}
+          {!isNew && (
+            <>
+              <Chip
+                label={t(
+                  toAffiliateWithdrawRequestStatusTitle(watch("status")),
+                )}
+                className={
+                  toAffiliateWithdrawRequestStatusColor(watch("status")) +
+                  " text-white"
+                }
+              />
+            </>
+          )}
+          {canCreate && (
+            <>
+              <LoadingButton
+                className="rounded-[10px] shadow-none whitespace-nowrap min-h-44"
+                variant="contained"
+                color="secondary"
+                loading={creating.isLoading}
+                disabled={blocked || creating.isLoading}
+                onClick={() => {
+                  // Validate against the latest recovered balance, preserving the editable draft.
+                  setValue("availableBalance", balance ?? 0, {
+                    shouldDirty: false,
+                  });
+                  submit();
+                }}
+                data-testid="send-affiliate-withdraw-request"
+                startIcon={<FuseSvgIcon>material-outline:save</FuseSvgIcon>}
+              >
+                {t("SAVE_WITHDRAW_REQUEST")}
+              </LoadingButton>
+            </>
+          )}
+          <Button
+            className="rounded-[10px] shadow-none whitespace-nowrap min-h-44"
+            color="primary"
+            variant="outlined"
+            component={Link}
+            to="/affiliate-profile/withdraw-requests"
           >
-            {t("SAVE_WITHDRAW_REQUEST")}
-          </LoadingButton>
-        )}
-        <Button
-          color="primary"
-          variant="outlined"
-          component={Link}
-          to="/affiliate-profile/withdraw-requests"
-        >
-          {t("CANCEL")}
-        </Button>
-      </div>
-    </div>
+            {t("CANCEL")}
+          </Button>
+        </FeatureHeaderActions>
+      </FeatureHeaderRow>
+    </FeatureHeader>
   );
 }

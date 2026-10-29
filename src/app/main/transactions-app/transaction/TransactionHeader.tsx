@@ -1,10 +1,15 @@
+import FeatureHeader, {
+  FeatureHeaderRow,
+  FeatureHeaderHeading,
+  FeatureHeaderActions,
+} from "app/shared-components/feature-header/FeatureHeader";
 import FuseSvgIcon from "@fuse/core/FuseSvgIcon";
 import { useTheme } from "@mui/material/styles";
 import { hasOperationPermission } from "src/app/auth/permissions";
 import { useRef, useState } from "react";
 import { Alert, Typography } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
-import { motion } from "framer-motion";
+
 import { Link, useNavigate } from "react-router-dom";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -73,51 +78,59 @@ export default function TransactionHeader({
     }
   });
   return (
-    <div className="flex flex-col w-full flex-1 gap-16 p-24 sm:p-32">
-      <div className="flex flex-col sm:flex-row justify-between items-start gap-16">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="min-w-0"
+    <FeatureHeader>
+      <div className="flex items-center justify-between gap-8 min-w-0">
+        <Typography
+          className="flex items-center self-start gap-4 text-12 font-medium hover:underline"
+          component={Link}
+          role="button"
+          to={
+            hasOperationPermission("merchants", "view", user) && values.userId
+              ? `/merchants/${values.userId}/view`
+              : `/transactions/${values.userId || "all"}/${values.relatedBalance || "wallet"}`
+          }
+          color="inherit"
         >
-          <Typography
-            className="flex items-center sm:mb-12"
-            component={Link}
-            role="button"
-            to={
-              hasOperationPermission("merchants", "view", user) && values.userId
-                ? `/merchants/${values.userId}/view`
-                : `/transactions/${values.userId || "all"}/${values.relatedBalance || "wallet"}`
-            }
-            color="inherit"
-          >
-            <FuseSvgIcon size={20}>
-              {theme.direction === "ltr"
-                ? "heroicons-outline:arrow-sm-left"
-                : "heroicons-outline:arrow-sm-right"}
-            </FuseSvgIcon>
-            <span className="flex mx-4 font-medium">{t("TRANSACTIONS")}</span>
-          </Typography>
-          <Typography className="text-20 sm:text-24 font-semibold">
-            {t("EDIT_WALLET_BALANCE")}
-            {values.user ? ` — ${transactionUserLabel(values.user)}` : ""}
-          </Typography>
-        </motion.div>
-        {canEdit && (
-          <LoadingButton
-            color="primary"
-            variant="contained"
-            className="whitespace-nowrap shrink-0"
-            data-testid="save-transaction"
-            loading={busy}
-            disabled={!accountReady || saved}
-            onClick={onSave}
-          >
-            {t(isNew ? "CREATE_TRANSACTION" : "SAVE")}
-          </LoadingButton>
-        )}
+          <FuseSvgIcon size={20}>
+            {theme.direction === "ltr"
+              ? "heroicons-outline:arrow-sm-left"
+              : "heroicons-outline:arrow-sm-right"}
+          </FuseSvgIcon>
+          <span className="flex mx-4 font-medium">{t("TRANSACTIONS")}</span>
+        </Typography>
       </div>
-      {failed && <Alert severity="error">{t("SAVE_ERROR")}</Alert>}
-    </div>
+      <FeatureHeaderRow>
+        <div className="flex-1 min-w-0">
+          <FeatureHeaderHeading feature="transactions-app">
+            {t("EDIT_WALLET_BALANCE")}
+
+            {values.user ? ` — ${transactionUserLabel(values.user)}` : ""}
+          </FeatureHeaderHeading>
+        </div>
+        <FeatureHeaderActions>
+          {canEdit && (
+            <>
+              <LoadingButton
+                color="primary"
+                variant="contained"
+                className="rounded-[10px] shadow-none whitespace-nowrap min-h-44"
+                data-testid="save-transaction"
+                loading={busy}
+                disabled={!accountReady || saved}
+                onClick={onSave}
+              >
+                {t(isNew ? "CREATE_TRANSACTION" : "SAVE")}
+              </LoadingButton>
+            </>
+          )}
+        </FeatureHeaderActions>
+      </FeatureHeaderRow>
+
+      {failed && (
+        <>
+          <Alert severity="error">{t("SAVE_ERROR")}</Alert>
+        </>
+      )}
+    </FeatureHeader>
   );
 }

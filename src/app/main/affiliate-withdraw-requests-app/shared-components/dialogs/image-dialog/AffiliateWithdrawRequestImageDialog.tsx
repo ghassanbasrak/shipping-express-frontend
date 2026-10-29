@@ -68,8 +68,6 @@ export default function AffiliateWithdrawRequestImageDialog({
               severity="error"
               action={
                 <Button
-                  color="primary"
-                  variant="outlined"
                   onClick={() => {
                     setImageFailed(false);
                     setRetry((value) => value + 1);

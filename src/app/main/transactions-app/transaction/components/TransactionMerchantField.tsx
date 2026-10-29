@@ -34,15 +34,7 @@ export default function TransactionMerchantField({
       {users.isError && (
         <Alert
           severity="error"
-          action={
-            <Button
-              color="primary"
-              variant="outlined"
-              onClick={() => users.refetch()}
-            >
-              {t("RETRY")}
-            </Button>
-          }
+          action={<Button onClick={() => users.refetch()}>{t("RETRY")}</Button>}
         >
           {t("USER_LOOKUP_ERROR")}
         </Alert>

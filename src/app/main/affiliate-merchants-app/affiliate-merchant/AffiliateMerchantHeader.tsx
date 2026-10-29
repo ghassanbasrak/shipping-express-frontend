@@ -1,3 +1,7 @@
+import FeatureHeader, {
+  FeatureHeaderRow,
+  FeatureHeaderHeading,
+} from "app/shared-components/feature-header/FeatureHeader";
 import FuseSvgIcon from "@fuse/core/FuseSvgIcon";
 import { useTheme } from "@mui/material/styles";
 import { Avatar, Typography } from "@mui/material";
@@ -14,13 +18,10 @@ export default function AffiliateMerchantHeader({
   const theme = useTheme();
   const { t } = useTranslation("affiliateMerchantsApp");
   return (
-    <div className="flex flex-wrap items-center gap-16 p-24 sm:p-32 w-full">
-      <Avatar src={affiliate.image || affiliate.avatarUrl}>
-        {affiliate.firstName?.[0]}
-      </Avatar>
-      <div className="min-w-0">
+    <FeatureHeader>
+      <div className="flex items-center justify-between gap-8 min-w-0">
         <Typography
-          className="flex items-center sm:mb-12"
+          className="flex items-center self-start gap-4 text-12 font-medium hover:underline"
           component={Link}
           role="button"
           to={self ? "/profile" : "/affiliate-merchants"}
@@ -35,9 +36,27 @@ export default function AffiliateMerchantHeader({
             {t(self ? "VIEW_MAIN_PROFILE" : "MERCHANTS")}
           </span>
         </Typography>
-        <Typography className="text-24 font-bold break-words">{`${affiliate.firstName || ""} ${affiliate.lastName || ""}`}</Typography>
-        <Typography className="break-all">{affiliate.email}</Typography>
       </div>
-    </div>
+      <FeatureHeaderRow>
+        <div className="flex-1 min-w-0">
+          <FeatureHeaderHeading
+            feature="affiliate-merchants-app"
+            leading={
+              <Avatar src={affiliate.image || affiliate.avatarUrl}>
+                {affiliate.firstName?.[0]}
+              </Avatar>
+            }
+          >{`${affiliate.firstName || ""} ${affiliate.lastName || ""}`}</FeatureHeaderHeading>
+          <div className="flex flex-wrap items-center gap-8 mt-8 sm:ps-[72px]">
+            <Typography
+              color="text.secondary"
+              className="text-13 leading-relaxed [overflow-wrap:anywhere]"
+            >
+              {affiliate.email}
+            </Typography>
+          </div>
+        </div>
+      </FeatureHeaderRow>
+    </FeatureHeader>
   );
 }

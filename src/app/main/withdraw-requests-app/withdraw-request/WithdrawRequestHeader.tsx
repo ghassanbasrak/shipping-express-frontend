@@ -1,3 +1,9 @@
+import FeatureHeader, {
+  FeatureHeaderRow,
+  FeatureHeaderHeading,
+  FeatureHeaderActions,
+  FeatureHeaderMeta,
+} from "app/shared-components/feature-header/FeatureHeader";
 import FuseSvgIcon from "@fuse/core/FuseSvgIcon";
 import { useTheme } from "@mui/material/styles";
 import { useRef, useState } from "react";
@@ -105,10 +111,10 @@ export default function WithdrawRequestHeader({
       }
     })();
   return (
-    <div className="flex flex-col sm:flex-row gap-16 flex-1 w-full items-center justify-between py-32 px-24 md:px-32">
-      <div>
+    <FeatureHeader>
+      <div className="flex items-center justify-between gap-8 min-w-0">
         <Typography
-          className="flex items-center sm:mb-12"
+          className="flex items-center self-start gap-4 text-12 font-medium hover:underline"
           component={Link}
           role="button"
           to="/withdraw-requests/all"
@@ -123,52 +129,65 @@ export default function WithdrawRequestHeader({
             {t("WITHDRAW_REQUESTS")}
           </span>
         </Typography>
-        <Typography className="text-20 font-semibold">
-          {t(isNew ? "ADD_NEW_WITHDRAW_REQUEST" : "WITHDRAW_REQUEST_DETAILS")}
-        </Typography>
       </div>
-      <div className="flex flex-wrap justify-end items-center gap-8">
-        {balance !== undefined && (
-          <Typography data-testid="withdraw-balance">
-            {t("CURRENT_BALANCE")}: {Currency(balance)}
-          </Typography>
-        )}
-        {!isNew && (
-          <Chip
-            label={t(toWithdrawRequestStatusTitle(watch("status")))}
-            className={
-              toWithdrawRequestStatusColor(watch("status")) + " text-white"
-            }
-          />
-        )}
-        {isNew &&
-          user.role === "user" &&
-          (["walletCharge", "withdrew"] as const).map((type) => (
-            <LoadingButton
-              color="primary"
-              key={type}
-              variant="contained"
-              loading={checking || creating.isLoading}
-              disabled={blocked || checking || creating.isLoading}
-              onClick={() => submit(type)}
-              data-testid={"send-withdraw-" + type}
-            >
-              {t(
-                type === "walletCharge"
-                  ? "REQUEST_WITHDRAW_WALLET"
-                  : "REQUEST_WITHDRAW_BANK",
-              )}
-            </LoadingButton>
-          ))}
-        <Button
-          color="primary"
-          variant="outlined"
-          component={Link}
-          to="/withdraw-requests/all"
-        >
-          {t("CANCEL")}
-        </Button>
-      </div>
-    </div>
+      <FeatureHeaderRow>
+        <div className="flex-1 min-w-0">
+          <FeatureHeaderHeading feature="withdraw-requests-app">
+            {t(isNew ? "ADD_NEW_WITHDRAW_REQUEST" : "WITHDRAW_REQUEST_DETAILS")}
+          </FeatureHeaderHeading>
+        </div>
+        <FeatureHeaderActions>
+          {balance !== undefined && (
+            <>
+              <FeatureHeaderMeta>
+                <Typography data-testid="withdraw-balance">
+                  {t("CURRENT_BALANCE")}: {Currency(balance)}
+                </Typography>
+              </FeatureHeaderMeta>
+            </>
+          )}
+          {!isNew && (
+            <>
+              <Chip
+                label={t(toWithdrawRequestStatusTitle(watch("status")))}
+                className={
+                  toWithdrawRequestStatusColor(watch("status")) + " text-white"
+                }
+              />
+            </>
+          )}
+          {isNew && user.role === "user" && (
+            <>
+              {(["walletCharge", "withdrew"] as const).map((type) => (
+                <LoadingButton
+                  color="primary"
+                  key={type}
+                  variant="contained"
+                  loading={checking || creating.isLoading}
+                  disabled={blocked || checking || creating.isLoading}
+                  onClick={() => submit(type)}
+                  data-testid={"send-withdraw-" + type}
+                >
+                  {t(
+                    type === "walletCharge"
+                      ? "REQUEST_WITHDRAW_WALLET"
+                      : "REQUEST_WITHDRAW_BANK",
+                  )}
+                </LoadingButton>
+              ))}
+            </>
+          )}
+          <Button
+            className="rounded-[10px] shadow-none whitespace-nowrap min-h-44"
+            color="primary"
+            variant="outlined"
+            component={Link}
+            to="/withdraw-requests/all"
+          >
+            {t("CANCEL")}
+          </Button>
+        </FeatureHeaderActions>
+      </FeatureHeaderRow>
+    </FeatureHeader>
   );
 }

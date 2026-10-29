@@ -141,7 +141,6 @@ const locale = {
   RECORD_NO: "Record No",
   ADD_WITHDRAW_REQUEST: "New Withdraw Request",
   ACCOUNT_AUTHORIZATION: "Account Authorization",
-  AUTHORIZE: "Authorize",
   REMAINING_BALANCE: "Remaining Balance From Plan",
   CURRENT_BALANCE_MESSAGE:
     "Current balance is {{balance}} includes the remaining balance from plan which is {{subscriptionBalance}}",

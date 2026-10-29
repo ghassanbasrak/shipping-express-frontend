@@ -1,4 +1,10 @@
 import FusePageSimple from "@fuse/core/FusePageSimple";
+import FeatureHeader, {
+  FeatureHeaderHeading,
+  FeatureHeaderRow,
+  FeatureHeaderActions,
+} from "../feature-header/FeatureHeader";
+import type { HeaderFeature } from "../feature-header/content";
 import { ReactNode } from "react";
 import {
   Alert,
@@ -89,25 +95,31 @@ export function OverviewShell({ children }: { children: ReactNode }) {
   );
 }
 export function OverviewHeader({
+  feature = "home-app",
   eyebrow,
   title,
   description,
   children,
 }: {
+  feature?: HeaderFeature;
   eyebrow: string;
   title: string;
   description: string;
   children?: ReactNode;
 }) {
   return (
-    <header className="ov-header">
-      <div className="ov-heading">
-        <span className="ov-eyebrow">{eyebrow}</span>
-        <h1>{title}</h1>
-        <p>{description}</p>
-      </div>
-      <div className="ov-header-actions">{children}</div>
-    </header>
+    <FeatureHeader className="mb-24 rounded-16">
+      <FeatureHeaderRow>
+        <FeatureHeaderHeading
+          feature={feature}
+          eyebrow={eyebrow}
+          description={description}
+        >
+          {title}
+        </FeatureHeaderHeading>
+        <FeatureHeaderActions>{children}</FeatureHeaderActions>
+      </FeatureHeaderRow>
+    </FeatureHeader>
   );
 }
 export function OverviewRefresh({ onClick }: { onClick: () => void }) {
@@ -177,12 +189,7 @@ export function QueryFeedback({ query }: { query: OverviewQuery }) {
           severity="warning"
           className="ov-query-error"
           action={
-            <Button
-              color="primary"
-              variant="outlined"
-              size="small"
-              onClick={() => query.refetch()}
-            >
+            <Button size="small" onClick={() => query.refetch()}>
               {t("RETRY")}
             </Button>
           }

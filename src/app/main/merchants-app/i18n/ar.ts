@@ -133,7 +133,6 @@ const locale = {
   RECORD_NO: "رقم القيد",
   ADD_WITHDRAW_REQUEST: "طلب سحب المستحقات",
   ACCOUNT_AUTHORIZATION: "توثيق الحساب",
-  AUTHORIZE: "توثيق",
   REMAINING_BALANCE: "الرصيد المتبقي من الباقة المشتركة",
   CURRENT_BALANCE_MESSAGE:
     "الرصيد الحالي هو {{balance}} يتضمن الرصيد المتبقي من الباقة المشتركة والذي هو {{subscriptionBalance}}",

@@ -76,6 +76,7 @@ export default function DashboardContent() {
     <OverviewShell>
       <div data-testid="administrator-dashboard">
         <OverviewHeader
+          feature="dashboard"
           eyebrow="ASHAMCO EXPRESS / OPERATIONS"
           title={t("OPERATIONS_OVERVIEW")}
           description={t("ADMIN_INTRO", { name: user.firstName || "" })}

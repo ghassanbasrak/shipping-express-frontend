@@ -58,15 +58,7 @@ export default function CustomersTab({ affiliate }: { affiliate: IMerchant }) {
       {query.isError ? (
         <Alert
           severity="error"
-          action={
-            <Button
-              color="primary"
-              variant="outlined"
-              onClick={() => query.refetch()}
-            >
-              {t("RETRY")}
-            </Button>
-          }
+          action={<Button onClick={() => query.refetch()}>{t("RETRY")}</Button>}
         >
           {t("LOAD_ERROR")}
         </Alert>
@@ -148,13 +140,7 @@ export default function CustomersTab({ affiliate }: { affiliate: IMerchant }) {
         <Alert
           severity="error"
           action={
-            <Button
-              color="primary"
-              variant="outlined"
-              onClick={() => carriers.refetch()}
-            >
-              {t("RETRY")}
-            </Button>
+            <Button onClick={() => carriers.refetch()}>{t("RETRY")}</Button>
           }
         >
           {t("LOAD_CARRIERS_ERROR")}

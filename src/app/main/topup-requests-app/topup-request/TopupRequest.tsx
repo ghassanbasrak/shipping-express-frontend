@@ -109,19 +109,10 @@ export default function TopupRequest() {
                   {created && (
                     <Alert severity="info" className="mb-16">
                       {t("CHECKOUT_CREATED")}{" "}
-                      <Button
-                        color="primary"
-                        variant="outlined"
-                        onClick={() => setCheckout(created)}
-                      >
+                      <Button onClick={() => setCheckout(created)}>
                         {t("PROCEED_TO_PAYMENT")}
                       </Button>
-                      <Button
-                        color="primary"
-                        variant="outlined"
-                        component={Link}
-                        to="/topup-requests/all"
-                      >
+                      <Button component={Link} to="/topup-requests/all">
                         {t("GO_TO_TOPUP_REQUESTS")}
                       </Button>
                     </Alert>

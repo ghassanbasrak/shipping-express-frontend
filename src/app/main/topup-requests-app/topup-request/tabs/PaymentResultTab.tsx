@@ -88,11 +88,7 @@ export default function PaymentResultTab({
       <Alert
         severity="error"
         action={
-          <Button
-            color="primary"
-            variant="outlined"
-            onClick={() => setAttempt((value) => value + 1)}
-          >
+          <Button onClick={() => setAttempt((value) => value + 1)}>
             {t("RETRY")}
           </Button>
         }

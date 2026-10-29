@@ -32,15 +32,7 @@ export default function BasicInfoTab({
       {isError && (
         <Alert
           severity="error"
-          action={
-            <Button
-              color="primary"
-              variant="outlined"
-              onClick={() => refetch()}
-            >
-              {t("RETRY")}
-            </Button>
-          }
+          action={<Button onClick={() => refetch()}>{t("RETRY")}</Button>}
         >
           {t("LOOKUP_ERROR")}
         </Alert>

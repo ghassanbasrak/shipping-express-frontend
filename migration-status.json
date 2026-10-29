@@ -3,15 +3,15 @@
   "scope": "Feature areas registered by the legacy routesConfig; auth and common pages are tracked separately. Counts do not measure implementation effort.",
   "counts": {
     "featureAreas": 32,
-    "migrated": 31,
-    "excluded": 1,
+    "migrated": 29,
+    "excluded": 3,
     "partial": 0,
     "pending": 0
   },
   "completedThisBatch": [],
   "removedThisBatch": [
-    "merchant-services",
-    "unused e-commerce template mocks and merchant store-status fields/filters"
+    "merchant-statistics-new-app",
+    "auth-requests-app"
   ],
   "storeRemovalAudit": {
     "date": "2026-10-29",
@@ -28,15 +28,73 @@
   },
   "topupHeaderDesignPreview": {
     "date": "2026-10-29",
-    "status": "awaiting-design-approval",
-    "scope": "Topup-requests-app list and creation/detail headers only. Other feature headers await user approval of this design; feature migration counts, partial areas and exclusions are unchanged.",
-    "changes": "Theme-based purple heading and wallet icon, short localized descriptions, separate account balance card, prominent permission-gated primary action, grouped search/filter/reset toolbar and active-filter labels. Detail navigation retains the Typography link and direction-aware arrow. Layout helpers remain local to topup-requests-app until this direction is approved.",
+    "status": "approved-and-rolled-out",
+    "scope": "The approved top-up header design is now shared by all current feature page headers and the home/dashboard workspaces. Feature migration counts and existing feature exclusions are unchanged.",
+    "changes": "Theme-based heading and icon, localized descriptions, separate account balance card, permission-gated primary actions, grouped search/filter/reset toolbar and active-filter labels. Detail navigation retains the Typography link and direction-aware arrow. Top-up layout helpers now delegate to the shared feature-header components.",
     "preservation": "Existing routes, account ownership, filter handlers, pagination reset, payment APIs, checkout creation/recovery and adjustment permissions are preserved. No balances or payment totals are fabricated; missing balance values display an unavailable marker.",
     "validation": "Active application typecheck, production build, 27 top-up/payment regression checks and 33 existing browser checks passed. Captured actual English desktop and Arabic mobile headers, including selected-account staff and merchant variants, with header overflow checks and no uncaught browser exceptions. Existing Browserslist, CSS minification and large-chunk warnings remain. Fixture checks do not establish live backend acceptance.",
     "refinement": "2026-10-30: Restored the search/filter toolbar to full available width while retaining compact controls. Uniform Tailwind padding, a local compact input minimum height and flex alignment of the filter wrapper make the visible end gap equal to the top and bottom gaps. Layout, spacing, typography, sizing, responsive rules and radii use Tailwind classes. Only four theme-dependent color/background sx rules remain across the local header components; the detail back link uses no sx.",
     "refinementValidation": "Active application typecheck and production build passed. Focused English desktop and Arabic mobile browser checks confirm full available toolbar width, identical visible end/top/bottom gaps of approximately 6.69px and no header overflow. The earlier 33 top-up/payment browser checks remain recorded above. Existing build warnings remain.",
     "paddingRefinement": "2026-10-30: Capped outer padding at p-16 for both list and detail headers at every breakpoint. Active application typecheck, production build and diff checks passed after this adjustment.",
     "previews": "test-results/topup-header-full-width"
+  },
+  "featureHeaderDesignRollout": {
+    "date": "2026-10-30",
+    "status": "complete",
+    "pageHeaderComponents": 42,
+    "additionalPageHeadersRedesigned": 40,
+    "workspaceHeaderVariants": 3,
+    "completedHeaderAreas": [
+      "admins-app",
+      "affiliate-merchants-app",
+      "affiliate-withdraw-requests-app",
+      "alerts-app",
+      "applications-app",
+      "bank-transfers-app",
+      "cancel-shipment-requests-app",
+      "cities-app",
+      "countries-app",
+      "coupons-app",
+      "dashboard",
+      "home-app",
+      "logs-app",
+      "merchant-dues-app",
+      "merchant-statistics-app",
+      "merchants-app",
+      "plans-app",
+      "shipment-users-app",
+      "shipments-app",
+      "shipping-companies-app",
+      "states-app",
+      "topup-requests-app",
+      "transaction-reports-app",
+      "transactions-app",
+      "verification-requests-app",
+      "withdraw-requests-app"
+    ],
+    "remainingInScopeHeaders": [],
+    "partialWork": [],
+    "design": "Shared FeatureHeader components provide p-16 outer padding at every breakpoint, themed headings and icons, organized context/metadata and action groups, compact full-width search/filter toolbars, explicit colored button variants and Typography back links with directional arrows. Tailwind owns layout, spacing, sizing, typography and responsive rules; sx is limited to theme-dependent colors. Profile avatars sit alongside identity headings.",
+    "behavior": "AST comparison verified unchanged query/state/mutation handlers, permissions, control props, filter definitions, labels and destinations across 43 changed headers and 143 existing controls. No backend contracts, default grants, form drafts, account scopes, retired controls or feature migration statuses were changed.",
+    "excludedFormats": [
+      "Printable/PDF report headings retain their output format",
+      "Authentication and payment-provider callback layouts retain their dedicated flow",
+      "Absent historical feature headers and retired feature areas were not recreated"
+    ],
+    "validation": "Active application typecheck and production build passed. 427 functional regression assertions and 464 browser checks across 19 feature suites passed, with 68 observed headers across 67 screenshot samples confirming capped padding, full-width toolbars and no header overflow. Existing build warnings remain. Fixture-based checks do not establish live backend acceptance.",
+    "legacyTestScope": "Temporary test copies aligned four older browser suites with already-migrated profile links/destinations and missing home/dashboard fixtures. One obsolete inventory assertion and one inactive shipment chart-toggle assertion were excluded; shipped source tests were not modified. Original runs and exact adaptations are retained in test-results/feature-headers/legacy-check-adaptations.json.",
+    "report": "test-results/feature-headers/summary.json",
+    "retiredHeaderComponents": 3
+  },
+  "alertButtonStyleRestoration": {
+    "date": "2026-10-30",
+    "status": "complete",
+    "buttonsRestored": 83,
+    "filesChanged": 70,
+    "baseline": "9b1be07d96959b9a13cb42baba7086f579f72883 (before the button-style update)",
+    "scope": "Restored the original color and variant props, including omitted props/default text styling, for buttons nested inside MUI Alert components. Other page/dialog buttons retain their approved styles. Header action classes now target direct button children so nested Alerts retain the original medium sizing and appearance.",
+    "validation": "Every Alert button matched its original source settings with zero unmatched controls and zero remaining style differences. Active application typecheck and production build passed. Targeted overview and nested-header browser checks verified text styling, default sizing and working retry recovery. Existing build warnings remain.",
+    "report": "test-results/alert-buttons/restoration.json"
   },
   "features": [
     {
@@ -137,7 +195,7 @@
     },
     {
       "feature": "auth-requests-app",
-      "status": "migrated",
+      "status": "excluded",
       "sourceConfigs": [
         "src/app/main/auth-requests-app/AuthRequestsAppConfig.js"
       ],
@@ -145,13 +203,7 @@
         "auth-requests/:userId",
         "auth-requests/:userId/:authRequestId/*"
       ],
-      "includes": [
-        "Account-scoped authorization lists, search/status/date filters, pagination and filtered Excel export",
-        "Merchant document upload/submission, validation, failure recovery and read-only submitted details",
-        "Current-account ownership, fixed pending authorization type and duplicate-safe post-submit refresh",
-        "Confirmed staff decisions for pending requests, operation permissions and document downloads",
-        "English/Arabic/Turkish locale resources and mobile RTL"
-      ]
+      "exclusionReason": "Removed from the project by explicit user request on 2026-10-30."
     },
     {
       "feature": "balance-errors-app",
@@ -375,22 +427,14 @@
     },
     {
       "feature": "merchant-statistics-new-app",
-      "status": "migrated",
+      "status": "excluded",
       "sourceConfigs": [
         "src/app/main/merchant-statistics-new-app/MerchantStatisticsAppConfig.js"
       ],
       "sourceRoutes": [
         "merchant-statistics-new"
       ],
-      "includes": [
-        "Original staff-only /merchant-statistics-new aggregate report using POST v1/users/statistics-new; dependency on migrated base statistics controls and auth User, without fabricated shipment entities",
-        "Required bankTransferTotals/otherFees inputs preserve zero and signed source values; send only the account, optional ISO date bounds and those two adjustments",
-        "All five status counts/fees for local, international and COD shipment summaries; all five COD balance categories, all eight wallet/charge/tax fields and multiline message/note pairs",
-        "Preserve exact case-sensitive backend BankTransferChargeAmount; render zero groups and escaped report notes correctly",
-        "Frozen request/adjustment snapshot, draft-preserving failures, duplicate-request protection and full compressed multipage PDF with retries",
-        "Separate merchant-statistics-new view grants retain original route semantics; no new default staff permission or silent alias to merchant-statistics",
-        "Reference header/tabs/BasicInfoTab, shared validation refinements, simple RTK Query and English/Arabic/Turkish resources with mobile RTL"
-      ]
+      "exclusionReason": "Removed from the project by explicit user request on 2026-10-30."
     },
     {
       "feature": "merchants-app",
@@ -702,7 +746,9 @@
     "products-app and product e-commerce",
     "aramex-comparisons-app",
     "smsa-comparisons-app",
-    "compare-bills-app"
+    "compare-bills-app",
+    "merchant-statistics-new-app",
+    "auth-requests-app"
   ],
   "retainedRequirement": "Keep package-requests-app; do not remove it with product e-commerce.",
   "unroutedSourceDirectories": [
@@ -775,5 +821,16 @@
     "Packaging fixtures and links were preserved. This checkout already lacks its page/config despite the historical migrated inventory; that discrepancy is not fixed or concealed by this store removal.",
     "126 focused regression checks, active application typecheck and production build passed. Browser checks cover six retired-route redirects and English merchant/Arabic administrator menu cleanup. Production assets/chunks were audited for removed identifiers.",
     "No new dependencies, backend writes or payment-contract changes. Redux state management and historical gateway error mappings remain. Previous full-feature regression/browser counts are historical, not rerun in this batch."
-  ]
+  ],
+  "featureRemovalAudit": {
+    "date": "2026-10-30",
+    "removed": [
+      "merchant-statistics-new-app",
+      "auth-requests-app"
+    ],
+    "scope": "Removed feature source folders, route registration, navigation/translations, shared header metadata, merchant authorization submission link and retired demo fixture behavior. Original merchant statistics, verification requests, account flags and carrier authorization eligibility remain supported.",
+    "remainingMigrationWork": [],
+    "validation": "Active application typecheck and production build passed. 47 focused regression checks passed (retirement 8, original statistics 17, verification requests 13, navigation 9), along with demo contracts and 56 browser checks (statistics 13, verification 11, merchants/retired URLs 32). Both retired route families resolve to the standard 404 for staff and merchants; no navigation/profile links or production-bundle identifiers remain. Existing build warnings remain. Browser checks use fixtures, not live backend acceptance.",
+    "report": "test-results/feature-removal/summary.json"
+  }
 }

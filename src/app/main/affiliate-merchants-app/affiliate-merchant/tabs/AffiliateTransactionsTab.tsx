@@ -255,13 +255,7 @@ export default function AffiliateTransactionsTab({
         <Alert
           severity="error"
           action={
-            <Button
-              color="primary"
-              variant="outlined"
-              onClick={() => balance.refetch()}
-            >
-              {t("RETRY")}
-            </Button>
+            <Button onClick={() => balance.refetch()}>{t("RETRY")}</Button>
           }
         >
           {t("BALANCE_ERROR")}
@@ -281,15 +275,7 @@ export default function AffiliateTransactionsTab({
       {query.isError && (
         <Alert
           severity="error"
-          action={
-            <Button
-              color="primary"
-              variant="outlined"
-              onClick={() => query.refetch()}
-            >
-              {t("RETRY")}
-            </Button>
-          }
+          action={<Button onClick={() => query.refetch()}>{t("RETRY")}</Button>}
         >
           {t("LOAD_ERROR")}
         </Alert>

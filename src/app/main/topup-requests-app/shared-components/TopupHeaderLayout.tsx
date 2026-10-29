@@ -1,3 +1,6 @@
+import FeatureHeader, {
+  FeatureHeaderHeading,
+} from "app/shared-components/feature-header/FeatureHeader";
 import { ReactNode } from "react";
 import { Box, Typography } from "@mui/material";
 import { alpha } from "@mui/material/styles";
@@ -12,19 +15,7 @@ export function TopupHeaderLayout({
   children: ReactNode;
   testId: string;
 }) {
-  return (
-    <Box
-      component="header"
-      data-testid={testId}
-      className="flex flex-col gap-24 w-full min-w-0 p-16 border-b-1"
-      sx={(theme) => ({
-        borderColor: theme.palette.divider,
-        background: `linear-gradient(120deg, ${alpha(theme.palette.primary.main, 0.045)}, ${theme.palette.background.paper} 75%)`,
-      })}
-    >
-      {children}
-    </Box>
-  );
+  return <FeatureHeader data-testid={testId}>{children}</FeatureHeader>;
 }
 
 export function TopupHeaderHeading({
@@ -36,40 +27,13 @@ export function TopupHeaderHeading({
 }) {
   const { t } = useTranslation("topupRequestsApp");
   return (
-    <div className="flex items-start gap-16 min-w-0 flex-1">
-      <Box
-        className="hidden sm:grid place-items-center shrink-0 w-56 h-56 rounded-16 border-1"
-        sx={(theme) => ({
-          color: "primary.main",
-          bgcolor: alpha(theme.palette.primary.main, 0.09),
-          borderColor: alpha(theme.palette.primary.main, 0.12),
-        })}
-      >
-        <FuseSvgIcon size={28} color="inherit">
-          heroicons-outline:credit-card
-        </FuseSvgIcon>
-      </Box>
-      <div className="min-w-0">
-        <Typography
-          color="primary.main"
-          className="text-10 font-extrabold tracking-[0.1em] mb-6"
-        >
-          {t("WALLET_AND_PAYMENTS")}
-        </Typography>
-        <Typography
-          component="h1"
-          className="text-24 sm:text-28 font-extrabold leading-tight"
-        >
-          {title}
-        </Typography>
-        <Typography
-          color="text.secondary"
-          className="text-13 leading-[1.7] mt-6 max-w-[580px]"
-        >
-          {description}
-        </Typography>
-      </div>
-    </div>
+    <FeatureHeaderHeading
+      feature="topup-requests-app"
+      description={description}
+      eyebrow={t("WALLET_AND_PAYMENTS")}
+    >
+      {title}
+    </FeatureHeaderHeading>
   );
 }
 

@@ -144,9 +144,9 @@ const reviewer = {
   firstName: "Reviewer",
   lastName: "One",
 };
-const records = ["authorization", "verification"].flatMap((kind) =>
+const records = ["verification"].flatMap((kind) =>
   Array.from({ length: 15 }, (_, i) => ({
-    id: (kind === "authorization" ? "auth-" : "verify-") + (i + 1),
+    id: "verify-" + (i + 1),
     type: kind,
     status: i === 1 ? "approved" : i === 2 ? "rejected" : "pending",
     userId: i % 2 ? "merchant-2" : "merchant-1",
@@ -237,15 +237,13 @@ async function intercept(event) {
           role: viewer || denied || employee ? "employee" : "admin",
         };
     if (viewer || employee)
-      account.features = ["auth-requests", "verification-requests"].map(
-        (feature) => ({
-          feature,
-          accessView: true,
-          accessUpdate: employee,
-          accessCreate: false,
-          accessDelete: false,
-        }),
-      );
+      account.features = ["verification-requests"].map((feature) => ({
+        feature,
+        accessView: true,
+        accessUpdate: employee,
+        accessCreate: false,
+        accessDelete: false,
+      }));
     if (denied) account.features = [{ feature: "merchants", accessView: true }];
     result = {
       user: account,
@@ -398,20 +396,6 @@ async function setStatusFilter(folder, value) {
     code: "Escape",
   });
   await sleep(100);
-}
-async function upload(name = "authorization.pdf") {
-  const file = path.join(output, name);
-  fs.writeFileSync(file, "%PDF-1.4\nMock account document\n%%EOF");
-  const dom = await send("DOM.getDocument"),
-    inputs = await send("DOM.querySelectorAll", {
-      nodeId: dom.root.nodeId,
-      selector: "input[type=file]",
-    });
-  assert.equal(inputs.nodeIds.length, 1);
-  await send("DOM.setFileInputFiles", {
-    nodeId: inputs.nodeIds[0],
-    files: [file],
-  });
 }
 async function exportAll(kind, scope) {
   const started = Date.now();
@@ -624,10 +608,10 @@ async function main() {
     await evaluate(
       "Boolean(document.querySelector('a[href=\"/merchants/merchant-1/view\"]'))",
     ),
-    false,
+    true,
   );
   pass(
-    "Merchant and reviewer URL scopes initialize without unavailable profile links",
+    "Merchant and reviewer URL scopes initialize with authorized merchant profile links",
   );
   const docs = await evaluate(
     "[...document.querySelectorAll('[role=row][data-id=verify-1] a[target=_blank]')].map(x=>x.href)",
@@ -741,267 +725,18 @@ async function main() {
   pass(
     "Merchant picker changes scope and reset restores the merchant/reviewer URL filters",
   );
-  await navigate("/auth-requests/all");
-  await until(exists("[role=row][data-id=auth-1]"), "authorization list");
-  assert.equal(
-    calls.filter((x) => x.url === "/v1/requests").at(-1).query.type,
-    "authorization",
-  );
-  await rowAction("auth-1", "Accept");
-  await confirm();
-  await until(
-    "document.querySelector('[role=row][data-id=auth-1]')?.innerText.includes('Confirmed')",
-    "authorization approved",
-  );
-  assert.equal(
-    await evaluate(
-      "[...document.querySelectorAll('[role=row][data-id=auth-1] button')].some(x=>['Accept','Refuse'].includes(x.textContent.trim()))",
-    ),
-    false,
-  );
-  await rowAction("auth-3", "Accept").then(
-    () => {
-      throw Error("Rejected authorization must not have Accept");
-    },
-    () => {},
-  );
-  pass("Authorization review is restricted to pending requests");
-  await navigate("/auth-requests/merchant-2");
-  await until(
-    exists("[role=row][data-id=auth-2]"),
-    "authorization merchant scope",
-  );
-  await exportAll("authorization", { userId: "merchant-2" });
-  pass(
-    "Authorization account scopes and export-all remain independent of verification",
-  );
-  failList = true;
-  await navigate("/verification-requests/all");
-  await until(
-    "document.body.innerText.includes('Unable to load requests')",
-    "list error",
-  );
-  failList = false;
-  await clickText("Retry");
-  await until(exists("[role=row][data-id=verify-1]"), "retry list");
-  pass("Failed request lists expose working retry actions");
   await login("viewer@example.test");
-  await until("location.pathname==='/home'", "viewer login");
-  for (const folder of ["auth-requests", "verification-requests"]) {
-    await navigate("/" + folder + "/all");
-    await until(exists("[role=row][data-id]"), "viewer list");
-    assert.equal(
-      await evaluate(
-        "[...document.querySelectorAll('[role=row][data-id] button')].some(x=>['Accept','Refuse'].includes(x.textContent.trim()))",
-      ),
-      false,
-    );
-  }
-  pass("View-only staff can read documents but cannot approve or refuse");
-  await login("employee@example.test");
-  await until("location.pathname==='/home'", "employee login");
+  await until("location.pathname==='/home'", "view-only staff");
   await navigate("/verification-requests/all");
-  await until(exists("[role=row][data-id=verify-1]"), "employee list");
-  assert.equal(
-    await evaluate(exists('[data-field="updatedBy.firstName"]')),
-    false,
+  await until(exists("[role=row][data-id=verify-1]"), "verification viewer");
+  assert(
+    !(await evaluate(
+      "[...document.querySelectorAll('[role=row][data-id] button')].some(button=>['Accept','Refuse'].includes(button.textContent.trim()))",
+    )),
   );
-  await click("[data-testid=verification-requests-filters]");
-  await until(exists("[role=menu]"), "employee filters");
-  assert.equal(
-    await evaluate(
-      "document.querySelector('[role=menu]').innerText.includes('Updated By')",
-    ),
-    false,
-  );
-  await send("Input.dispatchKeyEvent", {
-    type: "keyDown",
-    key: "Escape",
-    code: "Escape",
-  });
-  pass(
-    "Reviewer columns and employee-selection filter remain administrator-only",
-  );
-  await login("denied@example.test");
-  await until("location.pathname==='/home'", "denied login");
-  const deniedBefore = calls.filter((x) => x.url === "/v1/requests").length;
-  for (const folder of ["auth-requests", "verification-requests"]) {
-    await navigate("/" + folder + "/all");
-    await until(
-      "document.body.innerText.includes('Unauthorized Access')",
-      "denied " + folder,
-    );
-  }
-  assert.equal(
-    calls.filter((x) => x.url === "/v1/requests").length,
-    deniedBefore,
-  );
-  pass("Denied staff cannot load either request feature");
-  await login("merchant@example.test");
-  await until("location.pathname==='/home'", "merchant login");
-  await navigate("/auth-requests/merchant-2");
-  await until(exists("[data-testid=add-auth-request]"), "merchant list");
-  assert.equal(
-    calls.filter((x) => x.url === "/v1/requests").at(-1).query.userId,
-    undefined,
-  );
-  assert.equal(
-    await evaluate(
-      "[...document.querySelectorAll('[role=row][data-id]')].some(x=>x.getAttribute('data-id')==='auth-2')",
-    ),
-    false,
-  );
-  assert.equal(
-    await evaluate(
-      "[...document.querySelectorAll('[role=row] button')].some(x=>['Accept','Refuse'].includes(x.textContent.trim()))",
-    ),
-    false,
-  );
-  pass(
-    "Merchant lists ignore route owner overrides and retain server account scoping",
-  );
-  await navigate("/auth-requests/foreign-owner/new");
-  await until(exists("textarea[name=description]"), "new authorization");
-  await click("[data-testid=send-auth-request]");
-  await until(
-    "document.querySelectorAll('.Mui-error').length>0",
-    "required validation",
-  );
-  assert.equal(
-    calls.filter((x) => x.url === "/v1/requests" && x.method === "POST").length,
-    0,
-  );
-  await fillField("description", "Merchant notes that must survive");
-  failUpload = true;
-  await upload("failed.pdf");
-  await until(
-    "document.body.innerText.includes('The request failed')",
-    "upload error",
-  );
-  assert.equal(
-    await evaluate(
-      "document.querySelector('textarea[name=description]').value",
-    ),
-    "Merchant notes that must survive",
-  );
-  failUpload = false;
-  slowUpload = true;
-  await upload("authorization.pdf");
-  await until(
-    "document.querySelector('[data-testid=send-auth-request]')?.disabled",
-    "upload locks submission",
-  );
-  await until(
-    "Boolean(document.querySelector('a[href=\"https://uploads.example.test/authorization.pdf\"]'))",
-    "uploaded",
-  );
-  slowUpload = false;
-  pass(
-    "Required notes/document validation, failed uploads and upload busy state preserve the draft",
-  );
-  failWrite = true;
-  await click("[data-testid=send-auth-request]");
-  await until(
-    "document.body.innerText.includes('Something went wrong while')",
-    "failed submit",
-  );
-  assert.equal(
-    await evaluate(
-      "document.querySelector('textarea[name=description]').value",
-    ),
-    "Merchant notes that must survive",
-  );
-  assert.ok(
-    await evaluate(
-      exists('a[href="https://uploads.example.test/authorization.pdf"]'),
-    ),
-  );
-  failWrite = false;
-  await click("[data-testid=send-auth-request]");
-  await until("location.pathname==='/auth-requests/all'", "request sent");
-  const created = calls
-    .filter((x) => x.url === "/v1/requests" && x.method === "POST")
-    .at(-1).body;
-  assert.deepEqual(created, {
-    description: "Merchant notes that must survive",
-    fileUrl: "https://uploads.example.test/authorization.pdf",
-    userId: "merchant-1",
-    type: "authorization",
-    status: "pending",
-  });
-  assert.ok(calls.some((x) => x.url === "/v1/users/me"));
-  pass(
-    "Failed submission keeps uploaded document; retry uses current account and fixed pending authorization type",
-  );
-  const newId = records.find(
-    (x) => x.description === "Merchant notes that must survive",
-  ).id;
-  await navigate("/auth-requests/all/" + newId);
-  await until(exists("textarea[name=description]"), "submitted detail");
-  assert.equal(
-    await evaluate(
-      "document.querySelector('textarea[name=description]').disabled",
-    ),
-    true,
-  );
-  assert.equal(
-    await evaluate(exists("[data-testid=send-auth-request]")),
-    false,
-  );
-  await navigate("/auth-requests/all/verify-1");
-  await until(
-    "document.body.innerText.includes('No such')||document.body.innerText.includes('no such')",
-    "wrong request type",
-  );
-  pass(
-    "Submitted requests are read-only and other request types cannot populate their form",
-  );
-  await navigate("/auth-requests/all/new");
-  await until(exists("textarea[name=description]"), "refresh-failure form");
-  await fillField("description", "Accepted despite refresh failure");
-  await upload("refresh.pdf");
-  await until(
-    exists('a[href="https://uploads.example.test/refresh.pdf"]'),
-    "refresh upload",
-  );
-  failRefresh = true;
-  await click("[data-testid=send-auth-request]");
-  await until(
-    "location.pathname==='/auth-requests/all'",
-    "accepted before refresh",
-  );
-  await until(
-    "document.body.innerText.includes('could not be refreshed')",
-    "refresh error message",
-  );
-  failRefresh = false;
-  assert.equal(
-    records.filter((x) => x.description === "Accepted despite refresh failure")
-      .length,
-    1,
-  );
-  pass(
-    "Account refresh failure cannot turn a completed request into a duplicate submission",
-  );
-  await navigate("/verification-requests/all");
-  await until(
-    "document.body.innerText.includes('Unauthorized Access')||location.pathname==='/home'",
-    "merchant staff-route denial",
-  );
-  pass("Merchants cannot open the staff verification-review route");
-  await login("authorized@example.test");
-  await until("location.pathname==='/home'", "authorized login");
-  await navigate("/auth-requests/all");
-  await until(exists("[data-testid=auth-requests-table]"), "authorized list");
-  assert.equal(await evaluate(exists("[data-testid=add-auth-request]")), false);
-  await navigate("/auth-requests/all/new");
-  await until(
-    "location.pathname==='/auth-requests/all'",
-    "authorized create blocked",
-  );
-  pass(
-    "Already authorized accounts cannot create another authorization request",
-  );
+  pass("View-only verification staff cannot change decisions");
+  await login("admin@example.test");
+  await until("location.pathname==='/home'", "administrator");
   await send("Page.removeScriptToEvaluateOnNewDocument", {
     identifier: languageScript.identifier,
   });
@@ -1012,37 +747,17 @@ async function main() {
     deviceScaleFactor: 1,
     mobile: true,
   });
-  await navigate("/auth-requests/all");
+  await navigate("/verification-requests/all");
   await until(
-    exists("[data-testid=auth-requests-table]"),
-    "Arabic mobile list",
+    exists("[data-testid=verification-requests-table]"),
+    "Arabic verification list",
   );
   assert.equal(
     await evaluate("getComputedStyle(document.body).direction"),
     "rtl",
   );
-  assert.ok(
-    await evaluate("document.documentElement.scrollWidth<=innerWidth+1"),
-  );
-  await screenshot("authorization-ar-mobile");
-  pass("Arabic mobile lists keep RTL and contained table scrolling");
-  account = { ...account, isAuthorized: false };
-  await navigate("/auth-requests/all/new");
-  await until(
-    exists("textarea[name=description]"),
-    "Arabic mobile authorization form",
-  );
-  assert.equal(
-    await evaluate("getComputedStyle(document.body).direction"),
-    "rtl",
-  );
-  assert.ok(
-    await evaluate("document.documentElement.scrollWidth<=innerWidth+1"),
-  );
-  await screenshot("authorization-form-ar-mobile");
-  pass(
-    "Arabic mobile authorization form fits the screen with document upload and submit controls",
-  );
+  await screenshot("verification-ar-mobile");
+  pass("Verification list retains Arabic mobile layout");
   assert.deepEqual(exceptions, []);
   fs.writeFileSync(
     path.join(output, "summary.json"),

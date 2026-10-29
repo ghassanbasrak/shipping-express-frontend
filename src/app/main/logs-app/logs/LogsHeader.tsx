@@ -1,8 +1,14 @@
-import { Button, Input, Paper, Typography } from "@mui/material";
+import FeatureHeader, {
+  FeatureHeaderRow,
+  FeatureHeaderHeading,
+  FeatureHeaderToolbar,
+  FeatureHeaderFilter,
+} from "app/shared-components/feature-header/FeatureHeader";
+import { Button, Input } from "@mui/material";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import FuseSvgIcon from "@fuse/core/FuseSvgIcon";
-import FilterIcon from "app/shared-components/filter-icon/FilterIcon";
+
 import { FilterTypes } from "app/shared-components/filter-icon/Utils";
 import { useAppDispatch } from "app/store/hooks";
 import { GetLogsApiArg } from "../LogsApi";
@@ -21,12 +27,33 @@ export default function LogsHeader() {
     dispatch = useAppDispatch(),
     filters = useSelector(selectLogsFilters) as GetLogsApiArg;
   return (
-    <div className="flex flex-wrap justify-between items-center gap-16 w-full p-24 sm:p-32">
-      <Typography className="text-24 md:text-32 font-bold">
-        {t("LOGS")}
-      </Typography>
-      <div className="flex flex-wrap items-center gap-8">
-        <FilterIcon
+    <FeatureHeader>
+      <FeatureHeaderRow>
+        <div className="flex-1 min-w-0">
+          <FeatureHeaderHeading feature="logs-app">
+            {t("LOGS")}
+          </FeatureHeaderHeading>
+        </div>
+      </FeatureHeaderRow>
+      <FeatureHeaderToolbar
+        search={
+          <>
+            <Input
+              className="text-12 min-h-36 flex-1"
+              disableUnderline
+              fullWidth={true}
+              value={filters.searchText}
+              placeholder={t("SEARCH_LOGS")}
+              inputProps={{
+                "data-testid": "logs-search",
+                "aria-label": t("SEARCH_LOGS"),
+              }}
+              onChange={(event) => dispatch(setLogsSearchText(event))}
+            />
+          </>
+        }
+      >
+        <FeatureHeaderFilter
           componentProps={{
             "data-testid": "logs-filters",
             "aria-label": t("FILTER_LOGS"),
@@ -91,27 +118,18 @@ export default function LogsHeader() {
           ]}
         />
         <Button
+          startIcon={
+            <FuseSvgIcon size={16}>heroicons-outline:refresh</FuseSvgIcon>
+          }
+          size="small"
+          className="rounded-8 min-h-36 px-12 text-12 flex-1 sm:flex-initial whitespace-nowrap"
           color="primary"
           variant="outlined"
           onClick={() => dispatch(newLogsInstance(null))}
         >
           {t("RESET_FILTERS")}
         </Button>
-        <Paper className="flex items-center w-full sm:max-w-256 gap-8 px-16 rounded-8 border-1 shadow-0">
-          <FuseSvgIcon color="disabled">heroicons-solid:search</FuseSvgIcon>
-          <Input
-            disableUnderline
-            fullWidth
-            value={filters.searchText}
-            placeholder={t("SEARCH_LOGS")}
-            inputProps={{
-              "data-testid": "logs-search",
-              "aria-label": t("SEARCH_LOGS"),
-            }}
-            onChange={(event) => dispatch(setLogsSearchText(event))}
-          />
-        </Paper>
-      </div>
-    </div>
+      </FeatureHeaderToolbar>
+    </FeatureHeader>
   );
 }

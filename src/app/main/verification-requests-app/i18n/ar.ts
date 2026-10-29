@@ -55,7 +55,6 @@ const locale = {
   LOAD_ERROR: "تعذر تحميل الطلبات. يرجى إعادة المحاولة.",
   USER_LOOKUP_ERROR: "تعذر تحميل الحساب المحدد. يرجى إعادة المحاولة.",
   RESET_FILTERS: "إعادة ضبط الفلاتر",
-  NO_AUTH_REQUESTS: "لا توجد طلبات تفويض",
   FILTER_REQUESTS: "تصفية الطلبات",
 };
 export default locale;

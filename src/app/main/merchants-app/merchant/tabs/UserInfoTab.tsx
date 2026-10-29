@@ -228,16 +228,7 @@ export default function UserInfoTab({ merchant }: { merchant: IMerchant }) {
           />
         ))}
       </div>
-      {self && !merchant.isAuthorized && (
-        <Button
-          color="primary"
-          variant="outlined"
-          component={Link}
-          to="/auth-requests/all/new"
-        >
-          {t("AUTHORIZE")}
-        </Button>
-      )}
+
       {self &&
         !["approved", "pending"].includes(merchant.verificationStatus) && (
           <Button

@@ -48,7 +48,6 @@ function load(file, imports = {}) {
   return exports;
 }
 const lodash = require(path.join(target, "node_modules/lodash"));
-
 const plain = (x) => JSON.parse(JSON.stringify(x));
 let passed = 0;
 function check(name, fn) {
@@ -65,32 +64,10 @@ const validations = load("src/app/main/utils/validations.ts", {
   "src/i18n": { t: (k) => k },
   validator: require(path.join(target, "node_modules/validator")),
 });
-const schema = load(
-  "src/app/main/auth-requests-app/models/AuthRequestSchema.ts",
-  { "src/app/main/utils/validations": validations },
-).authRequestSchema((k) => k);
 const toolkit = require(path.join(target, "node_modules/@reduxjs/toolkit"));
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 async function main() {
-  check(
-    "authorization requires notes and uploaded file; populations are not form contracts",
-    () => {
-      assert.equal(
-        schema.safeParse({
-          description: "Account documents",
-          fileUrl: "https://uploads.example.test/doc.pdf",
-        }).success,
-        true,
-      );
-      for (const value of [
-        { description: "", fileUrl: "x" },
-        { description: "Notes", fileUrl: "" },
-      ])
-        assert.equal(schema.safeParse(value).success, false);
-    },
-  );
   for (const [entity, plural, folder, kind, verification] of [
-    ["AuthRequest", "AuthRequests", "auth-requests", "authorization", false],
     [
       "VerificationRequest",
       "VerificationRequests",
@@ -125,22 +102,18 @@ async function main() {
         assert.equal(model.default({}).type, kind);
       },
     );
-    check(
-      entity +
-        ": decision rules preserve pending-only authorization and reversible verification",
-      () => {
-        const review = utils["canReview" + entity];
-        for (const current of ["pending", "approved", "rejected"])
-          for (const next of ["approved", "rejected"])
-            assert.equal(
-              review(current, next),
-              verification ? current !== next : current === "pending",
-              current + " -> " + next,
-            );
-        assert.equal(review("unknown", "approved"), false);
-        assert.equal(review("pending", "pending"), false);
-      },
-    );
+    check(entity + ": decision rules preserve reversible verification", () => {
+      const review = utils["canReview" + entity];
+      for (const current of ["pending", "approved", "rejected"])
+        for (const next of ["approved", "rejected"])
+          assert.equal(
+            review(current, next),
+            current !== next,
+            current + " -> " + next,
+          );
+      assert.equal(review("unknown", "approved"), false);
+      assert.equal(review("pending", "pending"), false);
+    });
     check(
       entity + ": enum titles/colors and scoped routes retain backend values",
       () => {
@@ -153,7 +126,7 @@ async function main() {
           "bg-red-600",
         );
         assert.equal(utils[lists + "Path"]("owner"), "/" + folder + "/owner");
-        if (verification) {
+        {
           assert.equal(
             utils.toVerificationRequestUserTypeTitle("smallStore"),
             "SMALL_STORE",
@@ -182,14 +155,14 @@ async function main() {
         );
         assert.equal(s.pageSize, 10);
         assert.equal(s.userIdFilter, "owner");
-        if (verification) assert.equal(s.updatedByIdFilter, "reviewer");
+        assert.equal(s.updatedByIdFilter, "reviewer");
         for (const [field, value] of [
           ["SearchText", { target: { value: "A & B" } }],
           ["StatusFilter", "pending"],
           ["UserIdFilter", "next"],
           ["DateFromFilter", new Date("2026-10-01T00:00:00Z")],
           ["DateToFilter", new Date("2026-10-22T00:00:00Z")],
-          ...(verification ? [["UpdatedByIdFilter", "second"]] : []),
+          ...[["UpdatedByIdFilter", "second"]],
         ]) {
           s = slice.default(s, slice["set" + plural + "Page"](3));
           s = slice.default(s, slice["set" + plural + field](value));
@@ -246,7 +219,7 @@ async function main() {
               status: "pending",
               dateFrom: "2026-10-01",
               dateTo: "2026-10-22",
-              ...(verification ? { updatedById: "reviewer" } : {}),
+              ...{ updatedById: "reviewer" },
             });
             return [
               200,
@@ -298,8 +271,7 @@ async function main() {
             assert.equal(config.params.userId, "owner");
             assert.equal(config.params.type, kind);
             assert.equal(config.params.status, "rejected");
-            if (verification)
-              assert.equal(config.params.updatedById, "reviewer");
+            assert.equal(config.params.updatedById, "reviewer");
             return [200, { results: [], total: 0 }];
           });
           await request("get" + plural, {
@@ -402,66 +374,39 @@ async function main() {
           assert.equal(mock.history.delete.length, 0);
         },
       );
-      if (!verification)
-        await checkAsync(
-          "authorization create forces type/status and strips populations, IDs and metadata",
-          async () => {
-            mock.onPost("v1/requests").reply((config) => {
-              assert.deepEqual(JSON.parse(config.data), {
-                description: "Notes",
-                fileUrl: "https://uploads.example.test/doc.pdf",
-                userId: "owner",
-                type: "authorization",
+      await checkAsync(
+        "onboarding verification submission invalidates the migrated review list",
+        async () => {
+          const auth = load("src/app/main/auth-app/AuthApi.ts", {
+            "app/store/apiService": api,
+          });
+          mock.onPost("v1/requests").reply(200, { id: "new-verification" });
+          const before = mock.history.get.filter(
+            (x) => x.url === "v1/requests",
+          ).length;
+          await store
+            .dispatch(
+              api.endpoints.submitVerification.initiate({
+                type: "verification",
                 status: "pending",
-              });
-              return [200, { id: "created" }];
-            });
-            await request("createAuthRequest", {
-              id: "foreign",
-              description: "Notes",
-              fileUrl: "https://uploads.example.test/doc.pdf",
-              userId: "owner",
-              user: { id: "foreign" },
-              status: "approved",
-              type: "verification",
-              updatedById: "foreign",
-            });
-          },
-        );
-      if (verification)
-        await checkAsync(
-          "onboarding verification submission invalidates the migrated review list",
-          async () => {
-            const auth = load("src/app/main/auth-app/AuthApi.ts", {
-              "app/store/apiService": api,
-            });
-            mock.onPost("v1/requests").reply(200, { id: "new-verification" });
-            const before = mock.history.get.filter(
-              (x) => x.url === "v1/requests",
-            ).length;
-            await store
-              .dispatch(
-                api.endpoints.submitVerification.initiate({
-                  type: "verification",
-                  status: "pending",
-                  userId: "owner",
-                }),
-              )
-              .unwrap();
-            for (
-              let i = 0;
-              i < 30 &&
-              mock.history.get.filter((x) => x.url === "v1/requests").length ===
-                before;
-              i++
+                userId: "owner",
+              }),
             )
-              await sleep(10);
-            assert.ok(
-              mock.history.get.filter((x) => x.url === "v1/requests").length >
-                before,
-            );
-          },
-        );
+            .unwrap();
+          for (
+            let i = 0;
+            i < 30 &&
+            mock.history.get.filter((x) => x.url === "v1/requests").length ===
+              before;
+            i++
+          )
+            await sleep(10);
+          assert.ok(
+            mock.history.get.filter((x) => x.url === "v1/requests").length >
+              before,
+          );
+        },
+      );
     } finally {
       subscriptions.forEach((x) => x.unsubscribe?.());
       store.dispatch(api.util.resetApiState());
@@ -475,7 +420,7 @@ async function main() {
         fs.readFileSync(path.join(target, "migration-status.json"), "utf8"),
       );
       assert.equal(ledger.features.length, 32);
-      for (const name of ["auth-requests-app", "verification-requests-app"])
+      for (const name of ["verification-requests-app"])
         assert.equal(
           ledger.features.find((x) => x.feature === name).status,
           "migrated",
