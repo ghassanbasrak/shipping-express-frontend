@@ -72,7 +72,13 @@ export default function NamingConfigSection({
         <Alert
           severity="warning"
           action={
-            <Button onClick={() => languages.refetch()}>{t("RETRY")}</Button>
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={() => languages.refetch()}
+            >
+              {t("RETRY")}
+            </Button>
           }
         >
           {t("LANGUAGES_ERROR")}
@@ -82,7 +88,13 @@ export default function NamingConfigSection({
         <Alert
           severity="error"
           action={
-            <Button onClick={() => companies.refetch()}>{t("RETRY")}</Button>
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={() => companies.refetch()}
+            >
+              {t("RETRY")}
+            </Button>
           }
         >
           {t("LOOKUP_ERROR")}

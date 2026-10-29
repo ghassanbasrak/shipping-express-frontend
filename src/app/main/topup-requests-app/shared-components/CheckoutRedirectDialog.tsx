@@ -52,12 +52,14 @@ export default function CheckoutRedirectDialog({
       </DialogContent>
       <DialogActions>
         {url && (
-          <Button component="a" href={url}>
+          <Button color="primary" variant="outlined" component="a" href={url}>
             {t("PROCEED_TO_PAYMENT")}
           </Button>
         )}
         {!url && onRetry && (
           <Button
+            color="primary"
+            variant="outlined"
             disabled={busy}
             onClick={onRetry}
             data-testid="retry-checkout"
@@ -65,7 +67,12 @@ export default function CheckoutRedirectDialog({
             {t("RETRY")}
           </Button>
         )}
-        <Button disabled={busy} onClick={onClose}>
+        <Button
+          color="primary"
+          variant="outlined"
+          disabled={busy}
+          onClick={onClose}
+        >
           {t("CLOSE")}
         </Button>
       </DialogActions>

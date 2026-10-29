@@ -179,6 +179,8 @@ export default function PaymentPage() {
             <div className="flex flex-wrap gap-8 justify-center">
               {state.retry && (
                 <Button
+                  color="primary"
+                  variant="outlined"
                   onClick={() => setAttempt((value) => value + 1)}
                   data-testid="retry-callback"
                 >
@@ -186,14 +188,29 @@ export default function PaymentPage() {
                 </Button>
               )}
               {state.signOut && (
-                <Button component={Link} to="/sign-out">
+                <Button
+                  color="primary"
+                  variant="outlined"
+                  component={Link}
+                  to="/sign-out"
+                >
                   {t("SIGN_OUT")}
                 </Button>
               )}
-              <Button component={Link} to="/home">
+              <Button
+                color="primary"
+                variant="outlined"
+                component={Link}
+                to="/home"
+              >
                 {t("GO_TO_HOME")}
               </Button>
-              <Button component={Link} to="/topup-requests/all">
+              <Button
+                color="primary"
+                variant="outlined"
+                component={Link}
+                to="/topup-requests/all"
+              >
                 {t("GO_TO_TOPUP_REQUESTS")}
               </Button>
             </div>

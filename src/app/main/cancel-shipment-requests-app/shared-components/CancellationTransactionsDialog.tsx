@@ -44,7 +44,13 @@ export default function CancellationTransactionsDialog({
           <Alert
             severity="error"
             action={
-              <Button onClick={() => query.refetch()}>{t("RETRY")}</Button>
+              <Button
+                color="primary"
+                variant="outlined"
+                onClick={() => query.refetch()}
+              >
+                {t("RETRY")}
+              </Button>
             }
           >
             {t("TRANSACTIONS_LOAD_ERROR")}
@@ -58,7 +64,9 @@ export default function CancellationTransactionsDialog({
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>{t("CLOSE")}</Button>
+        <Button color="primary" variant="outlined" onClick={onClose}>
+          {t("CLOSE")}
+        </Button>
       </DialogActions>
     </Dialog>
   );

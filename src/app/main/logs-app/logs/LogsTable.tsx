@@ -165,6 +165,8 @@ export default function LogsTable() {
       renderCell: ({ row }) => (
         <div className="flex flex-wrap gap-4 py-8">
           <Button
+            color="primary"
+            variant="outlined"
             size="small"
             onClick={() =>
               setRaw(
@@ -177,6 +179,8 @@ export default function LogsTable() {
             {t("VIEW")}
           </Button>
           <Button
+            color="primary"
+            variant="outlined"
             size="small"
             onClick={() =>
               navigate(`/logs/${encodeURIComponent(row.id || row._id)}`)
@@ -187,6 +191,8 @@ export default function LogsTable() {
           {logShipmentPath(row) &&
             hasOperationPermission("shipments", "view", user) && (
               <Button
+                color="primary"
+                variant="outlined"
                 size="small"
                 onClick={() => navigate(logShipmentPath(row))}
               >
@@ -196,6 +202,8 @@ export default function LogsTable() {
           {logSnapshots(row)[0]?.reference &&
             hasOperationPermission("transactions", "view", user) && (
               <Button
+                color="primary"
+                variant="outlined"
                 size="small"
                 onClick={() => navigate("/transactions/all/wallet")}
               >
@@ -205,6 +213,8 @@ export default function LogsTable() {
           {logSnapshots(row)[0]?.reference &&
             hasOperationPermission("payments", "view", user) && (
               <Button
+                color="primary"
+                variant="outlined"
                 size="small"
                 onClick={() => navigate("/topup-requests/all")}
               >
@@ -224,7 +234,15 @@ export default function LogsTable() {
       {query.isError && (
         <Alert
           severity="error"
-          action={<Button onClick={() => query.refetch()}>{t("RETRY")}</Button>}
+          action={
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={() => query.refetch()}
+            >
+              {t("RETRY")}
+            </Button>
+          }
         >
           {t("LOAD_ERROR")}
         </Alert>
@@ -263,7 +281,13 @@ export default function LogsTable() {
         <DialogTitle id="log-json-title">{t("LOG")}</DialogTitle>
         <DialogContent>{raw && <LogJson log={raw} />}</DialogContent>
         <DialogActions>
-          <Button onClick={() => setRaw(undefined)}>{t("CLOSE")}</Button>
+          <Button
+            color="primary"
+            variant="outlined"
+            onClick={() => setRaw(undefined)}
+          >
+            {t("CLOSE")}
+          </Button>
         </DialogActions>
       </Dialog>
     </div>

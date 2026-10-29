@@ -86,7 +86,13 @@ export default function AffiliateInfoTab({
         <Alert
           severity="error"
           action={
-            <Button onClick={() => summary.refetch()}>{t("RETRY")}</Button>
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={() => summary.refetch()}
+            >
+              {t("RETRY")}
+            </Button>
           }
         >
           {t("SUMMARY_ERROR")}
@@ -104,7 +110,15 @@ export default function AffiliateInfoTab({
                       ? Currency(Number(value) || 0)
                       : value || 0}
                 </Typography>
-                {tab && <Button onClick={() => onTab(tab)}>{t("VIEW")}</Button>}
+                {tab && (
+                  <Button
+                    color="primary"
+                    variant="outlined"
+                    onClick={() => onTab(tab)}
+                  >
+                    {t("VIEW")}
+                  </Button>
+                )}
               </CardContent>
             </Card>
           ))}
@@ -189,6 +203,8 @@ export default function AffiliateInfoTab({
                 {(self ||
                   hasOperationPermission("merchants", "view", user)) && (
                   <Button
+                    color="primary"
+                    variant="outlined"
                     component={Link}
                     to={self ? "/profile" : `/merchants/${affiliate.id}/view`}
                   >
@@ -196,12 +212,19 @@ export default function AffiliateInfoTab({
                   </Button>
                 )}
                 {!self && canUpdateMerchant(user) && (
-                  <Button component={Link} to={`/merchants/${affiliate.id}`}>
+                  <Button
+                    color="primary"
+                    variant="outlined"
+                    component={Link}
+                    to={`/merchants/${affiliate.id}`}
+                  >
                     {t("EDIT_ACCOUNT")}
                   </Button>
                 )}
                 {!self && canAdjustMerchantBalance(user) && (
                   <Button
+                    color="primary"
+                    variant="outlined"
                     component={Link}
                     to={`/transactions/${affiliate.id}/all/new`}
                   >
@@ -210,6 +233,7 @@ export default function AffiliateInfoTab({
                 )}
                 {!self && canBlockMerchant(user) && (
                   <Button
+                    variant="outlined"
                     onClick={() => setDeactivate(true)}
                     color="warning"
                     data-testid="deactivate-affiliate"
@@ -236,7 +260,13 @@ export default function AffiliateInfoTab({
             <Alert
               severity="error"
               action={
-                <Button onClick={() => carriers.refetch()}>{t("RETRY")}</Button>
+                <Button
+                  color="primary"
+                  variant="outlined"
+                  onClick={() => carriers.refetch()}
+                >
+                  {t("RETRY")}
+                </Button>
               }
             >
               {t("LOAD_CARRIERS_ERROR")}

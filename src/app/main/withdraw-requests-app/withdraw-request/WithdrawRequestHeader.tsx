@@ -1,3 +1,5 @@
+import FuseSvgIcon from "@fuse/core/FuseSvgIcon";
+import { useTheme } from "@mui/material/styles";
 import { useRef, useState } from "react";
 import { Button, Chip, Typography } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
@@ -28,6 +30,7 @@ export default function WithdrawRequestHeader({
   blocked: boolean;
   balance?: number;
 }) {
+  const theme = useTheme();
   const { t } = useTranslation("withdrawRequestsApp"),
     dispatch = useAppDispatch(),
     user = useAppSelector(selectUser),
@@ -104,9 +107,22 @@ export default function WithdrawRequestHeader({
   return (
     <div className="flex flex-col sm:flex-row gap-16 flex-1 w-full items-center justify-between py-32 px-24 md:px-32">
       <div>
-        <Button component={Link} to="/withdraw-requests/all">
-          {t("WITHDRAW_REQUESTS")}
-        </Button>
+        <Typography
+          className="flex items-center sm:mb-12"
+          component={Link}
+          role="button"
+          to="/withdraw-requests/all"
+          color="inherit"
+        >
+          <FuseSvgIcon size={20}>
+            {theme.direction === "ltr"
+              ? "heroicons-outline:arrow-sm-left"
+              : "heroicons-outline:arrow-sm-right"}
+          </FuseSvgIcon>
+          <span className="flex mx-4 font-medium">
+            {t("WITHDRAW_REQUESTS")}
+          </span>
+        </Typography>
         <Typography className="text-20 font-semibold">
           {t(isNew ? "ADD_NEW_WITHDRAW_REQUEST" : "WITHDRAW_REQUEST_DETAILS")}
         </Typography>
@@ -129,6 +145,7 @@ export default function WithdrawRequestHeader({
           user.role === "user" &&
           (["walletCharge", "withdrew"] as const).map((type) => (
             <LoadingButton
+              color="primary"
               key={type}
               variant="contained"
               loading={checking || creating.isLoading}
@@ -143,7 +160,12 @@ export default function WithdrawRequestHeader({
               )}
             </LoadingButton>
           ))}
-        <Button component={Link} to="/withdraw-requests/all">
+        <Button
+          color="primary"
+          variant="outlined"
+          component={Link}
+          to="/withdraw-requests/all"
+        >
           {t("CANCEL")}
         </Button>
       </div>

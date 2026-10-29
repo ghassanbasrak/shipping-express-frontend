@@ -58,7 +58,15 @@ export default function CustomersTab({ affiliate }: { affiliate: IMerchant }) {
       {query.isError ? (
         <Alert
           severity="error"
-          action={<Button onClick={() => query.refetch()}>{t("RETRY")}</Button>}
+          action={
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={() => query.refetch()}
+            >
+              {t("RETRY")}
+            </Button>
+          }
         >
           {t("LOAD_ERROR")}
         </Alert>
@@ -113,6 +121,8 @@ export default function CustomersTab({ affiliate }: { affiliate: IMerchant }) {
                 )}
                 {canEditCustomerPrices(user) && (
                   <Button
+                    color="primary"
+                    variant="outlined"
                     disabled={
                       !carriers.currentData ||
                       carriers.isFetching ||
@@ -138,7 +148,13 @@ export default function CustomersTab({ affiliate }: { affiliate: IMerchant }) {
         <Alert
           severity="error"
           action={
-            <Button onClick={() => carriers.refetch()}>{t("RETRY")}</Button>
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={() => carriers.refetch()}
+            >
+              {t("RETRY")}
+            </Button>
           }
         >
           {t("LOAD_CARRIERS_ERROR")}

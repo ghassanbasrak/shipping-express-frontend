@@ -1,5 +1,14 @@
 const locale = {
-  TOPUP_REQUESTS: "Topup Requests",
+  WALLET_AND_PAYMENTS: "WALLET & PAYMENTS",
+  TOPUP_LIST_DESCRIPTION:
+    "Track payments and keep your wallet funding in view.",
+  TOPUP_CREATE_DESCRIPTION:
+    "Choose an amount and continue to secure checkout to fund your wallet.",
+  TOPUP_DETAIL_DESCRIPTION:
+    "Review your payment details and checkout status in one place.",
+  TOPUP_FILTERS: "Filters",
+  TOPUP_ACTIVE_FILTERS: "Active filters",
+  TOPUP_REQUESTS: "Top-up requests",
   SEARCH_TOPUP_REQUESTS: "Search Topup Requests",
   ADD_TOPUP_REQUEST: "Add Topup Request",
   SAVE_TOPUP_REQUEST: "Save Topup Request",
@@ -185,5 +194,6 @@ const locale = {
   DETAILS: "Details",
   PAYMENT_PENDING: "Payment is pending",
   PROCEED_TO_PAYMENT: "Proceed to payment",
+  REFERENCE: "Reference",
 };
 export default locale;

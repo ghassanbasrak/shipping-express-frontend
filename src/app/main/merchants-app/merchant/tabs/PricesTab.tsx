@@ -61,7 +61,13 @@ export default function PricesTab({ disabled }: { disabled: boolean }) {
         <Alert
           severity="error"
           action={
-            <Button onClick={() => carriers.refetch()}>{t("RETRY")}</Button>
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={() => carriers.refetch()}
+            >
+              {t("RETRY")}
+            </Button>
           }
         >
           {t("LOOKUP_ERROR")}

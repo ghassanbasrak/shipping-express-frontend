@@ -108,7 +108,12 @@ export default function AuthRequestHeader({
             {t("SEND_AUTH_REQUEST")}
           </LoadingButton>
         )}
-        <Button component={Link} to="/auth-requests/all">
+        <Button
+          color="primary"
+          variant="outlined"
+          component={Link}
+          to="/auth-requests/all"
+        >
           {t("CANCEL")}
         </Button>
       </motion.div>

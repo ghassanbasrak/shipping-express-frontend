@@ -231,6 +231,8 @@ export default function MerchantDuesHeader({
             ]}
           />
           <Button
+            color="primary"
+            variant="outlined"
             onClick={() =>
               dispatch(
                 newMerchantDuesInstance({
@@ -269,7 +271,13 @@ export default function MerchantDuesHeader({
         <Alert
           severity="error"
           action={
-            <Button onClick={() => selected.refetch()}>{t("RETRY")}</Button>
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={() => selected.refetch()}
+            >
+              {t("RETRY")}
+            </Button>
           }
         >
           {t("USER_LOOKUP_ERROR")}
@@ -279,7 +287,13 @@ export default function MerchantDuesHeader({
         <Alert
           severity="error"
           action={
-            <Button onClick={() => summary.refetch()}>{t("RETRY")}</Button>
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={() => summary.refetch()}
+            >
+              {t("RETRY")}
+            </Button>
           }
         >
           {t("SUMMARY_LOAD_ERROR")}
@@ -309,6 +323,8 @@ export default function MerchantDuesHeader({
           severity="error"
           action={
             <Button
+              color="primary"
+              variant="outlined"
               onClick={() => {
                 if (carrierList.isError) carrierList.refetch();
                 if (carrierItem.isError) carrierItem.refetch();

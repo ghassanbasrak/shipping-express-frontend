@@ -90,7 +90,11 @@ export default function LogsHeader() {
             },
           ]}
         />
-        <Button onClick={() => dispatch(newLogsInstance(null))}>
+        <Button
+          color="primary"
+          variant="outlined"
+          onClick={() => dispatch(newLogsInstance(null))}
+        >
           {t("RESET_FILTERS")}
         </Button>
         <Paper className="flex items-center w-full sm:max-w-256 gap-8 px-16 rounded-8 border-1 shadow-0">

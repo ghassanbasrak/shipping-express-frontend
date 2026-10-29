@@ -64,6 +64,7 @@ export function AuthForm({
         )}
         {children}
         <LoadingButton
+          color="primary"
           type="submit"
           variant="contained"
           fullWidth
@@ -258,7 +259,15 @@ function PlaceField({
               />
             )}
           />
-          {isError && <Button onClick={() => refetch()}>↻</Button>}
+          {isError && (
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={() => refetch()}
+            >
+              ↻
+            </Button>
+          )}
         </div>
       )}
     />

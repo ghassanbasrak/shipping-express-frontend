@@ -32,11 +32,18 @@ function TableToolbar<T extends object>({
           : undefined
       }
     >
-      <div className="flex">
-        <GridToolbarColumnsButton />
-        <GridToolbarFilterButton />
-        <GridToolbarDensitySelector />
+      <div className="flex flex-wrap gap-8">
+        <GridToolbarColumnsButton
+          slotProps={{ button: { variant: "outlined", color: "primary" } }}
+        />
+        <GridToolbarFilterButton
+          slotProps={{ button: { variant: "outlined", color: "primary" } }}
+        />
+        <GridToolbarDensitySelector
+          slotProps={{ button: { variant: "outlined", color: "primary" } }}
+        />
         <GridToolbarExport
+          slotProps={{ button: { variant: "outlined", color: "primary" } }}
           csvOptions={{
             fileName: exportedFileName ?? "results",
             utf8WithBom: true,

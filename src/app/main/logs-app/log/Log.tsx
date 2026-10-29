@@ -29,8 +29,14 @@ export default function Log() {
     return (
       <div className="p-24 space-y-16">
         <Alert severity="error">{t("NO_SUCH_LOG")}</Alert>
-        <Button onClick={() => query.refetch()}>{t("RETRY")}</Button>
-        <Button component={Link} to="/logs">
+        <Button
+          color="primary"
+          variant="outlined"
+          onClick={() => query.refetch()}
+        >
+          {t("RETRY")}
+        </Button>
+        <Button color="primary" variant="outlined" component={Link} to="/logs">
           {t("GO_TO_LOGS")}
         </Button>
       </div>

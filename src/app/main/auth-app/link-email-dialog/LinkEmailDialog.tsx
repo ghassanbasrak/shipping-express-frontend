@@ -125,7 +125,11 @@ export default function LinkEmailDialog({
             </>
           )}
         </AuthForm>
-        <Button onClick={required ? auth.signOut : close}>
+        <Button
+          color="primary"
+          variant="outlined"
+          onClick={required ? auth.signOut : close}
+        >
           {t(required ? "SIGN_OUT" : "CHANGE_CONTACT")}
         </Button>
       </DialogContent>
@@ -148,6 +152,8 @@ function Resend({
     <>
       {error && <Alert severity="error">{t("ERROR")}</Alert>}
       <Button
+        color="primary"
+        variant="outlined"
         disabled={loading || challenge.seconds > 0}
         onClick={async () => {
           setLoading(true);
@@ -170,7 +176,9 @@ function Resend({
       >
         {t("RESEND")} {challenge.seconds > 0 && `(${challenge.seconds})`}
       </Button>
-      <Button onClick={onChange}>{t("CHANGE_CONTACT")}</Button>
+      <Button color="primary" variant="outlined" onClick={onChange}>
+        {t("CHANGE_CONTACT")}
+      </Button>
     </>
   );
 }

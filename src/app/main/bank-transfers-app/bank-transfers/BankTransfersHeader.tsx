@@ -152,6 +152,8 @@ export default function BankTransfersHeader() {
             ]}
           />
           <Button
+            color="primary"
+            variant="outlined"
             onClick={() =>
               dispatch(
                 newBankTransfersInstance({
@@ -185,7 +187,13 @@ export default function BankTransfersHeader() {
         <Alert
           severity="error"
           action={
-            <Button onClick={() => selectedUser.refetch()}>{t("RETRY")}</Button>
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={() => selectedUser.refetch()}
+            >
+              {t("RETRY")}
+            </Button>
           }
         >
           {t("USER_LOOKUP_ERROR")}

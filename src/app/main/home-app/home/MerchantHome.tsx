@@ -91,6 +91,8 @@ export default function MerchantHome() {
           <p>{t("SHIPMENT_INTRO")}</p>
           <div className="ov-hero-actions">
             <Button
+              color="primary"
+              variant="contained"
               className="ov-primary"
               component={Link}
               to="/shipments/all/all/new"
@@ -99,6 +101,7 @@ export default function MerchantHome() {
               {t("CREATE_SHIPMENT")}
             </Button>
             <Button
+              color="primary"
               className="ov-secondary"
               variant="outlined"
               component={Link}

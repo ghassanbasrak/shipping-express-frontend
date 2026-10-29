@@ -23,6 +23,7 @@ export default function BasicInfoTab({
       {disabled ? (
         fileUrl && (
           <Button
+            color="primary"
             component="a"
             href={fileUrl}
             target="_blank"
@@ -43,6 +44,7 @@ export default function BasicInfoTab({
           />
           {fileUrl && (
             <Button
+              variant="outlined"
               disabled={uploading}
               color="error"
               onClick={() =>

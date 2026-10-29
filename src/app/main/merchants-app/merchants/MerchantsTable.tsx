@@ -209,6 +209,8 @@ export default function MerchantsTable() {
     <div className="w-full flex flex-col h-full" data-testid="merchants-table">
       <div className="flex flex-wrap gap-8 p-8">
         <Button
+          color="primary"
+          variant="outlined"
           data-testid="sort-wallet"
           onClick={() =>
             dispatch(
@@ -225,6 +227,8 @@ export default function MerchantsTable() {
           {t("BALANCE")}: {filters.balanceSorting || t("ALL")}
         </Button>
         <Button
+          color="primary"
+          variant="outlined"
           data-testid="sort-cod"
           onClick={() =>
             dispatch(
@@ -247,7 +251,15 @@ export default function MerchantsTable() {
       {query.isError && (
         <Alert
           severity="error"
-          action={<Button onClick={() => query.refetch()}>{t("RETRY")}</Button>}
+          action={
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={() => query.refetch()}
+            >
+              {t("RETRY")}
+            </Button>
+          }
         >
           {t("LOAD_ERROR")}
         </Alert>

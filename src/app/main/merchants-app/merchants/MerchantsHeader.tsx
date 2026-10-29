@@ -120,7 +120,11 @@ export default function MerchantsHeader() {
             },
           ]}
         />
-        <Button onClick={() => dispatch(newMerchantsInstance(null))}>
+        <Button
+          color="primary"
+          variant="outlined"
+          onClick={() => dispatch(newMerchantsInstance(null))}
+        >
           {t("RESET_FILTERS")}
         </Button>
         <Paper className="flex items-center w-full sm:max-w-256 gap-8 px-16 rounded-8 border-1 shadow-0">

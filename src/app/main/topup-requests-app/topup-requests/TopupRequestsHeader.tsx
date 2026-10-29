@@ -1,4 +1,4 @@
-import { Alert, Button, Input, Paper, Typography } from "@mui/material";
+import { Alert, Button, Chip, Input, Paper, Typography } from "@mui/material";
 import { Link, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
@@ -7,7 +7,11 @@ import FilterIcon from "app/shared-components/filter-icon/FilterIcon";
 import { FilterTypes } from "app/shared-components/filter-icon/Utils";
 import { useAppDispatch, useAppSelector } from "app/store/hooks";
 import { selectUser } from "src/app/auth/user/store/userSlice";
-import Currency from "../../utils/currencyFormatter";
+import {
+  TopupBalanceCard,
+  TopupHeaderHeading,
+  TopupHeaderLayout,
+} from "../shared-components/TopupHeaderLayout";
 import {
   GetTopupRequestsApiArg,
   useGetTopupRequestsUserQuery,
@@ -42,21 +46,120 @@ export default function TopupRequestsHeader() {
       filters.userIdFilter === "all",
   });
   const account = user.role === "user" ? user : selected.currentData;
+
+  const activeFilters = [
+    ...(user.role !== "user" &&
+    filters.userIdFilter &&
+    filters.userIdFilter !== "all"
+      ? [t("MERCHANT")]
+      : []),
+    ...(filters.statusFilter && filters.statusFilter !== "all"
+      ? [
+          `${t("STATUS")}: ${t(toTopupRequestStatusTitle(filters.statusFilter))}`,
+        ]
+      : []),
+    ...(filters.dateFromFilter || filters.dateFromInvalid
+      ? [t("START_DATE")]
+      : []),
+    ...(filters.dateToFilter || filters.dateToInvalid ? [t("END_DATE")] : []),
+  ];
   return (
-    <div className="flex flex-col gap-16 w-full p-24 sm:p-32">
-      <div className="flex flex-wrap justify-between items-center gap-16">
-        <Typography className="text-24 md:text-32 font-bold">
-          {t("TOPUP_REQUESTS")}
-          {selected.currentData
-            ? ` — ${selected.currentData.firstName || ""} ${selected.currentData.lastName || ""}`
-            : ""}
-        </Typography>
-        <div className="flex flex-wrap items-center gap-8">
+    <TopupHeaderLayout testId="topup-list-header">
+      <div className="flex flex-col lg:flex-row justify-between lg:items-center gap-24">
+        <TopupHeaderHeading
+          title={t("TOPUP_REQUESTS")}
+          description={t("TOPUP_LIST_DESCRIPTION")}
+        />
+        <div className="flex flex-col sm:flex-row sm:items-center gap-16 w-full lg:w-auto shrink-0">
+          {account && !selected.isError && (
+            <TopupBalanceCard
+              label={t(
+                user.role === "user" ? "CURRENT_BALANCE" : "MERCHANT_BALANCE",
+              )}
+              balance={account.balance}
+              accountName={
+                user.role !== "user"
+                  ? `${account.firstName || ""} ${account.lastName || ""}`.trim()
+                  : undefined
+              }
+            />
+          )}
+          {user.role === "user" && (
+            <Button
+              color="primary"
+              variant="contained"
+              size="large"
+              component={Link}
+              to="/topup-requests/all/new"
+              startIcon={
+                <FuseSvgIcon size={20}>heroicons-outline:plus</FuseSvgIcon>
+              }
+              className="rounded-[10px] shadow-none whitespace-nowrap min-h-44"
+              data-testid="new-topup"
+            >
+              {t("TOPUP_BALANCE")}
+            </Button>
+          )}
+          {canAdjustTopupBalance(user, filters.userIdFilter) && (
+            <Button
+              color="primary"
+              variant="contained"
+              size="large"
+              component={Link}
+              to={`/transactions/${filters.userIdFilter}/all/new`}
+              startIcon={
+                <FuseSvgIcon size={20}>
+                  heroicons-outline:adjustments
+                </FuseSvgIcon>
+              }
+              className="rounded-[10px] shadow-none whitespace-nowrap min-h-44"
+              data-testid="adjust-topup-balance"
+            >
+              {t("EDIT_BALANCE")}
+            </Button>
+          )}
+        </div>
+      </div>
+      <Paper
+        elevation={0}
+        className="flex flex-col sm:flex-row sm:items-center gap-8 p-6 w-full rounded-12 border-1"
+        sx={{ borderColor: "divider" }}
+        data-testid="topup-search-toolbar"
+      >
+        <div className="flex items-center gap-8 px-8 min-h-36 min-w-0 flex-1">
+          <FuseSvgIcon size={18} color="disabled">
+            heroicons-outline:search
+          </FuseSvgIcon>
+          <Input
+            disableUnderline
+            fullWidth
+            value={filters.searchText}
+            placeholder={t("SEARCH_TOPUP_REQUESTS")}
+            className="text-12 min-h-36"
+            inputProps={{
+              "data-testid": "topup-requests-search",
+              "aria-label": t("SEARCH_TOPUP_REQUESTS"),
+            }}
+            onChange={(event) => dispatch(setTopupRequestsSearchText(event))}
+          />
+        </div>
+        <div className="flex items-center gap-8 shrink-0 [&>div]:flex [&>div]:flex-1 sm:[&>div]:flex-initial [&_.MuiBadge-root]:w-full">
           <FilterIcon
+            component={Button}
+            changesCount={activeFilters.length}
+            badgeColor="primary"
             componentProps={{
+              variant: "outlined",
+              color: "primary",
+              size: "small",
+              fullWidth: true,
+              className: "rounded-8 min-h-36 px-12 text-12",
               "data-testid": "topup-requests-filters",
               "aria-label": t("FILTER_REQUESTS"),
-              children: <FuseSvgIcon>heroicons-outline:filter</FuseSvgIcon>,
+              startIcon: (
+                <FuseSvgIcon size={16}>heroicons-outline:filter</FuseSvgIcon>
+              ),
+              children: t("TOPUP_FILTERS"),
             }}
             filters={[
               ...(user.role !== "user"
@@ -127,6 +230,13 @@ export default function TopupRequestsHeader() {
             ]}
           />
           <Button
+            color="primary"
+            variant="outlined"
+            size="small"
+            startIcon={
+              <FuseSvgIcon size={16}>heroicons-outline:refresh</FuseSvgIcon>
+            }
+            className="rounded-8 min-h-36 px-12 text-12 flex-1 sm:flex-initial whitespace-nowrap"
             onClick={() =>
               dispatch(
                 newTopupRequestsInstance({
@@ -137,58 +247,41 @@ export default function TopupRequestsHeader() {
           >
             {t("RESET_FILTERS")}
           </Button>
-          <Paper className="flex items-center w-full sm:max-w-256 gap-8 px-16 rounded-8 border-1 shadow-0">
-            <FuseSvgIcon color="disabled">heroicons-solid:search</FuseSvgIcon>
-            <Input
-              disableUnderline
-              fullWidth
-              value={filters.searchText}
-              placeholder={t("SEARCH_TOPUP_REQUESTS")}
-              inputProps={{
-                "data-testid": "topup-requests-search",
-                "aria-label": t("SEARCH_TOPUP_REQUESTS"),
-              }}
-              onChange={(event) => dispatch(setTopupRequestsSearchText(event))}
-            />
-          </Paper>
-          {user.role === "user" && (
-            <Button
-              component={Link}
-              to="/topup-requests/all/new"
-              variant="contained"
-              data-testid="new-topup"
-            >
-              {t("TOPUP_BALANCE")}
-            </Button>
-          )}
-          {canAdjustTopupBalance(user, filters.userIdFilter) && (
-            <Button
-              component={Link}
-              to={`/transactions/${filters.userIdFilter}/all/new`}
-              variant="contained"
-              data-testid="adjust-topup-balance"
-            >
-              {t("EDIT_BALANCE")}
-            </Button>
-          )}
         </div>
-      </div>
-      {account && !selected.isError && (
-        <Typography className="font-semibold" data-testid="topup-balance">
-          {t(user.role === "user" ? "CURRENT_BALANCE" : "MERCHANT_BALANCE")}:{" "}
-          {Currency(account.balance || 0)}
-        </Typography>
+      </Paper>
+      {activeFilters.length > 0 && (
+        <div className="flex flex-wrap items-center gap-8">
+          <Typography color="text.secondary" className="text-11">
+            {t("TOPUP_ACTIVE_FILTERS")}
+          </Typography>
+          {activeFilters.map((label) => (
+            <Chip
+              key={label}
+              label={label}
+              size="small"
+              color="primary"
+              variant="outlined"
+              className="text-11 rounded-[7px]"
+            />
+          ))}
+        </div>
       )}
       {selected.isError && (
         <Alert
           severity="error"
           action={
-            <Button onClick={() => selected.refetch()}>{t("RETRY")}</Button>
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={() => selected.refetch()}
+            >
+              {t("RETRY")}
+            </Button>
           }
         >
           {t("USER_LOOKUP_ERROR")}
         </Alert>
       )}
-    </div>
+    </TopupHeaderLayout>
   );
 }

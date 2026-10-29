@@ -191,6 +191,7 @@ export default function CancelShipmentRequestsTable() {
             <>
               {(["rejected", "approved"] as const).map((next) => (
                 <Button
+                  variant="outlined"
                   key={next}
                   size="small"
                   color={next === "approved" ? "success" : "error"}
@@ -210,6 +211,8 @@ export default function CancelShipmentRequestsTable() {
           )}
           {row.shipment?.trackingUrl && (
             <Button
+              color="primary"
+              variant="outlined"
               size="small"
               component="a"
               href={row.shipment.trackingUrl}
@@ -221,6 +224,8 @@ export default function CancelShipmentRequestsTable() {
           )}
           {canViewCancellationTransactions(user, row) && (
             <Button
+              color="primary"
+              variant="outlined"
               size="small"
               onClick={() =>
                 setLedger({
@@ -246,7 +251,15 @@ export default function CancelShipmentRequestsTable() {
       {isError && (
         <Alert
           severity="error"
-          action={<Button onClick={() => refetch()}>{t("RETRY")}</Button>}
+          action={
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={() => refetch()}
+            >
+              {t("RETRY")}
+            </Button>
+          }
         >
           {t("LOAD_ERROR")}
         </Alert>

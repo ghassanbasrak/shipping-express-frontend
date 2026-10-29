@@ -194,7 +194,11 @@ export default function AddressSection({
         <Alert
           severity="error"
           action={
-            <Button onClick={() => failed.forEach((query) => query.refetch())}>
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={() => failed.forEach((query) => query.refetch())}
+            >
               {t("RETRY")}
             </Button>
           }

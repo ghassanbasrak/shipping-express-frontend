@@ -126,12 +126,13 @@ function ImageInput({
                         : size === "medium"
                           ? "w-200 h-200"
                           : "w-320 h-320",
-                    containerImageClassName
+                    containerImageClassName,
                   )}
                 >
                   {(finished ||
                     (!!imageUrl && getValues(name) && !pickedData)) && (
                     <IconButton
+                      color="primary"
                       onClick={(event) => {
                         event.stopPropagation();
                         handleResetFile();
@@ -177,7 +178,7 @@ function ImageInput({
                               ? "text-12"
                               : size === "medium"
                                 ? "text-13"
-                                : "text-15"
+                                : "text-15",
                           )}
                           sx={{
                             color: (theme) => theme.palette.success.main,
@@ -244,7 +245,7 @@ function ImageInput({
                     : size === "medium"
                       ? "w-200 h-200"
                       : "w-320 h-320",
-                containerImageClassName
+                containerImageClassName,
               )}
             >
               <input
@@ -293,7 +294,7 @@ function ImageInput({
                               file,
                               name: file.name,
                               url: `data:${file.type};base64,${btoa(
-                                reader.result as string
+                                reader.result as string,
                               )}`,
                             });
                             if (
@@ -305,7 +306,7 @@ function ImageInput({
                             return true;
                           };
                           image.src = `data:${file.type};base64,${btoa(
-                            reader.result as string
+                            reader.result as string,
                           )}`;
                         };
                         reader.onerror = () => {
@@ -327,7 +328,7 @@ function ImageInput({
                         fileSize > maximumFileSizeInKB
                       ) {
                         setError(
-                          t("IMAGE_SHOULD_BE_SIZEKB", { maximumFileSizeInKB })
+                          t("IMAGE_SHOULD_BE_SIZEKB", { maximumFileSizeInKB }),
                         );
                         return;
                       }
@@ -355,11 +356,11 @@ function ImageInput({
                                     resolve(data);
                                   }}
                                   imageSrc={`data:${file.type};base64,${btoa(
-                                    reader.result as string
+                                    reader.result as string,
                                   )}`}
                                 />
                               ),
-                            })
+                            }),
                           );
                         } else {
                           var image = new Image();
@@ -379,13 +380,13 @@ function ImageInput({
                               // name: file.name.split(".").pop(),
                               name: file.name,
                               url: `data:${file.type};base64,${btoa(
-                                reader.result as string
+                                reader.result as string,
                               )}`,
                             });
                             return true;
                           };
                           image.src = `data:${file.type};base64,${btoa(
-                            reader.result as string
+                            reader.result as string,
                           )}`;
                         }
                       };
@@ -438,7 +439,7 @@ function ImageInput({
                     ? "text-13"
                     : size === "medium"
                       ? "text-15"
-                      : "text-17"
+                      : "text-17",
                 )}
                 textAlign="center"
               >
@@ -455,7 +456,7 @@ function ImageInput({
                       ? "text-10"
                       : size === "medium"
                         ? "text-12"
-                        : "text-13"
+                        : "text-13",
                   )}
                   textAlign="center"
                 >

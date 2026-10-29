@@ -124,9 +124,11 @@ export default function ShipmentsHeader({
         >
           {t("SHIPMENTS")}
         </Typography>
-        <div className="flex flex-wrap items-center justify-end gap-8">
+        <div className="flex items-center justify-end gap-8">
           {canCreateShipment(user) && (
             <Button
+              className="whitespace-nowrap px-24"
+              color="primary"
               component={Link}
               variant="contained"
               to={shipmentPath(
@@ -135,11 +137,15 @@ export default function ShipmentsHeader({
                 "new",
               )}
               data-testid="add-shipment"
+              role="button"
+              startIcon={<FuseSvgIcon>heroicons-outline:plus</FuseSvgIcon>}
             >
               {t("ADD_SHIPMENT")}
             </Button>
           )}
-          <Button
+          {/* <Button
+            color="primary"
+            variant="outlined"
             onClick={() =>
               dispatch(
                 setShipmentsViewType(
@@ -150,7 +156,7 @@ export default function ShipmentsHeader({
             data-testid="shipments-view-toggle"
           >
             {t(filters.viewType === "chart" ? "TABLE_VIEW" : "CHART_VIEW")}
-          </Button>
+          </Button> */}
           <FilterIcon
             componentProps={{
               "aria-label": t("FILTER_SHIPMENTS"),
@@ -294,7 +300,9 @@ export default function ShipmentsHeader({
               },
             ]}
           />
-          <Button
+          {/* <Button
+            color="primary"
+            variant="outlined"
             onClick={() =>
               dispatch(
                 newShipmentsInstance({
@@ -318,7 +326,7 @@ export default function ShipmentsHeader({
             }
           >
             {t("RESET_FILTERS")}
-          </Button>
+          </Button> */}
           <Paper className="flex items-center w-full sm:max-w-256 gap-8 px-16 rounded-8 border-1 shadow-0">
             <FuseSvgIcon color="disabled">heroicons-solid:search</FuseSvgIcon>
             <Input
@@ -340,6 +348,8 @@ export default function ShipmentsHeader({
           severity="error"
           action={
             <Button
+              color="primary"
+              variant="outlined"
               onClick={() => {
                 if (carrierList.isError) carrierList.refetch();
                 if (carrierItem.isError) carrierItem.refetch();

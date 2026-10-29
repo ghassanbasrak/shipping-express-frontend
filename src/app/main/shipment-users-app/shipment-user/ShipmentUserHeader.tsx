@@ -104,6 +104,7 @@ export default function ShipmentUserHeader() {
     <div className="flex flex-col gap-12 py-24 px-16 sm:px-24 w-full">
       <div className="flex items-center gap-8 min-w-0">
         <IconButton
+          color="primary"
           component={Link}
           to={shipmentUsersPath(routeType)}
           aria-label={t("CLOSE")}

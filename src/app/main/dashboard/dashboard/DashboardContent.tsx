@@ -83,6 +83,8 @@ export default function DashboardContent() {
           <OverviewRefresh onClick={refresh} />
           {hasOperationPermission("shipments", "view", user) && (
             <Button
+              color="primary"
+              variant="outlined"
               component={Link}
               to="/shipments/all/all"
               className="ov-primary"
@@ -143,7 +145,11 @@ export default function DashboardContent() {
           <span className="ov-toolbar-note">{t("REVENUE_SCOPE")}</span>
         </div>
         {carriers.isError && (
-          <Button onClick={() => carriers.refetch()}>
+          <Button
+            color="primary"
+            variant="outlined"
+            onClick={() => carriers.refetch()}
+          >
             {t("RETRY_CARRIERS")}
           </Button>
         )}

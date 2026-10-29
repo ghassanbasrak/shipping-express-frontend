@@ -68,6 +68,8 @@ export default function PlanCard({
       </div>
       {forSelect ? (
         <Button
+          color="primary"
+          variant="outlined"
           onClick={(event) => {
             event.stopPropagation();
             onSelect?.(plan);
@@ -81,6 +83,7 @@ export default function PlanCard({
           <div className="flex gap-8 border-t-1 p-8">
             {canUpdate && (
               <LoadingButton
+                variant="outlined"
                 loading={loadingChangeActive}
                 color={plan.status === planStatus.active ? "error" : "success"}
                 onClick={() =>
@@ -98,7 +101,12 @@ export default function PlanCard({
                 )}
               </LoadingButton>
             )}
-            <Button component={Link} to={`/plans/${plan.id}`}>
+            <Button
+              color="primary"
+              variant="outlined"
+              component={Link}
+              to={`/plans/${plan.id}`}
+            >
               {t(canUpdate ? "EDIT" : "VIEW")}
             </Button>
           </div>

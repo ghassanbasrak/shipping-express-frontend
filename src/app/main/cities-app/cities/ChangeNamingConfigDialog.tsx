@@ -29,6 +29,8 @@ export default function ChangeNamingConfigDialog({ city }: { city: ICity }) {
               severity="error"
               action={
                 <Button
+                  color="primary"
+                  variant="outlined"
                   onClick={() => {
                     query.refetch();
                     mappings.refetch();

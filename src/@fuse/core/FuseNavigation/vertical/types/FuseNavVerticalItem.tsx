@@ -115,7 +115,8 @@ function FuseNavVerticalItem(props: FuseNavItemComponentProps) {
           primary={item.title}
           secondary={item.subtitle}
           classes={{
-            primary: "text-13 font-medium fuse-list-item-text-primary truncate",
+            primary:
+              "text-13 font-medium fuse-list-item-text-primary whitespace-normal break-words leading-snug",
             secondary:
               "text-11 font-medium fuse-list-item-text-secondary leading-normal truncate",
           }}

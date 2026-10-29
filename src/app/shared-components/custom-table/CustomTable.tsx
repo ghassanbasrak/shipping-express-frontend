@@ -569,7 +569,7 @@ function CustomTable<T extends object>({
                                   className="px-8 whitespace-nowrap"
                                   variant={action.variant ?? "contained"}
                                   size={action.size ?? "small"}
-                                  color={action.color}
+                                  color={action.color ?? "primary"}
                                   onClick={() =>
                                     action.onActionClick
                                       ? action.onActionClick(params.row)

@@ -1,4 +1,11 @@
 const locale = {
+  WALLET_AND_PAYMENTS: "المحفظة والمدفوعات",
+  TOPUP_LIST_DESCRIPTION: "تابع عمليات الدفع وطلبات شحن محفظتك من مكان واحد.",
+  TOPUP_CREATE_DESCRIPTION:
+    "حدد المبلغ ثم انتقل إلى صفحة الدفع الآمنة لشحن محفظتك.",
+  TOPUP_DETAIL_DESCRIPTION: "راجع تفاصيل عملية الدفع وحالتها من مكان واحد.",
+  TOPUP_FILTERS: "تصفية",
+  TOPUP_ACTIVE_FILTERS: "الفلاتر النشطة",
   TOPUP_REQUESTS: "طلبات شحن الرصيد",
   SEARCH_TOPUP_REQUESTS: "البحث في طلبات شحن الرصيد",
   ADD_TOPUP_REQUEST: "إضافة طلب شحن رصيد",
@@ -181,5 +188,6 @@ const locale = {
   DETAILS: "التفاصيل",
   PAYMENT_PENDING: "الدفع قيد الانتظار",
   PROCEED_TO_PAYMENT: "متابعة الدفع",
+  REFERENCE: "المرجع",
 };
 export default locale;

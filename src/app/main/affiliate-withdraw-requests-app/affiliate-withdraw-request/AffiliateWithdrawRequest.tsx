@@ -88,8 +88,17 @@ export default function AffiliateWithdrawRequest() {
     return (
       <div className="flex flex-col items-center justify-center h-full gap-16">
         <Alert severity="error">{t("NO_SUCH_WITHDRAW_REQUEST")}</Alert>
-        {isError && <Button onClick={() => refetch()}>{t("RETRY")}</Button>}
-        <Button component={Link} to="/affiliate-withdraw-requests/all">
+        {isError && (
+          <Button color="primary" variant="outlined" onClick={() => refetch()}>
+            {t("RETRY")}
+          </Button>
+        )}
+        <Button
+          color="primary"
+          variant="outlined"
+          component={Link}
+          to="/affiliate-withdraw-requests/all"
+        >
           {t("GO_TO_WITHDRAW_REQUESTS")}
         </Button>
       </div>
@@ -130,7 +139,11 @@ export default function AffiliateWithdrawRequest() {
                 <Alert
                   severity="error"
                   action={
-                    <Button onClick={() => balance.refetch()}>
+                    <Button
+                      color="primary"
+                      variant="outlined"
+                      onClick={() => balance.refetch()}
+                    >
                       {t("RETRY")}
                     </Button>
                   }
@@ -142,7 +155,11 @@ export default function AffiliateWithdrawRequest() {
                 <Alert
                   severity="error"
                   action={
-                    <Button onClick={() => pending.refetch()}>
+                    <Button
+                      color="primary"
+                      variant="outlined"
+                      onClick={() => pending.refetch()}
+                    >
                       {t("RETRY")}
                     </Button>
                   }

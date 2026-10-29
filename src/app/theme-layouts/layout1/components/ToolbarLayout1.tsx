@@ -61,7 +61,7 @@ type ToolbarLayout1Props = {
 function ToolbarLayout1(props: ToolbarLayout1Props) {
   const { className } = props;
   const config = useAppSelector(
-    selectFuseCurrentLayoutConfig
+    selectFuseCurrentLayoutConfig,
   ) as Layout1ConfigDefaultsType;
   const navbar = useAppSelector(selectFuseNavbar);
   const toolbarTheme = useAppSelector(selectToolbarTheme);
@@ -92,11 +92,12 @@ function ToolbarLayout1(props: ToolbarLayout1Props) {
               theme.palette.mode === "light"
                 ? toolbarTheme.palette.background.default
                 : toolbarTheme.palette.background.paper,
-              0.72
+              0.72,
             ),
           backdropFilter: "blur(16px) saturate(160%)",
           WebkitBackdropFilter: "blur(16px) saturate(160%)",
-          borderBottom: (theme) => `1px solid ${alpha(theme.palette.divider, 0.7)}`,
+          borderBottom: (theme) =>
+            `1px solid ${alpha(theme.palette.divider, 0.7)}`,
           boxShadow: "none",
         }}
         position={className?.includes("sticky") ? "sticky" : "static"}

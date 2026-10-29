@@ -163,6 +163,8 @@ export default function CancelShipmentRequestsHeader() {
             ]}
           />
           <Button
+            color="primary"
+            variant="outlined"
             onClick={() =>
               dispatch(
                 newCancelShipmentRequestsInstance({
@@ -198,7 +200,13 @@ export default function CancelShipmentRequestsHeader() {
         <Alert
           severity="error"
           action={
-            <Button onClick={() => selectedUser.refetch()}>{t("RETRY")}</Button>
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={() => selectedUser.refetch()}
+            >
+              {t("RETRY")}
+            </Button>
           }
         >
           {t("USER_LOOKUP_ERROR")}

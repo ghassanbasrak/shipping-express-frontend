@@ -114,6 +114,7 @@ export function OverviewRefresh({ onClick }: { onClick: () => void }) {
   const { t } = useTranslation("overview");
   return (
     <Button
+      color="primary"
       className="ov-refresh"
       variant="outlined"
       startIcon={<Refresh />}
@@ -134,16 +135,33 @@ export function OverviewFooter() {
         {isDemoMode && (
           <>
             <Chip size="small" label={t("DEMO_MODE")} />
-            <Button component={Link} to="/countries/all">
+            <Button
+              color="primary"
+              variant="outlined"
+              component={Link}
+              to="/countries/all"
+            >
               {t("COUNTRIES")}
             </Button>
-            <Button component={Link} to="/shipping-companies">
+            <Button
+              color="primary"
+              variant="outlined"
+              component={Link}
+              to="/shipping-companies"
+            >
               {t("CARRIERS")}
             </Button>
-            <Button onClick={resetDemoData}>{t("RESET_DEMO")}</Button>
+            <Button color="primary" variant="outlined" onClick={resetDemoData}>
+              {t("RESET_DEMO")}
+            </Button>
           </>
         )}
-        <Button onClick={signOut} startIcon={<Logout fontSize="small" />}>
+        <Button
+          color="primary"
+          variant="outlined"
+          onClick={signOut}
+          startIcon={<Logout fontSize="small" />}
+        >
           {t("SIGN_OUT")}
         </Button>
       </div>
@@ -159,7 +177,12 @@ export function QueryFeedback({ query }: { query: OverviewQuery }) {
           severity="warning"
           className="ov-query-error"
           action={
-            <Button size="small" onClick={() => query.refetch()}>
+            <Button
+              color="primary"
+              variant="outlined"
+              size="small"
+              onClick={() => query.refetch()}
+            >
               {t("RETRY")}
             </Button>
           }
@@ -308,6 +331,8 @@ export function OverviewLink({
 }) {
   return (
     <Button
+      color="primary"
+      variant="outlined"
       className="ov-text-link"
       size="small"
       component={Link}

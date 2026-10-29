@@ -98,7 +98,13 @@ export default function Transaction() {
               : "LOAD_ERROR",
           )}
         </Alert>
-        <Button onClick={() => record.refetch()}>{t("RETRY")}</Button>
+        <Button
+          color="primary"
+          variant="outlined"
+          onClick={() => record.refetch()}
+        >
+          {t("RETRY")}
+        </Button>
       </div>
     );
   if (ready !== key) return <FuseLoading />;
@@ -134,7 +140,11 @@ export default function Transaction() {
                 <Alert
                   severity="error"
                   action={
-                    <Button onClick={() => selected.refetch()}>
+                    <Button
+                      color="primary"
+                      variant="outlined"
+                      onClick={() => selected.refetch()}
+                    >
                       {t("RETRY")}
                     </Button>
                   }

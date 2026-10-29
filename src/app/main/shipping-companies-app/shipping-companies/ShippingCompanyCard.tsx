@@ -83,6 +83,7 @@ function ShippingCompanyCard({
       <div className="flex flex-wrap items-center gap-4 p-8 border-t-1">
         {canUpdate && (
           <LoadingButton
+            variant="outlined"
             color={company.isActive ? "error" : "success"}
             loading={loadingChangeActive}
             onClick={() => handleChangeActiveItem(company)}
@@ -91,10 +92,17 @@ function ShippingCompanyCard({
             {t(company.isActive ? "DEACTIVATE" : "ACTIVATE")}
           </LoadingButton>
         )}
-        <Button component={Link} to={`/shipping-companies/${company.id}`}>
+        <Button
+          color="primary"
+          variant="outlined"
+          component={Link}
+          to={`/shipping-companies/${company.id}`}
+        >
           {t(canUpdate ? "EDIT" : "VIEW")}
         </Button>
         <Button
+          color="primary"
+          variant="outlined"
           component={Link}
           to={`/shipments/${company.id}/all`}
           disabled={

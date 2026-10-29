@@ -126,7 +126,12 @@ export default function AffiliateWithdrawRequestHeader({
             {t("SAVE_WITHDRAW_REQUEST")}
           </LoadingButton>
         )}
-        <Button component={Link} to="/affiliate-profile/withdraw-requests">
+        <Button
+          color="primary"
+          variant="outlined"
+          component={Link}
+          to="/affiliate-profile/withdraw-requests"
+        >
           {t("CANCEL")}
         </Button>
       </div>

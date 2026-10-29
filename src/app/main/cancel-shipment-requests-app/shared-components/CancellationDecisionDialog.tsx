@@ -71,10 +71,17 @@ export default function CancellationDecisionDialog({
         {error && <Alert severity="error">{error}</Alert>}
       </DialogContent>
       <DialogActions>
-        <Button disabled={isLoading} onClick={onClose}>
+        <Button
+          color="primary"
+          variant="outlined"
+          disabled={isLoading}
+          onClick={onClose}
+        >
           {t("CLOSE")}
         </Button>
         <LoadingButton
+          color="primary"
+          variant="outlined"
           disabled={!allowed}
           loading={isLoading}
           onClick={submit}

@@ -158,6 +158,8 @@ export default function VerificationRequestsHeader() {
             ]}
           />
           <Button
+            color="primary"
+            variant="outlined"
             onClick={() =>
               dispatch(
                 newVerificationRequestsInstance({
@@ -204,7 +206,13 @@ export default function VerificationRequestsHeader() {
         <Alert
           severity="error"
           action={
-            <Button onClick={() => selectedUser.refetch()}>{t("RETRY")}</Button>
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={() => selectedUser.refetch()}
+            >
+              {t("RETRY")}
+            </Button>
           }
         >
           {t("USER_LOOKUP_ERROR")}

@@ -126,8 +126,19 @@ export default function Merchant({ forView = false }: { forView?: boolean }) {
     return (
       <div className="p-24 space-y-16">
         <Alert severity="error">{t("NO_SUCH_MERCHANT")}</Alert>
-        <Button onClick={() => query.refetch()}>{t("RETRY")}</Button>
-        <Button component={Link} to={self ? "/home" : "/merchants"}>
+        <Button
+          color="primary"
+          variant="outlined"
+          onClick={() => query.refetch()}
+        >
+          {t("RETRY")}
+        </Button>
+        <Button
+          color="primary"
+          variant="outlined"
+          component={Link}
+          to={self ? "/home" : "/merchants"}
+        >
           {t("BACK")}
         </Button>
       </div>

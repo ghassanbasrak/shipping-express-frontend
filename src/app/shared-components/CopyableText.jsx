@@ -88,7 +88,7 @@ function CopyableText({
           )}
         </Typography>
         <Tooltip title={t("COPY_TO_CLIPBOARD")} placement="bottom">
-          <IconButton color="inherit" onClick={handleClick}>
+          <IconButton color="primary" onClick={handleClick}>
             <FuseSvgIcon size={20}>material-solid:content_copy</FuseSvgIcon>
           </IconButton>
         </Tooltip>
@@ -120,7 +120,7 @@ function CopyableText({
             )}
           </Typography>
           <Tooltip title={t("COPY_TO_CLIPBOARD")} placement="bottom">
-            <IconButton color="inherit" onClick={handleClickSecond}>
+            <IconButton color="primary" onClick={handleClickSecond}>
               <FuseSvgIcon size={20}>material-solid:content_copy</FuseSvgIcon>
             </IconButton>
           </Tooltip>

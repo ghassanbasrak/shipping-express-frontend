@@ -117,6 +117,7 @@ export default function AffiliateWithdrawRequestDecisionForm({
                 alt={t("TRANSACTION_IMAGE")}
               />
               <Button
+                variant="outlined"
                 color="error"
                 disabled={disabled}
                 onClick={() =>

@@ -131,7 +131,15 @@ export default function AdminsTable() {
       {isError && (
         <Alert
           severity="error"
-          action={<Button onClick={() => refetch()}>{t("RETRY")}</Button>}
+          action={
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={() => refetch()}
+            >
+              {t("RETRY")}
+            </Button>
+          }
         >
           {t("LOAD_ERROR")}
         </Alert>

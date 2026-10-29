@@ -17,7 +17,7 @@ const Root = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: 24,
   color: theme.palette.text.primary,
-  background: `linear-gradient(165deg, ${theme.palette.primary.light} 0%, ${theme.palette.primary.main} 38%, ${theme.palette.primary.dark} 100%)`,
+  background: `linear-gradient(165deg, ${alpha(theme.palette.primary.main, 0.8)} 0%, ${alpha(theme.palette.primary.main, 0.8)} 38%, ${alpha(theme.palette.primary.dark, 0.8)} 100%)`,
   border: `1px solid ${alpha("#ffffff", 0.1)}`,
   boxShadow:
     "0 24px 48px -16px rgba(9, 20, 80, .55), inset 0 1px 0 rgba(255,255,255,.08)",

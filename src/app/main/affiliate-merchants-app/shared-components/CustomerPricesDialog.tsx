@@ -162,10 +162,17 @@ export default function CustomerPricesDialog({
           ))}
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose} disabled={busy}>
+          <Button
+            color="primary"
+            variant="outlined"
+            onClick={onClose}
+            disabled={busy}
+          >
             {t("CANCEL")}
           </Button>
           <LoadingButton
+            color="primary"
+            variant="outlined"
             loading={busy}
             disabled={!allowed || !defaults.prices.length}
             onClick={() => submit()}

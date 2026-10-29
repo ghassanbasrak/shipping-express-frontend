@@ -107,6 +107,8 @@ export default function StatesHeader() {
             }
           />
           <Button
+            color="primary"
+            variant="outlined"
             onClick={() =>
               dispatch(newStatesInstance({ shippingCompanyIdFilter: "all" }))
             }
@@ -147,7 +149,13 @@ export default function StatesHeader() {
         <Alert
           severity="error"
           action={
-            <Button onClick={() => companies.refetch()}>{t("RETRY")}</Button>
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={() => companies.refetch()}
+            >
+              {t("RETRY")}
+            </Button>
           }
         >
           {t("LOOKUP_ERROR")}

@@ -132,6 +132,8 @@ export default function AuthRequestsHeader() {
             ]}
           />
           <Button
+            color="primary"
+            variant="outlined"
             onClick={() =>
               dispatch(
                 newAuthRequestsInstance({
@@ -182,7 +184,13 @@ export default function AuthRequestsHeader() {
         <Alert
           severity="error"
           action={
-            <Button onClick={() => selectedUser.refetch()}>{t("RETRY")}</Button>
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={() => selectedUser.refetch()}
+            >
+              {t("RETRY")}
+            </Button>
           }
         >
           {t("USER_LOOKUP_ERROR")}

@@ -42,7 +42,13 @@ export default function AffiliateMerchant() {
     return (
       <div className="p-24">
         <Alert severity="error">{t("NO_SUCH_MERCHANT")}</Alert>
-        <Button onClick={() => query.refetch()}>{t("RETRY")}</Button>
+        <Button
+          color="primary"
+          variant="outlined"
+          onClick={() => query.refetch()}
+        >
+          {t("RETRY")}
+        </Button>
       </div>
     );
   if (!affiliate) return <FuseLoading />;

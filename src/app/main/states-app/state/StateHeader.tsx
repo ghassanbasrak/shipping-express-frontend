@@ -217,6 +217,7 @@ function StateHeader({ original }: { original?: IState }) {
             animate={{ opacity: 1, x: 0, transition: { delay: 0.3 } }}
           >
             <Button
+              color="primary"
               className="whitespace-nowrap mx-4"
               component={Link}
               to={`/cities/${shippingCompanyId}/${id}`}

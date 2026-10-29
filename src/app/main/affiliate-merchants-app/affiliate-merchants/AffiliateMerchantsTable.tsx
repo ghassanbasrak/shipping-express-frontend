@@ -214,6 +214,8 @@ export default function AffiliateMerchantsTable() {
     >
       <div className="flex flex-wrap gap-8 p-8">
         <Button
+          color="primary"
+          variant="outlined"
           data-testid="sort-wallet"
           onClick={() =>
             dispatch(
@@ -230,6 +232,8 @@ export default function AffiliateMerchantsTable() {
           {t("BALANCE")}: {filters.balanceSorting || t("ALL")}
         </Button>
         <Button
+          color="primary"
+          variant="outlined"
           data-testid="sort-cod"
           onClick={() =>
             dispatch(
@@ -252,7 +256,15 @@ export default function AffiliateMerchantsTable() {
       {query.isError && (
         <Alert
           severity="error"
-          action={<Button onClick={() => query.refetch()}>{t("RETRY")}</Button>}
+          action={
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={() => query.refetch()}
+            >
+              {t("RETRY")}
+            </Button>
+          }
         >
           {t("LOAD_ERROR")}
         </Alert>

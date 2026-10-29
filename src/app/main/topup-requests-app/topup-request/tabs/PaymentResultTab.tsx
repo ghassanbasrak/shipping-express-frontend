@@ -88,7 +88,11 @@ export default function PaymentResultTab({
       <Alert
         severity="error"
         action={
-          <Button onClick={() => setAttempt((value) => value + 1)}>
+          <Button
+            color="primary"
+            variant="outlined"
+            onClick={() => setAttempt((value) => value + 1)}
+          >
             {t("RETRY")}
           </Button>
         }
@@ -139,7 +143,12 @@ export default function PaymentResultTab({
         <Alert severity="info">{message}</Alert>
       )}
       <RecreateCheckoutButton payment={payment} />
-      <Button component={Link} to="/topup-requests/all">
+      <Button
+        color="primary"
+        variant="outlined"
+        component={Link}
+        to="/topup-requests/all"
+      >
         {t("GO_TO_TOPUP_REQUESTS")}
       </Button>
     </Paper>

@@ -47,6 +47,8 @@ export default function MerchantDueActions({ row }: { row: IMerchantDue }) {
       {row.shipment.trackingUrl &&
         (user.role !== "user" || row.shipment.status !== "failed") && (
           <Button
+            color="primary"
+            variant="outlined"
             component="a"
             href={row.shipment.trackingUrl}
             target="_blank"
@@ -58,6 +60,8 @@ export default function MerchantDueActions({ row }: { row: IMerchantDue }) {
         )}
       {items.length > 0 && (
         <Button
+          color="primary"
+          variant="outlined"
           size="small"
           aria-label={t("DUE_ACTIONS")}
           aria-controls={anchor ? `merchant-due-menu-${row.id}` : undefined}

@@ -195,6 +195,8 @@ export default function TransactionsHeader({
             ]}
           />
           <Button
+            color="primary"
+            variant="outlined"
             onClick={() =>
               dispatch(
                 newTransactionsInstance({
@@ -234,6 +236,7 @@ export default function TransactionsHeader({
           </Paper>
           {user.role === "user" && (
             <Button
+              color="primary"
               component={Link}
               to="/topup-requests/all/new"
               variant="contained"
@@ -244,6 +247,7 @@ export default function TransactionsHeader({
           )}
           {canCreate && (
             <Button
+              color="primary"
               component={Link}
               to={`/transactions/${filters.userIdFilter}/all/new`}
               variant="contained"
@@ -259,7 +263,13 @@ export default function TransactionsHeader({
         <Alert
           severity="error"
           action={
-            <Button onClick={() => selected.refetch()}>{t("RETRY")}</Button>
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={() => selected.refetch()}
+            >
+              {t("RETRY")}
+            </Button>
           }
         >
           {t("USER_LOOKUP_ERROR")}

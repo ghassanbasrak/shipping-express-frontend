@@ -93,6 +93,7 @@ export default function AffiliateWithdrawRequestsHeader({
             !pending.isFetching &&
             !pending.isError && (
               <Button
+                color="primary"
                 component={Link}
                 to="/affiliate-withdraw-requests/all/new"
                 variant="contained"
@@ -197,6 +198,8 @@ export default function AffiliateWithdrawRequestsHeader({
             ]}
           />
           <Button
+            color="primary"
+            variant="outlined"
             onClick={() =>
               dispatch(
                 newAffiliateWithdrawRequestsInstance({
@@ -243,7 +246,13 @@ export default function AffiliateWithdrawRequestsHeader({
         <Alert
           severity="error"
           action={
-            <Button onClick={() => balance.refetch()}>{t("RETRY")}</Button>
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={() => balance.refetch()}
+            >
+              {t("RETRY")}
+            </Button>
           }
         >
           {t("BALANCE_LOAD_ERROR")}
@@ -253,7 +262,13 @@ export default function AffiliateWithdrawRequestsHeader({
         <Alert
           severity="error"
           action={
-            <Button onClick={() => pending.refetch()}>{t("RETRY")}</Button>
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={() => pending.refetch()}
+            >
+              {t("RETRY")}
+            </Button>
           }
         >
           {t("PENDING_LOAD_ERROR")}
@@ -263,7 +278,13 @@ export default function AffiliateWithdrawRequestsHeader({
         <Alert
           severity="error"
           action={
-            <Button onClick={() => selectedUser.refetch()}>{t("RETRY")}</Button>
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={() => selectedUser.refetch()}
+            >
+              {t("RETRY")}
+            </Button>
           }
         >
           {t("USER_LOOKUP_ERROR")}

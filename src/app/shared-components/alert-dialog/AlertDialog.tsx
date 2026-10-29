@@ -49,7 +49,7 @@ function AlertDialog({
         {closeIcon && (
           <IconButton
             edge="end"
-            color="inherit"
+            color="primary"
             onClick={handleClose}
             aria-label="close"
           >
@@ -66,10 +66,20 @@ function AlertDialog({
             customActions
           ) : (
             <>
-              <Button {...cancelButtonProps} onClick={handleCancel}>
+              <Button
+                color="primary"
+                variant="outlined"
+                {...cancelButtonProps}
+                onClick={handleCancel}
+              >
                 {cancelButtonTitle ?? t("NO")}
               </Button>
-              <Button {...submitButtonProps} onClick={handleSubmit}>
+              <Button
+                color="error"
+                variant="contained"
+                {...submitButtonProps}
+                onClick={handleSubmit}
+              >
                 {submitButtonTitle ?? t("YES")}
               </Button>
             </>

@@ -21,7 +21,7 @@ const Root = styled(ListItem)<ListItemButtonComponentProps>(
   ({ theme, ...props }) => ({
     width: "100%",
     borderRadius: 8,
-    margin: "20px 0 4px 0",
+    margin: "12px 0 4px 0",
     paddingRight: 14,
     paddingLeft: props.itempadding,
     paddingTop: 4,

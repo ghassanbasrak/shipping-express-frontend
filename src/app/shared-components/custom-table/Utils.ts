@@ -204,7 +204,7 @@ export interface ActionProps<T> {
   conditions?: ConditionProps[];
   keepOnView?: boolean;
   target?: "_blank" | "_self" | "_parent" | "_top" | string;
-  variant?: "contained" | "outlined" | "text";
+  variant?: "contained" | "outlined";
   size?: "small" | "medium" | "large";
   color?:
     | "primary"
@@ -397,7 +397,7 @@ export interface TableToolbarSelectionButtonProps<T> {
     | "info"
     | "success"
     | "inherit";
-  variant?: "text" | "outlined" | "contained";
+  variant?: "outlined" | "contained";
   label?: string;
   exportAllButton?: boolean;
   loading?: boolean;

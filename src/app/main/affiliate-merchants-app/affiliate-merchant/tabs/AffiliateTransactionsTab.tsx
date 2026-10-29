@@ -177,6 +177,8 @@ export default function AffiliateTransactionsTab({
           row.shipment.shippingCompany?.serviceName,
         ) ? (
           <Button
+            color="primary"
+            variant="outlined"
             disabled={!!syncing}
             data-testid={`sync-affiliate-${row.id || row._id}`}
             onClick={async () => {
@@ -253,7 +255,13 @@ export default function AffiliateTransactionsTab({
         <Alert
           severity="error"
           action={
-            <Button onClick={() => balance.refetch()}>{t("RETRY")}</Button>
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={() => balance.refetch()}
+            >
+              {t("RETRY")}
+            </Button>
           }
         >
           {t("BALANCE_ERROR")}
@@ -273,7 +281,15 @@ export default function AffiliateTransactionsTab({
       {query.isError && (
         <Alert
           severity="error"
-          action={<Button onClick={() => query.refetch()}>{t("RETRY")}</Button>}
+          action={
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={() => query.refetch()}
+            >
+              {t("RETRY")}
+            </Button>
+          }
         >
           {t("LOAD_ERROR")}
         </Alert>

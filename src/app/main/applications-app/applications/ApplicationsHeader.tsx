@@ -89,7 +89,11 @@ export default function ApplicationsHeader() {
               },
             ]}
           />
-          <Button onClick={() => dispatch(newApplicationsInstance(null))}>
+          <Button
+            color="primary"
+            variant="outlined"
+            onClick={() => dispatch(newApplicationsInstance(null))}
+          >
             {t("RESET_FILTERS")}
           </Button>
           <Paper className="flex items-center w-full sm:max-w-256 gap-8 px-16 rounded-8 border-1 shadow-0">

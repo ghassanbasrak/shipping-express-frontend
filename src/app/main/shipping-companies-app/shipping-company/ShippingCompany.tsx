@@ -82,13 +82,15 @@ function ShippingCompany() {
               : "LOAD_ERROR",
           )}
         </Alert>
-        <Button onClick={() => refetch()}>{t("RETRY")}</Button>
+        <Button color="primary" variant="outlined" onClick={() => refetch()}>
+          {t("RETRY")}
+        </Button>
         <Button
           className="mt-24"
           component={Link}
           variant="outlined"
           to="/shipping-companies"
-          color="inherit"
+          color="primary"
         >
           {t("GO_TO_SHIPPING_COMPANIES")}
         </Button>

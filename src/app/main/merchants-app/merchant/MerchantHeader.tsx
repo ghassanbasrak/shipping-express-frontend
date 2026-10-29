@@ -1,4 +1,6 @@
-import { Avatar, Button, Typography } from "@mui/material";
+import FuseSvgIcon from "@fuse/core/FuseSvgIcon";
+import { useTheme } from "@mui/material/styles";
+import { Avatar, Typography } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -19,13 +21,27 @@ export default function MerchantHeader({
   busy: boolean;
   onSave: () => void;
 }) {
+  const theme = useTheme();
   const { t } = useTranslation("merchantsApp");
   return (
     <div className="flex flex-wrap items-center justify-between gap-16 p-24 sm:p-32 w-full">
       <div>
-        <Button component={Link} to={self ? "/profile" : "/merchants"}>
-          {t(self ? "MY_ACCOUNT" : "MERCHANTS")}
-        </Button>
+        <Typography
+          className="flex items-center sm:mb-12"
+          component={Link}
+          role="button"
+          to={self ? "/profile" : "/merchants"}
+          color="inherit"
+        >
+          <FuseSvgIcon size={20}>
+            {theme.direction === "ltr"
+              ? "heroicons-outline:arrow-sm-left"
+              : "heroicons-outline:arrow-sm-right"}
+          </FuseSvgIcon>
+          <span className="flex mx-4 font-medium">
+            {t(self ? "MY_ACCOUNT" : "MERCHANTS")}
+          </span>
+        </Typography>
         <div className="flex items-center gap-12">
           {view && (
             <Avatar src={image} alt={title}>
@@ -37,6 +53,7 @@ export default function MerchantHeader({
       </div>
       {!view && canSave && (
         <LoadingButton
+          color="primary"
           variant="contained"
           loading={busy}
           onClick={onSave}

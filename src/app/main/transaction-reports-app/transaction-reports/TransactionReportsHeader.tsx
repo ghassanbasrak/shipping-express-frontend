@@ -119,6 +119,7 @@ export default function TransactionReportsHeader() {
           <div className="flex flex-wrap gap-8">
             {allowed.map((balance) => (
               <Button
+                color="primary"
                 key={balance}
                 variant={
                   filters.relatedBalanceTypeFilter === balance
@@ -199,6 +200,8 @@ export default function TransactionReportsHeader() {
           severity="error"
           action={
             <Button
+              color="primary"
+              variant="outlined"
               onClick={() => {
                 if (users.isError) users.refetch();
                 if (selected.isError) selected.refetch();

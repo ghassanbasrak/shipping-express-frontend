@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Button } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import {
   OverviewSection,
@@ -57,7 +58,9 @@ export default function ShipmentStages({
           aria-label={t("SHIPMENT_STAGES")}
         >
           {Object.values(dashboardFlowTypes).map((value) => (
-            <button
+            <Button
+              variant="outlined"
+              color="primary"
               key={value}
               role="tab"
               aria-selected={type === value}
@@ -65,7 +68,7 @@ export default function ShipmentStages({
               data-testid={`flow-${value}`}
             >
               {t(toDashboardFlowTitle(value))}
-            </button>
+            </Button>
           ))}
         </div>
       }

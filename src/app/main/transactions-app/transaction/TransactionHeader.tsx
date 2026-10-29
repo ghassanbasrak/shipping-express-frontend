@@ -1,6 +1,8 @@
+import FuseSvgIcon from "@fuse/core/FuseSvgIcon";
+import { useTheme } from "@mui/material/styles";
 import { hasOperationPermission } from "src/app/auth/permissions";
 import { useRef, useState } from "react";
-import { Alert, Button, Typography } from "@mui/material";
+import { Alert, Typography } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
@@ -27,6 +29,7 @@ export default function TransactionHeader({
   isNew: boolean;
   accountReady: boolean;
 }) {
+  const theme = useTheme();
   const { t } = useTranslation("transactionsApp"),
     { watch, handleSubmit } = useFormContext<ITransaction>(),
     values = watch(),
@@ -77,8 +80,10 @@ export default function TransactionHeader({
           animate={{ opacity: 1 }}
           className="min-w-0"
         >
-          <Button
+          <Typography
+            className="flex items-center sm:mb-12"
             component={Link}
+            role="button"
             to={
               hasOperationPermission("merchants", "view", user) && values.userId
                 ? `/merchants/${values.userId}/view`
@@ -86,8 +91,13 @@ export default function TransactionHeader({
             }
             color="inherit"
           >
-            {t("TRANSACTIONS")}
-          </Button>
+            <FuseSvgIcon size={20}>
+              {theme.direction === "ltr"
+                ? "heroicons-outline:arrow-sm-left"
+                : "heroicons-outline:arrow-sm-right"}
+            </FuseSvgIcon>
+            <span className="flex mx-4 font-medium">{t("TRANSACTIONS")}</span>
+          </Typography>
           <Typography className="text-20 sm:text-24 font-semibold">
             {t("EDIT_WALLET_BALANCE")}
             {values.user ? ` — ${transactionUserLabel(values.user)}` : ""}
@@ -95,6 +105,7 @@ export default function TransactionHeader({
         </motion.div>
         {canEdit && (
           <LoadingButton
+            color="primary"
             variant="contained"
             className="whitespace-nowrap shrink-0"
             data-testid="save-transaction"

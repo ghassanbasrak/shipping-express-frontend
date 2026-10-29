@@ -1,4 +1,4 @@
-import { Box, Button, Chip, Typography } from "@mui/material";
+import { Box, Chip, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { Link, useParams } from "react-router-dom";
 import { useFormContext } from "react-hook-form";
@@ -52,22 +52,20 @@ export default function ShipmentHeader({
           </FuseSvgIcon>
         </Box>
         <div className="min-w-0">
-          <Button
+          <Typography
+            className="flex items-center sm:mb-12"
             component={Link}
+            role="button"
             to={shipmentPath(shippingCompanyId, shippingType)}
             color="inherit"
-            size="small"
-            sx={{ ml: -1, minWidth: 0, opacity: 0.85 }}
-            startIcon={
-              <FuseSvgIcon size={18}>
-                {theme.direction === "rtl"
-                  ? "heroicons-outline:arrow-sm-right"
-                  : "heroicons-outline:arrow-sm-left"}
-              </FuseSvgIcon>
-            }
           >
-            {t("SHIPMENTS")}
-          </Button>
+            <FuseSvgIcon size={20}>
+              {theme.direction === "ltr"
+                ? "heroicons-outline:arrow-sm-left"
+                : "heroicons-outline:arrow-sm-right"}
+            </FuseSvgIcon>
+            <span className="flex mx-4 font-medium">{t("SHIPMENTS")}</span>
+          </Typography>
           <Typography className="truncate text-20 sm:text-26 font-bold leading-tight">
             {t(
               {

@@ -49,6 +49,8 @@ export default function RecreateCheckoutButton({
     <div className="space-y-8">
       {error && <Alert severity="error">{t("RECREATE_ERROR")}</Alert>}
       <LoadingButton
+        color="primary"
+        variant="outlined"
         size="small"
         loading={busy || state.isLoading}
         disabled={issued.current}

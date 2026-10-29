@@ -15,13 +15,18 @@ requests to the backend.
 
 ## Sidebar navigation
 
-The sidebar combines persistent `group` headings with expandable `collapse`
-submenus:
+The sidebar uses persistent `group` headings with direct page links. Only two
+closely related sets use an expandable `collapse` submenu:
 
-- **Overview:** Home and the operations dashboard as direct links.
-- **Daily Operations:** Shipping & Delivery, Finance & Payments, Accounts & Approvals.
-- **Insights & Engagement:** Reports & Statistics, Marketing & Alerts.
-- **Management:** Shipping Configuration, Administration & Audit.
+- **Overview:** Home.
+- **Shipping:** Shipments, price calculator, senders/receivers, cancellation requests.
+- **Payments & Finance:** Top-up, bank transfer, withdrawal and COD dues pages,
+  plus the **Transactions** submenu (wallet, COD, transaction reports).
+- **Accounts & Approvals:** Merchants, affiliates, account pages, verification and authorization requests.
+- **Reports & Marketing:** Merchant statistics, coupons, alerts.
+- **Shipping Settings:** Shipping companies, payment plans, plus the
+  **Locations** submenu (countries, states, cities).
+- **Administration:** Staff, applications, logs.
 
 Headings and submenu labels support English and Arabic. Existing role and
 feature permissions still control each page; empty submenus and their headings

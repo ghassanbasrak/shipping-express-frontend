@@ -119,6 +119,7 @@ export default function WithdrawRequestDecisionForm({
                 alt={t("TRANSACTION_IMAGE")}
               />
               <Button
+                variant="outlined"
                 color="error"
                 disabled={disabled}
                 onClick={() =>

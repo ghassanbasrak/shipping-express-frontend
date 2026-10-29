@@ -232,6 +232,8 @@ export default function TopupRequestsTable() {
             renderCell: ({ row }) => (
               <div className="py-8">
                 <Button
+                  color="primary"
+                  variant="outlined"
                   component={Link}
                   to={`/topup-requests/all/${row.id}`}
                   size="small"
@@ -257,7 +259,15 @@ export default function TopupRequestsTable() {
       {query.isError && (
         <Alert
           severity="error"
-          action={<Button onClick={() => query.refetch()}>{t("RETRY")}</Button>}
+          action={
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={() => query.refetch()}
+            >
+              {t("RETRY")}
+            </Button>
+          }
         >
           {t("LOAD_ERROR")}
         </Alert>

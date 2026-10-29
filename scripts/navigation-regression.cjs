@@ -98,26 +98,50 @@ function check(name, run) {
   console.log("PASS " + name);
 }
 
+const groups = [
+  "group-overview",
+  "group-shipping",
+  "group-finance",
+  "group-accounts",
+  "group-insights",
+  "group-settings",
+  "group-administration",
+];
 check(
-  "visible group headings contain collapses and preserve the complete leaf inventory",
+  "group headings hold direct links with only two focused collapses",
   () => {
     const all = flatten(config);
     assert.equal(new Set(all.map((item) => item.id)).size, all.length);
     assert(config.every((item) => item.type === "group"));
-    assert.deepEqual(ids(config), [
-      "group-overview",
-      "group-operations",
-      "group-insights",
-      "group-management",
+    assert.deepEqual(ids(config), groups);
+    assert.deepEqual(ids(config[0].children), ["home"]);
+    const collapses = all.filter((item) => item.type === "collapse");
+    assert.deepEqual(ids(collapses), ["nav-transactions", "nav-locations"]);
+    assert.deepEqual(ids(collapses[0].children), [
+      "transactions-wallet",
+      "transactions-cod",
+      "transaction-reports",
     ]);
-    assert.deepEqual(ids(config[0].children), ["home", "dashboard"]);
-    assert.equal(all.filter((item) => item.type === "collapse").length, 7);
+    assert.deepEqual(ids(collapses[1].children), [
+      "countries",
+      "states",
+      "cities",
+    ]);
+    for (const group of config) {
+      assert(group.children.length > 0);
+      assert(group.children.some((item) => item.type === "item"));
+      assert(group.children.every((item) => item.type !== "group"));
+    }
+    for (const section of collapses) {
+      assert(!section.url);
+      assert(
+        section.children.every((item) => item.type === "item" && item.url),
+      );
+    }
     assert.deepEqual(
       ids(all.filter((item) => item.url)).sort(),
       [
         "home",
-        "dashboard",
-        "balance-duplication-errors",
         "affiliate-merchants",
         "affiliate-profile",
         "merchants",
@@ -150,13 +174,6 @@ check(
         "countries",
       ].sort(),
     );
-    for (const section of all.filter((item) => item.type === "collapse")) {
-      assert(!section.url);
-      assert(section.children.length > 0);
-      assert(
-        section.children.every((item) => item.type === "item" && item.url),
-      );
-    }
   },
 );
 check("all menu items have English and Arabic translations", () => {
@@ -182,22 +199,26 @@ check(
     );
   },
 );
-check("administrator sees all staff sections", () => {
+check("administrator sees all groups", () => {
   const items = visible({ role: "admin" });
-  assert.equal(items.length, 4);
+  assert.deepEqual(ids(items), groups);
   assert(ids(flatten(items)).includes("countries"));
 });
 check(
-  "merchant hides staff-only and affiliate-only items and empty sections",
+  "merchant hides staff-only and affiliate-only items and empty groups",
   () => {
     const items = visible({ role: "user", isAffiliate: false });
     assert.deepEqual(ids(items), [
       "group-overview",
-      "group-operations",
-      "group-insights",
+      "group-shipping",
+      "group-finance",
+      "group-accounts",
     ]);
-    assert(!ids(flatten(items)).includes("affiliate-profile"));
-    assert(!ids(flatten(items)).includes("affiliate-withdraw-requests"));
+    const visibleIds = ids(flatten(items));
+    assert(visibleIds.includes("profile"));
+    assert(!visibleIds.includes("affiliate-profile"));
+    assert(!visibleIds.includes("affiliate-withdraw-requests"));
+    assert(!visibleIds.includes("merchants"));
   },
 );
 check("affiliate retains account and withdrawal links", () => {
@@ -214,27 +235,31 @@ check(
     });
     assert.deepEqual(ids(items), [
       "group-overview",
-      "group-operations",
-      "group-insights",
+      "group-shipping",
+      "group-finance",
+    ]);
+    const finance = items.find((item) => item.id === "group-finance");
+    assert.deepEqual(ids(finance.children), ["nav-transactions"]);
+    assert.deepEqual(ids(finance.children[0].children), [
+      "transactions-wallet",
+      "transaction-reports",
     ]);
     assert.deepEqual(
-      ids(flatten(items).find((item) => item.id === "nav-finance").children),
-      ["transactions-wallet"],
-    );
-    assert.deepEqual(
-      ids(flatten(items).find((item) => item.id === "nav-shipping").children),
+      ids(items.find((item) => item.id === "group-shipping").children),
       ["shipping-price-calculator"],
     );
   },
 );
-check("switching locale translates section labels in the selector", () => {
+check("switching locale translates group and collapse labels", () => {
   language = "ar";
-  const shipping = flatten(visible({ role: "admin" })).find(
-    (item) => item.id === "nav-shipping",
+  const items = visible({ role: "admin" });
+  const transactions = flatten(items).find(
+    (item) => item.id === "nav-transactions",
   );
-  assert.equal(shipping.title, ar.NAV_SHIPPING);
-  assert.equal(shipping.children[0].title, ar.SHIPMENTS);
-  assert.equal(visible({ role: "admin" })[0].title, ar.GROUP_OVERVIEW);
+  assert.equal(transactions.title, ar.NAV_TRANSACTIONS);
+  assert.equal(transactions.children[0].title, ar.TRANSACTIONS);
+  assert.equal(items[0].title, ar.GROUP_OVERVIEW);
+  assert.equal(items[1].title, ar.GROUP_SHIPPING);
 });
 check(
   "empty nested sections have no permission before rendering group headings",
@@ -247,18 +272,21 @@ check(
       },
       language,
     });
+    for (const id of [
+      "group-settings",
+      "group-administration",
+      "group-insights",
+    ]) {
+      assert.equal(
+        items.find((item) => item.id === id).hasPermission,
+        false,
+        id,
+      );
+    }
+    const finance = items.find((item) => item.id === "group-finance");
+    assert.equal(finance.hasPermission, false);
     assert.equal(
-      items.find((item) => item.id === "group-management").hasPermission,
-      false,
-    );
-    assert.equal(
-      items.find((item) => item.id === "group-insights").hasPermission,
-      false,
-    );
-    const operations = items.find((item) => item.id === "group-operations");
-    assert.equal(operations.hasPermission, true);
-    assert.equal(
-      operations.children.find((item) => item.id === "nav-finance")
+      finance.children.find((item) => item.id === "nav-transactions")
         .hasPermission,
       false,
     );

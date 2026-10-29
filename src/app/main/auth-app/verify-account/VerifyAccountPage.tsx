@@ -71,10 +71,16 @@ export default function VerifyAccountPage() {
     return (
       <AuthLayout title={t("VERIFY_ACCOUNT")}>
         <Alert severity="info">{t("PENDING")}</Alert>
-        <Button onClick={() => auth.getUser()}>
+        <Button
+          color="primary"
+          variant="outlined"
+          onClick={() => auth.getUser()}
+        >
           {t("VERIFICATION_STATUS")}
         </Button>
-        <Button onClick={auth.signOut}>{t("SIGN_OUT")}</Button>
+        <Button color="primary" variant="outlined" onClick={auth.signOut}>
+          {t("SIGN_OUT")}
+        </Button>
       </AuthLayout>
     );
   return (
@@ -134,11 +140,13 @@ export default function VerifyAccountPage() {
         ))}
       </AuthForm>
       {!requiresVerification(user) && (
-        <Button component={Link} to="/home">
+        <Button color="primary" variant="outlined" component={Link} to="/home">
           {t("HOME")}
         </Button>
       )}
-      <Button onClick={auth.signOut}>{t("SIGN_OUT")}</Button>
+      <Button color="primary" variant="outlined" onClick={auth.signOut}>
+        {t("SIGN_OUT")}
+      </Button>
     </AuthLayout>
   );
 }
@@ -165,7 +173,12 @@ export function UploadFileInput({
   return (
     <div>
       <AuthField name={name} label={label} disabled />
-      <Button component="label" disabled={progress !== null}>
+      <Button
+        color="primary"
+        variant="outlined"
+        component="label"
+        disabled={progress !== null}
+      >
         {t("UPLOAD")} {progress !== null && `${progress}%`}
         <input
           hidden
@@ -180,14 +193,18 @@ export function UploadFileInput({
             setError(false);
             try {
               if (isDemoMode) {
-                if (file.size > 1024 * 1024) throw new Error("Demo files must be 1 MB or smaller");
+                if (file.size > 1024 * 1024)
+                  throw new Error("Demo files must be 1 MB or smaller");
                 const demoUrl = await new Promise<string>((resolve, reject) => {
                   const reader = new FileReader();
                   reader.onload = () => resolve(String(reader.result || ""));
                   reader.onerror = () => reject(reader.error);
                   reader.readAsDataURL(file);
                 });
-                setValue(name, demoUrl, { shouldValidate: true, shouldDirty: true });
+                setValue(name, demoUrl, {
+                  shouldValidate: true,
+                  shouldDirty: true,
+                });
                 return;
               }
               const media = (await dispatch(

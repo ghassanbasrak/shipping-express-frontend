@@ -93,6 +93,8 @@ export default function CountriesHeader() {
             }
           />
           <Button
+            color="primary"
+            variant="outlined"
             onClick={() =>
               dispatch(newCountriesInstance({ shippingCompanyIdFilter: "all" }))
             }
@@ -133,7 +135,13 @@ export default function CountriesHeader() {
         <Alert
           severity="error"
           action={
-            <Button onClick={() => companies.refetch()}>{t("RETRY")}</Button>
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={() => companies.refetch()}
+            >
+              {t("RETRY")}
+            </Button>
           }
         >
           {t("LOOKUP_ERROR")}

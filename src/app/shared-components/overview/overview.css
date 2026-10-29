@@ -567,7 +567,7 @@
 }
 .ov-hero-wallet .ov-text-link.MuiButton-root {
   color: #8ee4d7;
-  padding-inline: 0;
+  border-color: currentColor;
   align-self: flex-start;
 }
 .ov-hero .ov-query-error {

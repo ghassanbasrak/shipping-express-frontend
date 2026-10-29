@@ -123,6 +123,7 @@ export default function ShipmentCountryItem({
         />
         {countryId && (
           <LoadingButton
+            color="primary"
             variant="contained"
             loading={busy}
             disabled={

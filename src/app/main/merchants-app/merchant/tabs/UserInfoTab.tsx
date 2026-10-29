@@ -32,6 +32,8 @@ export default function UserInfoTab({ merchant }: { merchant: IMerchant }) {
         (self ||
           merchantProfilePermission("affiliate-merchants", "view", user)) && (
           <Button
+            color="primary"
+            variant="outlined"
             component={Link}
             to={
               self
@@ -47,6 +49,8 @@ export default function UserInfoTab({ merchant }: { merchant: IMerchant }) {
         <div className="flex flex-wrap gap-8">
           {(self || canUpdateMerchant(user)) && (
             <Button
+              color="primary"
+              variant="outlined"
               component={Link}
               to={self ? "/edit-profile" : `/merchants/${merchant.id}`}
             >
@@ -55,6 +59,8 @@ export default function UserInfoTab({ merchant }: { merchant: IMerchant }) {
           )}
           {(self || canAdjustMerchantBalance(user)) && (
             <Button
+              color="primary"
+              variant="outlined"
               component={Link}
               to={
                 self
@@ -67,16 +73,36 @@ export default function UserInfoTab({ merchant }: { merchant: IMerchant }) {
           )}
           {self && (
             <>
-              <Button component={Link} to="/shipment-users/sender">
+              <Button
+                color="primary"
+                variant="outlined"
+                component={Link}
+                to="/shipment-users/sender"
+              >
                 {t("VIEW_SENDERS")}
               </Button>
-              <Button component={Link} to="/shipment-users/receiver">
+              <Button
+                color="primary"
+                variant="outlined"
+                component={Link}
+                to="/shipment-users/receiver"
+              >
                 {t("VIEW_RECEIVERS")}
               </Button>
-              <Button component={Link} to="/withdraw-requests/all/new">
+              <Button
+                color="primary"
+                variant="outlined"
+                component={Link}
+                to="/withdraw-requests/all/new"
+              >
                 {t("ADD_WITHDRAW_REQUEST")}
               </Button>
-              <Button component={Link} to="/sign-out">
+              <Button
+                color="primary"
+                variant="outlined"
+                component={Link}
+                to="/sign-out"
+              >
                 {t("SIGN_OUT")}
               </Button>
             </>
@@ -84,11 +110,17 @@ export default function UserInfoTab({ merchant }: { merchant: IMerchant }) {
           {canUpdateMerchant(user) && (
             <>
               {canLockMerchantBalance(user) && (
-                <Button onClick={() => setAction("closeBalance")}>
+                <Button
+                  color="primary"
+                  variant="outlined"
+                  onClick={() => setAction("closeBalance")}
+                >
                   {t("LOCK_BALANCE")}
                 </Button>
               )}
               <Button
+                color="primary"
+                variant="outlined"
                 onClick={() =>
                   setAction(
                     merchant.subscriptionBalance > 0
@@ -106,14 +138,22 @@ export default function UserInfoTab({ merchant }: { merchant: IMerchant }) {
 
               {canBlockMerchant(user) && (
                 <>
-                  <Button color="error" onClick={() => setAction("block")}>
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    onClick={() => setAction("block")}
+                  >
                     {t(
                       merchant.isBlocked
                         ? "ACTIVATE_ACCOUNT"
                         : "DEACTIVATE_ACCOUNT",
                     )}
                   </Button>
-                  <Button onClick={() => setAction("affiliate")}>
+                  <Button
+                    color="primary"
+                    variant="outlined"
+                    onClick={() => setAction("affiliate")}
+                  >
                     {t(
                       merchant.isAffiliate
                         ? "DEACTIVATE_AFFILIATE"
@@ -189,13 +229,23 @@ export default function UserInfoTab({ merchant }: { merchant: IMerchant }) {
         ))}
       </div>
       {self && !merchant.isAuthorized && (
-        <Button component={Link} to="/auth-requests/all/new">
+        <Button
+          color="primary"
+          variant="outlined"
+          component={Link}
+          to="/auth-requests/all/new"
+        >
           {t("AUTHORIZE")}
         </Button>
       )}
       {self &&
         !["approved", "pending"].includes(merchant.verificationStatus) && (
-          <Button component={Link} to="/verify-account">
+          <Button
+            color="primary"
+            variant="outlined"
+            component={Link}
+            to="/verify-account"
+          >
             {t("VERIFY_ACCOUNT")}
           </Button>
         )}

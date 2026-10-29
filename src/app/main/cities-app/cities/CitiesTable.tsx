@@ -150,7 +150,15 @@ export default function CitiesTable() {
       {isError && (
         <Alert
           severity="error"
-          action={<Button onClick={() => refetch()}>{t("RETRY")}</Button>}
+          action={
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={() => refetch()}
+            >
+              {t("RETRY")}
+            </Button>
+          }
         >
           {t("SOMETHING_WENT_WRONG_WHEN_GET_CITIES")}
         </Alert>

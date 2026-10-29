@@ -124,7 +124,11 @@ export default function AffiliateMerchantsHeader() {
             },
           ]}
         />
-        <Button onClick={() => dispatch(newAffiliateMerchantsInstance(null))}>
+        <Button
+          color="primary"
+          variant="outlined"
+          onClick={() => dispatch(newAffiliateMerchantsInstance(null))}
+        >
           {t("RESET_FILTERS")}
         </Button>
         <Paper className="flex items-center w-full sm:max-w-256 gap-8 px-16 rounded-8 border-1 shadow-0">

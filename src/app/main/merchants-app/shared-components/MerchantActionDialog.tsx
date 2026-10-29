@@ -84,7 +84,13 @@ function ActionFields({
             <Alert
               severity="error"
               action={
-                <Button onClick={() => plans.refetch()}>{t("RETRY")}</Button>
+                <Button
+                  color="primary"
+                  variant="outlined"
+                  onClick={() => plans.refetch()}
+                >
+                  {t("RETRY")}
+                </Button>
               }
             >
               {t("LOOKUP_ERROR")}
