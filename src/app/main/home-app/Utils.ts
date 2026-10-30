@@ -66,13 +66,6 @@ export const staffWorkspaceLinks = [
     path: "/withdraw-requests/all",
   },
   {
-    feature: "verification-requests",
-    title: "VERIFICATION_REQUESTS",
-    description: "STAFF_VERIFICATION",
-    icon: "verified_user",
-    path: "/verification-requests/all",
-  },
-  {
     feature: "package-requests",
     title: "PACKAGING_REQUESTS",
     description: "STAFF_PACKAGING",

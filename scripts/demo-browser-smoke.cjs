@@ -47,7 +47,6 @@ const routes = [
   "/coupons/all/all",
   "/alerts",
   "/shipment-users/all",
-  "/verification-requests/all",
   "/applications",
   "/bank-transfers/all",
   "/affiliate-withdraw-requests/all",
@@ -135,6 +134,34 @@ async function navigate(route) {
     `Account lookup failed on ${route}`,
   );
   routeChecks++;
+}
+async function retiredVerificationRoutes() {
+  assert.equal(
+    await evaluate(
+      "document.querySelectorAll('a[href^=\"/verification-requests\"]').length",
+    ),
+    0,
+    "Workspace has no retired verification links",
+  );
+  for (const route of [
+    "/verification-requests/all",
+    "/verification-requests/demo-merchant",
+    "/verification-requests/all?updatedById=demo-admin",
+  ]) {
+    await send("Page.navigate", { url: `http://127.0.0.1:${port}${route}` });
+    await until(
+      "location.pathname === '/error/404' && document.readyState === 'complete'",
+      `Retired verification URL ${route}`,
+    );
+    assert.equal(
+      await evaluate(
+        "document.querySelectorAll('a[href^=\"/verification-requests\"]').length",
+      ),
+      0,
+      "No retired verification navigation links",
+    );
+    routeChecks++;
+  }
 }
 async function main() {
   assert(
@@ -244,6 +271,7 @@ async function main() {
     source: "localStorage.setItem('my-language','en');",
   });
   await navigate("/home");
+  await retiredVerificationRoutes();
   for (const route of routes.slice(1)) await navigate(route);
   await evaluate("localStorage.setItem('ashamco-demo-identity','merchant')");
   await navigate("/home");
@@ -251,6 +279,7 @@ async function main() {
     (await evaluate("document.body.innerText")).includes("Merchant"),
     "Merchant identity missing",
   );
+  await retiredVerificationRoutes();
   for (const route of [
     "/profile",
     "/edit-profile",

@@ -239,12 +239,7 @@ export function createDemoExtras(base: {
       imageUrl: "/assets/images/logo/logo.png",
     }),
   );
-  const requestTypes = [
-    "verification",
-    "bankTransfer",
-    "affiliateWithdraw",
-    "bags",
-  ];
+  const requestTypes = ["bankTransfer", "affiliateWithdraw", "bags"];
   const requests = requestTypes.flatMap((type, t) =>
     Array.from({ length: 24 }, (_, n) => {
       const user =
@@ -274,8 +269,6 @@ export function createDemoExtras(base: {
         userType: "company",
         taxNumber: `TX${n + 1000}`,
         crNumber: `CR${n + 1000}`,
-        identityUrl:
-          type === "verification" ? "/assets/images/logo/logo.png" : undefined,
         paymentPlanId:
           type === "bankTransfer" ? plans[n % plans.length].id : undefined,
         productIds:
@@ -805,6 +798,11 @@ export async function handleDemoExtra(ctx: Context): Promise<Response | null> {
       record.userId =
         getDemoUser().role === "user" ? getDemoUser().id : data.userId;
       record.status = "pending";
+      if (record.type === "verification") {
+        const account = db.users.find((row) => row.id === record.userId);
+        if (!account) return [400, { message: "Account not found" }];
+        account.verificationStatus = "pending";
+      }
       if (record.type === "bags") {
         const selected = (record.productIds || []).map((key: string) =>
           db.products.find((row) => row.id === key),
@@ -876,7 +874,7 @@ export async function handleDemoExtra(ctx: Context): Promise<Response | null> {
     const before = rows[index];
     const update: DemoRow = { ...data };
     if (resource === "requests") {
-      if (before.status !== "pending" && before.type !== "verification")
+      if (before.status !== "pending")
         return [409, { message: "Request already reviewed" }];
       update.updatedById = getDemoUser().id;
       if (before.type === "bags" && update.status === "approved") {
@@ -898,10 +896,6 @@ export async function handleDemoExtra(ctx: Context): Promise<Response | null> {
           account.balance += Number(before.amount);
           account.walletBalance = account.balance;
         }
-      }
-      if (before.type === "verification") {
-        const account = db.users.find((row) => row.id === before.userId);
-        if (account) account.verificationStatus = update.status;
       }
     }
     if (resource === "transactions") {

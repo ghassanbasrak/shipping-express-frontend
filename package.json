@@ -251,8 +251,6 @@
     "test:coupons-alerts:browser": "npm run build && node scripts/coupons-alerts-browser-smoke.cjs",
     "test:shipment-users": "node scripts/shipment-users-regression.cjs",
     "test:shipment-users:browser": "npm run build && node scripts/shipment-users-browser-smoke.cjs",
-    "test:account-requests": "node scripts/account-requests-regression.cjs",
-    "test:account-requests:browser": "npm run build && node scripts/account-requests-browser-smoke.cjs",
     "test:applications": "node scripts/applications-regression.cjs",
     "test:applications:browser": "npm run build && node scripts/applications-browser-smoke.cjs",
     "test:bank-transfers": "node scripts/bank-transfers-regression.cjs",

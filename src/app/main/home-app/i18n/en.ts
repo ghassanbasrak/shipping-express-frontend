@@ -89,8 +89,6 @@ const locale = {
   STAFF_COD: "Review cash on delivery activity",
   WITHDRAWALS: "Withdrawal requests",
   STAFF_REQUESTS: "Review withdrawal requests",
-  VERIFICATION_REQUESTS: "Verification requests",
-  STAFF_VERIFICATION: "Review account documents",
   STAFF_PACKAGING: "Review packaging requests",
 };
 export default locale;

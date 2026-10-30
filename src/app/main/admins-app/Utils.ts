@@ -18,7 +18,6 @@ export const toAdminRoleFeatures = (type: string): IAdminFeature[] => {
       return Object.values(featureTypes)
         .filter(
           (feature) =>
-            feature !== featureTypes.verificationRequests &&
             feature !== featureTypes.shippingCompanies &&
             feature !== featureTypes.coupons &&
             feature !== featureTypes.plans &&
@@ -48,7 +47,6 @@ export const featureTypes = {
   withdrawRequests: "withdraw-requests",
   bankTransfers: "bank-transfers",
   packageRequests: "package-requests",
-  verificationRequests: "verification-requests",
   cancelShipmentRequests: "cancel-shipment-requests",
   merchantStatistics: "merchant-statistics",
   admins: "admins",
@@ -76,8 +74,6 @@ export const toFeaturesTypeTitle = (feature: string) => {
       return "BANK_TRANSFERS";
     case featureTypes.packageRequests:
       return "PACKAGE_REQUESTS";
-    case featureTypes.verificationRequests:
-      return "VERIFICATION_REQUESTS";
     case featureTypes.cancelShipmentRequests:
       return "CANCEL_SHIPMENT_REQUESTS";
     case featureTypes.admins:
@@ -119,8 +115,6 @@ export const toFeaturesTypeComparedPath = (feature: string) => {
       return "bank-transfers";
     case featureTypes.packageRequests:
       return "package-requests";
-    case featureTypes.verificationRequests:
-      return "verification-requests";
     case featureTypes.cancelShipmentRequests:
       return "cancel-shipment-requests";
     case featureTypes.admins:
@@ -198,12 +192,6 @@ export const adminRelatedLinks = [
     feature: featureTypes.cancelShipmentRequests,
     title: "VIEW_RELATED_CANCEL_SHIPMENT_REQUESTS",
     path: (id: string) => `/cancel-shipment-requests/all?updatedById=${id}`,
-    available: true,
-  },
-  {
-    feature: featureTypes.verificationRequests,
-    title: "VIEW_RELATED_VERIFICATION_REQUESTS",
-    path: (id: string) => `/verification-requests/all?updatedById=${id}`,
     available: true,
   },
 ];

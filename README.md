@@ -23,7 +23,7 @@ closely related sets use an expandable `collapse` submenu:
 - **Shipping:** Shipments, price calculator, senders/receivers, cancellation requests.
 - **Payments & Finance:** Top-up, bank transfer, withdrawal and COD dues pages,
   plus the **Transactions** submenu (wallet, COD, transaction reports).
-- **Accounts & Approvals:** Merchants, affiliates, account pages and verification requests.
+- **Accounts & Approvals:** Merchants, affiliates and account pages.
 - **Reports & Marketing:** Merchant statistics, coupons, alerts.
 - **Shipping Settings:** Shipping companies, payment plans, plus the
   **Locations** submenu (countries, states, cities).
@@ -36,6 +36,9 @@ can also be toggled with the keyboard.
 
 Run `node scripts/navigation-regression.cjs` to check grouping, translations,
 and role/feature visibility.
+
+Verification review pages are removed. Merchant account verification remains in
+`/verify-account`, including its onboarding document submission.
 
 ## Excluded store functionality
 

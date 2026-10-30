@@ -252,14 +252,6 @@ export default function DashboardContent() {
                 icon="groups"
               />
             )}
-            {hasOperationPermission("verification-requests", "view", user) && (
-              <QuickAction
-                to="/verification-requests/all"
-                title={t("VERIFICATION_REQUESTS")}
-                description={t("REVIEW_VERIFICATION")}
-                icon="verified_user"
-              />
-            )}
             {hasOperationPermission("withdraw-requests", "view", user) && (
               <QuickAction
                 to="/withdraw-requests/all"

@@ -34,7 +34,6 @@ const locale = {
   AFFILIATE_WITHDRAW_REQUESTS: "Affiliate Withdraw Requests",
   BANK_TRANSFERS: "Bank Transfers",
   APPLICATIONS: "Applications",
-  VERIFICATION_REQUESTS: "Verification Requests",
   SHIPMENT_USERS: "Senders / Receivers",
   COUPONS: "Coupons",
   ALERTS: "Alerts",

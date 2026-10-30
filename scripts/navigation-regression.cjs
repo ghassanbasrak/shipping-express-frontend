@@ -160,7 +160,6 @@ check(
         "affiliate-withdraw-requests",
         "bank-transfers",
         "applications",
-        "verification-requests",
         "shipment-users",
         "coupons",
         "alerts",

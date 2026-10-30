@@ -2,7 +2,11 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const root = path.resolve(__dirname, "..");
-const retired = ["merchant-statistics-new-app", "auth-requests-app"];
+const retired = [
+  "merchant-statistics-new-app",
+  "auth-requests-app",
+  "verification-requests-app",
+];
 let passed = 0;
 function check(name, run) {
   run();
@@ -29,17 +33,16 @@ check(
   "Runtime sources have no retired feature imports, routes, namespaces or endpoints",
   () => {
     const pattern =
-      /merchant-statistics-new|merchantStatisticsNew|MerchantStatisticsNew|auth-requests|authRequests|AuthRequests|AuthRequest|AUTH_REQUESTS|MERCHANT_STATISTICS_NEW|statistics-new/;
+      /merchant-statistics-new|merchantStatisticsNew|MerchantStatisticsNew|auth-requests|authRequests|AuthRequests|AuthRequest|AUTH_REQUESTS|MERCHANT_STATISTICS_NEW|statistics-new|verification-requests|verificationRequests|VerificationRequests|IVerificationRequest|VERIFICATION_REQUESTS/;
     for (const file of files(path.join(root, "src")))
       assert(!pattern.test(fs.readFileSync(file, "utf8")), file);
   },
 );
 check(
-  "Route registry retains original statistics, verification and wildcard 404 handling",
+  "Route registry retains original statistics and wildcard 404 handling",
   () => {
     const routes = read("src/app/configs/routesConfig.tsx");
     assert(routes.includes("../main/merchant-statistics-app/"));
-    assert(routes.includes("../main/verification-requests-app/"));
     assert(routes.includes('path: "*"'));
     assert(routes.includes('to="error/404"'));
   },
@@ -84,16 +87,36 @@ check(
     );
   },
 );
-check("Verification onboarding submission and review remain available", () => {
-  assert(
-    read("src/app/main/auth-app/AuthApi.ts").includes("submitVerification"),
-  );
-  assert(
-    read(
-      "src/app/main/verification-requests-app/VerificationRequestsApi.ts",
-    ).includes("verification"),
-  );
-});
+check(
+  "Verification onboarding remains available without retired review cache tags",
+  () => {
+    assert(
+      read("src/app/main/auth-app/AuthApi.ts").includes("submitVerification"),
+    );
+    const api = read("src/app/main/auth-app/AuthApi.ts");
+    assert(api.includes('url: "v1/requests"'));
+    assert(!api.includes("VerificationRequests"));
+    const form = read(
+      "src/app/main/auth-app/verify-account/VerifyAccountPage.tsx",
+    );
+    assert(form.includes('type: "verification"'));
+    assert(form.includes('status: "pending"'));
+    assert(form.includes("uploadMedia"));
+    assert(read("src/app/auth/permissions.ts").includes("verificationStatus"));
+  },
+);
+check(
+  "Permission defaults, staff audit links and workspace shortcuts exclude verification review",
+  () => {
+    for (const file of [
+      "src/app/main/admins-app/Utils.ts",
+      "src/app/main/home-app/Utils.ts",
+      "src/app/main/dashboard/dashboard/DashboardContent.tsx",
+      "src/app/configs/navigationConfig.ts",
+    ])
+      assert(!read(file).includes("verification-requests"), file);
+  },
+);
 check(
   "Migration inventory retains historical areas and counts explicit exclusions accurately",
   () => {

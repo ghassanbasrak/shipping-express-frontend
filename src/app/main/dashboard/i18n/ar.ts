@@ -72,8 +72,6 @@ const locale = {
   QUICK_ACTIONS_HINT: "انتقل مباشرة إلى مساحة العمل المطلوبة.",
   MERCHANTS: "التجار",
   REVIEW_MERCHANTS: "إدارة الحسابات والصلاحيات",
-  VERIFICATION_REQUESTS: "توثيق الحسابات",
-  REVIEW_VERIFICATION: "مراجعة المستندات المرسلة",
   WITHDRAWALS: "طلبات السحب",
   REVIEW_WITHDRAWALS: "مراجعة الطلبات والإيصالات",
 };

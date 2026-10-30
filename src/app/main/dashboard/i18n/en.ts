@@ -72,8 +72,6 @@ const locale = {
   QUICK_ACTIONS_HINT: "Open the workspace you need.",
   MERCHANTS: "Merchants",
   REVIEW_MERCHANTS: "Manage account details and access",
-  VERIFICATION_REQUESTS: "Account verification",
-  REVIEW_VERIFICATION: "Review submitted documents",
   WITHDRAWALS: "Withdrawal requests",
   REVIEW_WITHDRAWALS: "Review pending requests and receipts",
 };

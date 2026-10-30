@@ -34,7 +34,6 @@ const locale = {
   AFFILIATE_WITHDRAW_REQUESTS: "طلبات سحب المسوقين",
   BANK_TRANSFERS: "التحويلات البنكية",
   APPLICATIONS: "التطبيقات",
-  VERIFICATION_REQUESTS: "طلبات التوثيق",
   SHIPMENT_USERS: "المرسلون / المستلمون",
   COUPONS: "الكوبونات",
   ALERTS: "الإشعارات",

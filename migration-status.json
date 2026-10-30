@@ -3,15 +3,24 @@
   "scope": "Feature areas registered by the legacy routesConfig; auth and common pages are tracked separately. Counts do not measure implementation effort.",
   "counts": {
     "featureAreas": 32,
-    "migrated": 29,
-    "excluded": 3,
+    "migrated": 28,
+    "excluded": 4,
     "partial": 0,
     "pending": 0
   },
   "completedThisBatch": [],
+  "verificationFeatureRemoval": {
+    "date": "2026-10-30",
+    "feature": "verification-requests-app",
+    "status": "removed",
+    "changes": "Removed feature source/config/API/slice/models/translations, route registration, sidebar/home/dashboard links, staff audit shortcut and permission catalog/default entry, obsolete cache tags, demo review fixtures and review-only test commands/files. Preserved unknown stored staff grants and account verification onboarding/uploads/status/access guards. Old feature URLs use the standard wildcard 404.",
+    "remainingFeatureAreas": 0,
+    "partialWork": [],
+    "validation": "Passed active application typecheck, production build and isolated demo build; 112 focused regression checks (retirement 9, authentication 12, foundations 19, navigation 9, overviews 34, merchants 29); existing demo contracts and 66 extended demo checks, including preserved current-account onboarding submission and pending status refresh. All 15 authentication browser checks passed, including actual verification document upload/submission. All 72 demo browser route checks passed across admin, merchant and affiliate identities, including six retired-URL checks (list/account/reviewer query scopes for both staff and merchants), Arabic mobile and local checkout/replay. No uncaught browser exceptions or demo backend requests. Runtime source and both build outputs contain no retired verification-review identifiers. Current demo coverage matches all 26 active feature/workspace configurations. Existing build warnings remain; fixture checks do not establish live backend acceptance."
+  },
   "demoDataAudit": {
     "date": "2026-10-30",
-    "scope": "All 27 feature/workspace route configurations currently registered in src/app/configs/routesConfig.tsx, plus the existing demo authentication identities. This extends local demo behavior, not the feature migration inventory.",
+    "scope": "All 26 feature/workspace route configurations currently registered in src/app/configs/routesConfig.tsx, plus the existing demo authentication identities. This extends local demo behavior, not the feature migration inventory.",
     "completedAreas": [
       "dashboard",
       "home-app",
@@ -38,19 +47,17 @@
       "shipment-users-app",
       "applications-app",
       "bank-transfers-app",
-      "affiliate-withdraw-requests-app",
-      "verification-requests-app"
+      "affiliate-withdraw-requests-app"
     ],
     "changes": "Added account-scoped, persistent shipment, top-up/payment, log and affiliate-ledger collections; cancellation/withdrawal requests; shipment pricing, creation, tracking, PDF labels/invoices, extra-weight and COD settlement handlers; merchant creation/profile/subscription/balance-closing actions; derived home/dashboard and affiliate summaries. Local checkout uses the existing payment callback and credits once. Withdrawal reservation/rejection/approval and inclusive COD-to-wallet tax update linked records. Existing merchant filters and inclusive-tax ledger edits are supported. New shipment defaults use the seeded country only in demo mode.",
     "preservation": "The existing Axios demo boundary and browser storage key remain. Missing collections are added without replacing existing edits or intentionally empty arrays. Saved profiles/balances survive identity switches and reloads. Unknown API routes still fail explicitly rather than reaching a live backend. Live feature API definitions, permissions, headers, Alert styles and backend mode are unchanged.",
     "remainingDemoAreas": [],
     "partialWork": [],
-    "exclusions": "Retired auth-requests-app, merchant-statistics-new-app and store/commerce features stay removed. The historically recorded packaging, merchant-services and balance-errors areas have no active route configurations in this checkout and are not restored. Existing retained packaging fixtures remain. Demo authentication is bypassed through admin/merchant/affiliate identities; no real OTP, payment gateway, carrier service or backend acceptance is exercised. Quotes and shipping PDFs are illustrative local samples.",
-    "validation": "Passed active application typecheck, production build and isolated demo build. Existing demo contracts passed, including generated XLSX/PDF content; 64 extended demo operation checks passed for populated collections, combined filters/pagination, ownership, profile/subscription saves, inclusive-tax ledger edits, local checkout/replay, shipment creation/failures/documents/tracking/weight/invoice filters, COD settlement, withdrawal reserve/reject/approve flows, affiliate data and non-destructive snapshot upgrades. Existing shipment (30), navigation (9), feature-retirement (8) and store-removal (5) regressions passed. Browser checks passed on 67 routes across three identities, including Arabic mobile and a real local checkout callback/reload with one wallet credit, no uncaught exceptions and no backend requests. Coverage matches all 27 active feature/workspace configs; production chunks exclude the demo transport and shipping-document fixture. Existing build warnings remain; these checks do not establish live backend acceptance."
+    "exclusions": "Retired auth-requests-app, merchant-statistics-new-app, verification-requests-app and store/commerce features stay removed. Account verification onboarding remains in auth-app. The historically recorded packaging, merchant-services and balance-errors areas have no active route configurations in this checkout and are not restored. Existing retained packaging fixtures remain. Demo authentication is bypassed through admin/merchant/affiliate identities; no real OTP, payment gateway, carrier service or backend acceptance is exercised. Quotes and shipping PDFs are illustrative local samples.",
+    "validation": "Current verification-retirement batch passed active typecheck, production/demo builds, existing demo contracts, 66 extended demo checks and 72 browser route checks, with no demo backend requests or uncaught exceptions. Coverage matches all 26 currently active feature/workspace configurations. Original demo-batch validation also included shipment (30) and store-removal (5) regressions. See verificationFeatureRemoval for the complete current validation and preserved onboarding checks. Existing build warnings remain; fixture checks do not establish live backend acceptance."
   },
   "removedThisBatch": [
-    "merchant-statistics-new-app",
-    "auth-requests-app"
+    "verification-requests-app"
   ],
   "storeRemovalAudit": {
     "date": "2026-10-29",
@@ -698,21 +705,14 @@
     },
     {
       "feature": "verification-requests-app",
-      "status": "migrated",
+      "status": "excluded",
       "sourceConfigs": [
         "src/app/main/verification-requests-app/VerificationRequestsAppConfig.js"
       ],
       "sourceRoutes": [
         "verification-requests/:userId"
       ],
-      "includes": [
-        "Staff review table with account/reviewer/status/date filters, pagination and filtered Excel export",
-        "Tax/registration fields and all active legacy document-download columns",
-        "Confirmed status-only decisions with reversible approval/refusal and cache refresh",
-        "Admin-only reviewer filter/column, updatedById URL scope and enabled staff audit link",
-        "Existing onboarding verification submission retained with review-list invalidation",
-        "English/Arabic/Turkish locale resources and mobile RTL"
-      ]
+      "reason": "Removed by explicit user request on 2026-10-30: staff verification review screens, routes, navigation, permissions and demo review fixtures retired. Account verification onboarding, uploads, status flags and submission API remain in auth-app."
     },
     {
       "feature": "withdraw-requests-app",

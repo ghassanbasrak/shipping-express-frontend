@@ -846,6 +846,7 @@ async function main() {
     "/merchant-statistics-new",
     "/auth-requests/all",
     "/auth-requests/all/new",
+    "/verification-requests/all",
   ]) {
     await navigate(route);
     await until(
@@ -855,7 +856,7 @@ async function main() {
   }
   assert(
     !(await evaluate(
-      'Boolean(document.querySelector(\'a[href^="/auth-requests"],a[href="/merchant-statistics-new"]\'))',
+      'Boolean(document.querySelector(\'a[href^="/verification-requests"],a[href^="/auth-requests"],a[href="/merchant-statistics-new"]\'))',
     )),
   );
   pass("Retired feature routes return 404 and have no staff navigation links");
@@ -1250,6 +1251,7 @@ async function main() {
     "/merchant-statistics-new",
     "/auth-requests/all",
     "/auth-requests/all/new",
+    "/verification-requests/all",
   ]) {
     await navigate(route);
     await until(
@@ -1316,19 +1318,6 @@ async function main() {
   pass("Merchants cannot open another account staff profile");
   await login("admin@example.test");
   await until("location.pathname==='/home'", "admin again");
-  await navigate("/verification-requests/all");
-  await until(
-    exists("[role=row][data-id=request-1]"),
-    "verification merchant link",
-  );
-  const merchantLink = await evaluate(
-    "[...document.querySelectorAll('[role=row][data-id=request-1] a')].find(x=>x.href.includes('/merchants/'))?.getAttribute('href')",
-  );
-  assert.equal(merchantLink, "/merchants/merchant-1/view");
-  pass(
-    "Previously deferred request-table merchant links now resolve to the migrated profile",
-  );
-
   await edit("new");
   await fillField("firstName", "New");
   await fillField("lastName", "Merchant");

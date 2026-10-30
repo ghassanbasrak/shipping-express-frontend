@@ -86,8 +86,6 @@ const locale = {
   STAFF_COD: "مراجعة نشاط الدفع عند الاستلام",
   WITHDRAWALS: "طلبات السحب",
   STAFF_REQUESTS: "مراجعة طلبات السحب",
-  VERIFICATION_REQUESTS: "طلبات التوثيق",
-  STAFF_VERIFICATION: "مراجعة مستندات الحساب",
   STAFF_PACKAGING: "مراجعة طلبات التغليف",
 };
 export default locale;

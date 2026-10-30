@@ -23,7 +23,6 @@ import AlertsAppConfig from "../main/alerts-app/AlertsAppConfig";
 
 import ShipmentUsersAppConfig from "../main/shipment-users-app/ShipmentUsersAppConfig";
 
-import VerificationRequestsAppConfig from "../main/verification-requests-app/VerificationRequestsAppConfig";
 
 import ApplicationsAppConfig from "../main/applications-app/ApplicationsAppConfig";
 
@@ -78,7 +77,6 @@ const routeConfigs: FuseRouteConfigsType = [
   ApplicationsAppConfig,
   BankTransfersAppConfig,
   AffiliateWithdrawRequestsAppConfig,
-  VerificationRequestsAppConfig,
 ];
 
 /**

@@ -72,7 +72,6 @@ async function main() {
     "alerts",
     "shipping-users",
     "applications",
-    "requests?type=verification",
     "requests?type=bankTransfer",
     "requests?type=affiliateWithdraw",
     "transactions",
@@ -552,6 +551,35 @@ async function main() {
   check(
     snapshot().requests.length === count,
     "Upgrade does not duplicate requests",
+  );
+  check(
+    !initial.requests.some((row) => row.type === "verification"),
+    "Retired review feature has no seeded request fixtures",
+  );
+  identity("merchant");
+  const verification = await request(
+    "v1/requests",
+    "post",
+    {
+      type: "verification",
+      userId: "demo-affiliate",
+      status: "approved",
+      name: "Demo Merchant",
+      userType: "company",
+      crUrl: "data:application/pdf;base64,JVBERi0=",
+    },
+    undefined,
+    201,
+  );
+  check(
+    verification.type === "verification" &&
+      verification.userId === "demo-merchant" &&
+      verification.status === "pending",
+    "Onboarding verification still submits for the current account",
+  );
+  check(
+    (await request("v1/users/me")).verificationStatus === "pending",
+    "Onboarding verification status survives account refresh",
   );
   console.log(
     `Demo operations passed: ${checks} checks covering active collections, filters, ownership, local checkout, shipments, COD, withdrawals, affiliates, dashboards and saved-data upgrades`,

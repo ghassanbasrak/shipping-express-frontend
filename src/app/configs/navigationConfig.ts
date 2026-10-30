@@ -208,15 +208,6 @@ const navigationConfig: FuseNavItemType[] = [
         url: "/affiliate-profile",
         auth: authRoles.onlyUser,
       },
-      {
-        id: "verification-requests",
-        title: "Verification Requests",
-        translate: "VERIFICATION_REQUESTS",
-        type: "item",
-        icon: "heroicons-outline:badge-check",
-        url: "/verification-requests/all",
-        auth: authRoles.staff,
-      },
     ],
   },
   {

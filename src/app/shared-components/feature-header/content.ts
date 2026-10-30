@@ -133,12 +133,6 @@ const features = {
     "Review account transactions and balance adjustments.",
     "مراجعة العمليات المالية وتعديلات الأرصدة.",
   ],
-  "verification-requests-app": [
-    "badge-check",
-    "ACCOUNTS",
-    "Review merchant verification requests and documents.",
-    "مراجعة طلبات توثيق التجار والمستندات.",
-  ],
   "withdraw-requests-app": [
     "cash",
     "PAYMENTS",
