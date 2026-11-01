@@ -357,13 +357,18 @@ async function main() {
     );
   });
   check("staff audit routes enable only migrated owning features", () => {
-    assert.equal(adminUtils.adminRelatedLinks.length, 7);
+    assert.equal(adminUtils.adminRelatedLinks.length, 6);
     assert(
       adminUtils.adminRelatedLinks
         .filter(
           (link) =>
             ![
+              "shipments",
+              "cancel-shipment-requests",
+              "shipments",
+              "cancel-shipment-requests",
               "verification-requests",
+              "withdraw-requests",
               "bank-transfers",
               "transactions",
               "cod-transactions",
@@ -371,12 +376,7 @@ async function main() {
         )
         .every((link) => !link.available),
     );
-    assert.equal(
-      adminUtils.adminRelatedLinks.find(
-        (link) => link.feature === "verification-requests",
-      ).available,
-      true,
-    );
+    assert(!adminUtils.adminRelatedLinks.some(link => link.feature === "verification-requests"));
     assert.equal(
       adminUtils.adminRelatedLinks.find(
         (link) => link.feature === "bank-transfers",

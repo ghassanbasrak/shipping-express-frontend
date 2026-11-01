@@ -1,8 +1,13 @@
+import FeatureHeader, {
+  FeatureHeaderRow,
+  FeatureHeaderHeading,
+  FeatureHeaderActions,
+} from "app/shared-components/feature-header/FeatureHeader";
 import { Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { LoadingButton } from "@mui/lab";
 import { Button } from "@mui/material";
-import { motion } from "framer-motion";
+
 import { Link, useNavigate } from "react-router-dom";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -107,13 +112,13 @@ export default function ApplicationHeader() {
     );
   }
   return (
-    <div className="flex flex-col sm:flex-row gap-16 flex-1 w-full items-center justify-between py-24 sm:py-32 px-24 md:px-32">
-      <div className="flex flex-col items-start gap-8 min-w-0">
+    <FeatureHeader>
+      <div className="flex items-center justify-between gap-8 min-w-0">
         <Typography
           component={Link}
           to="/applications"
           color="inherit"
-          className="flex items-center"
+          className="flex items-center self-start gap-4 text-12 font-medium hover:underline"
         >
           <FuseSvgIcon size={20}>
             {theme.direction === "ltr"
@@ -122,62 +127,79 @@ export default function ApplicationHeader() {
           </FuseSvgIcon>
           <span className="mx-4 font-medium">{t("APPLICATIONS")}</span>
         </Typography>
-        <Typography className="text-20 font-semibold">
-          {t(id ? "EDIT_APPLICATION" : "ADD_NEW_APPLICATION")}
-        </Typography>
-        <Typography variant="caption">{displayName(name)}</Typography>
       </div>
-      <motion.div
-        className="flex flex-wrap justify-end gap-8"
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
-      >
-        {id &&
-          canView &&
-          hasOperationPermission("applications", "delete", user) && (
-            <LoadingButton
-              variant="outlined"
-              color="error"
-              onClick={remove}
-              loading={removing.isLoading}
-              disabled={busy}
-              data-testid="remove-application"
+      <FeatureHeaderRow>
+        <div className="flex-1 min-w-0">
+          <FeatureHeaderHeading feature="applications-app">
+            {t(id ? "EDIT_APPLICATION" : "ADD_NEW_APPLICATION")}
+          </FeatureHeaderHeading>
+          <div className="flex flex-wrap items-center gap-8 mt-8 sm:ps-[72px]">
+            <Typography
+              color="text.secondary"
+              className="text-13 leading-relaxed [overflow-wrap:anywhere]"
+              variant="caption"
             >
-              {t("REMOVE")}
-            </LoadingButton>
+              {displayName(name)}
+            </Typography>
+          </div>
+        </div>
+        <FeatureHeaderActions>
+          {id &&
+            canView &&
+            hasOperationPermission("applications", "delete", user) && (
+              <>
+                <LoadingButton
+                  className="rounded-[10px] shadow-none whitespace-nowrap min-h-44"
+                  variant="outlined"
+                  color="error"
+                  onClick={remove}
+                  loading={removing.isLoading}
+                  disabled={busy}
+                  data-testid="remove-application"
+                >
+                  {t("REMOVE")}
+                </LoadingButton>
+              </>
+            )}
+          {id && apiKey && canView && (
+            <>
+              <Button
+                className="rounded-[10px] shadow-none whitespace-nowrap min-h-44"
+                variant="contained"
+                color="info"
+                data-testid="application-api-key"
+                onClick={() =>
+                  dispatch(
+                    openDialog({
+                      maxWidth: "md",
+                      fullWidth: true,
+                      children: <ApplicationApiDetails apiKey={apiKey} />,
+                    }),
+                  )
+                }
+              >
+                {t("API_KEY")}
+              </Button>
+            </>
           )}
-        {id && apiKey && canView && (
-          <Button
-            variant="contained"
-            color="info"
-            data-testid="application-api-key"
-            onClick={() =>
-              dispatch(
-                openDialog({
-                  maxWidth: "md",
-                  fullWidth: true,
-                  children: <ApplicationApiDetails apiKey={apiKey} />,
-                }),
-              )
-            }
-          >
-            {t("API_KEY")}
-          </Button>
-        )}
-        {canEdit && (
-          <LoadingButton
-            variant="contained"
-            color="secondary"
-            loading={creating.isLoading || updating.isLoading}
-            disabled={busy || Boolean(id && !formState.isDirty)}
-            onClick={() => submit()}
-            data-testid="save-application"
-            startIcon={<FuseSvgIcon>material-outline:save</FuseSvgIcon>}
-          >
-            {t(id ? "SAVE_APPLICATION" : "ADD_APPLICATION")}
-          </LoadingButton>
-        )}
-      </motion.div>
-    </div>
+          {canEdit && (
+            <>
+              <LoadingButton
+                className="rounded-[10px] shadow-none whitespace-nowrap min-h-44"
+                variant="contained"
+                color="secondary"
+                loading={creating.isLoading || updating.isLoading}
+                disabled={busy || Boolean(id && !formState.isDirty)}
+                onClick={() => submit()}
+                data-testid="save-application"
+                startIcon={<FuseSvgIcon>material-outline:save</FuseSvgIcon>}
+              >
+                {t(id ? "SAVE_APPLICATION" : "ADD_APPLICATION")}
+              </LoadingButton>
+            </>
+          )}
+        </FeatureHeaderActions>
+      </FeatureHeaderRow>
+    </FeatureHeader>
   );
 }

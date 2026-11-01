@@ -794,6 +794,7 @@ async function main() {
     () => {
       const tableTypes = { normal: 0, money: 1, date: 2, actions: 3 };
       const fields = load(base + "shared-components/TransactionFields.tsx", {
+        "src/app/auth/permissions": permissions,
         "../Utils": utils,
         "../../countries-app/Utils": {
           displayName: (x) => (typeof x === "string" ? x : x?.en || ""),

@@ -473,7 +473,7 @@ async function main() {
     mock.restore();
   }
   check(
-    "migration inventory accounts for all areas without claiming scope owner screens migrated",
+    "migration inventory accounts for all areas and recognizes completed scope owners",
     () => {
       const ledger = JSON.parse(
         fs.readFileSync(path.join(target, "migration-status.json"), "utf8"),
@@ -485,7 +485,7 @@ async function main() {
       );
       assert.equal(
         ledger.features.find((x) => x.feature === "shipments-app").status,
-        "pending",
+        "migrated",
       );
       for (const status of ["migrated", "partial", "pending"])
         assert.equal(

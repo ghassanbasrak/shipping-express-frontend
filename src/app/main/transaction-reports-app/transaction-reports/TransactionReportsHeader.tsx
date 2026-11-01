@@ -1,3 +1,6 @@
+import FeatureHeader, {
+  FeatureHeaderHeading,
+} from "app/shared-components/feature-header/FeatureHeader";
 import {
   Alert,
   Autocomplete,
@@ -67,10 +70,11 @@ export default function TransactionReportsHeader() {
       ? [current, ...options]
       : options;
   return (
-    <div className="w-full flex-1 min-w-0 p-24 sm:p-32 space-y-16">
-      <Typography className="text-24 md:text-32 font-bold">
+    <FeatureHeader>
+      <FeatureHeaderHeading feature="transaction-reports-app">
         {t("TRANSACTION_REPORTS")}
-      </Typography>
+      </FeatureHeaderHeading>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
         <div className="space-y-16 min-w-0">
           {user.role !== "user" && (
@@ -119,6 +123,7 @@ export default function TransactionReportsHeader() {
           <div className="flex flex-wrap gap-8">
             {allowed.map((balance) => (
               <Button
+                color="primary"
                 key={balance}
                 variant={
                   filters.relatedBalanceTypeFilter === balance
@@ -194,6 +199,7 @@ export default function TransactionReportsHeader() {
           ))}
         </div>
       </div>
+
       {(users.isError || selected.isError) && (
         <Alert
           severity="error"
@@ -211,6 +217,6 @@ export default function TransactionReportsHeader() {
           {t("USER_LOOKUP_ERROR")}
         </Alert>
       )}
-    </div>
+    </FeatureHeader>
   );
 }

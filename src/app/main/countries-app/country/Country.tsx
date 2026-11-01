@@ -90,13 +90,19 @@ function Country() {
               : "SOMETHING_WENT_WRONG",
           )}
         </Alert>
-        <Button onClick={() => failedQuery.refetch()}>{t("RETRY")}</Button>
+        <Button
+          color="primary"
+          variant="outlined"
+          onClick={() => failedQuery.refetch()}
+        >
+          {t("RETRY")}
+        </Button>
         <Button
           className="mt-24"
           component={Link}
           variant="outlined"
           to={countriesPath(shippingCompanyId)}
-          color="inherit"
+          color="primary"
         >
           {t("GO_TO_COUNTRIES")}
         </Button>

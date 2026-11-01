@@ -102,13 +102,19 @@ function State() {
               : "SOMETHING_WENT_WRONG",
           )}
         </Alert>
-        <Button onClick={() => failedQuery.refetch()}>{t("RETRY")}</Button>
+        <Button
+          color="primary"
+          variant="outlined"
+          onClick={() => failedQuery.refetch()}
+        >
+          {t("RETRY")}
+        </Button>
         <Button
           className="mt-24"
           component={Link}
           variant="outlined"
           to={statesPath(shippingCompanyId, countryId)}
-          color="inherit"
+          color="primary"
         >
           {t("GO_TO_STATES")}
         </Button>

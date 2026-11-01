@@ -14,10 +14,13 @@
 }
 
 .Header-logo {
-  font-size: 24px;
-  font-weight: 800;
-  letter-spacing: 1.4;
-  opacity: 0.8;
+  flex-shrink: 0;
+}
+
+.Header-logo img {
+  display: block;
+  width: min(160px, 28vw);
+  height: auto;
 }
 
 .Header-items {

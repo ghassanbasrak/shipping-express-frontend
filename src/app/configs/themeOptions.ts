@@ -2,6 +2,24 @@ import themesConfig from 'app/configs/themesConfig';
 
 const themeOptions = [
 	{
+		id: 'Ashamco Express',
+		section: {
+			main: themesConfig.ashamcoLight,
+			navbar: themesConfig.ashamcoNavbar,
+			toolbar: themesConfig.ashamcoLight,
+			footer: themesConfig.ashamcoNavbar
+		}
+	},
+	{
+		id: 'Ashamco Express Dark',
+		section: {
+			main: themesConfig.ashamcoDark,
+			navbar: themesConfig.ashamcoNavbar,
+			toolbar: themesConfig.ashamcoDark,
+			footer: themesConfig.ashamcoDark
+		}
+	},
+	{
 		id: 'Default ',
 		section: {
 			main: themesConfig.default,

@@ -22,7 +22,7 @@ export const Logo: ComponentConfig<LogoProps> = {
       type: "radio",
       options: [
         { label: "Colorfull", value: "colored" },
-        { label: "White", value: "white" },
+        { label: "For dark backgrounds", value: "white" },
       ],
     },
     action: {
@@ -43,11 +43,11 @@ export const Logo: ComponentConfig<LogoProps> = {
   render: ({ id, variant, color, action, puck }) => {
     const image = (
       <img
-        src={`assets/images/logo/${variant === "text" ? (color === "colored" ? "logo-text-only.png" : "logo-text-only-dark.png") : variant === "logo" ? (color === "colored" ? "logo.png" : "logo-dark.png") : color === "colored" ? "logo-text.png" : "logo-text-dark.png"}`}
+        src={`/assets/images/logo/${variant === "text" ? (color === "colored" ? "logo-text-only.png" : "logo-text-only-dark.png") : variant === "logo" ? (color === "colored" ? "logo.png" : "logo-dark.png") : color === "colored" ? "logo-text.png" : "logo-text-dark.png"}`}
         style={{
           cursor: action === "active" ? "pointer" : "default",
         }}
-        alt="Logo"
+        alt="Ashamco Express"
       />
     );
     return (

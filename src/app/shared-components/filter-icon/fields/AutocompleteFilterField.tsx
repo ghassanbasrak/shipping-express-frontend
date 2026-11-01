@@ -49,7 +49,7 @@ function AutocompleteFilterField({
 }: AutocompleteFilterFieldProps) {
   const dispatch = useDispatch<AppDispatch>();
   const [itemsLoading, setItemsLoading] = useState(false);
-  const [itemsSearchBy, setItemsSearchBy] = useState(null);
+  const [itemsSearchBy, setItemsSearchBy] = useState("");
   const [items, setItems] = useState([]);
   useEffect(() => {
     if (multiple) {

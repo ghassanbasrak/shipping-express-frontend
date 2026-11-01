@@ -106,7 +106,6 @@ async function login(email) {
   await fill("password", "password123");
   await submit();
 }
-
 async function fillSelector(selector, value) {
   await evaluate(
     `(()=>{const input=document.querySelector(${JSON.stringify(selector)});if(!input)throw new Error('Missing input');Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(input,${JSON.stringify(value)});input.dispatchEvent(new Event('input',{bubbles:true}));})()`,
@@ -117,7 +116,6 @@ async function clickText(text, selector = "button") {
     `(()=>{const element=[...document.querySelectorAll(${JSON.stringify(selector)})].find(element=>element.textContent.trim()===${JSON.stringify(text)});if(!element)throw new Error('Missing action '+${JSON.stringify(text)});element.click();})()`,
   );
 }
-
 async function fulfill(
   event,
   status,
@@ -145,7 +143,6 @@ async function fulfill(
           ).toString("base64"),
   });
 }
-
 const users = [
   {
     ...normal,
@@ -195,8 +192,8 @@ async function intercept(event) {
             : (kind === "old"
                 ? ["merchant-statistics"]
                 : kind === "new"
-                  ? ["merchant-statistics-new"]
-                  : ["merchant-statistics", "merchant-statistics-new"]
+                  ? ["merchant-statistics"]
+                  : ["merchant-statistics", "merchant-statistics"]
               ).map((feature) => ({
                 feature,
                 accessView: kind !== "noview",
@@ -226,20 +223,11 @@ async function intercept(event) {
         );
         result = { results: list, total: list.length };
       }
-    } else if (
-      ["/v1/users/statistics", "/v1/users/statistics-new"].includes(
-        url.pathname,
-      )
-    ) {
+    } else if (["/v1/users/statistics"].includes(url.pathname)) {
       assert.equal(method, "POST");
       assert.ok(users.some((x) => x.id === body.userId));
-      const isNew = url.pathname.endsWith("-new");
-      const allowed = [
-        "userId",
-        "dateFrom",
-        "dateTo",
-        ...(isNew ? ["bankTransferTotals", "otherFees"] : []),
-      ];
+
+      const allowed = ["userId", "dateFrom", "dateTo", ...[]];
       assert.deepEqual(
         Object.keys(body).filter((key) => !allowed.includes(key)),
         [],
@@ -249,7 +237,7 @@ async function intercept(event) {
         status = 500;
         result = { message: "Statistics unavailable" };
       } else if (emptyReport) result = null;
-      else if (!isNew)
+      else
         result = {
           financialAssets: {
             total: 37,
@@ -270,44 +258,6 @@ async function intercept(event) {
           bankTransfer: { total: 9, cod: 8, others: 1 },
           codObligations: { total: 88, block: 2, pending: 3, paid: 83 },
         };
-      else {
-        const shipments = {
-          deliveredShipments: { count: 12, fees: 120 },
-          processingShipments: { count: 4, fees: 40 },
-          canceledShipments: { count: 0, fees: 0 },
-          returnedShipments: { count: 2, fees: 20 },
-          failedShipments: { count: 1, fees: 10 },
-        };
-        result = {
-          localShipments: shipments,
-          internationalShipments: shipments,
-          codShipments: shipments,
-          codBalance: {
-            pending: { count: 3, total: 30 },
-            settled: { count: 2, total: 20 },
-            canceled: { count: 0, total: 0 },
-            block: { count: 1, total: 10 },
-            paid: { count: 5, total: 50 },
-          },
-          userBalance: {
-            walletBalance: 0,
-            codBalance: 200,
-            eChargeAmount: 300,
-            eChargeTaxAmount: 45,
-            codChargeAmount: 100,
-            codChargeTaxAmount: 15,
-            BankTransferChargeAmount: body.bankTransferTotals,
-            otherChargeAmount: body.otherFees,
-          },
-          messages: Array.from({ length: 36 }, (_, i) => ({
-            message: `Report note ${i + 1} for ${body.userId}`,
-            note:
-              i === 35
-                ? "Final note: all report sections must be exported.\n<script>window.__unsafeReport=true</script>"
-                : "Account reconciliation details and settlement information.",
-          })),
-        };
-      }
     } else if (url.pathname.startsWith("/v1/users/")) {
       result = users.find((x) => x.id === url.pathname.split("/").at(-1));
       if (!result) {
@@ -351,8 +301,8 @@ async function selectUser(text) {
     `[...document.querySelectorAll('[role=option]')].find(x=>x.textContent.includes(${JSON.stringify(text)})).click()`,
   );
 }
-async function statisticsPage(newer = false) {
-  await navigate(newer ? "/merchant-statistics-new" : "/merchant-statistics");
+async function statisticsPage() {
+  await navigate("/merchant-statistics");
   await until(exists("[data-testid=generate-statistics]"), "report form");
 }
 async function generate() {
@@ -368,7 +318,7 @@ async function screenshot(name) {
 }
 const reportCalls = () =>
   calls.filter((x) =>
-    ["/v1/users/statistics", "/v1/users/statistics-new"].includes(x.url),
+    ["/v1/users/statistics", "/v1/users/statistics"].includes(x.url),
   );
 async function downloadPdf(fileName) {
   const file = path.join(output, fileName + ".pdf");
@@ -502,7 +452,6 @@ async function main() {
     "Boolean(document.querySelector('input[name=email]')) || location.pathname==='/home'",
     "initial browser load",
   );
-
   await send("Emulation.setDeviceMetricsOverride", {
     width: 1440,
     height: 1000,
@@ -513,7 +462,6 @@ async function main() {
     behavior: "allow",
     downloadPath: output,
   });
-
   await reset("/merchant-statistics");
   await until("location.pathname==='/sign-in'", "guest protection");
   pass("Guests are redirected to sign-in");
@@ -529,16 +477,7 @@ async function main() {
     ),
     false,
   );
-  await navigate("/merchant-statistics-new");
-  await sleep(700);
-  assert.equal(reportCalls().length, count);
-  assert.equal(
-    await evaluate(
-      "Boolean(document.querySelector('[data-testid=generate-statistics]'))",
-    ),
-    false,
-  );
-  pass("Both statistics pages remain staff-only");
+  pass("Statistics remains staff-only");
   await login("denied@example.test");
   await until("location.pathname==='/home'", "denied login");
   await navigate("/merchant-statistics");
@@ -552,29 +491,6 @@ async function main() {
   pass("Staff without statistics grants cannot open report forms");
   await login("noview@example.test");
   await until("location.pathname==='/home'", "no-view login");
-  await navigate("/merchant-statistics-new");
-  await sleep(600);
-  assert.equal(
-    await evaluate(
-      "Boolean(document.querySelector('[data-testid=generate-statistics]'))",
-    ),
-    false,
-  );
-  pass("A grant without view access cannot fetch report data");
-  await login("old@example.test");
-  await until("location.pathname==='/home'", "old-only login");
-  await statisticsPage();
-  await navigate("/merchant-statistics-new");
-  await sleep(600);
-  assert.equal(
-    await evaluate(
-      "Boolean(document.querySelector('[data-testid=generate-statistics]'))",
-    ),
-    false,
-  );
-  await login("new@example.test");
-  await until("location.pathname==='/home'", "new-only login");
-  await statisticsPage(true);
   await navigate("/merchant-statistics");
   await sleep(600);
   assert.equal(
@@ -583,7 +499,7 @@ async function main() {
     ),
     false,
   );
-  pass("Old/new route grants stay independent in both directions");
+  pass("A grant without view access cannot fetch report data");
   await login("viewer@example.test");
   await until("location.pathname==='/home'", "read-only staff");
   await statisticsPage();
@@ -620,7 +536,7 @@ async function main() {
       "document.querySelectorAll('[data-testid^=statistics-] section').length",
     ),
     0,
-  ); // rows belong directly to four group sections
+  );
   assert.equal(
     await evaluate(
       "document.querySelectorAll('[data-testid=merchant-statistics-report] section').length",
@@ -766,87 +682,6 @@ async function main() {
   pass(
     "Empty responses clear obsolete data and disable export, with normal recovery",
   );
-  await statisticsPage(true);
-  await selectUser("Alpha");
-  await fillField("bankTransferTotals", "0");
-  await fillField("otherFees", "-12.5");
-  await generate();
-  await until(exists("[data-testid=statistics-LOCAL_SHIPMENTS]"), "new report");
-  assert.equal(reportCalls().at(-1).url, "/v1/users/statistics-new");
-  assert.equal(reportCalls().at(-1).body.bankTransferTotals, 0);
-  assert.equal(reportCalls().at(-1).body.otherFees, -12.5);
-  assert.equal(
-    await evaluate(
-      "document.querySelectorAll('[data-testid=merchant-statistics-report] section').length",
-    ),
-    7,
-  );
-  assert.equal(
-    await evaluate(
-      "document.querySelectorAll('[data-testid=statistics-message]').length",
-    ),
-    36,
-  );
-  assert.ok(
-    await evaluate(
-      "document.querySelector('[data-testid=statistic-BankTransferChargeAmount]').innerText.includes('0.00')",
-    ),
-  );
-  assert.ok(
-    await evaluate(
-      "document.querySelector('[data-testid=statistic-localShipments-canceledShipments]').innerText.includes('(0)')",
-    ),
-  );
-  assert.equal(await evaluate("Boolean(window.__unsafeReport)"), false);
-  pass(
-    "New report preserves zero/signed adjustments, all shipment/COD groups, case-sensitive balance fields and safe multiline notes",
-  );
-  await fillField("otherFees", "");
-  count = reportCalls().length;
-  await generate();
-  await sleep(250);
-  assert.equal(reportCalls().length, count);
-  await fillField("otherFees", "-12.5");
-  pass("Missing adjustment values cannot silently become zero");
-  failUsers = true;
-  await fill("userId", "unavailable");
-  await until(
-    "document.body.innerText.includes('Unable to load merchants')",
-    "lookup error",
-  );
-  failUsers = false;
-  await clickText("Retry");
-  await until(
-    "!document.body.innerText.includes('Unable to load merchants')",
-    "lookup retry",
-  );
-  await selectUser("Alpha");
-  pass(
-    "Merchant lookup failures expose a retry without discarding a report or its adjustment draft",
-  );
-  await evaluate(
-    "window.__originalDataUrl=HTMLCanvasElement.prototype.toDataURL;HTMLCanvasElement.prototype.toDataURL=function(){throw new Error('fixture capture failure')}",
-  );
-  await click("[data-testid=print-statistics]");
-  await until(
-    "document.body.innerText.includes('Unable to generate the PDF')",
-    "PDF error",
-  );
-  assert.equal(
-    await evaluate(
-      "document.querySelector('[data-testid=print-statistics]').disabled",
-    ),
-    false,
-  );
-  await evaluate(
-    "HTMLCanvasElement.prototype.toDataURL=window.__originalDataUrl",
-  );
-  const longPdf = await downloadPdf("Ashamco-statistics-new-merchant-1");
-  assert.ok((longPdf.match(/\/Type \/Page\b/g) || []).length > 1);
-  pass(
-    "PDF capture failure releases loading, and retry downloads every page of the long report",
-  );
-  await screenshot("statistics-new-desktop");
   await send("Page.removeScriptToEvaluateOnNewDocument", {
     identifier: languageScript.identifier,
   });
@@ -857,34 +692,6 @@ async function main() {
     deviceScaleFactor: 1,
     mobile: true,
   });
-  await statisticsPage(true);
-  await selectUser("Alpha");
-  await fillField("bankTransferTotals", "200");
-  await fillField("otherFees", "0");
-  await generate();
-  await until(
-    exists("[data-testid=statistics-LOCAL_SHIPMENTS]"),
-    "Arabic report",
-  );
-  assert.equal(
-    await evaluate("getComputedStyle(document.body).direction"),
-    "rtl",
-  );
-  assert.ok(
-    await evaluate("document.documentElement.scrollWidth<=innerWidth+1"),
-  );
-  assert.equal(
-    await evaluate(
-      "document.querySelectorAll('[data-testid=statistics-message]').length",
-    ),
-    36,
-  );
-  await screenshot("statistics-new-ar-mobile");
-  const arabicPdf = await downloadPdf("Ashamco-statistics-new-merchant-1");
-  assert.ok((arabicPdf.match(/\/Type \/Page\b/g) || []).length > 1);
-  pass(
-    "Arabic mobile report retains RTL, fits the viewport and downloads a complete multipage PDF",
-  );
   await statisticsPage();
   await selectUser("Beta");
   await generate();

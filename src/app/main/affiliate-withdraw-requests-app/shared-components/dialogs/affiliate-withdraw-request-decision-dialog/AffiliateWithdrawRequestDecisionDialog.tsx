@@ -1,3 +1,4 @@
+import type { AffiliateWithdrawViewFeature } from "../../../Utils";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
@@ -9,6 +10,7 @@ import { canReviewAffiliateWithdrawRequest } from "../../../Utils";
 import { useSetAffiliateWithdrawRequestStatusMutation } from "../../../AffiliateWithdrawRequestsApi";
 import AffiliateWithdrawRequestDecisionForm from "./AffiliateWithdrawRequestDecisionForm";
 export default function AffiliateWithdrawRequestDecisionDialog({
+  viewFeature = "affiliate-withdraw-requests",
   id,
   userId,
   bank,
@@ -20,6 +22,7 @@ export default function AffiliateWithdrawRequestDecisionDialog({
   next,
   onClose,
 }: {
+  viewFeature?: AffiliateWithdrawViewFeature;
   id: string;
   userId?: string;
   bank?: string;
@@ -78,7 +81,8 @@ export default function AffiliateWithdrawRequestDecisionDialog({
       formCancelButtonProps={{ disabled: busy }}
       formSubmitButtonProps={{
         color: approval ? "success" : "error",
-        disabled: busy || !canReviewAffiliateWithdrawRequest(user, status),
+        disabled:
+          busy || !canReviewAffiliateWithdrawRequest(user, status, viewFeature),
         ...{ "data-testid": "affiliate-withdraw-request-decision-submit" },
       }}
       handleSubmitForm={async (data: {
@@ -87,7 +91,10 @@ export default function AffiliateWithdrawRequestDecisionDialog({
         transactionDescription?: string;
         transactionImageUrl?: string;
       }) => {
-        if (busy || !canReviewAffiliateWithdrawRequest(user, status))
+        if (
+          busy ||
+          !canReviewAffiliateWithdrawRequest(user, status, viewFeature)
+        )
           throw t("DECISION_UNAVAILABLE");
         try {
           await setStatus({

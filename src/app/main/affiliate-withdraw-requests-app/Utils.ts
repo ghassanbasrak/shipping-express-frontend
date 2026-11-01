@@ -26,13 +26,23 @@ export const toAffiliateWithdrawRequestTypeColor = (type: string) =>
   type === affiliateWithdrawRequestTypes.affiliateWithdraw
     ? "bg-purple-600"
     : "bg-gray-600";
-export const canViewAffiliateWithdrawRequests = (user: User) =>
+export type AffiliateWithdrawViewFeature =
+  | "affiliate-withdraw-requests"
+  | "withdraw-requests";
+export const canViewAffiliateWithdrawRequests = (
+  user: User,
+  viewFeature: AffiliateWithdrawViewFeature = "affiliate-withdraw-requests",
+) =>
   user.role === "user"
     ? Boolean(user.isAffiliate)
-    : hasOperationPermission("affiliate-withdraw-requests", "view", user);
+    : hasOperationPermission(viewFeature, "view", user);
 // Preserve the legacy review operation grant; no new staff defaults or aliases.
-export const canReviewAffiliateWithdrawRequest = (user: User, status: string) =>
+export const canReviewAffiliateWithdrawRequest = (
+  user: User,
+  status: string,
+  viewFeature: AffiliateWithdrawViewFeature = "affiliate-withdraw-requests",
+) =>
   user.role !== "user" &&
-  canViewAffiliateWithdrawRequests(user) &&
+  canViewAffiliateWithdrawRequests(user, viewFeature) &&
   hasOperationPermission("withdraw-requests", "update", user) &&
   status === affiliateWithdrawRequestStatus.pending;

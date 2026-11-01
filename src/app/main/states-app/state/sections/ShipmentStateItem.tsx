@@ -123,6 +123,7 @@ export default function ShipmentStateItem({
         />
         {stateId && (
           <LoadingButton
+            color="primary"
             variant="contained"
             loading={busy}
             disabled={

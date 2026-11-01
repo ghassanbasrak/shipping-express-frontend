@@ -32,6 +32,8 @@ function ShippingCompanySummary({
           <div className="flex items-center gap-8">
             <Typography>{company[link.count] ?? "—"}</Typography>
             <Button
+              color="primary"
+              variant="outlined"
               size="small"
               component={Link}
               to={link.path(company.id)}

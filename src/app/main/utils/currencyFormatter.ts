@@ -8,7 +8,7 @@ interface CurrencyInfo {
 }
 
 export function getCurrentCurrency(): string {
-  return Cookies.get("currency") ?? "USD";
+  return "ر.س";
 }
 
 function Currency(originalPrice: number, short = false): string {
@@ -40,7 +40,7 @@ function Currency(originalPrice: number, short = false): string {
     const [currency, decimal] = value.split(".");
     return `${currency.replace(
       /\B(?=(\d{3})+(?!\d))/g,
-      options.thousandsSeparator
+      options.thousandsSeparator,
     )}${decimal ? options.decimalSeparator : ""}${decimal ?? ""} ${
       options.symbol
     }`;
