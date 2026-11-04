@@ -7,7 +7,7 @@
     "partial": 1,
     "pending": 12
   },
-  "completedThisBatch": ["transactions-app", "transaction-reports-app"],
+  "completedThisBatch": [],
   "features": [
     {
       "feature": "admins-app",
@@ -415,7 +415,9 @@
       "new Fuse foundation and JWT authentication",
       "OTP, registration, reset-password, blocking and verification gates",
       "role and operation permission middleware",
-      "branding, RTL and navigation infrastructure"
+      "branding, RTL and navigation infrastructure",
+      "2026-11-03 auth/onboarding foundation: OpenAPI inventory and plan, typed login/refresh/reset contracts, best-effort remote session revocation, responsive localized onboarding progress, duplicate-safe verification refresh",
+      "2026-11-04 sign-in, sign-up and profile-completion visual redesign using Ashamco theme, shared responsive layout, accessible password toggles and grouped registration fields"
     ]
   },
   "commonPages": {
@@ -480,8 +482,10 @@
   "validation": {
     "activeTypecheck": "passed (tsconfig.app.json)",
     "productionBuild": "passed; existing large-chunk warning remains",
+    "affectedAuthLint": "did not pass: 36 errors and 1075 warnings across five redesigned auth files; existing lint conventions and unsafe typing findings remain; no formatter was run",
+    "fullSourceLint": "did not pass: 2703 errors and 71354 warnings across the source tree, including template/shared files; no rewrite was run",
     "regressionChecks": {
-      "auth": 12,
+      "auth": 14,
       "countries": 14,
       "shippingCompanies": 12,
       "geography": 21,
@@ -490,7 +494,7 @@
       "shipmentUsers": 18,
       "accountRequests": 26,
       "applications": 20,
-      "total": 262,
+      "total": 264,
       "bankTransfers": 12,
       "affiliateWithdraw": 17,
       "packaging": 19,
@@ -499,14 +503,19 @@
     },
     "browserChecksThisBatch": {
       "transactionsAndReports": 31,
+      "authOnboarding": 18,
       "uncaughtExceptions": 0,
-      "fixtures": "Mock account/auth/transaction/report services with real local Excel/PDF downloads and isolated list/write/account/file failures; no live backend writes",
+      "fixtures": "Mock account/auth/transaction/report services with real local Excel/PDF downloads and isolated list/write/account/file failures; auth includes retryable bootstrap, partial sign-up and reset-login failure; no live backend writes",
       "screenshots": [
         "test-results/transactions-browser/transactions-desktop.png",
         "test-results/transactions-browser/transaction-reports-desktop.png",
         "test-results/transactions-browser/transactions-ar-mobile.png",
         "test-results/transactions-browser/transaction-reports-ar-mobile.png",
-        "test-results/transactions-browser/transaction-form-ar-mobile.png"
+        "test-results/transactions-browser/transaction-form-ar-mobile.png",
+        "test-results/auth-browser/sign-in.png",
+        "test-results/auth-browser/sign-up.png",
+        "test-results/auth-browser/sign-in-ar-mobile.png",
+        "test-results/auth-browser/sign-up-ar-mobile.png"
       ]
     },
     "scope": "Active application typecheck and production build. Browser contracts use fixtures; live backend acceptance is not verified. The full unused-template/shared-component source check is not the active migration gate."
@@ -524,6 +533,15 @@
     "Server PDF/XLSX exports previously used the visible list page with a 50000-row page size and could skip records. Exports now start at zero and preserve all active filters",
     "Missing report URLs and HTTP download errors now reject visibly and release loading. Temporary links/object URLs are cleaned; merchant exports retain backend current-account ownership",
     "Staff wallet/COD audit links are enabled. The earlier foundations regression was updated to recognize these newly migrated owning features; no default grants or excluded features were added",
-    "Merchant profile navigation and top-up entry points remain deferred to their pending owning features rather than opening unavailable routes"
+    "Merchant profile navigation and top-up entry points remain deferred to their pending owning features rather than opening unavailable routes",
+    "Auth foundation update: the supplied OpenAPI schema was inspected and docs/auth-onboarding-integration-plan.md records documented contracts and unresolved successful response shapes",
+    "Remote logout clears local credentials immediately and makes a best-effort authenticated destroy request; two new auth regressions cover success and failed revocation",
+    "The existing OTP registration path remains in place until the undocumented verify-codes success body and direct user registration relationship are verified against a safe backend account",
+    "The supplied Ashamco API host is configured for development only through VITE_BASE_URL; production retains its previous default",
+    "A temporary /users/me bootstrap failure retains the session and exposes retry; a late failure cannot replace a later sign-out state",
+    "After OTP succeeds, a failed profile PATCH retains the verified session and permits profile retry without another OTP; reset completion remains successful if automatic login fails",
+    "Fixture browser suite passed 15/15 English/Arabic auth checks with no uncaught exceptions; live backend acceptance still requires dedicated test credentials and OTP delivery",
+    "Sign-in, sign-up and /register now use a scoped product auth layout; registration has identity/contact/address/security groups and localized copy. API calls, schemas, OTP and route behavior are unchanged",
+    "Password visibility, autocomplete, explicit field IDs and stronger CTA contrast improve usability. Chrome fixture checks passed 18/18, including navigation and no horizontal overflow at 320px, 390px and 768px; desktop and Arabic mobile screenshots were inspected"
   ]
 }

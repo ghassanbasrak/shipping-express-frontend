@@ -1,4 +1,5 @@
 import { Link, useSearchParams } from "react-router-dom";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import { Alert } from "@mui/material";
@@ -8,6 +9,7 @@ import { AuthForm, AuthField, validation } from "../shared-components/AuthForm";
 export default function ResetPasswordPage() {
   const { t } = useTranslation("ashamcoAuth");
   const auth = useJwtAuth();
+  const [resetComplete, setResetComplete] = useState(false);
   const [params] = useSearchParams();
   const v = validation(t);
   const email = params.get("email");
@@ -20,7 +22,12 @@ export default function ResetPasswordPage() {
     });
   return (
     <AuthLayout title={t("RESET_PASSWORD")}>
-      {!email || !resetCode ? (
+      {resetComplete ? (
+        <>
+          <Alert severity="success">{t("RESET_COMPLETE")}</Alert>
+          <Link to="/sign-in">{t("SIGN_IN")}</Link>
+        </>
+      ) : !email || !resetCode ? (
         <>
           <Alert severity="error">{t("RESET_INVALID")}</Alert>
           <Link to="/forgot-password">{t("RESET_PASSWORD")}</Link>
@@ -32,7 +39,10 @@ export default function ResetPasswordPage() {
           submit={t("SAVE")}
           onSubmit={async ({ password }) => {
             await auth.verifyResetCode(email, password, resetCode);
-            await auth.signInWithEmailAndPassword(email, password);
+            setResetComplete(true);
+            await auth.signInWithEmailAndPassword(email, password).catch(() => {
+              // The password was changed; the user can sign in from this success state.
+            });
           }}
         >
           <AuthField name="password" label={t("PASSWORD")} type="password" />

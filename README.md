@@ -9,9 +9,10 @@ mode and are limited to 1 MB each. Use the user menu to switch between the
 admin, merchant, and affiliate demo accounts; switching keeps demo data and
 reloads the page with the selected account's permissions.
 
-`npm run dev` keeps the existing backend connection. Set `VITE_BASE_URL` in a
-local `.env` file when that backend is available. Demo mode never forwards API
-requests to the backend.
+`npm run dev` uses the Ashamco development API configured in `.env.development`.
+Set `VITE_BASE_URL` in a local `.env` file to use another backend. Production
+builds retain their existing backend configuration unless an environment sets
+`VITE_BASE_URL`. Demo mode never forwards API requests to the backend.
 
 ## Commands
 

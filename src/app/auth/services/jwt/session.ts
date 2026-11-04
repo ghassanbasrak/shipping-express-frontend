@@ -1,6 +1,7 @@
 import axios, { API_BASE_URL } from "app/configs/apiConfig";
 import { AxiosError, InternalAxiosRequestConfig, isAxiosError } from "axios";
 import config from "./jwtAuthConfig";
+import type { RefreshResponse } from "./authContracts";
 
 type Token = string | { token: string };
 export const tokenString = (token?: Token): string | undefined =>
@@ -27,6 +28,21 @@ export function setSession(accessToken: Token | null, refreshToken?: Token) {
       "fcm_token",
     ].forEach((key) => localStorage.removeItem(key));
     delete axios.defaults.headers.common.Authorization;
+  }
+}
+export async function revokeCurrentSession() {
+  const accessToken = getAccessToken();
+  const refreshToken = getRefreshToken();
+  setSession(null);
+  if (!accessToken || !refreshToken) return;
+  try {
+    await axios.post(
+      config.destroySession,
+      { refreshToken },
+      { headers: { Authorization: `Bearer ${accessToken}` } },
+    );
+  } catch {
+    // Local logout remains final if revocation is unavailable or the token expired.
   }
 }
 type RetryRequest = InternalAxiosRequestConfig & { _retry?: boolean };
@@ -65,6 +81,7 @@ export function installAuthInterceptors(onUnauthorized: () => void) {
         config.sendOtpCode,
         config.requestResetCode,
         config.verifyResetCode,
+        config.destroySession,
       ];
       if (publicEndpoints.some((endpoint) => path.endsWith(`/${endpoint}`)))
         throw error;
@@ -90,7 +107,7 @@ export function installAuthInterceptors(onUnauthorized: () => void) {
       }
       if (!refreshing) {
         const task = axios
-          .post(
+          .post<RefreshResponse>(
             config.signInWithRefreshToken,
             { refreshToken: getRefreshToken() },
             { headers: { Authorization: null } },
@@ -99,7 +116,11 @@ export function installAuthInterceptors(onUnauthorized: () => void) {
             const token = tokenString(response.data.accessToken);
             if (!token || requestGeneration !== generation)
               throw new Error("Session changed during token refresh");
-            setSession(token, response.data.refreshToken);
+            // Existing deployments may rotate the refresh token as well.
+            const rotated = response.data as RefreshResponse & {
+              refreshToken?: Token;
+            };
+            setSession(token, rotated.refreshToken);
             return token;
           });
         refreshing = task;
