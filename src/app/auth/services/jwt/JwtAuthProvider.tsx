@@ -8,21 +8,30 @@ import {
 } from "react";
 import { PartialDeep } from "type-fest";
 import axios from "app/configs/apiConfig";
+import { isAxiosError } from "axios";
 import { User } from "../../user";
 import config from "./jwtAuthConfig";
 import {
   getAccessToken,
   getRefreshToken,
   installAuthInterceptors,
+  revokeCurrentSession,
   setSession,
 } from "./session";
+import type { LoginRequest, LoginResponse, ResetPasswordRequest } from "./authContracts";
 import { useAppDispatch } from "app/store/hooks";
 import apiService from "app/store/apiService";
 import { closeDialog } from "@fuse/core/FuseDialog/fuseDialogSlice";
 import { resetUser } from "../../user/store/userSlice";
 import { getDemoUser, isDemoMode } from "src/app/demo/demoMode";
 
-export type JwtAuthStatus = "configuring" | "authenticated" | "unauthenticated";
+export type JwtAuthStatus = "configuring" | "authenticated" | "unauthenticated" | "unavailable";
+export class ProfileCompletionError extends Error {
+  constructor() {
+    super("Profile completion failed after phone verification");
+    this.name = "ProfileCompletionError";
+  }
+}
 export type JwtAuthConfig = typeof config;
 type Profile = PartialDeep<User> & {
   password?: string;
@@ -34,6 +43,7 @@ export type JwtAuthContextType = {
   isLoading: boolean;
   isAuthenticated: boolean;
   signOut: () => void;
+  retrySession: () => Promise<void>;
   signInWithEmailAndPassword: (
     email: string,
     password: string,
@@ -49,6 +59,7 @@ export type JwtAuthContextType = {
     messageId: string,
     profile: Profile,
   ) => Promise<User>;
+  completeSignUpProfile: (profile: Profile) => Promise<User>;
   sendOtpCode: (
     phone: string,
     type?: "signIn" | "signUp" | "link",
@@ -91,7 +102,7 @@ function JwtAuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = useCallback(() => {
     if (isDemoMode) return;
     revision.current += 1;
-    setSession(null);
+    void revokeCurrentSession();
     setUser(null);
     setAuthStatus("unauthenticated");
     dispatch(apiService.util.resetApiState());
@@ -117,6 +128,16 @@ function JwtAuthProvider({ children }: { children: React.ReactNode }) {
     },
     [acceptUser],
   );
+  const completeSignUpProfile = useCallback(
+    async (profile: Profile) => {
+      const { affiliateCode, ...body } = profile;
+      const next = await updateMe(body);
+      if (affiliateCode)
+        await axios.post(config.applyAffiliateCode, { affiliateCode }).catch(() => {});
+      return next;
+    },
+    [updateMe],
+  );
   const finishLogin = useCallback(
     (data: {
       user: User;
@@ -139,10 +160,8 @@ function JwtAuthProvider({ children }: { children: React.ReactNode }) {
   const signInWithEmailAndPassword = useCallback(
     async (email: string, password: string) => {
       const version = ++revision.current;
-      const { data } = await axios.post(config.signInWithEmailAndPassword, {
-        email,
-        password,
-      });
+      const body: LoginRequest = { email, password };
+      const { data } = await axios.post<LoginResponse>(config.signInWithEmailAndPassword, body);
       if (version !== revision.current) throw new Error("Session changed");
       return finishLogin(data);
     },
@@ -183,22 +202,14 @@ function JwtAuthProvider({ children }: { children: React.ReactNode }) {
       setSession(null);
       dispatch(apiService.util.resetApiState());
       setSession(data.accessToken, data.refreshToken);
-      const { affiliateCode, ...body } = profile;
       try {
-        const next = await updateMe(body);
-        if (affiliateCode) {
-          // Referral failure must not discard a successfully created account.
-          await axios
-            .post(config.applyAffiliateCode, { affiliateCode })
-            .catch(() => {});
-        }
-        return next;
-      } catch (error) {
-        signOut();
-        throw error;
+        return await completeSignUpProfile(profile);
+      } catch {
+        // Keep the verified session so profile PATCH can be retried without OTP.
+        throw new ProfileCompletionError();
       }
     },
-    [verifyPhone, updateMe, signOut, dispatch],
+    [verifyPhone, completeSignUpProfile, dispatch],
   );
   const sendOtpCode = useCallback(
     async (
@@ -243,31 +254,44 @@ function JwtAuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
   const verifyResetCode = useCallback(
     async (email: string, password: string, resetCode: string) => {
-      await axios.post(config.verifyResetCode, {
+      const body: ResetPasswordRequest = {
         email,
         password,
         confirmPassword: password,
         token: resetCode,
-      });
+      };
+      await axios.post(config.verifyResetCode, body);
     },
     [],
   );
+  const retrySession = useCallback(async () => {
+    if (!getAccessToken()) {
+      setAuthStatus("unauthenticated");
+      return;
+    }
+    const version = revision.current;
+    setAuthStatus("configuring");
+    try {
+      await getUser();
+    } catch (error) {
+      if (version !== revision.current) return;
+      if (isAxiosError(error) && [401, 403].includes(error.response?.status ?? 0))
+        signOut();
+      else setAuthStatus("unavailable");
+    }
+  }, [getUser, signOut]);
   useEffect(() => {
     if (isDemoMode) return;
-    let active = true;
     const removeInterceptors = installAuthInterceptors(signOut);
     if (getAccessToken()) {
       setSession(getAccessToken(), getRefreshToken());
-      getUser().catch(() => {
-        if (active) signOut();
-      });
+      void retrySession();
     } else setAuthStatus("unauthenticated");
     return () => {
-      active = false;
       removeInterceptors();
       revision.current += 1;
     };
-  }, [getUser, signOut]);
+  }, [retrySession, signOut]);
   const value = useMemo(
     () => ({
       user,
@@ -275,9 +299,11 @@ function JwtAuthProvider({ children }: { children: React.ReactNode }) {
       isLoading: authStatus === "configuring",
       isAuthenticated: authStatus === "authenticated",
       signOut,
+      retrySession,
       signInWithEmailAndPassword,
       signInWithPhoneNumber,
       signUpWithPhoneNumber,
+      completeSignUpProfile,
       sendOtpCode,
       updateMe,
       getUser,
@@ -291,9 +317,11 @@ function JwtAuthProvider({ children }: { children: React.ReactNode }) {
       user,
       authStatus,
       signOut,
+      retrySession,
       signInWithEmailAndPassword,
       signInWithPhoneNumber,
       signUpWithPhoneNumber,
+      completeSignUpProfile,
       sendOtpCode,
       updateMe,
       getUser,

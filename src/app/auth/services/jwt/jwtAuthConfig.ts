@@ -1,6 +1,7 @@
 const jwtAuthConfig = {
   signInWithEmailAndPassword: "v1/auth-sessions/login",
   signInWithRefreshToken: "v1/auth-sessions/refresh",
+  destroySession: "v1/auth-sessions/destroy",
   accessToken: "v1/users/me",
   updateUser: "v1/users/me",
   sendOtpCode: "v1/users/send-codes",

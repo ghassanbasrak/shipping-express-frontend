@@ -69,7 +69,7 @@ export default function VerifyAccountPage() {
     });
   if (submitted || user.verificationStatus === "pending")
     return (
-      <AuthLayout title={t("VERIFY_ACCOUNT")}>
+      <AuthLayout title={t("VERIFY_ACCOUNT")} onboardingStep={2}>
         <Alert severity="info">{t("PENDING")}</Alert>
         <Button
           color="primary"
@@ -84,7 +84,7 @@ export default function VerifyAccountPage() {
       </AuthLayout>
     );
   return (
-    <AuthLayout title={t("VERIFY_ACCOUNT")}>
+    <AuthLayout title={t("VERIFY_ACCOUNT")} onboardingStep={2}>
       <AuthForm
         schema={schema}
         defaults={{
@@ -110,7 +110,8 @@ export default function VerifyAccountPage() {
             type: "verification",
           }).unwrap();
           setSubmitted(true);
-          await auth.getUser();
+          // Creation succeeded; a profile refresh failure must not enable a duplicate POST.
+          void auth.getUser().catch(() => {});
         }}
       >
         <AuthField

@@ -4,6 +4,19 @@ export type Place = {
   name: { ar?: string; en?: string };
   code?: string;
 };
+export type VerificationSubmission = {
+  type: "verification";
+  status: "pending";
+  userId: string;
+  userType?: "company" | "smallStore";
+  name?: string;
+  taxNumber?: string;
+  crNumber?: string;
+  identityUrl?: string;
+  freelanceDocumentUrl?: string;
+  taxCertificateUrl?: string;
+  crUrl?: string;
+};
 const authApi = api
   .enhanceEndpoints({
     addTagTypes: ["AuthPlaces"] as const,
@@ -25,7 +38,8 @@ const authApi = api
           params: { page: 0, pageSize: 500, ...filters },
         }),
       }),
-      submitVerification: build.mutation<unknown, Record<string, unknown>>({
+      submitVerification: build.mutation<unknown, VerificationSubmission>({
+        invalidatesTags: ["VerificationRequests"],
         query: (data) => ({ url: "v1/requests", method: "POST", data }),
       }),
     }),

@@ -56,9 +56,7 @@
     "exclusions": "Retired auth-requests-app, merchant-statistics-new-app, verification-requests-app and store/commerce features stay removed. Account verification onboarding remains in auth-app. The historically recorded packaging, merchant-services and balance-errors areas have no active route configurations in this checkout and are not restored. Existing retained packaging fixtures remain. Demo authentication is bypassed through admin/merchant/affiliate identities; no real OTP, payment gateway, carrier service or backend acceptance is exercised. Quotes and shipping PDFs are illustrative local samples.",
     "validation": "Current verification-retirement batch passed active typecheck, production/demo builds, existing demo contracts, 66 extended demo checks and 72 browser route checks, with no demo backend requests or uncaught exceptions. Coverage matches all 26 currently active feature/workspace configurations. Original demo-batch validation also included shipment (30) and store-removal (5) regressions. See verificationFeatureRemoval for the complete current validation and preserved onboarding checks. Existing build warnings remain; fixture checks do not establish live backend acceptance."
   },
-  "removedThisBatch": [
-    "verification-requests-app"
-  ],
+  "removedThisBatch": ["verification-requests-app"],
   "storeRemovalAudit": {
     "date": "2026-10-29",
     "source": "Store pages, route registration, sidebar section, home shortcut, translations, merchant store-status fields/filters, unused e-commerce mock endpoints/data and platform assets removed. Redux state management and payment-provider error messages are not store implementations and remain.",
@@ -146,13 +144,8 @@
     {
       "feature": "admins-app",
       "status": "migrated",
-      "sourceConfigs": [
-        "src/app/main/admins-app/AdminsAppConfig.js"
-      ],
-      "sourceRoutes": [
-        "admins",
-        "admins/:adminId/*"
-      ]
+      "sourceConfigs": ["src/app/main/admins-app/AdminsAppConfig.js"],
+      "sourceRoutes": ["admins", "admins/:adminId/*"]
     },
     {
       "feature": "affiliate-merchants-app",
@@ -210,13 +203,8 @@
     {
       "feature": "alerts-app",
       "status": "migrated",
-      "sourceConfigs": [
-        "src/app/main/alerts-app/AlertsAppConfig.js"
-      ],
-      "sourceRoutes": [
-        "/alerts",
-        ":alertId/*"
-      ]
+      "sourceConfigs": ["src/app/main/alerts-app/AlertsAppConfig.js"],
+      "sourceRoutes": ["/alerts", ":alertId/*"]
     },
     {
       "feature": "applications-app",
@@ -224,10 +212,7 @@
       "sourceConfigs": [
         "src/app/main/applications-app/ApplicationsAppConfig.js"
       ],
-      "sourceRoutes": [
-        "/applications",
-        ":applicationId/*"
-      ],
+      "sourceRoutes": ["/applications", ":applicationId/*"],
       "includes": [
         "Staff-only v1/applications CRUD, search/account/date filters and ten-row server pagination",
         "Root IApplication model with nested IApplicationScope and canonical auth User references",
@@ -257,9 +242,7 @@
       "sourceConfigs": [
         "src/app/main/balance-errors-app/BalanceErrorsAppConfig.js"
       ],
-      "sourceRoutes": [
-        "/balance-duplication-errors"
-      ],
+      "sourceRoutes": ["/balance-duplication-errors"],
       "includes": [
         "Original /balance-duplication-errors manual read-only audit with date filters, all grouped transactions and full historical details",
         "Core IBalanceError imports migrated ITransaction; request/response wrappers remain in simple BalanceErrorsApi.ts; raw backend response is not normalized",
@@ -302,9 +285,7 @@
       "sourceConfigs": [
         "src/app/main/cancel-shipment-requests-app/CancelShipmentRequestsAppConfig.js"
       ],
-      "sourceRoutes": [
-        "cancel-shipment-requests/:userId"
-      ],
+      "sourceRoutes": ["cancel-shipment-requests/:userId"],
       "includes": [
         "Original /cancel-shipment-requests/:userId list with fixed v1/requests?type=cancelShipment, ten-row server pagination and encoded search/account/reviewer/status/date filters",
         "Root ICancelShipmentRequest imports canonical auth User, IAdmin and migrated IShipment populations; simple RTK API and cancelShipmentRequestsSlice.js",
@@ -322,9 +303,7 @@
     {
       "feature": "cities-app",
       "status": "migrated",
-      "sourceConfigs": [
-        "src/app/main/cities-app/CitiesConfig.js"
-      ],
+      "sourceConfigs": ["src/app/main/cities-app/CitiesConfig.js"],
       "sourceRoutes": [
         "cities/:shippingCompanyId/:stateId",
         "cities/:shippingCompanyId/:stateId/:cityId/*"
@@ -333,9 +312,7 @@
     {
       "feature": "countries-app",
       "status": "migrated",
-      "sourceConfigs": [
-        "src/app/main/countries-app/CountriesConfig.js"
-      ],
+      "sourceConfigs": ["src/app/main/countries-app/CountriesConfig.js"],
       "sourceRoutes": [
         "countries/:shippingCompanyId",
         "countries/:shippingCompanyId/:countryId/*"
@@ -344,9 +321,7 @@
     {
       "feature": "coupons-app",
       "status": "migrated",
-      "sourceConfigs": [
-        "src/app/main/coupons-app/CouponsAppConfig.js"
-      ],
+      "sourceConfigs": ["src/app/main/coupons-app/CouponsAppConfig.js"],
       "sourceRoutes": [
         "coupons/:shippingCompanyId/:userId",
         "coupons/:shippingCompanyId/:userId/:couponId/*"
@@ -355,12 +330,8 @@
     {
       "feature": "dashboard",
       "status": "migrated",
-      "sourceConfigs": [
-        "src/app/main/dashboard/DashboardPageConfig.js"
-      ],
-      "sourceRoutes": [
-        "/dashboard"
-      ],
+      "sourceConfigs": ["src/app/main/dashboard/DashboardPageConfig.js"],
+      "sourceRoutes": ["/dashboard"],
       "includes": [
         "User-authorized redesign of /dashboard and administrator /home with responsive shared overview components, clearer metric hierarchy, shipment stage counts, attention panel, merchant ranking and recent activity",
         "Administrator role and dashboard view checks before mounting any aggregate queries; restricted staff retain explicit grants and no default permissions are added",
@@ -376,12 +347,8 @@
     {
       "feature": "home-app",
       "status": "migrated",
-      "sourceConfigs": [
-        "src/app/main/home-app/HomeAppConfig.js"
-      ],
-      "sourceRoutes": [
-        "home"
-      ],
+      "sourceConfigs": ["src/app/main/home-app/HomeAppConfig.js"],
+      "sourceRoutes": ["home"],
       "includes": [
         "Role-aware /home keeps existing authentication destination: administrator overview, merchant shipping workspace and permission-filtered staff workspace",
         "Merchant redesign includes shipment/calculator actions, fresh wallet and COD balances, four all-time shipment totals, recent shipments, carrier options and useful account shortcuts",
@@ -397,13 +364,8 @@
     {
       "feature": "logs-app",
       "status": "migrated",
-      "sourceConfigs": [
-        "src/app/main/logs-app/LogsConfig.js"
-      ],
-      "sourceRoutes": [
-        "/logs",
-        "/logs/:logId"
-      ],
+      "sourceConfigs": ["src/app/main/logs-app/LogsConfig.js"],
+      "sourceRoutes": ["/logs", "/logs/:logId"],
       "includes": [
         "Original administrator-only /logs and /logs/:logId, read-only v1/logs GET contracts, simple LogsApi.ts and logsSlice.js; no log mutation endpoints",
         "Root ILog and nested historical metadata/data interfaces reference migrated account/shipment owners without introducing placeholder pending-feature models",
@@ -459,9 +421,7 @@
       "sourceConfigs": [
         "src/app/main/merchant-statistics-app/MerchantStatisticsAppConfig.js"
       ],
-      "sourceRoutes": [
-        "merchant-statistics"
-      ],
+      "sourceRoutes": ["merchant-statistics"],
       "includes": [
         "Original staff-only /merchant-statistics aggregate report using POST v1/users/statistics; canonical auth User references and all four original financial/obligation/bank-transfer/COD sections",
         "Searchable merchant selection, current remote search parameters, retained selected accounts, six-month initial range, optional date bounds and range validation",
@@ -477,17 +437,13 @@
       "sourceConfigs": [
         "src/app/main/merchant-statistics-new-app/MerchantStatisticsAppConfig.js"
       ],
-      "sourceRoutes": [
-        "merchant-statistics-new"
-      ],
+      "sourceRoutes": ["merchant-statistics-new"],
       "exclusionReason": "Removed from the project by explicit user request on 2026-10-30."
     },
     {
       "feature": "merchants-app",
       "status": "migrated",
-      "sourceConfigs": [
-        "src/app/main/merchants-app/MerchantsAppConfig.js"
-      ],
+      "sourceConfigs": ["src/app/main/merchants-app/MerchantsAppConfig.js"],
       "sourceRoutes": [
         "merchants",
         "merchants/:merchantId",
@@ -538,12 +494,8 @@
     {
       "feature": "payment-app",
       "status": "migrated",
-      "sourceConfigs": [
-        "src/app/main/payment-app/PaymentAppConfig.js"
-      ],
-      "sourceRoutes": [
-        "payment/:userId/:topupRequestId/:result"
-      ],
+      "sourceConfigs": ["src/app/main/payment-app/PaymentAppConfig.js"],
+      "sourceRoutes": ["payment/:userId/:topupRequestId/:result"],
       "includes": [
         "Original merchant-only /payment/:userId/:topupRequestId/:result legacy MyFatoorah callback, full-screen Fuse layout, current branding, language control, loading/error/success states and working home/history/retry/sign-out actions",
         "Reads actual payment by plain ID, validates current route/stored ownership, verifies gateway CustomerReference through backend POST v1/payments/payment-status with original keyType/key shape",
@@ -557,13 +509,8 @@
     {
       "feature": "plans-app",
       "status": "migrated",
-      "sourceConfigs": [
-        "src/app/main/plans-app/PlansAppConfig.js"
-      ],
-      "sourceRoutes": [
-        "plans",
-        "plans/:planId"
-      ]
+      "sourceConfigs": ["src/app/main/plans-app/PlansAppConfig.js"],
+      "sourceRoutes": ["plans", "plans/:planId"]
     },
     {
       "feature": "shipment-users-app",
@@ -571,10 +518,7 @@
       "sourceConfigs": [
         "src/app/main/shipment-users-app/ShipmentUsersAppConfig.js"
       ],
-      "sourceRoutes": [
-        "shipment-users/:type",
-        ":shipmentUserId"
-      ],
+      "sourceRoutes": ["shipment-users/:type", ":shipmentUserId"],
       "includes": [
         "Sender/receiver/all card lists, search and 16-item pagination",
         "Route-driven responsive side editor with separate header, tabs and basic information",
@@ -587,9 +531,7 @@
     {
       "feature": "shipments-app",
       "status": "migrated",
-      "sourceConfigs": [
-        "src/app/main/shipments-app/ShipmentsAppConfig.js"
-      ],
+      "sourceConfigs": ["src/app/main/shipments-app/ShipmentsAppConfig.js"],
       "sourceRoutes": [
         "shipments/:shippingCompanyId/:shippingType",
         "shipments/:shippingCompanyId/:shippingType/:shipmentId/*",
@@ -628,9 +570,7 @@
     {
       "feature": "states-app",
       "status": "migrated",
-      "sourceConfigs": [
-        "src/app/main/states-app/StatesConfig.js"
-      ],
+      "sourceConfigs": ["src/app/main/states-app/StatesConfig.js"],
       "sourceRoutes": [
         "states/:shippingCompanyId/:countryId",
         "states/:shippingCompanyId/:countryId/:stateId/*"
@@ -664,9 +604,7 @@
       "sourceConfigs": [
         "src/app/main/transaction-reports-app/TransactionReportsAppConfig.js"
       ],
-      "sourceRoutes": [
-        "transaction-reports/:userId"
-      ],
+      "sourceRoutes": ["transaction-reports/:userId"],
       "includes": [
         "Original /transaction-reports/:userId uses the migrated transaction domain with independent transactionReportsSlice.js and simple RTK Query",
         "Staff must select a merchant before querying/exporting; merchant route IDs are ignored and backend current-account scope is retained",
@@ -709,9 +647,7 @@
       "sourceConfigs": [
         "src/app/main/verification-requests-app/VerificationRequestsAppConfig.js"
       ],
-      "sourceRoutes": [
-        "verification-requests/:userId"
-      ],
+      "sourceRoutes": ["verification-requests/:userId"],
       "reason": "Removed by explicit user request on 2026-10-30: staff verification review screens, routes, navigation, permissions and demo review fixtures retired. Account verification onboarding, uploads, status flags and submission API remain in auth-app."
     },
     {
@@ -743,7 +679,9 @@
       "new Fuse foundation and JWT authentication",
       "OTP, registration, reset-password, blocking and verification gates",
       "role and operation permission middleware",
-      "branding, RTL and navigation infrastructure"
+      "branding, RTL and navigation infrastructure",
+      "2026-11-03 auth/onboarding foundation: OpenAPI inventory and plan, typed login/refresh/reset contracts, best-effort remote session revocation, responsive localized onboarding progress, duplicate-safe verification refresh",
+      "2026-11-04 sign-in, sign-up and profile-completion visual redesign using Ashamco theme, shared responsive layout, accessible password toggles and grouped registration fields"
     ]
   },
   "commonPages": {
@@ -752,9 +690,7 @@
       "error pages",
       "maintenance page from authentication foundation"
     ],
-    "pending": [
-      "legacy coming-soon page and final route parity review"
-    ]
+    "pending": ["legacy coming-soon page and final route parity review"]
   },
   "sharedComponents": {
     "status": "provided-by-user",
@@ -805,8 +741,10 @@
   "validation": {
     "activeTypecheck": "passed (tsconfig.app.json)",
     "productionBuild": "passed; existing large-chunk warning remains",
+    "affectedAuthLint": "did not pass: 36 errors and 1075 warnings across five redesigned auth files; existing lint conventions and unsafe typing findings remain; no formatter was run",
+    "fullSourceLint": "did not pass: 2703 errors and 71354 warnings across the source tree, including template/shared files; no rewrite was run",
     "regressionChecks": {
-      "auth": 12,
+      "auth": 14,
       "countries": 14,
       "shippingCompanies": 12,
       "geography": 21,
@@ -863,10 +801,7 @@
   ],
   "featureRemovalAudit": {
     "date": "2026-10-30",
-    "removed": [
-      "merchant-statistics-new-app",
-      "auth-requests-app"
-    ],
+    "removed": ["merchant-statistics-new-app", "auth-requests-app"],
     "scope": "Removed feature source folders, route registration, navigation/translations, shared header metadata, merchant authorization submission link and retired demo fixture behavior. Original merchant statistics, verification requests, account flags and carrier authorization eligibility remain supported.",
     "remainingMigrationWork": [],
     "validation": "Active application typecheck and production build passed. 47 focused regression checks passed (retirement 8, original statistics 17, verification requests 13, navigation 9), along with demo contracts and 56 browser checks (statistics 13, verification 11, merchants/retired URLs 32). Both retired route families resolve to the standard 404 for staff and merchants; no navigation/profile links or production-bundle identifiers remain. Existing build warnings remain. Browser checks use fixtures, not live backend acceptance.",

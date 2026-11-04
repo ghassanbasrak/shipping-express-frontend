@@ -164,6 +164,30 @@ test("Invalid credentials do not trigger token refresh", async () => {
   assert.equal(f.mock.history.post.length, 1);
   f.remove();
 });
+test("Logout revokes the captured refresh token and clears local access immediately", async () => {
+  const f = fixture();
+  let sent;
+  f.mock.onPost("v1/auth-sessions/destroy").reply((request) => {
+    sent = request;
+    return [204];
+  });
+  const revocation = f.session.revokeCurrentSession();
+  assert.equal(f.session.getAccessToken(), null);
+  assert.equal(f.session.getRefreshToken(), null);
+  await revocation;
+  assert.equal(JSON.parse(sent.data).refreshToken, "refresh");
+  assert.equal(sent.headers.Authorization, "Bearer old");
+  f.remove();
+});
+test("Failed remote logout does not refresh or restore the local session", async () => {
+  const f = fixture();
+  f.mock.onPost("v1/auth-sessions/destroy").reply(401, {});
+  await f.session.revokeCurrentSession();
+  assert.equal(f.session.getAccessToken(), null);
+  assert.equal(f.mock.history.post.length, 1);
+  assert.equal(f.signouts(), 0);
+  f.remove();
+});
 test("Expired refresh credentials clear the session without retry loops", async () => {
   const f = fixture();
   f.mock.onGet("v1/data").reply(401, {});

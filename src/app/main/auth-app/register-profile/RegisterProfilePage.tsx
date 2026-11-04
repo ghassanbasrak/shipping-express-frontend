@@ -20,7 +20,7 @@ export default function RegisterProfilePage() {
   if (!user) return null;
   const parts = (user.phone || "+966-").split("-");
   return (
-    <AuthLayout title={t("REGISTER")}>
+    <AuthLayout title={t("REGISTER")} description={t("REGISTER_SUBTITLE")} onboardingStep={1} product wide>
       <AuthForm
         key={user.id}
         schema={profileSchema(t, true, challenge.sent)}

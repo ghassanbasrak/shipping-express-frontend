@@ -15,6 +15,9 @@ let seq = 0;
 const exceptions = [];
 const calls = [];
 let account;
+let failNextProfilePatch = false;
+let failNextMeGet = false;
+let failNextLogin = false;
 const normal = {
   id: "merchant-1",
   role: "user",
@@ -69,13 +72,18 @@ async function assertTypographyFont(font) {
       .map(element => getComputedStyle(element).fontFamily);
   })()`);
   assert.ok(families.length > 0, "Rendered MUI Typography is present");
-  assert.ok(families.every(family => family.startsWith(font) || family.startsWith('"' + font + '"')),
-    `Expected ${font} on every Typography, received ${JSON.stringify(families)}`);
+  assert.ok(
+    families.every(
+      (family) =>
+        family.startsWith(font) || family.startsWith('"' + font + '"'),
+    ),
+    `Expected ${font} on every Typography, received ${JSON.stringify(families)}`,
+  );
   assert.equal(await evaluate(`document.fonts.check('14px "${font}"')`), true);
 }
 async function until(expression, label) {
   for (let i = 0; i < 150; i++) {
-    if (await evaluate(expression)) return;
+    if (await evaluate(`Boolean(document.body) && (${expression})`)) return;
     await sleep(100);
   }
   throw new Error(
@@ -153,29 +161,47 @@ async function intercept(event) {
   let result = {},
     status = 200;
   if (url.pathname.endsWith("/auth-sessions/login")) {
-    account = { ...normal };
-    if (body.email.startsWith("employee"))
-      account = { ...normal, id: "employee-1", role: "employee" };
-    if (body.email.startsWith("blocked")) account.isBlocked = true;
-    if (body.email.startsWith("register"))
-      account = {
-        ...normal,
-        isRegistered: false,
-        emailVerified: true,
-        phoneVerified: false,
+    if (failNextLogin) {
+      failNextLogin = false;
+      status = 401;
+      result = {
+        statusCode: 401,
+        type: "E_INVALID_CREDENTIALS",
+        message: "Invalid credentials",
       };
-    if (body.email.startsWith("verify"))
-      account.verificationStatus = "notSubmitted";
-    if (body.email.startsWith("link")) account.emailVerified = false;
-    result = {
-      user: account,
-      accessToken: "test-access",
-      refreshToken: "test-refresh",
-    };
+    } else {
+      account = { ...normal };
+      if (body.email.startsWith("employee"))
+        account = { ...normal, id: "employee-1", role: "employee" };
+      if (body.email.startsWith("blocked")) account.isBlocked = true;
+      if (body.email.startsWith("register"))
+        account = {
+          ...normal,
+          isRegistered: false,
+          emailVerified: true,
+          phoneVerified: false,
+        };
+      if (body.email.startsWith("verify"))
+        account.verificationStatus = "notSubmitted";
+      if (body.email.startsWith("link")) account.emailVerified = false;
+      result = {
+        user: account,
+        accessToken: "test-access",
+        refreshToken: "test-refresh",
+      };
+    }
   } else if (url.pathname.endsWith("/users/me")) {
-    if (request.method === "PATCH")
+    if (request.method === "GET" && failNextMeGet) {
+      failNextMeGet = false;
+      status = 503;
+      result = { message: "Temporary outage" };
+    } else if (request.method === "PATCH" && failNextProfilePatch) {
+      failNextProfilePatch = false;
+      status = 503;
+      result = { message: "Temporary outage" };
+    } else if (request.method === "PATCH")
       account = { ...account, ...body, isRegistered: true };
-    result = account || normal;
+    if (status === 200) result = account || normal;
   } else if (
     url.pathname.endsWith("/users/send-codes") ||
     url.pathname.endsWith("/users/send-phone-code")
@@ -335,6 +361,12 @@ async function main() {
     setting: "denied",
     origin: "http://127.0.0.1:3138",
   });
+  await send("Emulation.setDeviceMetricsOverride", {
+    width: 1440,
+    height: 900,
+    deviceScaleFactor: 1,
+    mobile: false,
+  });
   const languageScript = await send("Page.addScriptToEvaluateOnNewDocument", {
     source: "localStorage.setItem('my-language','en')",
   });
@@ -350,6 +382,31 @@ async function main() {
   );
   console.log("PASS Guest protected-route redirect");
   await assertTypographyFont("Inter var");
+  assert.equal(
+    await evaluate("document.querySelector('a[href=\"/sign-up\"]') !== null"),
+    true,
+  );
+  assert.equal(
+    await evaluate(
+      "document.querySelector('a[href=\"/forgot-password\"]') !== null",
+    ),
+    true,
+  );
+  await evaluate(
+    "document.querySelector('button[aria-label=\"Show password\"]').click()",
+  );
+  assert.equal(
+    await evaluate("document.querySelector('input[name=password]').type"),
+    "text",
+  );
+  await evaluate(
+    "document.querySelector('button[aria-label=\"Hide password\"]').click()",
+  );
+  assert.equal(
+    await evaluate("document.querySelector('input[name=password]').type"),
+    "password",
+  );
+  console.log("PASS Sign-in navigation and password visibility");
   const screenshot = await send("Page.captureScreenshot", { format: "png" });
   fs.writeFileSync(
     path.join(output, "sign-in.png"),
@@ -367,6 +424,21 @@ async function main() {
     "session restoration",
   );
   console.log("PASS Session restoration");
+  failNextMeGet = true;
+  await send("Page.reload");
+  await until(
+    "document.body.innerText.includes('could not check your session')",
+    "retryable session startup",
+  );
+  assert.equal(
+    await evaluate("Boolean(localStorage.getItem('jwt_access_token'))"),
+    true,
+  );
+  await evaluate("document.querySelector('button').click()");
+  await until("location.pathname==='/home'", "session retry success");
+  console.log(
+    "PASS Temporary session startup failure retains credentials and retries",
+  );
   await navigate("/sign-out");
   await until(
     "location.pathname==='/sign-in' && !localStorage.getItem('jwt_access_token')",
@@ -435,10 +507,29 @@ async function main() {
   assert.equal(resetCall.body.token, "reset-test");
   assert.equal(resetCall.body.confirmPassword, "newpassword123");
   console.log("PASS Password-reset link and backend payload");
+  await reset(
+    "/reset-password?email=merchant%40example.test&resetCode=reset-test-2",
+  );
+  await fill("password", "newpassword456");
+  await fill("passwordConfirmation", "newpassword456");
+  failNextLogin = true;
+  await submit();
+  await until(
+    "document.body.innerText.includes('password has been changed')",
+    "reset success after login failure",
+  );
+  console.log(
+    "PASS Password-reset success remains visible if automatic sign-in fails",
+  );
   await reset("/sign-up");
   await until(
     "Boolean(document.querySelector('input[name=firstName]'))",
     "sign-up",
+  );
+  const signUpDesktop = await send("Page.captureScreenshot", { format: "png" });
+  fs.writeFileSync(
+    path.join(output, "sign-up.png"),
+    Buffer.from(signUpDesktop.data, "base64"),
   );
   await fill("firstName", "New");
   await fill("lastName", "Merchant");
@@ -458,8 +549,25 @@ async function main() {
     "sign-up OTP",
   );
   await fill("code", "1234");
+  failNextProfilePatch = true;
+  const otpVerifications = calls.filter((call) =>
+    call.url.endsWith("/users/verify-codes"),
+  ).length;
+  await submit();
+  await until(
+    "document.body.innerText.includes('request failed')",
+    "profile completion retry",
+  );
+  assert.equal(
+    await evaluate("Boolean(localStorage.getItem('jwt_access_token'))"),
+    true,
+  );
   await submit();
   await until("location.pathname==='/home'", "sign-up completion");
+  assert.equal(
+    calls.filter((call) => call.url.endsWith("/users/verify-codes")).length,
+    otpVerifications + 1,
+  );
   const profileCall = calls
     .filter((call) => call.url.endsWith("/users/me") && call.method === "PATCH")
     .at(-1);
@@ -540,13 +648,59 @@ async function main() {
   );
   console.log("PASS Arabic RTL and mobile sign-in");
   await assertTypographyFont("LamaSans");
+  assert.equal(
+    await evaluate(
+      "document.documentElement.scrollWidth <= document.documentElement.clientWidth",
+    ),
+    true,
+  );
+  await navigate("/sign-up");
+  await until(
+    "Boolean(document.querySelector('input[name=firstName]'))",
+    "Arabic mobile sign-up",
+  );
+  assert.equal(
+    await evaluate(
+      "document.documentElement.scrollWidth <= document.documentElement.clientWidth",
+    ),
+    true,
+  );
+  const signUpMobile = await send("Page.captureScreenshot", { format: "png" });
+  fs.writeFileSync(
+    path.join(output, "sign-up-ar-mobile.png"),
+    Buffer.from(signUpMobile.data, "base64"),
+  );
+  console.log("PASS Arabic mobile registration has no horizontal overflow");
+  for (const width of [320, 768]) {
+    await send("Emulation.setDeviceMetricsOverride", {
+      width,
+      height: 844,
+      deviceScaleFactor: 1,
+      mobile: width === 320,
+    });
+    for (const route of ["/sign-in", "/sign-up"]) {
+      await navigate(route);
+      await until(
+        "Boolean(document.querySelector('form'))",
+        `${route} at ${width}px`,
+      );
+      assert.equal(
+        await evaluate(
+          "document.documentElement.scrollWidth <= document.documentElement.clientWidth",
+        ),
+        true,
+        `${route} overflows at ${width}px`,
+      );
+    }
+  }
+  console.log("PASS Sign-in and registration fit 320px and 768px viewports");
   assert.deepEqual(exceptions, []);
   fs.writeFileSync(
     path.join(output, "summary.json"),
-    JSON.stringify({ checks: 15, exceptions, calls }, null, 2),
+    JSON.stringify({ checks: 18, exceptions, calls }, null, 2),
   );
   console.log(
-    "15/15 browser checks passed; no uncaught JavaScript exceptions.",
+    "18/18 browser checks passed; no uncaught JavaScript exceptions.",
   );
 }
 main()

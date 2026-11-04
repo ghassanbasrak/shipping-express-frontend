@@ -15,7 +15,11 @@ import {
   FormControlLabel,
   MenuItem,
   TextField,
+  IconButton,
+  InputAdornment,
 } from "@mui/material";
+import VisibilityOutlined from "@mui/icons-material/VisibilityOutlined";
+import VisibilityOffOutlined from "@mui/icons-material/VisibilityOffOutlined";
 import { LoadingButton } from "@mui/lab";
 import { useTranslation } from "react-i18next";
 import { useGetAuthPlacesQuery } from "../AuthApi";
@@ -28,6 +32,7 @@ export function AuthForm({
   children,
   submit,
   disabled = false,
+  errorMessage,
 }: {
   schema: ZodTypeAny;
   defaults: FieldValues;
@@ -35,6 +40,7 @@ export function AuthForm({
   children: ReactNode;
   submit: string;
   disabled?: boolean;
+  errorMessage?: (error: unknown) => string;
 }) {
   const methods = useForm({
     defaultValues: defaults,
@@ -52,8 +58,8 @@ export function AuthForm({
           setError("");
           try {
             await onSubmit(values);
-          } catch {
-            setError(t("ERROR"));
+          } catch (failure) {
+            setError(errorMessage?.(failure) || t("ERROR"));
           }
         })}
       >
@@ -69,7 +75,8 @@ export function AuthForm({
           variant="contained"
           fullWidth
           loading={methods.formState.isSubmitting}
-          disabled={disabled}
+          disabled={disabled || methods.formState.isSubmitting}
+          sx={{ minHeight: 52, borderRadius: 2, fontWeight: 700, fontSize: 15, textTransform: "none", boxShadow: "none", bgcolor: "primary.main", color: "primary.contrastText", "&:hover": { bgcolor: "primary.dark", boxShadow: "0 8px 20px rgba(48, 32, 120, .16)" }, "@media (prefers-reduced-motion: reduce)": { transition: "none" } }}
         >
           {submit}
         </LoadingButton>
@@ -84,14 +91,19 @@ export function AuthField({
   type = "text",
   disabled = false,
   options,
+  autoComplete,
 }: {
   name: string;
   label: string;
   type?: string;
   disabled?: boolean;
   options?: { value: string; label: string }[];
+  autoComplete?: string;
 }) {
   const { control } = useFormContext();
+  const { t } = useTranslation("ashamcoAuth");
+  const [visible, setVisible] = useState(false);
+  const isPassword = type === "password";
   return (
     <Controller
       name={name}
@@ -99,15 +111,27 @@ export function AuthField({
       render={({ field, fieldState }) => (
         <TextField
           {...field}
+          id={`auth-${name.replace(/\./g, "-")}`}
           value={field.value ?? ""}
           label={label}
-          type={type}
+          type={isPassword && visible ? "text" : type}
+          autoComplete={autoComplete}
           disabled={disabled}
           fullWidth
           select={Boolean(options)}
           error={Boolean(fieldState.error)}
           helperText={fieldState.error?.message}
           inputProps={type === "tel" ? { dir: "ltr" } : {}}
+          InputProps={isPassword ? {
+            endAdornment: <InputAdornment position="end"><IconButton
+              edge="end"
+              type="button"
+              aria-label={t(visible ? "HIDE_PASSWORD" : "SHOW_PASSWORD")}
+              aria-pressed={visible}
+              onClick={() => setVisible((value) => !value)}
+            >{visible ? <VisibilityOffOutlined /> : <VisibilityOutlined />}</IconButton></InputAdornment>,
+          } : undefined}
+          sx={{ minWidth: 0, "& .MuiOutlinedInput-root": { minHeight: 52, borderRadius: 2, bgcolor: "background.paper", "&.Mui-focused": { boxShadow: (theme) => `0 0 0 3px ${theme.palette.primary.main}22` } }, "& .MuiFormHelperText-root": { mx: .5 } }}
         >
           {options?.map((option) => (
             <MenuItem key={option.value} value={option.value}>
