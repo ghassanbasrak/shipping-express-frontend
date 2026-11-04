@@ -753,7 +753,7 @@
       "shipmentUsers": 18,
       "accountRequests": 26,
       "applications": 20,
-      "total": 262,
+      "total": 481,
       "bankTransfers": 12,
       "affiliateWithdraw": 17,
       "packaging": 19,
@@ -768,33 +768,43 @@
       "servicesBalance": 23,
       "overviews": 34
     },
-    "browserChecksThisBatch": {
-      "transactionsAndReports": 31,
+    "previousFeatureBatchBrowserChecks": {
+      "overviews": 32,
+      "total": 47,
       "uncaughtExceptions": 0,
-      "fixtures": "Mock account/auth/transaction/report services with real local Excel/PDF downloads and isolated list/write/account/file failures; no live backend writes",
+      "fixtures": "Isolated mocked administrator, employee and merchant accounts. Role/view guards, exact operational/financial query contracts, scope labels, stale/delayed responses, last-successful errors, zero/missing data, account ownership, immutable shipment identity, active carrier/custom prices, refresh, English desktop and Arabic mobile RTL. No live backend writes or invented production metrics. Includes an incomplete carrier/shipment list response recovery check, plus the existing authentication suite: password and phone login, session restoration, sign-out, account gates, required email linking/OTP, password reset, registration, verification upload and Arabic mobile sign-in.",
       "screenshots": [
-        "test-results/transactions-browser/transactions-desktop.png",
-        "test-results/transactions-browser/transaction-reports-desktop.png",
-        "test-results/transactions-browser/transactions-ar-mobile.png",
-        "test-results/transactions-browser/transaction-reports-ar-mobile.png",
-        "test-results/transactions-browser/transaction-form-ar-mobile.png"
-      ]
+        "test-results/overviews-browser/administrator-dashboard-en-desktop.png",
+        "test-results/overviews-browser/administrator-insights-en-desktop.png",
+        "test-results/overviews-browser/merchant-home-en-desktop.png",
+        "test-results/overviews-browser/administrator-dashboard-ar-mobile.png",
+        "test-results/overviews-browser/administrator-ranking-ar-mobile.png",
+        "test-results/overviews-browser/merchant-home-ar-mobile.png",
+        "test-results/overviews-browser/merchant-activity-ar-mobile.png"
+      ],
+      "authenticationRecheck": 15
+    },
+    "browserChecksThisBatch": {
+      "retiredRoute404Checks": 6,
+      "menuAndHomeChecks": 2,
+      "scope": "Demo merchant in English and administrator in Arabic. Each of the three removed URLs resolves to /error/404; store section/home links absent. No live backend acceptance claimed."
     },
     "scope": "Active application typecheck and production build. Browser contracts use fixtures; live backend acceptance is not verified. The full unused-template/shared-component source check is not the active migration gate."
   },
   "notesThisBatch": [
-    "The shipment transaction view imports transaction types and consumes ledger rows. This batch migrates that dependency and the transaction report consumer before building the main shipment workflow",
-    "Root ITransaction contains only ledger fields, canonical account/staff references and nested invoice metadata. Filters and request/response wrappers stay in Api.ts; no shipment or merchant stub model was introduced",
-    "JavaScript feature slices retain list state only. Each list wrapper remains simple while its table owns query initialization/pagination and its header owns filter controls",
-    "Wallet and COD queries/controls honor their own view grants; all-balance reads require both scopes. New writes require create and existing edits require update; create-only staff cannot edit existing records",
-    "The legacy detail save button reused create permission for edits. The migration applies the explicit update grant to PATCH operations while keeping separate wallet/COD grants and the merchant-update requirement on the original all/new entry route",
-    "Custom operation is a valid original default/submittable value even though the old select omitted its label. It is now displayed explicitly without enabling inactive reset or accounting generation controls",
-    "Inclusive deposit tax is removed from gross amounts before balance credit; the separate historical amount-with-tax column retains its original cutoff and invoice/taxable conditions. Stored records do not inherit a new tax flag when one was absent",
-    "Operation label prefixes are added only to the outgoing notes. Failed saves preserve raw notes, and already prefixed notes do not receive a duplicate prefix when an existing record is saved",
-    "Successful creation returns to the migrated account ledger before optional balance refresh can fail; retries cannot duplicate the successful monetary write",
-    "Server PDF/XLSX exports previously used the visible list page with a 50000-row page size and could skip records. Exports now start at zero and preserve all active filters",
-    "Missing report URLs and HTTP download errors now reject visibly and release loading. Temporary links/object URLs are cleaned; merchant exports retain backend current-account ownership",
-    "Staff wallet/COD audit links are enabled. The earlier foundations regression was updated to recognize these newly migrated owning features; no default grants or excluded features were added",
-    "Merchant profile navigation and top-up entry points remain deferred to their pending owning features rather than opening unavailable routes"
-  ]
+    "Removed all three merchant-services pages and their route registration, sidebar group, home shortcut, translations and exclusive assets at user request.",
+    "Removed merchant/affiliate store-status fields and filters, unused template e-commerce endpoints/schemas/fixtures and commerce images. The shared table image fallback was moved to a generic asset path.",
+    "The 32-area historical inventory now records 31 migrated areas and one explicit exclusion; no partial or pending counted migration areas. Foundation/auth remain complete, with common-page parity and eight dormant-source import audits still separately unfinished.",
+    "Packaging fixtures and links were preserved. This checkout already lacks its page/config despite the historical migrated inventory; that discrepancy is not fixed or concealed by this store removal.",
+    "126 focused regression checks, active application typecheck and production build passed. Browser checks cover six retired-route redirects and English merchant/Arabic administrator menu cleanup. Production assets/chunks were audited for removed identifiers.",
+    "No new dependencies, backend writes or payment-contract changes. Redux state management and historical gateway error mappings remain. Previous full-feature regression/browser counts are historical, not rerun in this batch."
+  ],
+  "featureRemovalAudit": {
+    "date": "2026-10-30",
+    "removed": ["merchant-statistics-new-app", "auth-requests-app"],
+    "scope": "Removed feature source folders, route registration, navigation/translations, shared header metadata, merchant authorization submission link and retired demo fixture behavior. Original merchant statistics, verification requests, account flags and carrier authorization eligibility remain supported.",
+    "remainingMigrationWork": [],
+    "validation": "Active application typecheck and production build passed. 47 focused regression checks passed (retirement 8, original statistics 17, verification requests 13, navigation 9), along with demo contracts and 56 browser checks (statistics 13, verification 11, merchants/retired URLs 32). Both retired route families resolve to the standard 404 for staff and merchants; no navigation/profile links or production-bundle identifiers remain. Existing build warnings remain. Browser checks use fixtures, not live backend acceptance.",
+    "report": "test-results/feature-removal/summary.json"
+  }
 }
