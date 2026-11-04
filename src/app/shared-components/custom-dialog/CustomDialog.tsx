@@ -85,7 +85,7 @@ function CustomDialog({
               autoHideDuration: 2000,
               variant: "success",
               anchorOrigin: { vertical: "top", horizontal: "right" },
-            })
+            }),
           );
         }
 
@@ -100,7 +100,7 @@ function CustomDialog({
             autoHideDuration: 2000,
             variant: "error",
             anchorOrigin: { vertical: "top", horizontal: "right" },
-          })
+          }),
         );
       } finally {
         setLoading(false);
@@ -166,7 +166,7 @@ function CustomDialog({
           {closeIcon && (
             <IconButton
               edge="end"
-              color="inherit"
+              color="primary"
               onClick={() => {
                 customCloseAction
                   ? customCloseAction()
@@ -216,7 +216,11 @@ function CustomDialog({
                   </Button>
                 )}
                 {!hideFormSubmitButton && (
-                  <LoadingButton {...submitFormButtonProps}>
+                  <LoadingButton
+                    color="secondary"
+                    variant="contained"
+                    {...submitFormButtonProps}
+                  >
                     <span>{formSubmitButtonTitle ?? t("ADD")}</span>
                   </LoadingButton>
                 )}

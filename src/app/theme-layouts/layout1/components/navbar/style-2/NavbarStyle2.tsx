@@ -98,6 +98,9 @@ const StyledNavbar = styled('div')<StyledNavBarProps>(
 				'& .fuse-list-item-text, & .arrow-icon, & .item-badge': {
 					opacity: 0
 				},
+				'& .fuse-list-item-text-primary': {
+					whiteSpace: 'nowrap'
+				},
 				'& .fuse-list-subheader .fuse-list-subheader-text': {
 					opacity: 0
 				},

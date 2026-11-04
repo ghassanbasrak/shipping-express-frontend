@@ -19,7 +19,7 @@ export type VerificationSubmission = {
 };
 const authApi = api
   .enhanceEndpoints({
-    addTagTypes: ["AuthPlaces", "VerificationRequests"] as const,
+    addTagTypes: ["AuthPlaces"] as const,
   })
   .injectEndpoints({
     endpoints: (build) => ({

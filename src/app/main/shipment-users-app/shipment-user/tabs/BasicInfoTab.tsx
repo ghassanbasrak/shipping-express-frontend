@@ -98,9 +98,6 @@ export default function BasicInfoTab({
           />
         )}
       />
-      <Typography color="info.main" className="text-13">
-        {t("NATIONAL_ADDRESS_HINT")}
-      </Typography>
       <AddressSection disabled={disabled} />
     </div>
   );

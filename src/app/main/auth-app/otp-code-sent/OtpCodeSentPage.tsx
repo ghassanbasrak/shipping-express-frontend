@@ -41,6 +41,8 @@ export default function OtpCodeSentPage() {
         <AuthField name="code" label={t("CODE")} />
       </AuthForm>
       <Button
+        color="primary"
+        variant="outlined"
         disabled={challenge.seconds > 0 || sending}
         onClick={async () => {
           setSending(true);

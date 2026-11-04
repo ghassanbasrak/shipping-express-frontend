@@ -19,18 +19,17 @@ type ListItemButtonComponentProps = ListItemButtonProps & {
 
 const Root = styled(ListItem)<ListItemButtonComponentProps>(
   ({ theme, ...props }) => ({
-    minminHeight: 44,
     width: "100%",
-    borderRadius: "6px",
-    margin: "28px 0 0 0",
-    paddingRight: 16,
-    paddingLeft: props.itempadding > 80 ? 80 : props.itempadding,
-    paddingTop: 10,
-    paddingBottom: 10,
+    borderRadius: 8,
+    margin: "12px 0 4px 0",
+    paddingRight: 14,
+    paddingLeft: props.itempadding,
+    paddingTop: 4,
+    paddingBottom: 4,
     color: alpha(theme.palette.text.primary, 0.7),
     fontWeight: 600,
     letterSpacing: "0.025em",
-  })
+  }),
 );
 
 /**
@@ -52,18 +51,18 @@ function FuseNavVerticalGroup(props: FuseNavItemComponentProps) {
   function getRemoteItemValue(
     keyName: string,
     item: object,
-    isLocale?: boolean | null
+    isLocale?: boolean | null,
   ) {
     const value: any = keyName?.includes("%")
       ? keyName
           .replace(
             `%{${keyName.substring(
               keyName.indexOf("{") + 1,
-              keyName.indexOf("}")
+              keyName.indexOf("}"),
             )}`,
             item[
               keyName.substring(keyName.indexOf("{") + 1, keyName.indexOf("}"))
-            ]
+            ],
           )
           .replace("}", "")
       : item[keyName];
@@ -108,7 +107,7 @@ function FuseNavVerticalGroup(props: FuseNavItemComponentProps) {
           metadata: remoteItem,
         }));
         setRemoteChildren(
-          list.map((item) => convertRemoteItemToLocalItem(item))
+          list.map((item) => convertRemoteItemToLocalItem(item)),
         );
       }
     }
@@ -132,7 +131,7 @@ function FuseNavVerticalGroup(props: FuseNavItemComponentProps) {
     }
   }, [isLoadingRemoteData, isFetchingRemoteData, remoteData, remoteChildren]);
 
-  const itempadding = nestedLevel > 0 ? 38 + nestedLevel * 16 : 16;
+  const itempadding = nestedLevel > 0 ? 12 : 14;
 
   const component = item.url ? NavLinkAdapter : "li";
 
@@ -146,18 +145,18 @@ function FuseNavVerticalGroup(props: FuseNavItemComponentProps) {
       role: "button",
     };
   }
-  if (
-    (checkPermission && !item?.hasPermission) ||
-    (item.hasPermissionGetter && !item.hasPermissionGetter(user))
-  ) {
-    return null;
-  }
   return useMemo(() => {
+    if (
+      (checkPermission && !item.hasPermission) ||
+      (item.hasPermissionGetter && !item.hasPermissionGetter(user))
+    ) {
+      return null;
+    }
     const children =
       item.children || remoteChildren.length > 0
         ? [
             ...(!item.childrenPosition || item.childrenPosition === "before"
-              ? item.children
+              ? item.children ?? []
               : []),
             ...remoteChildren,
             ...(item.childrenPosition === "after" ? item.children : []),
@@ -171,7 +170,7 @@ function FuseNavVerticalGroup(props: FuseNavItemComponentProps) {
           itempadding={itempadding}
           className={clsx(
             "fuse-list-subheader flex items-center  py-10",
-            !item.url ? "cursor-default" : ""
+            !item.url ? "cursor-default" : "",
           )}
           onClick={() => onItemClick && onItemClick(item)}
           sx={item.sx}
@@ -182,14 +181,14 @@ function FuseNavVerticalGroup(props: FuseNavItemComponentProps) {
             sx={{
               margin: 0,
               "& > .MuiListItemText-primary": {
-                fontSize: 12,
+                fontSize: 11,
                 color: (theme) =>
                   theme.palette.mode === "dark"
-                    ? "secondary.light"
-                    : "secondary.main",
-                fontWeight: 600,
+                    ? "rgba(255,255,255,.45)"
+                    : "text.secondary",
+                fontWeight: 700,
                 textTransform: "uppercase",
-                letterSpacing: ".05em",
+                letterSpacing: ".12em",
                 lineHeight: "20px",
               },
 
@@ -222,7 +221,15 @@ function FuseNavVerticalGroup(props: FuseNavItemComponentProps) {
         )}
       </>
     );
-  }, [item, itempadding, nestedLevel, onItemClick, remoteChildren]);
+  }, [
+    item,
+    itempadding,
+    nestedLevel,
+    onItemClick,
+    remoteChildren,
+    checkPermission,
+    user,
+  ]);
 }
 
 const NavVerticalGroup = FuseNavVerticalGroup;

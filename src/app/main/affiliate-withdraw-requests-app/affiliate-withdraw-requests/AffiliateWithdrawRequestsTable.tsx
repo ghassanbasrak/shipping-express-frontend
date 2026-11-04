@@ -1,3 +1,6 @@
+import { merchantDatesInvalid } from "../../merchants-app/Utils";
+import type { AffiliateWithdrawViewFeature } from "../Utils";
+import { hasOperationPermission as merchantProfilePermission } from "src/app/auth/permissions";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Alert, Button, Dialog } from "@mui/material";
@@ -34,11 +37,18 @@ import {
 } from "../store/affiliateWithdrawRequestsSlice";
 import AffiliateWithdrawRequestDecisionDialog from "../shared-components/dialogs/affiliate-withdraw-request-decision-dialog/AffiliateWithdrawRequestDecisionDialog";
 import AffiliateWithdrawRequestImageDialog from "../shared-components/dialogs/image-dialog/AffiliateWithdrawRequestImageDialog";
-export default function AffiliateWithdrawRequestsTable() {
+export default function AffiliateWithdrawRequestsTable({
+  fixedUserId,
+  viewFeature = "affiliate-withdraw-requests",
+}: {
+  fixedUserId?: string;
+  viewFeature?: AffiliateWithdrawViewFeature;
+}) {
   const { t } = useTranslation("affiliateWithdrawRequestsApp"),
     dispatch = useAppDispatch(),
     user = useAppSelector(selectUser);
-  const { userId = "all" } = useParams(),
+  const { userId: routeUserId = "all" } = useParams(),
+    userId = fixedUserId || routeUserId,
     location = useLocation();
   const routeKey = `${userId}/${user.role}/${location.search}`;
   const filters = useSelector(
@@ -61,7 +71,8 @@ export default function AffiliateWithdrawRequestsTable() {
     url: string;
     reference?: string;
   }>();
-  const canView = canViewAffiliateWithdrawRequests(user);
+  const invalidDates = merchantDatesInvalid(filters);
+  const canView = canViewAffiliateWithdrawRequests(user, viewFeature);
   useEffect(() => {
     dispatch(
       newAffiliateWithdrawRequestsInstance({
@@ -81,10 +92,18 @@ export default function AffiliateWithdrawRequestsTable() {
     [dispatch],
   );
   const { data, currentData, isFetching, isError, refetch } =
-    useGetAffiliateWithdrawRequestsQuery(filters, {
-      skip: !canView || ready !== routeKey,
-      refetchOnMountOrArgChange: true,
-    });
+    useGetAffiliateWithdrawRequestsQuery(
+      {
+        ...filters,
+        ...(fixedUserId && user.role !== "user"
+          ? { userIdFilter: fixedUserId }
+          : {}),
+      },
+      {
+        skip: !canView || ready !== routeKey || invalidDates,
+        refetchOnMountOrArgChange: true,
+      },
+    );
   const [getAll] = useLazyGetAffiliateWithdrawRequestsQuery();
   useEffect(() => {
     if (
@@ -104,7 +123,8 @@ export default function AffiliateWithdrawRequestsTable() {
     row: IAffiliateWithdrawRequest,
     next: "approved" | "rejected",
   ) {
-    if (!canReviewAffiliateWithdrawRequest(user, row.status)) return;
+    if (!canReviewAffiliateWithdrawRequest(user, row.status, viewFeature))
+      return;
     setDecision({
       id: row.id,
       userId: row.userId,
@@ -129,6 +149,11 @@ export default function AffiliateWithdrawRequestsTable() {
       ? [
           {
             id: "user.firstName" as const,
+            link: merchantProfilePermission("merchants", "view", user),
+            linkGetter: (row) =>
+              row.userId || row.user?.id
+                ? `/merchants/${encodeURIComponent(row.userId || row.user?.id)}/view`
+                : "/merchants",
             label: t("MERCHANT"),
             type: TableDataTypes.normal,
             valueGetter: (row: IAffiliateWithdrawRequest) =>
@@ -215,6 +240,7 @@ export default function AffiliateWithdrawRequestsTable() {
         canReviewAffiliateWithdrawRequest(
           user,
           affiliateWithdrawRequestStatus.pending,
+          viewFeature,
         )
           ? [
               {
@@ -266,6 +292,11 @@ export default function AffiliateWithdrawRequestsTable() {
       className="w-full flex flex-col h-full"
       data-testid="affiliate-withdraw-requests-table"
     >
+      {invalidDates && (
+        <Alert severity="error">
+          {t("INVALID_DATE_RANGE", { ns: "merchantsApp" })}
+        </Alert>
+      )}
       {isError && (
         <Alert
           severity="error"
@@ -281,7 +312,7 @@ export default function AffiliateWithdrawRequestsTable() {
         page={filters.page}
         pageSize={filters.pageSize}
         status={
-          isError
+          isError || invalidDates
             ? FetchStatus.error
             : ready !== routeKey || isFetching
               ? FetchStatus.loading
@@ -301,8 +332,12 @@ export default function AffiliateWithdrawRequestsTable() {
         tableToolbarSelectionExportAllButton={user.role !== "user"}
         tableToolbarSelectionExportAllButtonProps={{
           onClick: async () => {
+            if (invalidDates) throw new Error("Invalid dates");
             const response = await getAll({
               ...filters,
+              ...(fixedUserId && user.role !== "user"
+                ? { userIdFilter: fixedUserId }
+                : {}),
               page: 0,
               pageSize: 500000,
             }).unwrap();
@@ -319,6 +354,7 @@ export default function AffiliateWithdrawRequestsTable() {
         {decision && (
           <AffiliateWithdrawRequestDecisionDialog
             {...decision}
+            viewFeature={viewFeature}
             status={
               data?.results.find((row) => row.id === decision.id)?.status ??
               decision.status

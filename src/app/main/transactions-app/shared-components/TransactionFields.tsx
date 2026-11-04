@@ -1,3 +1,4 @@
+import { hasOperationPermission as merchantProfilePermission } from "src/app/auth/permissions";
 import { TFunction } from "i18next";
 import type { User } from "src/app/auth/user";
 import {
@@ -61,6 +62,11 @@ export default function transactionFields(
       ? [
           {
             id: "user.firstName" as const,
+            link: merchantProfilePermission("merchants", "view", user),
+            linkGetter: (row) =>
+              row.userId || row.user?.id
+                ? `/merchants/${encodeURIComponent(row.userId || row.user?.id)}/view`
+                : "/merchants",
             label: t("MERCHANT"),
             type: TableDataTypes.normal,
             valueGetter: (row: ITransaction) =>

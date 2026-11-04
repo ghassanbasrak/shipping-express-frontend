@@ -569,7 +569,7 @@ function CustomTable<T extends object>({
                                   className="px-8 whitespace-nowrap"
                                   variant={action.variant ?? "contained"}
                                   size={action.size ?? "small"}
-                                  color={action.color}
+                                  color={action.color ?? "primary"}
                                   onClick={() =>
                                     action.onActionClick
                                       ? action.onActionClick(params.row)
@@ -684,7 +684,7 @@ function CustomTable<T extends object>({
                               e.placeholder ?? (
                                 <img
                                   className="rounded max-w-full max-h-full"
-                                  src="assets/images/apps/ecommerce/product-image-placeholder.png"
+                                  src="assets/images/image-placeholder.png"
                                   alt={dataValue}
                                 />
                               )

@@ -1,7 +1,12 @@
+import FeatureHeader, {
+  FeatureHeaderRow,
+  FeatureHeaderHeading,
+  FeatureHeaderActions,
+} from "app/shared-components/feature-header/FeatureHeader";
 import { Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { LoadingButton } from "@mui/lab";
-import { motion } from "framer-motion";
+
 import { Link, useNavigate } from "react-router-dom";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -108,94 +113,85 @@ function PlanHeader() {
   }
 
   return (
-    <div className="flex flex-col sm:flex-row flex-1 w-full items-center justify-between space-y-8 sm:space-y-0 py-24 sm:py-32 px-24 md:px-32">
-      <div className="flex flex-col items-start space-y-8 sm:space-y-0 w-full sm:max-w-full min-w-0">
-        <motion.div
-          initial={{ x: 20, opacity: 0 }}
-          animate={{ x: 0, opacity: 1, transition: { delay: 0.3 } }}
+    <FeatureHeader>
+      <div className="flex items-center justify-between gap-8 min-w-0">
+        <Typography
+          className="flex items-center self-start gap-4 text-12 font-medium hover:underline"
+          component={Link}
+          role="button"
+          to="/plans"
+          color="inherit"
         >
-          <Typography
-            className="flex items-center sm:mb-12"
-            component={Link}
-            role="button"
-            to="/plans"
-            color="inherit"
-          >
-            <FuseSvgIcon size={20}>
-              {theme.direction === "ltr"
-                ? "heroicons-outline:arrow-sm-left"
-                : "heroicons-outline:arrow-sm-right"}
-            </FuseSvgIcon>
-            <span className="flex mx-4 font-medium">{t("PLANS")}</span>
-          </Typography>
-        </motion.div>
-        <div className="flex items-center max-w-full">
-          <motion.div
-            className="flex flex-col min-w-0 mx-8 sm:mx-16"
-            initial={{ x: -20 }}
-            animate={{ x: 0, transition: { delay: 0.3 } }}
-          >
-            <Typography className="text-16 sm:text-20 truncate font-semibold">
-              {t(id ? "EDIT_PLAN" : "ADD_NEW_PLAN")}
-            </Typography>
-            <Typography variant="caption" className="font-medium">
+          <FuseSvgIcon size={20}>
+            {theme.direction === "ltr"
+              ? "heroicons-outline:arrow-sm-left"
+              : "heroicons-outline:arrow-sm-right"}
+          </FuseSvgIcon>
+          <span className="flex mx-4 font-medium">{t("PLANS")}</span>
+        </Typography>
+      </div>
+      <FeatureHeaderRow>
+        <div className="flex-1 min-w-0">
+          <FeatureHeaderHeading feature="plans-app">
+            {t(id ? "EDIT_PLAN" : "ADD_NEW_PLAN")}
+          </FeatureHeaderHeading>
+          <div className="flex flex-wrap items-center gap-8 mt-8 sm:ps-[72px]">
+            <Typography
+              color="text.secondary"
+              variant="caption"
+              className="text-13 leading-relaxed [overflow-wrap:anywhere]"
+            >
               {name}
             </Typography>
-          </motion.div>
+          </div>
         </div>
-      </div>
-      {id && canEdit && (
-        <motion.div
-          className="flex flex-1 w-full"
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0, transition: { delay: 0.3 } }}
-        >
-          <LoadingButton
-            className="whitespace-nowrap mx-4"
-            variant="outlined"
-            color={status === planStatus.active ? "error" : "success"}
-            onClick={handleChangeActive}
-            loading={toggling.isLoading}
-            disabled={busy}
-            startIcon={
-              <Icon
-                type="fa6"
-                name={
-                  status === planStatus.active
-                    ? "FaRegCircleXmark"
-                    : "FaRegCircleCheck"
+        <FeatureHeaderActions>
+          {id && canEdit && (
+            <>
+              <LoadingButton
+                className="rounded-[10px] shadow-none whitespace-nowrap min-h-44"
+                variant="outlined"
+                color={status === planStatus.active ? "error" : "success"}
+                onClick={handleChangeActive}
+                loading={toggling.isLoading}
+                disabled={busy}
+                startIcon={
+                  <Icon
+                    type="fa6"
+                    name={
+                      status === planStatus.active
+                        ? "FaRegCircleXmark"
+                        : "FaRegCircleCheck"
+                    }
+                    size="1em"
+                  />
                 }
-                size="1em"
-              />
-            }
-            data-testid="toggle-plan"
-          >
-            {t(status === planStatus.active ? "DEACTIVATE" : "ACTIVATE")}
-          </LoadingButton>
-        </motion.div>
-      )}
-      {canEdit && (
-        <motion.div
-          className="flex flex-1 w-full"
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0, transition: { delay: 0.3 } }}
-        >
-          <LoadingButton
-            className="whitespace-nowrap mx-4"
-            variant="contained"
-            color="secondary"
-            onClick={() => handleSavePlan()}
-            loading={creating.isLoading || updating.isLoading}
-            disabled={busy || Boolean(id && !formState.isDirty)}
-            loadingPosition="start"
-            startIcon={<Icon type="fa6" name="FaFloppyDisk" size="0.8em" />}
-            data-testid="save-plan"
-          >
-            {t(id ? "SAVE_PLAN" : "ADD_PLAN")}
-          </LoadingButton>
-        </motion.div>
-      )}
-    </div>
+                data-testid="toggle-plan"
+              >
+                {t(status === planStatus.active ? "DEACTIVATE" : "ACTIVATE")}
+              </LoadingButton>
+            </>
+          )}
+          {canEdit && (
+            <>
+              <LoadingButton
+                className="rounded-[10px] shadow-none whitespace-nowrap min-h-44"
+                variant="contained"
+                color="secondary"
+                onClick={() => handleSavePlan()}
+                loading={creating.isLoading || updating.isLoading}
+                disabled={busy || Boolean(id && !formState.isDirty)}
+                loadingPosition="start"
+                startIcon={<Icon type="fa6" name="FaFloppyDisk" size="0.8em" />}
+                data-testid="save-plan"
+              >
+                {t(id ? "SAVE_PLAN" : "ADD_PLAN")}
+              </LoadingButton>
+            </>
+          )}
+        </FeatureHeaderActions>
+      </FeatureHeaderRow>
+    </FeatureHeader>
   );
 }
 export default PlanHeader;
