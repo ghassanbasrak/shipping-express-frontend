@@ -15,7 +15,6 @@ import {
   useGetCityQuery,
 } from "src/app/main/cities-app/CitiesApi";
 import { displayName } from "src/app/main/countries-app/Utils";
-import { shippingGeoName } from "../../Utils";
 import ICountry from "../../../countries-app/models/ICountry";
 import IState from "../../../states-app/models/IState";
 import ICity from "../../../cities-app/models/ICity";
@@ -37,8 +36,6 @@ export default function ShipmentGeoField({
   const suffix = kind[0].toUpperCase() + kind.slice(1),
     name = `${path}${prefix}${suffix}Id`,
     id = watch(name),
-    carrier = watch("shippingCompanyId"),
-    company = watch("shippingCompany"),
     countryId = watch(`${path}${prefix}CountryId`),
     stateId = watch(`${path}${prefix}StateId`),
     local = watch("method") === "local";
@@ -47,7 +44,6 @@ export default function ShipmentGeoField({
       page: 0,
       pageSize: 50,
       searchText: search,
-      shippingCompanyIdFilter: carrier,
     },
     { skip: kind !== "country" },
   );
@@ -56,7 +52,6 @@ export default function ShipmentGeoField({
       page: 0,
       pageSize: 50,
       searchText: search,
-      shippingCompanyIdFilter: carrier,
       countryIdFilter: countryId,
     },
     { skip: kind !== "state" || !countryId },
@@ -66,9 +61,8 @@ export default function ShipmentGeoField({
       page: 0,
       pageSize: 50,
       searchText: search,
-      shippingCompanyIdFilter: carrier,
       countryIdFilter: countryId,
-      stateIdFilter: !company || company.hasState ? stateId : undefined,
+      stateIdFilter: stateId,
     },
     { skip: kind !== "city" || !countryId },
   );
@@ -93,10 +87,7 @@ export default function ShipmentGeoField({
   useEffect(() => {
     if (!entity || getValues(name) !== entity.id) return;
     setValue(`${path}${prefix}${suffix}`, structuredClone(entity));
-    setValue(
-      `${path}${prefix}${suffix}Name`,
-      shippingGeoName(entity, carrier, kind),
-    );
+    setValue(`${path}${prefix}${suffix}Name`, displayName(entity.name));
     if (kind === "country")
       setValue(`${path}${prefix}CountryCode`, entity.code || "");
     if (kind === "city") {
@@ -105,12 +96,7 @@ export default function ShipmentGeoField({
       if (entity.postalCode && !getValues(`${path}${prefix}ZipCode`))
         setValue(`${path}${prefix}ZipCode`, entity.postalCode);
     }
-  }, [entity, carrier, kind, name, path, prefix, suffix, getValues, setValue]);
-  const mappingMissing =
-    !!entity &&
-    !!carrier &&
-    (kind === "city" || (kind === "state" && !!company?.hasState)) &&
-    !shippingGeoName(entity, carrier, kind);
+  }, [entity, kind, name, path, prefix, suffix, getValues, setValue]);
   const lookupFailed = list.isError || selected.isError;
   return (
     <div className="min-w-0">
@@ -146,7 +132,7 @@ export default function ShipmentGeoField({
               );
               setValue(
                 `${path}${prefix}${suffix}Name`,
-                shippingGeoName(value, carrier, kind),
+                displayName(value?.name),
               );
               if (kind === "country")
                 setValue(`${path}${prefix}CountryCode`, value?.code || "");
@@ -173,7 +159,7 @@ export default function ShipmentGeoField({
                 {...params}
                 fullWidth
                 name={name}
-                required={kind !== "state" || !!company?.hasState}
+                required={kind !== "state"}
                 label={t(
                   kind === "country"
                     ? "COUNTRY"
@@ -181,7 +167,7 @@ export default function ShipmentGeoField({
                       ? "STATE"
                       : "CITY",
                 )}
-                error={!!fieldState.error || mappingMissing || lookupFailed}
+                error={!!fieldState.error || lookupFailed}
                 helperText={
                   fieldState.error?.message ||
                   (lookupFailed ? (
@@ -198,8 +184,6 @@ export default function ShipmentGeoField({
                         {t("RETRY")}
                       </Button>
                     </>
-                  ) : mappingMissing ? (
-                    t("CITY_NOT_AVAILABLE_FOR_CARRIER")
                   ) : undefined)
                 }
               />

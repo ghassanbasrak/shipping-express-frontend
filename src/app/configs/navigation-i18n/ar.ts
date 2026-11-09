@@ -1,4 +1,10 @@
 const locale = {
+  GROUP_STORAGE: "التخزين",
+  STORAGE: "اشتراك التخزين",
+  STORAGE_WAREHOUSES: "المستودعات",
+  STORAGE_PLANS: "باقات التخزين",
+  STORAGE_PRODUCTS: "المنتجات المخزنة",
+  STORAGE_SUPPLIES: "طلبات التوريد",
   GROUP_OVERVIEW: "نظرة عامة",
   GROUP_SHIPPING: "الشحن",
   GROUP_FINANCE: "المدفوعات والمالية",

@@ -1,5 +1,14 @@
+import { Link } from "react-router-dom";
 import { ReactNode } from "react";
-import { Alert, Box, Button, Divider, Paper, Typography } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  Divider,
+  LinearProgress,
+  Paper,
+  Typography,
+} from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import { alpha } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
@@ -13,11 +22,13 @@ import type { ShipmentSectionStatus } from "../components/ShipmentSection";
 export type ShipmentQuote = {
   key: string;
   cost?: IShipmentPrice;
+  quoteId?: string;
   error?: string;
 };
 export type ShipmentOutcome = {
   key: string;
   success: boolean;
+  uncertain?: boolean;
   id?: string;
   message?: string;
 };
@@ -75,7 +86,11 @@ export default function ShipmentSummary({
   action,
   checklist,
   calculator = false,
+  stage,
   canCreate,
+  onContinue,
+  onEdit,
+  detailsLocked = false,
   onReview,
   onCreate,
   onGoTo,
@@ -88,12 +103,16 @@ export default function ShipmentSummary({
   action?: "review" | "create";
   checklist: ShipmentChecklistItem[];
   calculator?: boolean;
+  stage: "details" | "review";
   canCreate: boolean;
+  onContinue: () => void;
+  onEdit: () => void;
+  detailsLocked?: boolean;
   onReview: () => void;
   onCreate: () => void;
   onGoTo: (id: string) => void;
 }) {
-  const { t } = useTranslation("shipmentsApp");
+  const { t, i18n } = useTranslation("shipmentsApp");
   const receiverNames = [
       ...(form.receivers || []).map((item) => item.receiverName),
       form.receiverName,
@@ -103,6 +122,67 @@ export default function ShipmentSummary({
       form.receiverName,
     good = quotes.filter((item) => item.cost && !item.error),
     total = good.reduce((sum, item) => sum + (item.cost?.total || 0), 0);
+  if (stage === "details")
+    return (
+      <Paper
+        variant="outlined"
+        className="rounded-16 p-16 sm:p-24"
+        data-testid="shipment-continue"
+      >
+        <div className="flex flex-col gap-16 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0 space-y-8">
+            <Typography className="text-16 font-semibold">
+              {t("READY_FOR_CARRIER")}
+            </Typography>
+            <Typography className="text-13" color="text.secondary">
+              {t("READY_FOR_CARRIER_HINT")}
+            </Typography>
+            <div className="flex flex-wrap gap-x-16 gap-y-8">
+              {checklist.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  disabled={busy}
+                  onClick={() => onGoTo(item.id)}
+                  className="flex items-center gap-6 border-0 bg-transparent p-0 text-start text-12"
+                  style={{ color: "inherit", cursor: "pointer" }}
+                >
+                  <FuseSvgIcon
+                    size={16}
+                    color={
+                      item.status === "complete"
+                        ? "success"
+                        : item.status === "error"
+                          ? "error"
+                          : "disabled"
+                    }
+                  >
+                    {item.status === "complete"
+                      ? "heroicons-solid:check-circle"
+                      : "heroicons-outline:minus-circle"}
+                  </FuseSvgIcon>
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <Button
+            variant="contained"
+            color="primary"
+            size="large"
+            className="min-h-48 shrink-0 rounded-12"
+            disabled={busy}
+            onClick={onContinue}
+            data-testid="submit-shipment-details"
+            endIcon={
+              <FuseSvgIcon size={20}>heroicons-outline:truck</FuseSvgIcon>
+            }
+          >
+            {t("CONTINUE_TO_CARRIERS")}
+          </Button>
+        </div>
+      </Paper>
+    );
   return (
     <Paper
       variant="outlined"
@@ -122,10 +202,10 @@ export default function ShipmentSummary({
         })}
       >
         <Typography className="text-16 font-bold" color="inherit">
-          {t("SHIPMENT_SUMMARY")}
+          {t("PRICE_REVIEW")}
         </Typography>
         <Typography className="text-12 opacity-80" color="inherit">
-          {t("SHIPMENT_SUMMARY_HINT")}
+          {t("PRICE_REVIEW_HINT")}
         </Typography>
       </Box>
       <div className="space-y-16 p-16 sm:p-20">
@@ -150,7 +230,7 @@ export default function ShipmentSummary({
               label={t("SENDER_AND_RECEIVERS")}
             >
               {form.senderName || "—"}
-              {" → "}
+              {i18n.dir() === "rtl" ? " ← " : " → "}
               {receiverNames.length ? receiverNames.join(", ") : "—"}
             </SummaryRow>
           )}
@@ -158,8 +238,11 @@ export default function ShipmentSummary({
             icon="heroicons-outline:cube"
             label={t("SHIPMENT_DETAILS")}
           >
-            <span dir="ltr">
-              {form.weight ?? "—"} {t("KG")} × {form.packagesCount ?? "—"}
+            <span dir="ltr" className="inline-flex items-center gap-4">
+              <span>{form.weight ?? "—"}</span>
+              <span>{t("KG")}</span>
+              <span>×</span>
+              <span>{form.packagesCount ?? "—"}</span>
             </span>
           </SummaryRow>
           {form.isCod && (
@@ -172,41 +255,26 @@ export default function ShipmentSummary({
           )}
         </div>
         <Divider />
-        <div className="space-y-8">
-          {checklist.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => onGoTo(item.id)}
-              className="flex w-full items-center gap-8 bg-transparent py-2 text-start"
-              style={{ cursor: "pointer", border: 0, color: "inherit" }}
-            >
-              <FuseSvgIcon
-                size={18}
-                color={
-                  item.status === "complete"
-                    ? "success"
-                    : item.status === "error"
-                      ? "error"
-                      : "disabled"
-                }
-              >
-                {item.status === "complete"
-                  ? "heroicons-solid:check-circle"
-                  : "heroicons-outline:minus-circle"}
-              </FuseSvgIcon>
-              <Typography
-                className="text-13"
-                color={
-                  item.status === "complete" ? "text.primary" : "text.secondary"
-                }
-              >
-                {item.label}
-              </Typography>
-            </button>
-          ))}
-        </div>
-        <Divider />
+        {busy && action === "review" && (
+          <div className="space-y-12" role="status">
+            <LinearProgress />
+            <Typography className="text-13" color="text.secondary">
+              {t("REVIEWING")}
+            </Typography>
+          </div>
+        )}
+        {!quotes.length && action !== "review" && (
+          <Typography
+            className="text-13 leading-relaxed"
+            color="text.secondary"
+          >
+            {t(
+              form.shippingCompanyId
+                ? "PRICES_AFTER_VALIDATION"
+                : "SELECT_CARRIER_FOR_PRICES",
+            )}
+          </Typography>
+        )}
         {stale && quotes.length > 0 && (
           <Alert severity="info">{t("QUOTE_CHANGED")}</Alert>
         )}
@@ -249,7 +317,13 @@ export default function ShipmentSummary({
         {outcomes.map((outcome) => (
           <Alert
             key={outcome.key}
-            severity={outcome.success ? "success" : "error"}
+            severity={
+              outcome.success
+                ? "success"
+                : outcome.uncertain
+                  ? "warning"
+                  : "error"
+            }
             data-testid={`shipment-outcome-${outcome.key}`}
           >
             {nameOf(outcome.key)}:{" "}
@@ -262,9 +336,20 @@ export default function ShipmentSummary({
               : outcome.message}
           </Alert>
         ))}
+        {outcomes.some((item) => item.uncertain) && (
+          <Button
+            component={Link}
+            to="/shipments/all/all"
+            variant="outlined"
+            color="primary"
+          >
+            {t("SHIPMENTS")}
+          </Button>
+        )}
         <div className="space-y-8">
           <Button
             fullWidth
+            color="primary"
             disabled={busy}
             onClick={onReview}
             variant={calculator ? "contained" : "outlined"}
@@ -275,11 +360,12 @@ export default function ShipmentSummary({
             }
             data-testid="review-shipment-costs"
           >
-            {action === "review" ? t("REVIEWING") : t("REVIEW_SHIPMENT_COSTS")}
+            {action === "review" ? t("REVIEWING_ALL_CARRIERS") : t("REFRESH_CARRIER_OFFERS")}
           </Button>
           {!calculator && (
             <LoadingButton
               fullWidth
+              color="primary"
               variant="contained"
               size="large"
               loading={busy && action === "create"}
@@ -296,6 +382,17 @@ export default function ShipmentSummary({
               {t("CREATE_SHIPMENT")}
             </LoadingButton>
           )}
+          <Button
+            fullWidth
+            variant="outlined"
+            color="primary"
+            disabled={busy || detailsLocked}
+            onClick={onEdit}
+            data-testid="edit-shipment-details"
+            className="min-h-44 rounded-12"
+          >
+            {t("EDIT_DETAILS")}
+          </Button>
         </div>
       </div>
     </Paper>

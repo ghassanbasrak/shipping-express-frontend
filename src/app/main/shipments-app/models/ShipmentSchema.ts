@@ -8,8 +8,33 @@ import {
   optionalBooleanValidation,
 } from "src/app/main/utils/validations";
 import { shipmentVolumetricWeight } from "../Utils";
+import type IStorageProduct from "../../storage-app/models/IStorageProduct";
+import type IWarehouse from "../../storage-app/models/IWarehouse";
+import type IStorageSubscription from "../../storage-app/models/IStorageSubscription";
+export type ShipmentWarehouse = Pick<
+  IWarehouse,
+  "id" | "name" | "address" | "mapAddress" | "pickup"
+>;
+export type ShipmentWarehouseItem = {
+  productId: string;
+  quantity: number;
+  product?: Pick<
+    IStorageProduct,
+    | "id"
+    | "userId"
+    | "warehouseId"
+    | "sku"
+    | "name"
+    | "unitPrice"
+    | "storageType"
+    | "quantity"
+  >;
+};
 type ShipmentContactDetails = Omit<
   IShipmentDetails,
+  | "isCommercial"
+  | "senderPhone1"
+  | "receiverPhone1"
   | "senderCountry"
   | "senderState"
   | "senderCity"
@@ -21,7 +46,6 @@ export type ShipmentReceiverValues = Partial<ShipmentContactDetails> & {
   key: string;
   receiverId?: string;
   receiverPhoneCountry?: string;
-  receiverPhoneCountry1?: string;
   receiverNationalAddress?: string;
 };
 // Only editable/domain fields enter RHF; recursive shipment populations remain read-only.
@@ -36,7 +60,6 @@ export type ShipmentFormValues = Partial<
     | "isCod"
     | "codPrice"
     | "imageUrl"
-    | "products"
     | "couponCodeId"
     | "coupon"
     | "orderReturned"
@@ -46,26 +69,29 @@ export type ShipmentFormValues = Partial<
 > & {
   senderId?: string;
   receiverId?: string;
-  senderNamePrefix?: string;
   senderPhoneCountry?: string;
-  senderPhoneCountry1?: string;
   receiverPhoneCountry?: string;
-  receiverPhoneCountry1?: string;
   senderNationalAddress?: string;
   receiverNationalAddress?: string;
   couponCode?: string;
-  acceptExtraWeightTerms?: boolean;
   receivers: ShipmentReceiverValues[];
+  fulfillmentSource?: "external" | "warehouse";
+  warehouseId?: string;
+  warehouse?: ShipmentWarehouse;
+  warehouseItems?: ShipmentWarehouseItem[];
+  storageSubscription?: Pick<
+    IStorageSubscription,
+    "id" | "userId" | "startsAt" | "endsAt" | "status"
+  >;
 };
 export const shipmentSchema = (
   t: TFunction,
   mode: "create" | "return" | "calculator" = "create",
+  stage: "details" | "review" = "review",
 ) =>
   z
     .object({
-      shippingCompanyId: requiredStringValidation({
-        error: t("SHIPPING_COMPANY_REQUIRED"),
-      }),
+      shippingCompanyId: optionalStringValidation(),
       method: requiredStringValidation({ error: t("SHIPPING_TYPE_REQUIRED") }),
       length: requiredNumberValidation({ positive: true, nonZero: true }),
       width: requiredNumberValidation({ positive: true, nonZero: true }),
@@ -77,19 +103,65 @@ export const shipmentSchema = (
       }),
       description: optionalStringValidation(),
       isCod: optionalBooleanValidation(),
-      isCommercial: optionalBooleanValidation(),
     })
     .passthrough()
     .superRefine((value, ctx) => {
       const form = value as ShipmentFormValues;
       const issue = (path: (string | number)[], key: string) =>
         ctx.addIssue({ code: "custom", path, message: t(key) });
+      if (
+        form.fulfillmentSource &&
+        !["external", "warehouse"].includes(form.fulfillmentSource)
+      )
+        issue(["fulfillmentSource"], "STORAGE_SELECTION_REQUIRED");
+      if (form.fulfillmentSource === "warehouse") {
+        const subscription = form.storageSubscription;
+        if (
+          mode !== "create" ||
+          !subscription ||
+          subscription.status !== "active" ||
+          !Number.isFinite(Date.parse(subscription.endsAt)) ||
+          Date.parse(subscription.endsAt) <= Date.now()
+        )
+          issue(["warehouseId"], "STORAGE_SUBSCRIPTION_REQUIRED");
+        if (!form.warehouseId || form.warehouse?.id !== form.warehouseId)
+          issue(["warehouseId"], "STORAGE_SELECTION_REQUIRED");
+        if (!form.warehouse?.pickup?.phone || !form.warehouse.pickup.cityId)
+          issue(["warehouseId"], "STORAGE_PICKUP_REQUIRED");
+        if (!form.warehouseItems?.length)
+          issue(["warehouseItems"], "STORAGE_SELECTION_REQUIRED");
+        const ids = new Set<string>();
+        (form.warehouseItems || []).forEach((item, index) => {
+          if (
+            !item.productId ||
+            ids.has(item.productId) ||
+            !item.product ||
+            item.product.id !== item.productId ||
+            item.product.warehouseId !== form.warehouseId ||
+            item.product.userId !== subscription?.userId
+          )
+            issue(
+              ["warehouseItems", index, "productId"],
+              "STORAGE_SELECTION_REQUIRED",
+            );
+          ids.add(item.productId);
+          if (!Number.isSafeInteger(item.quantity) || item.quantity <= 0)
+            issue(
+              ["warehouseItems", index, "quantity"],
+              "STORAGE_QUANTITY_INVALID",
+            );
+        });
+      }
       if (!["local", "international"].includes(form.method))
         issue(["method"], "SHIPPING_TYPE_REQUIRED");
       if (
-        !form.shippingCompany ||
-        !form.shippingCompany.isActive ||
-        !form.shippingCompany.shippingMethods?.includes(form.method)
+        stage === "review" &&
+        (!form.shippingCompanyId ||
+          !form.shippingCompany ||
+          form.shippingCompany.id !== form.shippingCompanyId ||
+          form.shippingCompany.isActive === false ||
+          (form.shippingCompany.shippingMethods &&
+            !form.shippingCompany.shippingMethods.includes(form.method)))
       )
         issue(["shippingCompanyId"], "SHIPPING_COMPANY_REQUIRED");
       if (form.packagesCount > (mode === "create" ? 6 : 2))
@@ -99,11 +171,14 @@ export const shipmentSchema = (
         );
       if (!Number.isInteger(form.weight))
         issue(["weight"], "INTEGER_VALUES_ONLY");
-      if (form.weight < shipmentVolumetricWeight(form))
+      const volumetricWeight = shipmentVolumetricWeight(
+        stage === "details" ? { ...form, shippingCompany: null } : form,
+      );
+      if (form.weight < volumetricWeight)
         ctx.addIssue({
           code: "custom",
           path: ["weight"],
-          message: `${t("MUST_BE_MORE_THAN_OR_EQUAL")} ${shipmentVolumetricWeight(form)} ${t("KG")}`,
+          message: `${t("MUST_BE_MORE_THAN_OR_EQUAL")} ${volumetricWeight} ${t("KG")}`,
         });
       const validateContact = (
         contact: Partial<ShipmentFormValues>,
@@ -115,10 +190,11 @@ export const shipmentSchema = (
           if (!get(suffix)) issue([...path, `${prefix}${suffix}`], key);
         };
         if (mode !== "calculator") {
-          required(
-            "Id",
-            prefix === "sender" ? "SENDER_REQUIRED" : "RECEIVER_REQUIRED",
-          );
+          if (!(prefix === "sender" && form.fulfillmentSource === "warehouse"))
+            required(
+              "Id",
+              prefix === "sender" ? "SENDER_REQUIRED" : "RECEIVER_REQUIRED",
+            );
           required(
             "Name",
             prefix === "sender"
@@ -128,6 +204,7 @@ export const shipmentSchema = (
           if (get("Name")?.length < 2)
             issue([...path, `${prefix}Name`], "TWO_CHARACTERS_AT_LEAST");
           if (
+            stage === "review" &&
             form.shippingCompany?.isEnglish &&
             !/[A-Za-z0-9]+/.test(get("Name") || "")
           )
@@ -159,7 +236,7 @@ export const shipmentSchema = (
             ? "SENDER_CITY_REQUIRED"
             : "RECEIVER_CITY_REQUIRED",
         );
-        if (form.shippingCompany?.hasState)
+        if (stage === "review" && form.shippingCompany?.hasState)
           required(
             "StateId",
             prefix === "sender"
@@ -181,9 +258,15 @@ export const shipmentSchema = (
               ? "SENDER_ZIP_CODE_REQUIRED"
               : "RECEIVER_ZIP_CODE_REQUIRED",
           );
-        if (form.shippingCompany && get("CityId") && !get("CityName"))
+        if (
+          stage === "review" &&
+          form.shippingCompany &&
+          get("CityId") &&
+          !get("CityName")
+        )
           issue([...path, `${prefix}CityId`], "CITY_NOT_AVAILABLE_FOR_CARRIER");
         if (
+          stage === "review" &&
           form.shippingCompany?.hasState &&
           get("StateId") &&
           !get("StateName")
@@ -205,33 +288,25 @@ export const shipmentSchema = (
         form.isCod &&
         (mode === "return" ||
           form.method !== "local" ||
-          !form.shippingCompany?.shippingMethods?.includes("cashOnDelivery"))
+          (stage === "review" &&
+            form.shippingCompany?.shippingMethods &&
+            !form.shippingCompany.shippingMethods.includes("cashOnDelivery")))
       )
         issue(["isCod"], "SHIPPING_COMPANY_DOESNT_SUPPORT_COD");
       if (form.isCod && !(form.codPrice > 0))
         issue(["codPrice"], "MUST_BE_MORE_THAN_0");
+      if (
+        stage === "review" &&
+        form.coupon?.shippingCompanyId &&
+        form.coupon.shippingCompanyId !== form.shippingCompanyId
+      )
+        issue(["couponCode"], "COUPON_NOT_AVILABLE_SHIPPING_COMPANY");
       if (mode !== "calculator") {
         if (!form.description) issue(["description"], "DESCRIPTION_REQURIED");
-        if (!form.acceptExtraWeightTerms)
-          issue(
-            ["acceptExtraWeightTerms"],
-            "EXTRA_WEIGHT_TERMS_REQUIRED_FIELD",
-          );
         if (
           (form.method === "international" || form.type === "document") &&
           !form.imageUrl
         )
           issue(["imageUrl"], "SHIPMENT_IMAGE_REQUIRED");
-        if (form.isCommercial && form.type !== "document") {
-          if (!form.products?.length)
-            issue(["products"], "YOU_SHOULD_ADD_ONE_PRODUCT");
-          (form.products || []).forEach((item, index) => {
-            if (!item.title)
-              issue(["products", index, "title"], "REQUIRED_FIELD");
-            for (const field of ["price", "quantity"])
-              if (typeof item[field] !== "number" || Number.isNaN(item[field]))
-                issue(["products", index, field], "REQUIRED_FIELD");
-          });
-        }
       }
     });

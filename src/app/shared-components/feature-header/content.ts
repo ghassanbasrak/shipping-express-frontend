@@ -1,6 +1,7 @@
 import i18next from "i18next";
 
 const features = {
+  "storage-app": ["cube","MANAGEMENT","Warehouses, storage subscriptions and stock fulfillment.","المستودعات واشتراكات التخزين وتجهيز الشحنات."],
   "admins-app": [
     "users",
     "ACCOUNTS",

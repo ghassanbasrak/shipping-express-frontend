@@ -25,8 +25,7 @@ export default function ShippingTypeSection({
 }) {
   const { t } = useTranslation("shipmentsApp"),
     { watch, setValue, getValues } = useFormContext(),
-    method = watch("method"),
-    company = watch("shippingCompany");
+    method = watch("method");
 
   function choose(value: string) {
     if (value === method) return;
@@ -42,6 +41,8 @@ export default function ShippingTypeSection({
     setValue("isCod", false);
     setValue("codPrice", 0);
     for (const { prefix, path } of parties) {
+      if (prefix === "sender" && getValues("fulfillmentSource") === "warehouse")
+        continue;
       for (const kind of ["State", "City"])
         for (const suffix of ["Id", "Name", ""])
           setValue(
@@ -61,13 +62,9 @@ export default function ShippingTypeSection({
         (value === "local" ? defaultCountry.code : "") as never,
       );
     }
-    // A carrier that cannot ship this way must be picked again after the addresses.
-    if (company && !company.shippingMethods?.includes(value)) {
-      setValue("shippingCompanyId", "", { shouldDirty: true });
-      setValue("shippingCompany", null);
-      setValue("couponCodeId", "");
-      setValue("coupon", null);
-    }
+    // Fresh offers determine eligibility after the route changes.
+    setValue("shippingCompanyId", "", { shouldDirty: true });
+    setValue("shippingCompany", null);
   }
 
   return (

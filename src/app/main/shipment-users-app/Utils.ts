@@ -34,16 +34,15 @@ export function splitShipmentUserPhone(value = "", fallbackCode = "+966") {
 export function toShipmentUserFormValues(
   value: IShipmentUser,
 ): ShipmentUserFormValues {
-  const first = splitShipmentUserPhone(value.phone),
-    second = splitShipmentUserPhone(value.phone1);
+  const first = splitShipmentUserPhone(value.phone);
+  const contact = { ...value };
+  delete contact.phone1;
   const address = { ...(value.address || {}) };
   const parts = (address.street || "").split(nationalAddressSeparator);
   return {
-    ...value,
+    ...contact,
     phone: first.number,
     phoneCountry: first.code,
-    phone1: second.number,
-    phoneCountry1: second.code,
     address: {
       ...address,
       street: parts[0],
@@ -61,7 +60,6 @@ export function toShipmentUserSaveValues(
     fullName: values.fullName,
     type: values.type,
     phone: `${values.phoneCountry}-${values.phone}`,
-    phone1: values.phone1 ? `${values.phoneCountry1}-${values.phone1}` : "",
     address: {
       countryId: address.countryId,
       stateId: address.stateId,

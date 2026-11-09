@@ -121,7 +121,6 @@ export default function ShipmentView({ shipment }: { shipment: IShipment }) {
                           "Name",
                           "Email",
                           "Phone",
-                          "Phone1",
                           "CountryName",
                           "StateName",
                           "CityName",

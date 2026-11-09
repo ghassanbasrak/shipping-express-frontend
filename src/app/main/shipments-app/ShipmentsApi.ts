@@ -5,6 +5,7 @@ import ICoupon from "../coupons-app/models/ICoupon";
 import ITransaction from "../transactions-app/models/ITransaction";
 import type { User } from "src/app/auth/user";
 export const addTagTypes = [
+  "StorageProducts",
   "Shipments",
   "Shipment",
   "ShipmentSummary",
@@ -80,21 +81,19 @@ const ShipmentsApi = api.enhanceEndpoints({ addTagTypes }).injectEndpoints({
       }),
       providesTags: ["ShipmentSummary"],
     }),
-    getShipmentCarriers: build.query<
-      { results: IShippingCompany[]; total: number },
-      void
-    >({
-      query: () => ({
-        url: "v1/shipping-companies",
-        params: { page: 0, pageSize: 50 },
-      }),
-    }),
     getShipmentAccount: build.query<User, string>({
       query: (id) => ({ url: `v1/users/${id}` }),
       providesTags: (_, __, id) => [{ type: "ShipmentAccount", id }],
     }),
-    reviewShipment: build.mutation<IShipmentPrice, CreateShipmentApiArg>({
-      query: (data) => ({ url: "v1/shipments/review", method: "POST", data }),
+    reviewShipmentCompanies: build.mutation<
+      ReviewShipmentCompaniesApiResponse,
+      ReviewShipmentCompaniesApiArg
+    >({
+      query: (data) => ({
+        url: "v1/shipments/review/companies",
+        method: "POST",
+        data,
+      }),
     }),
     createShipment: build.mutation<
       CreateShipmentApiResponse,
@@ -102,7 +101,14 @@ const ShipmentsApi = api.enhanceEndpoints({ addTagTypes }).injectEndpoints({
     >({
       query: (data) => ({ url: "v1/shipments", method: "POST", data }),
       invalidatesTags: (_, error) =>
-        error ? [] : ["Shipments", "ShipmentSummary", "ShipmentAccount"],
+        error
+          ? []
+          : [
+              "Shipments",
+              "ShipmentSummary",
+              "ShipmentAccount",
+              "StorageProducts",
+            ],
     }),
     setShipmentStatus: build.mutation<
       IShipment,
@@ -258,7 +264,37 @@ export type IShipmentAnalyticValue = {
   label: string;
   color?: string;
 };
+export type ReviewShipmentCompaniesApiArg = Omit<
+  CreateShipmentApiArg,
+  "shippingCompanyId" | "quoteId" | "userId"
+>;
+export type ReviewedShipmentCompany = Pick<
+  IShippingCompany,
+  | "id"
+  | "name"
+  | "serviceName"
+  | "color"
+  | "logoUrl"
+  | "iconUrl"
+  | "hasState"
+  | "isEnglish"
+  | "shippingMethods"
+  | "isAuthorizationRequired"
+>;
+export type ReviewShipmentCompaniesApiResponse = {
+  suitableCompanies: {
+    shippingCompany: ReviewedShipmentCompany;
+    calculation: IShipmentPrice;
+    quoteId: string;
+  }[];
+  unsuitableCompanies: {
+    shippingCompany: ReviewedShipmentCompany;
+    reasons: { code: string; message: string }[];
+  }[];
+};
 export type CreateShipmentApiArg = {
+  warehouseId?: string;
+  quoteId?: string;
   shippingCompanyId: string;
   method: string;
   type: string;
@@ -268,7 +304,6 @@ export type CreateShipmentApiArg = {
   weight: number;
   packagesCount: number;
   description: string;
-  isCommercial: boolean;
   isCod: boolean;
   codPrice?: number;
   senderId?: string;
@@ -276,14 +311,18 @@ export type CreateShipmentApiArg = {
   couponCode?: string;
   couponCodeId?: string;
   imageUrl?: string;
-  products?: { title: string; price: number }[];
+  products?: {
+    title: string;
+    price: number;
+    quantity?: number;
+    warehouseProductId?: string;
+  }[];
   returnedFromShipmentId?: string;
   orderReturned?: boolean;
   userId?: string;
   senderName?: string;
   senderEmail?: string;
   senderPhone?: string;
-  senderPhone1?: string;
   senderCountryId?: string;
   senderCountryName?: string;
   senderCountryCode?: string;
@@ -296,7 +335,6 @@ export type CreateShipmentApiArg = {
   receiverName?: string;
   receiverEmail?: string;
   receiverPhone?: string;
-  receiverPhone1?: string;
   receiverCountryId?: string;
   receiverCountryName?: string;
   receiverCountryCode?: string;
@@ -314,9 +352,8 @@ export const {
   useGetShipmentQuery,
   useLazyGetShipmentQuery,
   useGetShipmentsSummaryQuery,
-  useGetShipmentCarriersQuery,
   useGetShipmentAccountQuery,
-  useReviewShipmentMutation,
+  useReviewShipmentCompaniesMutation,
   useCreateShipmentMutation,
   useSetShipmentStatusMutation,
   useAttachShipmentInvoiceMutation,

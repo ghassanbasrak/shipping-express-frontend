@@ -1,8 +1,7 @@
-import { Box, Button, IconButton, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { alpha } from "@mui/material/styles";
-import { useFieldArray, useFormContext } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import FuseSvgIcon from "@fuse/core/FuseSvgIcon";
 import { UploadFileInput } from "src/app/main/auth-app/verify-account/VerifyAccountPage";
 import { useAppSelector } from "app/store/hooks";
 import { selectUser } from "src/app/auth/user/store/userSlice";
@@ -22,14 +21,8 @@ export default function ParcelSection({
 }) {
   const { t } = useTranslation("shipmentsApp"),
     user = useAppSelector(selectUser),
-    { control, watch, setValue, formState } =
-      useFormContext<ShipmentFormValues>(),
-    form = watch(),
-    { fields, append, remove } = useFieldArray({
-      control,
-      name: "products",
-      keyName: "formKey",
-    });
+    { watch, setValue, formState } = useFormContext<ShipmentFormValues>(),
+    form = watch();
   const needsImage =
     form.method === "international" || form.type === "document";
   return (
@@ -104,6 +97,11 @@ export default function ParcelSection({
             <Typography className="text-15 font-bold" dir="ltr">
               {shipmentVolumetricWeight(form)} {t("KG")}
             </Typography>
+            {!form.shippingCompanyId && (
+              <Typography className="text-11" color="text.secondary">
+                {t("WEIGHT_CARRIER_HINT")}
+              </Typography>
+            )}
           </Box>
         </div>
       </div>
@@ -117,78 +115,6 @@ export default function ParcelSection({
             required
             disabled={disabled}
           />
-          {form.type !== "document" && (
-            <ShipmentField
-              name="isCommercial"
-              type="checkbox"
-              label={t("IS_COMMERCIAL")}
-              helper={t("IS_COMMERCIAL_HINT")}
-              disabled={disabled}
-            />
-          )}
-          {form.isCommercial && form.type !== "document" && (
-            <Box
-              sx={(theme) => ({
-                border: `1px solid ${theme.palette.divider}`,
-                borderRadius: "16px",
-                p: { xs: 1.5, sm: 2 },
-              })}
-              className="space-y-16"
-            >
-              {fields.map((item, index) => (
-                <div
-                  key={item.formKey}
-                  className="grid grid-cols-2 items-start gap-12 sm:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)_auto]"
-                >
-                  <ShipmentField
-                    name={`products.${index}.title`}
-                    label={t("PRODUCT_NAME")}
-                    className="col-span-2 sm:col-span-1"
-                    disabled={disabled}
-                    required
-                  />
-                  <ShipmentField
-                    name={`products.${index}.price`}
-                    label={t("PRICE")}
-                    disabled={disabled}
-                    type="number"
-                    required
-                  />
-                  <ShipmentField
-                    name={`products.${index}.quantity`}
-                    label={t("QUANTITY")}
-                    disabled={disabled}
-                    type="number"
-                    required
-                  />
-                  <IconButton
-                    disabled={disabled}
-                    color="error"
-                    aria-label={t("REMOVE")}
-                    onClick={() => remove(index)}
-                    sx={{ mt: 0.75 }}
-                  >
-                    <FuseSvgIcon size={20}>heroicons-outline:trash</FuseSvgIcon>
-                  </IconButton>
-                </div>
-              ))}
-              <Button
-                disabled={disabled}
-                onClick={() => append({ title: "", price: 0, quantity: 1 })}
-                startIcon={
-                  <FuseSvgIcon size={20}>heroicons-outline:plus</FuseSvgIcon>
-                }
-                data-testid="add-shipment-product"
-              >
-                {t("ADD_PRODUCT")}
-              </Button>
-              {formState.errors.products && (
-                <Typography color="error" className="text-13">
-                  {t("YOU_SHOULD_ADD_ONE_PRODUCT")}
-                </Typography>
-              )}
-            </Box>
-          )}
           {needsImage && (
             <Box
               sx={(theme) => ({
@@ -206,12 +132,6 @@ export default function ParcelSection({
               />
             </Box>
           )}
-          <ShipmentField
-            name="acceptExtraWeightTerms"
-            type="checkbox"
-            label={t("ACCEPT_EXTRA_WEIGHT_TERMS")}
-            disabled={disabled}
-          />
         </div>
       )}
     </div>

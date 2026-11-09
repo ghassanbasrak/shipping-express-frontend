@@ -1,4 +1,10 @@
 const locale = {
+  GROUP_STORAGE: "Storage",
+  STORAGE: "Storage subscription",
+  STORAGE_WAREHOUSES: "Warehouses",
+  STORAGE_PLANS: "Storage plans",
+  STORAGE_PRODUCTS: "Stored products",
+  STORAGE_SUPPLIES: "Supply requests",
   GROUP_OVERVIEW: "Overview",
   GROUP_SHIPPING: "Shipping",
   GROUP_FINANCE: "Payments & Finance",

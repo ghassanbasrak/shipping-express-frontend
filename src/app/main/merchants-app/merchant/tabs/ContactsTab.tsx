@@ -80,7 +80,7 @@ export default function ContactsTab({
       type: TableDataTypes.normal,
       flex: 0.9,
       minWidth: 90,
-      valueGetter: (row) => [row.phone, row.phone1].filter(Boolean).join(" / "),
+      valueGetter: (row) => row.phone,
     },
     {
       id: "address",

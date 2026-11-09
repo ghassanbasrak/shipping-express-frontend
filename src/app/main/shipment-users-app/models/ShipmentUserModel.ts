@@ -3,10 +3,9 @@ import { PartialDeep } from "type-fest";
 import IShipmentUser from "./IShipmentUser";
 import { shipmentUserTypes } from "../Utils";
 const ShipmentUserModel = (data: PartialDeep<IShipmentUser> = {}) =>
-  _.defaultsDeep({}, data, {
+  _.defaultsDeep({}, _.omit(data, ["phone1", "phoneCountry1"]), {
     fullName: "",
     phone: "",
-    phone1: "",
     email: "",
     type: shipmentUserTypes.receiver,
     address: {
@@ -21,7 +20,6 @@ export const shipmentUserDefaultValues = ShipmentUserModel({});
 export const shipmentUserEditableFields = [
   "fullName",
   "phone",
-  "phone1",
   "email",
   "type",
   "address",

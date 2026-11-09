@@ -28,12 +28,17 @@ export default function ReceiversSection({
         return (
           <Box
             key={item.formKey}
-            sx={(theme) => ({
-              border: `1px solid ${theme.palette.divider}`,
-              borderRadius: "16px",
-              p: { xs: 1.5, sm: 2.5 },
-              backgroundColor: alpha(theme.palette.primary.main, 0.02),
-            })}
+            className={
+              fields.length > 1 ? "rounded-12 border-1 p-12 sm:p-16" : "min-w-0"
+            }
+            sx={(theme) =>
+              fields.length > 1
+                ? {
+                    borderColor: "divider",
+                    backgroundColor: alpha(theme.palette.primary.main, 0.02),
+                  }
+                : {}
+            }
           >
             {(fields.length > 1 || completed.includes(item.key)) && (
               <div className="mb-16 flex items-center justify-between gap-8">
@@ -69,6 +74,7 @@ export default function ReceiversSection({
         );
       })}
       <Button
+        color="primary"
         variant="outlined"
         disabled={disabled}
         onClick={() => append(newShipmentReceiver())}

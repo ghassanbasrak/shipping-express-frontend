@@ -8,7 +8,304 @@
     "partial": 0,
     "pending": 0
   },
-  "completedThisBatch": [],
+  "completedThisBatch": [
+    "shipments-app",
+    "storage-app"
+  ],
+  "mainPhoneUpdate": {
+    "date": "2026-11-07",
+    "status": "complete",
+    "scope": "Existing shipments-app and shipment-users-app only; no newly migrated or restored feature area.",
+    "completed": [
+      "Removed sender/receiver secondary phone inputs from shipment creation and shipment-user editors, with their labels, draft defaults, form types and editable field lists.",
+      "Saved-contact mappings, contact creation and shipment review/create serializers use only the main phone; legacy secondary phones cannot leak into outgoing payloads.",
+      "Shipment return drafts discard legacy secondary phones while preserving swapped main phones, dial codes, addresses and original shipment linkage.",
+      "Removed secondary phone display from shipment details, generated invoice content, shipment-user cards and embedded merchant shipment-contact tables.",
+      "Main-phone validation/serialization, geographic dependencies, contact save IDs, multi-receiver retry behavior and carrier/price workflow remain verified."
+    ],
+    "validation": {
+      "activeApplicationTypecheck": "passed: npm run typecheck:app",
+      "productionBuild": "passed: build/main-phone-verify",
+      "buildWarnings": "Existing Browserslist, CSS transition-property, mixed FuseDialog import and large-chunk warnings remain.",
+      "regressionChecks": {
+        "shipments": 35,
+        "shipmentUsers": 18,
+        "total": 53
+      },
+      "browserChecks": {
+        "shipments": 33,
+        "shipmentUsers": 20,
+        "total": 53
+      },
+      "uncaughtBrowserExceptions": 0,
+      "scope": "Local browser/API fixtures, including saved records containing secondary phones, payload omission for reviews/creates/updates/returns, main-phone round trips, failed-save recovery and English desktop/Arabic mobile layouts. No live backend data was changed.",
+      "reports": [
+        "test-results/shipments-browser/summary.json",
+        "test-results/shipment-users-browser/summary.json",
+        "test-results/main-phone-build.log",
+        "test-results/main-phone-shipments-browser.log",
+        "test-results/main-phone-contacts-browser.log"
+      ]
+    },
+    "partialWork": [],
+    "remainingWork": [],
+    "contractCompatibility": "Legacy optional response-domain phone properties remain typed for backend/history compatibility. They are excluded from forms and writes; existing backend records are not cleared. Merchant account phones remain outside this request.",
+    "inventoryReport": {
+      "historicalFeatureAreas": 32,
+      "historicalMigrated": 28,
+      "historicalExcluded": 4,
+      "historicalPartial": 0,
+      "historicalPending": 0,
+      "newFeatureAreas": "Existing storage-app work remains tracked separately and unchanged.",
+      "unchangedRemainingAreas": [
+        "Common-page legacy coming-soon/final route parity",
+        "Eight dormant-source import audits",
+        "Final cross-feature live backend acceptance"
+      ],
+      "unchangedSourceGaps": "Historical packaging/balance-error implementation gaps in this checkout remain outside this phone-field change.",
+      "exclusions": "Retired review, commerce/platform and comparison features remain excluded."
+    }
+  },
+  "newFeatureAreas": [
+    {
+      "feature": "storage-app",
+      "status": "frontend-verified-backend-team-handoff-live-shipment-blocked",
+      "countedInLegacyInventory": false,
+      "detail": "storageFeatureUpdate",
+      "latestDetail": "carrierReviewUpdate"
+    }
+  ],
+  "storageFeatureUpdate": {
+    "date": "2026-11-07",
+    "status": "frontend-verified-backend-team-handoff-live-shipment-blocked",
+    "scope": "New storage feature and existing shipment integration. Tracked separately from the historical 32-area route migration inventory.",
+    "backend": {
+      "path": "C:\\Users\\MAJD\\Desktop\\Node.Js Projects\\shipping-express-backend",
+      "branch": "develop",
+      "inspectedCommit": "175f3c3",
+      "modifiedFiles": [
+        "src/api/controllers/v1/shipments.ts",
+        "src/api/validations/schema/v1/shipments.ts",
+        "src/api/validations/schema/v1/warehouses.ts",
+        "src/database/mongodb/models/warehouse.ts",
+        "src/database/mongodb/models/shipment.ts",
+        "src/database/mongodb/repositories/warehouseProduct.ts",
+        "src/operations/v1/warehouses/create.ts",
+        "src/operations/v1/warehouses/update.ts",
+        "src/operations/v1/warehouses/validate-pickup.ts",
+        "src/operations/v1/shipments/resolve-warehouse-sender.ts",
+        "src/operations/v1/shipments/add-shipment-to-queue.ts",
+        "src/operations/v1/shipments/create.ts",
+        "src/services/internal/shipping/base.ts"
+      ],
+      "compatibilityFix": "Single-carrier review persists and returns quoteId; review product validation retains warehouseProductId so the native creation fingerprint matches.",
+      "liveServiceExecution": true,
+      "liveApi": "https://api.v1.dev.e5hh6.ashamcoexpress.com",
+      "fullBackendBuild": "Not run: npm ci --ignore-scripts failed because the backend lockfile and manifest disagree on transitive dependency versions. No broad lockfile rewrite was made. Actual controller/queue source and validation declarations passed isolated checks.",
+      "ownership": "Explicit user instruction: do not edit backend further. User will discard recent backend edits; requirements are handed to the owning team. No backend revert, commit, publish or deployment was performed by this audit.",
+      "requiredTeamHandoff": "docs/storage-backend-handoff.ar.md"
+    },
+    "liveAudit": {
+      "date": "2026-11-07",
+      "environment": "User-authorized development API and test administrator/merchant accounts; credentials and tokens excluded from files and reports.",
+      "connectionFix": "Updated normal-build VITE_BASE_URL, .env.example and API fallback from obsolete hosts to the supplied development API; explicit environment overrides remain supported.",
+      "requirements": [
+        {
+          "requirement": "Warehouse definition including map/information",
+          "result": "Live POST 201 and merchant GET 200 preserve all fields."
+        },
+        {
+          "requirement": "Subscription plan price, discount and types",
+          "result": "Live POST 201 retains price 25, discountPrice 0, duration one day and three feature/type strings."
+        },
+        {
+          "requirement": "Subscription activation and menu access",
+          "result": "Live zero-value checkout 201 activates subscription; GET current populates plan. Inventory denied with 403 before activation. Navigation/direct-route gates passed browser fixtures."
+        },
+        {
+          "requirement": "Multi-product supply and plan-restricted types",
+          "result": "Live two-product POST 201 defaults to pending; unlisted type rejected with 403."
+        },
+        {
+          "requirement": "Administrator list, merchant contact and status",
+          "result": "Live list populates warehouse and merchant phone; approval succeeds. Contact link and review controls passed browser fixtures; no message sent."
+        },
+        {
+          "requirement": "Receipt adds or merges stock once",
+          "result": "Live pending-to-received rejected 400; approved-to-received succeeds; repeat rejected 400. Second receipt retains IDs and increases SKU quantity 10 to 13 and no-SKU name quantity 4 to 6."
+        },
+        {
+          "requirement": "Shipment chooses external or warehouse products and quantity",
+          "result": "Implemented and passed browser/DTO checks. Live warehouse review returns total 24 without quoteId, blocking final native creation until local backend fix is deployed."
+        }
+      ],
+      "blockingFinding": "Deployed POST v1/shipments/review returns only calculation, without the quoteId required by creation. The two-file local backend fix is not reflected in the live response. Warehouse review now fails early on a missing quoteId before contact creation.",
+      "testRecords": {
+        "warehouseId": "6aef63e2fe4f4b824918c35c",
+        "planId": "6aef63e2fe4f4b824918c362",
+        "supplyRequestIds": [
+          "6aef647bfe4f4b824918c395",
+          "6aef64ecfe4f4b824918c409"
+        ],
+        "subscriptionEndsAt": "2026-11-08T17:47:42.943Z",
+        "note": "Clearly named development audit records remain available for review. Successful zero-value payment only; no card charge or wallet funding. Audit-created sessions revoked."
+      },
+      "validation": {
+        "activeApplicationTypecheck": "passed",
+        "productionBuild": "passed: build/storage-live-verify",
+        "demoBuild": "passed: build/storage-live-demo",
+        "storageRegressionChecks": 27,
+        "backendSchemaPayloads": 6,
+        "backendControllerQueueChecksWithIsolatedDependencies": 6,
+        "shipmentRegressionChecks": 35,
+        "shipmentUserRegressionChecks": 18,
+        "navigationRegressionChecks": 9,
+        "storageBrowserFixtureChecks": 19,
+        "scope": "Live subscription/supply/receipt inventory persistence verified. Browser payment/carrier creation remains fixture based; no live paid Moyasar transaction or queued carrier shipment was made. Test merchant wallet balance is zero.",
+        "reports": [
+          "test-results/storage-live/api-audit.json",
+          "test-results/storage-live/browser.log",
+          "test-results/storage-live/production-build.log",
+          "test-results/storage-live/demo-build.log"
+        ]
+      }
+    },
+    "completed": [
+      "Administrator warehouse name/address/mapAddress/information forms and lists, using native text/map contracts and complete-list edit reads.",
+      "Administrator plan price/discountPrice/duration/features/activation forms; exact feature strings define allowed storage types and zero discounts remain valid.",
+      "Moyasar checkout with authoritative tax/total, retained checkout and provider-load recovery; paid entitlement is enabled only after server verification and a matching current subscription; free plans activate server-side.",
+      "Subscription-gated merchant navigation, direct product/supply routes, owner-scoped cache keys and expiration checks.",
+      "Multi-product supply submission with optional exact SKU, name, quantity, unit price, per-product notes and plan-restricted storage type; pending/approved/received/rejected review with merchant contact and fresh transition checks.",
+      "Merchant warehouse inventory and local list search/filter/pagination; receipt increases exact native SKU-or-name/storage-type stock identity once.",
+      "Shipment external/warehouse product selection, per-receiver quantities, fresh aggregate stock checks and products[].warehouseProductId serialization with automatic warehouse sender/pickup behavior.",
+      "Per-receiver quote IDs, renewed equal-price quotes after new contact saves, retained saved IDs/outcomes and asynchronous 201 acceptance. Uncertain warehouse writes are excluded from blind automatic retry.",
+      "English desktop and Arabic RTL/mobile screens using shared Fuse headers, tables and form tabs.",
+      "Native-contract local demo and regression/browser fixtures; README, integration documentation and AGENTS conventions updated."
+    ],
+    "validation": {
+      "activeApplicationTypecheck": "passed",
+      "productionBuild": "passed: build/storage-production",
+      "demoBuild": "passed: build/storage-demo",
+      "buildWarnings": "Existing Browserslist, CSS transition property, mixed FuseDialog imports and large chunks remain.",
+      "storageContractChecks": 27,
+      "realBackendSchemaPayloads": 6,
+      "realBackendOperationChecksWithIsolatedDependencies": 6,
+      "existingRegressionChecks": {
+        "shipments": 34,
+        "shipmentUsers": 18,
+        "codCancellation": 27,
+        "navigation": 9,
+        "authentication": 14,
+        "featureRetirement": 9,
+        "total": 111
+      },
+      "demoContracts": "passed; base contracts and 66 extended operations checks",
+      "browserChecks": {
+        "storageAndProductionPaymentWidget": 19,
+        "existingShipments": 32,
+        "existingDemoRoutes": 72,
+        "total": 123
+      },
+      "uncaughtBrowserExceptions": 0,
+      "scope": "Frontend/native DTOs, actual backend Zod declarations with environment/database primitives isolated, actual review controller/queue with pricing/repository/locking/queue dependencies isolated, and browser demo/fixture APIs. No real backend process, MongoDB, Redis, gateway charge or carrier booking was exercised.",
+      "reports": [
+        "test-results/storage/contracts.json",
+        "test-results/storage/backend-operations.json",
+        "test-results/storage-browser/summary.json",
+        "test-results/shipments-browser/summary.json",
+        "test-results/storage-demo-routes.log"
+      ],
+      "screenshots": [
+        "test-results/storage-browser/warehouse-editor-en.png",
+        "test-results/storage-browser/merchant-plans-en.png",
+        "test-results/storage-browser/storage-checkout-en.png",
+        "test-results/storage-browser/supply-create-en.png",
+        "test-results/storage-browser/supply-review-en.png",
+        "test-results/storage-browser/merchant-inventory-en.png",
+        "test-results/storage-browser/warehouse-shipment-review-en.png",
+        "test-results/storage-browser/storage-ar-mobile.png",
+        "test-results/storage-browser/inventory-ar-mobile.png",
+        "test-results/storage-browser/supply-create-ar-mobile.png"
+      ]
+    },
+    "partialWork": [],
+    "remainingWork": [
+      "Owning backend team implements/reviews and deploys the handoff contract, independently of discarded local edits.",
+      "Complete saved warehouse pickup, provide an adequately funded authorized test wallet and verify final sandbox tracking/label, stock and ledger changes once.",
+      "Paid storage checkout, Redis/worker runtime and carrier acceptance remain environment-specific checks; no real booking success is claimed."
+    ],
+    "contractLimits": [
+      "The backend provides no administrator inventory list or individual supply/product read. Administrator review uses complete supply lists; inventory is merchant-only.",
+      "No invented type catalog, stock availability endpoint, frozen plan capabilities, version field, wallet purchase, storage permission grant, request-key replay or cancellation restocking is claimed.",
+      "Warehouse pickup fields are a local develop extension pending deployment; legacy warehouses must be configured before dispatch."
+    ],
+    "inventoryReport": {
+      "historicalFeatureAreas": 32,
+      "historicalMigrated": 28,
+      "historicalExcluded": 4,
+      "historicalPartial": 0,
+      "historicalPending": 0,
+      "currentlyRegisteredFeatureWorkspaceConfigs": 27,
+      "newFeatureAreas": [
+        "storage-app"
+      ],
+      "unchangedRemainingAreas": [
+        "Common-page legacy coming-soon/final route parity",
+        "Eight dormant-source import audits",
+        "Final cross-feature live backend acceptance"
+      ],
+      "unchangedSourceGaps": "The historical packaging and balance-error implementation gaps in this checkout remain outside this storage batch.",
+      "exclusions": "Previously retired account-review, merchant-statistics-new, store/commerce/platform and comparison features remain excluded. Storage inventory is a separate explicitly requested domain."
+    },
+    "documentation": "docs/storage-api-contract.md",
+    "latestUpdate": "carrierReviewUpdate",
+    "currentHandoff": "docs/backend-modifications-report.ar.md",
+    "historicalContractNotice": "Earlier single-carrier /review quoteId observations and prototype fixes are superseded by carrierReviewUpdate. Native /review/companies works live; warehouse pickup/inventory completion remains backend-team work."
+  },
+  "shipmentCreationUpdate": {
+    "date": "2026-11-06",
+    "status": "complete",
+    "scope": "Existing shipments-app creation, return creation and price calculator; saved/new shipment-user integration. No new counted feature migration.",
+    "completed": [
+      "Removed sender-name prefix UI, defaults, form type, translations and serializer concatenation. Review, create and new-contact payloads retain the entered sender name.",
+      "Merged six inline sections into Route & contacts and Parcel & payment, with desktop contact columns, responsive spacing, progress labels and primary action styling.",
+      "Valid detail submission opens a separate carrier selector; route carrier filters never preselect a company. Carrier selection automatically prices every pending receiver after final validation.",
+      "Preserved canonical geographic IDs, refreshed carrier mapping names, COD intent/amount and coupon drafts; incompatible carriers explain authorization, coverage, COD or coupon restrictions.",
+      "Preserved draft edits, stale-quote protection, sequential new-contact saves and IDs, fresh wallet checks, per-receiver outcomes, partial retries and asynchronous acceptance.",
+      "Fixed saved-contact phone rendering and revalidation after a failed details submission; retained returns, calculator, uploads, parcel/customs rules and existing shipment operations.",
+      "Removed the obsolete VerificationRequests cache invalidation from retained account-verification submission to restore active typecheck without restoring review functionality."
+    ],
+    "validation": {
+      "activeApplicationTypecheck": "passed",
+      "productionBuild": "passed; existing Browserslist, CSS property, FuseDialog import and large-chunk warnings remain",
+      "regressionChecks": {
+        "shipments": 34,
+        "shipmentUsers": 18,
+        "authentication": 14,
+        "featureRetirement": 9,
+        "total": 75
+      },
+      "browserChecks": 32,
+      "uncaughtBrowserExceptions": 0,
+      "fixtureErrors": 0,
+      "demoContracts": "passed, including 66 demo operation checks",
+      "scope": "Mocked local backend contracts and Chromium fixture runs; English desktop and Arabic mobile screenshots. No live backend writes or carrier acceptance established.",
+      "testMaintenance": "Updated the existing creation cases for the new flow, supplied current Home endpoints and a stable initial account fixture, and removed one obsolete unreachable chart-toggle browser assertion. Summary query account scope remains covered by shipment regression checks.",
+      "browserReport": "test-results/shipments-browser/summary.json",
+      "buildLog": "test-results/shipment-creation-build.log",
+      "screenshots": [
+        "test-results/shipments-browser/shipment-route-en-desktop.png",
+        "test-results/shipments-browser/shipment-parcel-en-desktop.png",
+        "test-results/shipments-browser/shipment-carrier-review-en-desktop.png",
+        "test-results/shipments-browser/shipment-ar-mobile.png",
+        "test-results/shipments-browser/shipment-carrier-ar-mobile.png",
+        "test-results/shipments-browser/shipment-ar-mobile-summary.png"
+      ]
+    },
+    "remainingWork": [],
+    "partialWork": [],
+    "inventory": "Historical 32-area inventory, migrated/excluded counts, retired features and common-page/dormant-source work are unchanged. Existing packaging and balance-error implementation gaps in this checkout are outside this shipment update."
+  },
   "verificationFeatureRemoval": {
     "date": "2026-10-30",
     "feature": "verification-requests-app",
@@ -56,7 +353,9 @@
     "exclusions": "Retired auth-requests-app, merchant-statistics-new-app, verification-requests-app and store/commerce features stay removed. Account verification onboarding remains in auth-app. The historically recorded packaging, merchant-services and balance-errors areas have no active route configurations in this checkout and are not restored. Existing retained packaging fixtures remain. Demo authentication is bypassed through admin/merchant/affiliate identities; no real OTP, payment gateway, carrier service or backend acceptance is exercised. Quotes and shipping PDFs are illustrative local samples.",
     "validation": "Current verification-retirement batch passed active typecheck, production/demo builds, existing demo contracts, 66 extended demo checks and 72 browser route checks, with no demo backend requests or uncaught exceptions. Coverage matches all 26 currently active feature/workspace configurations. Original demo-batch validation also included shipment (30) and store-removal (5) regressions. See verificationFeatureRemoval for the complete current validation and preserved onboarding checks. Existing build warnings remain; fixture checks do not establish live backend acceptance."
   },
-  "removedThisBatch": ["verification-requests-app"],
+  "removedThisBatch": [
+    "verification-requests-app"
+  ],
   "storeRemovalAudit": {
     "date": "2026-10-29",
     "source": "Store pages, route registration, sidebar section, home shortcut, translations, merchant store-status fields/filters, unused e-commerce mock endpoints/data and platform assets removed. Redux state management and payment-provider error messages are not store implementations and remain.",
@@ -144,8 +443,13 @@
     {
       "feature": "admins-app",
       "status": "migrated",
-      "sourceConfigs": ["src/app/main/admins-app/AdminsAppConfig.js"],
-      "sourceRoutes": ["admins", "admins/:adminId/*"]
+      "sourceConfigs": [
+        "src/app/main/admins-app/AdminsAppConfig.js"
+      ],
+      "sourceRoutes": [
+        "admins",
+        "admins/:adminId/*"
+      ]
     },
     {
       "feature": "affiliate-merchants-app",
@@ -203,8 +507,13 @@
     {
       "feature": "alerts-app",
       "status": "migrated",
-      "sourceConfigs": ["src/app/main/alerts-app/AlertsAppConfig.js"],
-      "sourceRoutes": ["/alerts", ":alertId/*"]
+      "sourceConfigs": [
+        "src/app/main/alerts-app/AlertsAppConfig.js"
+      ],
+      "sourceRoutes": [
+        "/alerts",
+        ":alertId/*"
+      ]
     },
     {
       "feature": "applications-app",
@@ -212,7 +521,10 @@
       "sourceConfigs": [
         "src/app/main/applications-app/ApplicationsAppConfig.js"
       ],
-      "sourceRoutes": ["/applications", ":applicationId/*"],
+      "sourceRoutes": [
+        "/applications",
+        ":applicationId/*"
+      ],
       "includes": [
         "Staff-only v1/applications CRUD, search/account/date filters and ten-row server pagination",
         "Root IApplication model with nested IApplicationScope and canonical auth User references",
@@ -242,7 +554,9 @@
       "sourceConfigs": [
         "src/app/main/balance-errors-app/BalanceErrorsAppConfig.js"
       ],
-      "sourceRoutes": ["/balance-duplication-errors"],
+      "sourceRoutes": [
+        "/balance-duplication-errors"
+      ],
       "includes": [
         "Original /balance-duplication-errors manual read-only audit with date filters, all grouped transactions and full historical details",
         "Core IBalanceError imports migrated ITransaction; request/response wrappers remain in simple BalanceErrorsApi.ts; raw backend response is not normalized",
@@ -285,7 +599,9 @@
       "sourceConfigs": [
         "src/app/main/cancel-shipment-requests-app/CancelShipmentRequestsAppConfig.js"
       ],
-      "sourceRoutes": ["cancel-shipment-requests/:userId"],
+      "sourceRoutes": [
+        "cancel-shipment-requests/:userId"
+      ],
       "includes": [
         "Original /cancel-shipment-requests/:userId list with fixed v1/requests?type=cancelShipment, ten-row server pagination and encoded search/account/reviewer/status/date filters",
         "Root ICancelShipmentRequest imports canonical auth User, IAdmin and migrated IShipment populations; simple RTK API and cancelShipmentRequestsSlice.js",
@@ -303,7 +619,9 @@
     {
       "feature": "cities-app",
       "status": "migrated",
-      "sourceConfigs": ["src/app/main/cities-app/CitiesConfig.js"],
+      "sourceConfigs": [
+        "src/app/main/cities-app/CitiesConfig.js"
+      ],
       "sourceRoutes": [
         "cities/:shippingCompanyId/:stateId",
         "cities/:shippingCompanyId/:stateId/:cityId/*"
@@ -312,7 +630,9 @@
     {
       "feature": "countries-app",
       "status": "migrated",
-      "sourceConfigs": ["src/app/main/countries-app/CountriesConfig.js"],
+      "sourceConfigs": [
+        "src/app/main/countries-app/CountriesConfig.js"
+      ],
       "sourceRoutes": [
         "countries/:shippingCompanyId",
         "countries/:shippingCompanyId/:countryId/*"
@@ -321,7 +641,9 @@
     {
       "feature": "coupons-app",
       "status": "migrated",
-      "sourceConfigs": ["src/app/main/coupons-app/CouponsAppConfig.js"],
+      "sourceConfigs": [
+        "src/app/main/coupons-app/CouponsAppConfig.js"
+      ],
       "sourceRoutes": [
         "coupons/:shippingCompanyId/:userId",
         "coupons/:shippingCompanyId/:userId/:couponId/*"
@@ -330,8 +652,12 @@
     {
       "feature": "dashboard",
       "status": "migrated",
-      "sourceConfigs": ["src/app/main/dashboard/DashboardPageConfig.js"],
-      "sourceRoutes": ["/dashboard"],
+      "sourceConfigs": [
+        "src/app/main/dashboard/DashboardPageConfig.js"
+      ],
+      "sourceRoutes": [
+        "/dashboard"
+      ],
       "includes": [
         "User-authorized redesign of /dashboard and administrator /home with responsive shared overview components, clearer metric hierarchy, shipment stage counts, attention panel, merchant ranking and recent activity",
         "Administrator role and dashboard view checks before mounting any aggregate queries; restricted staff retain explicit grants and no default permissions are added",
@@ -347,8 +673,12 @@
     {
       "feature": "home-app",
       "status": "migrated",
-      "sourceConfigs": ["src/app/main/home-app/HomeAppConfig.js"],
-      "sourceRoutes": ["home"],
+      "sourceConfigs": [
+        "src/app/main/home-app/HomeAppConfig.js"
+      ],
+      "sourceRoutes": [
+        "home"
+      ],
       "includes": [
         "Role-aware /home keeps existing authentication destination: administrator overview, merchant shipping workspace and permission-filtered staff workspace",
         "Merchant redesign includes shipment/calculator actions, fresh wallet and COD balances, four all-time shipment totals, recent shipments, carrier options and useful account shortcuts",
@@ -364,8 +694,13 @@
     {
       "feature": "logs-app",
       "status": "migrated",
-      "sourceConfigs": ["src/app/main/logs-app/LogsConfig.js"],
-      "sourceRoutes": ["/logs", "/logs/:logId"],
+      "sourceConfigs": [
+        "src/app/main/logs-app/LogsConfig.js"
+      ],
+      "sourceRoutes": [
+        "/logs",
+        "/logs/:logId"
+      ],
       "includes": [
         "Original administrator-only /logs and /logs/:logId, read-only v1/logs GET contracts, simple LogsApi.ts and logsSlice.js; no log mutation endpoints",
         "Root ILog and nested historical metadata/data interfaces reference migrated account/shipment owners without introducing placeholder pending-feature models",
@@ -421,7 +756,9 @@
       "sourceConfigs": [
         "src/app/main/merchant-statistics-app/MerchantStatisticsAppConfig.js"
       ],
-      "sourceRoutes": ["merchant-statistics"],
+      "sourceRoutes": [
+        "merchant-statistics"
+      ],
       "includes": [
         "Original staff-only /merchant-statistics aggregate report using POST v1/users/statistics; canonical auth User references and all four original financial/obligation/bank-transfer/COD sections",
         "Searchable merchant selection, current remote search parameters, retained selected accounts, six-month initial range, optional date bounds and range validation",
@@ -437,13 +774,17 @@
       "sourceConfigs": [
         "src/app/main/merchant-statistics-new-app/MerchantStatisticsAppConfig.js"
       ],
-      "sourceRoutes": ["merchant-statistics-new"],
+      "sourceRoutes": [
+        "merchant-statistics-new"
+      ],
       "exclusionReason": "Removed from the project by explicit user request on 2026-10-30."
     },
     {
       "feature": "merchants-app",
       "status": "migrated",
-      "sourceConfigs": ["src/app/main/merchants-app/MerchantsAppConfig.js"],
+      "sourceConfigs": [
+        "src/app/main/merchants-app/MerchantsAppConfig.js"
+      ],
       "sourceRoutes": [
         "merchants",
         "merchants/:merchantId",
@@ -494,8 +835,12 @@
     {
       "feature": "payment-app",
       "status": "migrated",
-      "sourceConfigs": ["src/app/main/payment-app/PaymentAppConfig.js"],
-      "sourceRoutes": ["payment/:userId/:topupRequestId/:result"],
+      "sourceConfigs": [
+        "src/app/main/payment-app/PaymentAppConfig.js"
+      ],
+      "sourceRoutes": [
+        "payment/:userId/:topupRequestId/:result"
+      ],
       "includes": [
         "Original merchant-only /payment/:userId/:topupRequestId/:result legacy MyFatoorah callback, full-screen Fuse layout, current branding, language control, loading/error/success states and working home/history/retry/sign-out actions",
         "Reads actual payment by plain ID, validates current route/stored ownership, verifies gateway CustomerReference through backend POST v1/payments/payment-status with original keyType/key shape",
@@ -509,8 +854,13 @@
     {
       "feature": "plans-app",
       "status": "migrated",
-      "sourceConfigs": ["src/app/main/plans-app/PlansAppConfig.js"],
-      "sourceRoutes": ["plans", "plans/:planId"]
+      "sourceConfigs": [
+        "src/app/main/plans-app/PlansAppConfig.js"
+      ],
+      "sourceRoutes": [
+        "plans",
+        "plans/:planId"
+      ]
     },
     {
       "feature": "shipment-users-app",
@@ -518,7 +868,10 @@
       "sourceConfigs": [
         "src/app/main/shipment-users-app/ShipmentUsersAppConfig.js"
       ],
-      "sourceRoutes": ["shipment-users/:type", ":shipmentUserId"],
+      "sourceRoutes": [
+        "shipment-users/:type",
+        ":shipmentUserId"
+      ],
       "includes": [
         "Sender/receiver/all card lists, search and 16-item pagination",
         "Route-driven responsive side editor with separate header, tabs and basic information",
@@ -531,7 +884,9 @@
     {
       "feature": "shipments-app",
       "status": "migrated",
-      "sourceConfigs": ["src/app/main/shipments-app/ShipmentsAppConfig.js"],
+      "sourceConfigs": [
+        "src/app/main/shipments-app/ShipmentsAppConfig.js"
+      ],
       "sourceRoutes": [
         "shipments/:shippingCompanyId/:shippingType",
         "shipments/:shippingCompanyId/:shippingType/:shipmentId/*",
@@ -543,7 +898,7 @@
         "Simple raw RTK Query API, JavaScript shipmentsSlice.js, reference list wrapper/header/table and a single-page sectioned detail/creation form (FormProvider, header, sections/ components)",
         "Ten-row server pagination with stable totals, search, carrier/method/COD/parcel/status/payment/account/reviewer/contact/invoice/return/date filters and URL initialization",
         "Account-scoped carrier/method/staff merchant analytics and filtered 50000-row Excel export with nested price total and shipment count",
-        "Single-page creation redesign: shipping type, sender, receivers, carrier, parcel and payment sections with a sticky summary/review panel; carrier is chosen after the addresses and cards flag cities it does not cover; geography lookups work before a carrier is selected and carrier names refresh on carrier change; active carrier selection, saved/new sender and multiple receivers, geography mappings/fallback lookups, phones and national addresses",
+        "Two detail sections (Route & contacts and Parcel & payment) followed by a separate carrier-selection and automatic per-receiver price-review step; exact sender names without an added prefix, preserved COD/coupons, carrier mappings and draft-safe editing",
         "Parcel dimensions, carrier volumetric weight, normal six-package versus return/calculator two-package limits, image upload, customs commodities and extra-weight consent",
         "Local COD eligibility, coupon lookup/validation/removal, per-receiver price reviews and stale quote protection",
         "Fresh wallet balance guard, sequential creates, preserved new contact IDs after shipment failure, explicit per-receiver outcomes and retries excluding successful/accepted shipments",
@@ -570,7 +925,9 @@
     {
       "feature": "states-app",
       "status": "migrated",
-      "sourceConfigs": ["src/app/main/states-app/StatesConfig.js"],
+      "sourceConfigs": [
+        "src/app/main/states-app/StatesConfig.js"
+      ],
       "sourceRoutes": [
         "states/:shippingCompanyId/:countryId",
         "states/:shippingCompanyId/:countryId/:stateId/*"
@@ -604,7 +961,9 @@
       "sourceConfigs": [
         "src/app/main/transaction-reports-app/TransactionReportsAppConfig.js"
       ],
-      "sourceRoutes": ["transaction-reports/:userId"],
+      "sourceRoutes": [
+        "transaction-reports/:userId"
+      ],
       "includes": [
         "Original /transaction-reports/:userId uses the migrated transaction domain with independent transactionReportsSlice.js and simple RTK Query",
         "Staff must select a merchant before querying/exporting; merchant route IDs are ignored and backend current-account scope is retained",
@@ -647,7 +1006,9 @@
       "sourceConfigs": [
         "src/app/main/verification-requests-app/VerificationRequestsAppConfig.js"
       ],
-      "sourceRoutes": ["verification-requests/:userId"],
+      "sourceRoutes": [
+        "verification-requests/:userId"
+      ],
       "reason": "Removed by explicit user request on 2026-10-30: staff verification review screens, routes, navigation, permissions and demo review fixtures retired. Account verification onboarding, uploads, status flags and submission API remain in auth-app."
     },
     {
@@ -690,7 +1051,9 @@
       "error pages",
       "maintenance page from authentication foundation"
     ],
-    "pending": ["legacy coming-soon page and final route parity review"]
+    "pending": [
+      "legacy coming-soon page and final route parity review"
+    ]
   },
   "sharedComponents": {
     "status": "provided-by-user",
@@ -801,10 +1164,253 @@
   ],
   "featureRemovalAudit": {
     "date": "2026-10-30",
-    "removed": ["merchant-statistics-new-app", "auth-requests-app"],
+    "removed": [
+      "merchant-statistics-new-app",
+      "auth-requests-app"
+    ],
     "scope": "Removed feature source folders, route registration, navigation/translations, shared header metadata, merchant authorization submission link and retired demo fixture behavior. Original merchant statistics, verification requests, account flags and carrier authorization eligibility remain supported.",
     "remainingMigrationWork": [],
     "validation": "Active application typecheck and production build passed. 47 focused regression checks passed (retirement 8, original statistics 17, verification requests 13, navigation 9), along with demo contracts and 56 browser checks (statistics 13, verification 11, merchants/retired URLs 32). Both retired route families resolve to the standard 404 for staff and merchants; no navigation/profile links or production-bundle identifiers remain. Existing build warnings remain. Browser checks use fixtures, not live backend acceptance.",
     "report": "test-results/feature-removal/summary.json"
+  },
+  "shipmentOriginUpdate": {
+    "date": "2026-11-08",
+    "status": "implemented-and-locally-verified-awaiting-backend-deployment",
+    "scope": "Requested shipment-source/sender workflow and option removals. Storage and shipments only; no new historical migration area or restored feature.",
+    "completed": [
+      "Moved shipment source, warehouse and stock-product selection ahead of route/contact details.",
+      "Warehouse name and pickup contact/address become the automatic immutable sender. Merchant sender controls and sender-contact creation are skipped for warehouse shipments.",
+      "External sender drafts and warehouse item quantities survive switching shipment sources. Carrier-specific geographic mapping lookups remain active; fresh pickup changes require another review.",
+      "Removed commercial checkbox, manual commodity editor and extra-weight consent from UI/defaults/editable types/validation and outgoing payloads; external shipments never send products or legacy commercial flags.",
+      "Added administrator warehouse pickup phone/email/country/state/city/street/nationalAddress/postal-code editing using canonical geographic queries and selected-ID fallbacks.",
+      "Extended native warehouse schema/model and create/update geography validation. Both shipment review and queue admission replace submitted sender/contact/title/price snapshots from authoritative stored warehouse/product data.",
+      "Enforced one warehouse, active subscription, owned products, distinct valid quantities and available stock; conditional worker allocation now includes warehouseId. Shipment records retain warehouseId.",
+      "Kept existing receiver saves, per-receiver quote renewal, retry outcomes, COD/coupons, carrier choice after details, returns, calculator and main-phone-only contracts."
+    ],
+    "backend": {
+      "path": "C:\\Users\\MAJD\\Desktop\\Node.Js Projects\\shipping-express-backend",
+      "branch": "develop",
+      "modifiedFiles": [
+        "src/api/controllers/v1/shipments.ts",
+        "src/api/validations/schema/v1/shipments.ts",
+        "src/api/validations/schema/v1/warehouses.ts",
+        "src/database/mongodb/models/warehouse.ts",
+        "src/database/mongodb/models/shipment.ts",
+        "src/database/mongodb/repositories/warehouseProduct.ts",
+        "src/operations/v1/warehouses/create.ts",
+        "src/operations/v1/warehouses/update.ts",
+        "src/operations/v1/warehouses/validate-pickup.ts",
+        "src/operations/v1/shipments/resolve-warehouse-sender.ts",
+        "src/operations/v1/shipments/add-shipment-to-queue.ts",
+        "src/operations/v1/shipments/create.ts",
+        "src/services/internal/shipping/base.ts"
+      ],
+      "deployment": "Local changes only. Deploy the pickup/sender extension together with the earlier quoteId review compatibility fix.",
+      "fullBackendBuild": "Not run; backend dependency/lockfile mismatch from the prior audit remains. Real helper/controller/queue source and native Zod declarations were tested with isolated infrastructure dependencies."
+    },
+    "validation": {
+      "activeApplicationTypecheck": "passed: npm run typecheck:app",
+      "productionBuild": "passed: build/storage-origin-production",
+      "demoBuild": "passed: build/storage-origin-demo",
+      "storageRegressionChecks": 27,
+      "shipmentRegressionChecks": 35,
+      "backendSourceChecksWithIsolatedDependencies": 12,
+      "regressionTotal": 74,
+      "backendSchemaPayloads": 6,
+      "storageBrowserFixtureChecks": 21,
+      "shipmentBrowserFixtureChecks": 33,
+      "browserTotal": 54,
+      "uncaughtBrowserExceptions": 0,
+      "reports": [
+        "test-results/storage/contracts.json",
+        "test-results/storage/backend-operations.json",
+        "test-results/storage-browser/summary.json",
+        "test-results/shipments-browser/summary.json",
+        "build/storage-origin-work/production-build.log",
+        "build/storage-origin-work/typecheck-final.log"
+      ],
+      "scope": "Local browser/native DTO checks and actual backend helper/controller/queue source with database/auth/pricing/locking/queue dependencies isolated. No live carrier booking, paid gateway action or production deployment.",
+      "buildWarnings": "Existing Browserslist, CSS property casing, mixed FuseDialog imports and large bundle warnings remain."
+    },
+    "remainingWork": [
+      "Deploy the frontend and local backend extension together; the prior development audit found deployed review missing quoteId.",
+      "Administrator completes pickup data for each existing warehouse before dispatch; no address or contact is invented from text/map links.",
+      "Re-run live funded sandbox carrier/queued inventory acceptance and paid payment verification after deployment."
+    ],
+    "inventoryReport": {
+      "historicalFeatureAreas": 32,
+      "historicalMigrated": 28,
+      "historicalExcluded": 4,
+      "historicalPartial": 0,
+      "historicalPending": 0,
+      "newFeatureAreas": [
+        "storage-app, tracked separately"
+      ],
+      "unchangedRemainingAreas": [
+        "Common-page route parity",
+        "Eight dormant-source import audits",
+        "Cross-feature live backend acceptance"
+      ],
+      "unchangedSourceGaps": "Historical packaging/balance-error checkout gaps remain outside this shipment workflow change.",
+      "exclusions": "Retired account-review, commerce/platform and comparison features remain excluded."
+    },
+    "latestUpdate": "carrierReviewUpdate",
+    "currentHandoff": "docs/backend-modifications-report.ar.md",
+    "historicalContractNotice": "Earlier single-carrier /review quoteId observations and prototype fixes are superseded by carrierReviewUpdate. Native /review/companies works live; warehouse pickup/inventory completion remains backend-team work."
+  },
+  "storageEndToEndAudit": {
+    "date": "2026-11-08",
+    "status": "frontend-verified-backend-team-handoff-live-shipment-blocked",
+    "scope": "Storage warehouse/pickup persistence, supply receipt, shipment selection, review/create and recovery. No newly migrated legacy feature.",
+    "backendOwnership": "Explicit user instruction: do not edit backend further. User will discard recent backend edits; requirements are handed to the owning team. No backend revert, commit, publish or deployment was performed by this audit.",
+    "handoff": "docs/storage-backend-handoff.ar.md",
+    "liveApi": "https://api.v1.dev.e5hh6.ashamcoexpress.com",
+    "liveResults": [
+      "Administrator and merchant login succeed; merchant storage subscription active and wallet balance zero.",
+      "Full-address warehouse POST returns 201 but drops pickup; GET confirms it is not persisted. PATCH pickup returns 422 E_INVALID_BODY/unrecognized key.",
+      "New two-product supply returns pending. Approval creates no stock. Receipt produces exactly eight dry and three chilled products in the selected warehouse.",
+      "Warehouse shipment review returns 200/total 24 without quoteId. Successful live shipment booking cannot be asserted against this deployment."
+    ],
+    "testRecords": {
+      "warehouseId": "6aefaefbfe4f4b824918d19e",
+      "supplyRequestId": "6aefaf48fe4f4b824918d1b5",
+      "dryProductId": "6aefafa7d2a6903aed653b69",
+      "chilledProductId": "6aefafa7d2a6903aed653b6a",
+      "dryQuantity": 8,
+      "chilledQuantity": 3
+    },
+    "frontendFixes": [
+      "Warehouse save verifies pickup was retained. Partial success keeps the draft and returned warehouse ID; retry PATCHes that ID instead of duplicating a POST.",
+      "All real shipment/return price reviews require a server-issued quoteId before contact/shipment creation. Calculator price display remains supported without it.",
+      "Definitive warehouse rejection with no accepted/uncertain receiver unlocks editing and permits corrected quantities/repricing. Accepted/uncertain receiver protection remains.",
+      "Live audit redaction also excludes verification codes; audit-created sessions revoked and current evidence archived separately from the prior audit."
+    ],
+    "backendTeamRequirements": [
+      "Persist and return full pickup contact/geography; resolve the automatic warehouse sender and canonical owned product snapshots server-side.",
+      "Keep warehouseId/product IDs in review/create validation and issue/persist the exact single-carrier quote required by native creation.",
+      "Validate warehouse/owner/quantity atomically in worker allocation, preserve financial compensation/reconciliation and report actual queue/carrier outcome.",
+      "Reapply/review MongoDB reference and populated mapping type fixes, synchronize lockfile and verify Node 20 CI build.",
+      "Project safe owner fields in shipping-users; live population exposed verification-code fields.",
+      "Test concurrent receipt/upserts, queue replay, price fingerprints, carrier mappings and volumetric-rule parity; unproven risks are identified separately in the handoff."
+    ],
+    "validation": {
+      "frontendTypecheck": "passed: npm run typecheck:app",
+      "productionBuild": "passed: build/storage-e2e-production",
+      "shipmentRegressionChecks": 35,
+      "storageRegressionChecks": 28,
+      "backendSchemaPayloadsInTemporaryLocalContract": 6,
+      "shipmentAndWarehouseRecoveryBrowserChecks": 38,
+      "uncaughtBrowserExceptions": 0,
+      "scope": "Frontend browser/API fixtures and contract checks, plus authorized live storage requests. Native schema checks used the then-present temporary backend contract; they are not evidence of deployed compatibility and may fail if that prototype is discarded before the owning team implements it.",
+      "temporaryBackendVerificationBeforeOwnershipChange": "Dependencies installed in a frontend-owned isolated snapshot after lock sync; full backend TypeScript compilation passed there, under local Node 24. Team must revalidate supported Node 20 and runtime/integration after implementation. No Redis/MongoDB process or carrier booking was executed locally.",
+      "reports": [
+        "test-results/storage-e2e-live/api-audit.json",
+        "test-results/shipments-browser/summary.json",
+        "build/storage-e2e-work/frontend-browser-final.log",
+        "build/storage-e2e-work/frontend-typecheck.log",
+        "build/storage-e2e-work/frontend-build.log",
+        "build/storage-e2e-work/storage-regression.log",
+        "build/storage-e2e-work/shipments-regression.log"
+      ]
+    },
+    "remainingWork": [
+      "Owning backend team implements/reviews and deploys the handoff contract, independently of discarded local edits.",
+      "Complete saved warehouse pickup, provide an adequately funded authorized test wallet and verify final sandbox tracking/label, stock and ledger changes once.",
+      "Paid storage checkout, Redis/worker runtime and carrier acceptance remain environment-specific checks; no real booking success is claimed."
+    ],
+    "financialActions": "User authorized sandbox testing and test wallet credit, but no funding, card charge, carrier booking or shipment debit was performed because API prerequisites failed.",
+    "inventoryReport": {
+      "historicalCounts": {
+        "featureAreas": 32,
+        "migrated": 28,
+        "excluded": 4,
+        "partial": 0,
+        "pending": 0
+      },
+      "newFeatureAreas": "storage-app remains tracked separately",
+      "unchangedRemainingAreas": [
+        "Common-page parity",
+        "Eight dormant-source import audits",
+        "Cross-feature live acceptance"
+      ],
+      "unchangedSourceGaps": "Historical packaging/balance-error checkout gaps remain outside this audit.",
+      "exclusions": "Retired account-review, commerce/platform and comparison areas remain excluded."
+    },
+    "latestUpdate": "carrierReviewUpdate",
+    "currentHandoff": "docs/backend-modifications-report.ar.md",
+    "historicalContractNotice": "Earlier single-carrier /review quoteId observations and prototype fixes are superseded by carrierReviewUpdate. Native /review/companies works live; warehouse pickup/inventory completion remains backend-team work."
+  },
+  "carrierReviewUpdate": {
+    "date": "2026-11-08",
+    "status": "frontend-complete-native-companies-pricing-live-verified-storage-backend-team-handoff",
+    "scope": "shipments-app comparison/review flow and existing storage integration; no new legacy migration area.",
+    "backendOwnership": "No backend file edits, dependency installation, revert, commit, publish or deployment in this batch. Read-only source inspection and authorized live pricing only. Earlier local backend prototypes may be discarded by the user.",
+    "handoff": "docs/backend-modifications-report.ar.md",
+    "supersedes": "Earlier demand to issue quoteId from single-carrier /review is cancelled. Native /review/companies already persists and returns per-carrier quotes.",
+    "completed": [
+      "Replaced single-carrier review mutation with plain typed POST v1/shipments/review/companies; removed catalog fetch prerequisite.",
+      "Automatically compare all companies once per pending receiver after valid details, before choosing a carrier. Show server prices and unavailable-company reasons in separate groups.",
+      "Keep common eligible carriers across pending receivers, aggregate totals, preserve each quoteId and receiver-specific rejection/error. Missing/invalid quotes and prices cannot enable booking.",
+      "Carrier choice reuses returned prices without another pricing call or address rewrite. Canonical request data remains stable; backend providerInput owns carrier mappings.",
+      "Creation reuses the neutral reviewed body with selected shippingCompanyId/quoteId. New contact IDs renew companies review and require the same carrier and total; successful/accepted/uncertain receivers remain excluded from retry.",
+      "Preserve source-first warehouse sender, inventory quantities, external sender drafts, main phones only, COD/coupons and removed commercial/extra-weight options.",
+      "Updated demo comparison/quote binding, unit/backend-source/browser checks, README, AGENTS and handoff documentation. Historical handoff marked superseded."
+    ],
+    "livePricing": {
+      "endpoint": "POST /v1/shipments/review/companies",
+      "status": 200,
+      "suitable": "SMSA total 24 with a real server quoteId for the test address.",
+      "unsuitable": "DHL and Aramex with sender/receiver city coverage reasons.",
+      "scope": "Authenticated pricing request only; no wallet credit, shipment creation, carrier booking or gateway charge.",
+      "report": "test-results/carrier-review-live/api-audit.json"
+    },
+    "validation": {
+      "activeApplicationTypecheck": "passed: npm run typecheck:app",
+      "productionBuild": "passed: build/carrier-review-production",
+      "demoBuild": "passed: build/carrier-review-demo",
+      "shipmentRegressionChecks": 40,
+      "storageRegressionChecks": 28,
+      "backendSchemaPayloadsInCurrentLocalContract": 6,
+      "nativeBackendOperationChecksWithIsolatedDependencies": 8,
+      "shipmentBrowserFixtureChecks": 39,
+      "storageBrowserFixtureChecks": 21,
+      "uncaughtBrowserExceptions": 0,
+      "deprecatedSingleReviewBrowserCalls": 0,
+      "scope": "Frontend unit/demo/API fixtures and browser checks; actual companies operation/controller/queue source with infrastructure isolated. Local schema checks may depend on temporary storage extensions the user will discard. Live API check confirms comparison pricing, not warehouse pickup persistence or final booking.",
+      "buildWarnings": "Existing Browserslist, CSS property casing, mixed FuseDialog imports and large bundle warnings remain.",
+      "reports": [
+        "build/carrier-review-work/typecheck.log",
+        "build/carrier-review-work/build.log",
+        "build/carrier-review-work/demo-build.log",
+        "build/carrier-review-work/regression.log",
+        "build/carrier-review-work/storage-regression.log",
+        "test-results/storage/backend-operations.json",
+        "test-results/shipments-browser/summary.json",
+        "test-results/storage-browser/summary.json"
+      ]
+    },
+    "backendTeamRemainingWork": [
+      "Persist/read/update full warehouse pickup and validate coherent geographic references.",
+      "Resolve authoritative owned warehouse/product data and automatic sender inside native companies-review, with stable canonical request fingerprints separate from per-carrier provider input.",
+      "Complete method/location/language/national-address/COD/coupon/authorization/parcel/volumetric eligibility and finite pricing; Aramex divisor4000 versus5000.",
+      "Ensure quote owner/carrier/expiry/single-use/changed-input checks, new contact renewal, authoritative pickup changes and clear prequeue rejection.",
+      "Verify atomic stock and financial allocation, compensation/reconciliation, concurrent receipt, queue replay, source types/lockfile Node20 CI and safe shipping-user owner projections.",
+      "After deployment, complete funded sandbox warehouse shipment through actual tracking/label and stock/wallet updates exactly once; paid storage checkout/runtime acceptance remains environment-specific."
+    ],
+    "inventoryReport": {
+      "historicalFeatureAreas": 32,
+      "historicalMigrated": 28,
+      "historicalExcluded": 4,
+      "historicalPartial": 0,
+      "historicalPending": 0,
+      "newFeatureAreas": "storage-app tracked separately; frontend implemented, full live dispatch pending owning backend team.",
+      "unchangedRemainingAreas": [
+        "Common-page parity",
+        "Eight dormant-source import audits",
+        "Cross-feature live backend acceptance"
+      ],
+      "unchangedSourceGaps": "Historical packaging/balance-error checkout gaps remain outside this shipment review change.",
+      "exclusions": "Retired account-review, commerce/platform and standalone comparison features remain excluded."
+    }
   }
 }

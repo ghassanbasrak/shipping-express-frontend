@@ -24,7 +24,7 @@ const bundle = esbuild.buildSync({
 const mod = new Module(entry);
 mod.filename = entry;
 mod.paths = module.paths;
-mod._compile(bundle.outputFiles[0].text, entry);
+
 const storage = new Map();
 global.localStorage = {
   getItem: (key) => storage.get(key) ?? null,
@@ -32,6 +32,7 @@ global.localStorage = {
   removeItem: (key) => storage.delete(key),
 };
 global.window = { location: { origin: "http://localhost:3000" } };
+mod._compile(bundle.outputFiles[0].text, entry);
 const key = "ashamco-demo-data-v1";
 const snapshot = () => JSON.parse(storage.get(key));
 const identity = (value) =>

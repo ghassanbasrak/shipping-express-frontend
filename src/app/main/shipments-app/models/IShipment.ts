@@ -6,12 +6,15 @@ import ICountry from "../../countries-app/models/ICountry";
 import IState from "../../states-app/models/IState";
 import ICity from "../../cities-app/models/ICity";
 import ICoupon from "../../coupons-app/models/ICoupon";
+import IWarehouse from "../../storage-app/models/IWarehouse";
 export default interface IShipment extends IShipmentDetails {
   id: string;
   _id?: string;
   reference?: string;
   shippingCompanyId?: string;
   shippingCompany?: IShippingCompany;
+  warehouseId?: string;
+  warehouse?: IWarehouse;
   userId?: string;
   user?: User;
   updatedById?: string;

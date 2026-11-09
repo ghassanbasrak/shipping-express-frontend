@@ -7,6 +7,12 @@ import ICountry, {
 import IShippingCompany from "src/app/main/shipping-companies-app/models/IShippingCompany";
 import { demoStorageKey } from "./demoMode";
 import {
+  ensureDemoStorage,
+  handleDemoStorage,
+  withDemoStorageShipment,
+  type DemoStorageDb,
+} from "./demoStorage";
+import {
   createDemoExtras,
   handleDemoExtra,
   type DemoExtraDb,
@@ -33,6 +39,7 @@ type DemoCity = {
   postalCode?: string;
 };
 type DemoDb = DemoExtraDb &
+  DemoStorageDb &
   DemoOperationsDb & {
     countries: ICountry[];
     shippingCompanies: IShippingCompany[];
@@ -185,7 +192,8 @@ function seedDb(): DemoDb {
     ...createDemoExtras({ countries, shippingCompanies, states, cities }),
   };
   ensureDemoOperations(value);
-  return value;
+  ensureDemoStorage(value);
+  return value as DemoDb;
 }
 
 function loadDb(): DemoDb {
@@ -218,6 +226,7 @@ function loadDb(): DemoDb {
           )
             (merged as any)[key] = extras[key];
         ensureDemoOperations(merged);
+        ensureDemoStorage(merged);
         localStorage.setItem(demoStorageKey, JSON.stringify(merged));
         return merged;
       }
@@ -478,6 +487,13 @@ async function handle(config: AxiosRequestConfig): Promise<[number, unknown]> {
     }
   }
 
+  const context = { db, config, path, method, params, data, save: saveDb };
+  const storage = await handleDemoStorage(context);
+  if (storage) return storage;
+  const warehouseShipment = await withDemoStorageShipment(context, () =>
+    handleDemoOperations(context),
+  );
+  if (warehouseShipment) return warehouseShipment;
   const operations = await handleDemoOperations({
     db,
     config,
@@ -487,7 +503,9 @@ async function handle(config: AxiosRequestConfig): Promise<[number, unknown]> {
     data,
     save: saveDb,
   });
-  if (operations) return operations;
+  if (operations) {
+    return operations;
+  }
   const extra = await handleDemoExtra({
     db,
     config,

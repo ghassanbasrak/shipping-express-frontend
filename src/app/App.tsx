@@ -20,6 +20,7 @@ import AuthenticationProvider from "./auth/AuthenticationProvider";
 import AppConfigProvider from "./AppConfigProvider";
 import { LicenseInfo } from "@mui/x-license";
 import { LocaleString } from "./main/utils/commonTypes";
+import StorageNavigation from "./main/storage-app/StorageNavigation";
 
 /**
  * Axios HTTP Request defaults
@@ -86,6 +87,7 @@ function App() {
                     "bottom-0 right-0 mb-52 md:mb-68 mr-8 lg:mr-80 z-99",
                 }}
               >
+                <StorageNavigation />
                 <FuseLayout layouts={themeLayouts} />
               </SnackbarProvider>
             </AuthenticationProvider>

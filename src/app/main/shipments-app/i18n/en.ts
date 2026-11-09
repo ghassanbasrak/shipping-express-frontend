@@ -1,4 +1,41 @@
 const locale = {
+  SUITABLE_CARRIERS: "Available carriers & prices",
+  UNSUITABLE_CARRIERS: "Unavailable carriers",
+  REVIEWING_ALL_CARRIERS: "Checking carrier availability and prices…",
+  REFRESH_CARRIER_OFFERS: "Refresh carrier offers",
+  NO_COMPARISON_RESULTS:
+    "Carrier offers will appear after your shipment details are reviewed. Retry if the review failed.",
+  CARRIER_TOTAL_PRICE: "Total for pending receivers",
+  CARRIER_RESULT_MISSING:
+    "No valid booking quote is available for this receiver.",
+  CARRIER_REASON_METHOD: "This shipping method is not supported.",
+  CARRIER_REASON_SENDER_COUNTRY: "Pickup country is not supported.",
+  CARRIER_REASON_SENDER_STATE: "Pickup region is not supported.",
+  CARRIER_REASON_SENDER_CITY: "Pickup city is not supported.",
+  CARRIER_REASON_RECEIVER_COUNTRY: "Delivery country is not supported.",
+  CARRIER_REASON_RECEIVER_STATE: "Delivery region is not supported.",
+  CARRIER_REASON_RECEIVER_CITY: "Delivery city is not supported.",
+  CARRIER_REASON_ENGLISH: "This carrier accepts English addresses only.",
+  STORAGE_PICKUP_CHANGED:
+    "Warehouse pickup details changed. Return to the details and review the shipment again.",
+  STORAGE_SELECT_WAREHOUSE: "Select the dispatch warehouse first",
+  STORAGE_AUTOMATIC_SENDER:
+    "The warehouse is the sender. Its pickup details are applied automatically.",
+  STORAGE_PICKUP_REQUIRED:
+    "The administrator must complete this warehouse's pickup contact and address before it can dispatch shipments.",
+  STORAGE_QUOTE_REQUIRED:
+    "A valid shipment price is unavailable. Review prices again or contact support.",
+  STORAGE_RESULT_UNKNOWN:
+    "The server result is unknown. Check shipment history before creating another shipment for this receiver. This form will not submit it again.",
+  STORAGE_SELECTION_REQUIRED:
+    "Choose a valid warehouse and its stored products.",
+  STORAGE_SUBSCRIPTION_REQUIRED: "An active storage subscription is required.",
+  STORAGE_QUANTITY_INVALID: "Enter a positive whole quantity.",
+  STORAGE_STOCK_UNAVAILABLE:
+    "Stock is unavailable or insufficient. Refresh your inventory.",
+  STORAGE_WAREHOUSE_PICKUP: "Pickup from the selected warehouse",
+  STORAGE_ATTEMPT_LOCK:
+    "Complete or retry the pending warehouse shipments before editing these details.",
   SHIPMENTS: "Shipments",
   SEARCH_SHIPMENTS: "Search Shipments",
   ADD_SHIPMENT: "Add Shipment",
@@ -47,7 +84,6 @@ const locale = {
   SENDER_FULL_NAME: "Sender full name",
   SENDER_EMAIL: "Sender email",
   SENDER_PHONE_NUMBER: "Sender phone number",
-  SENDER_PHONE_NUMBER_1: "Sender phone number 1",
   SENDER_COUNTRY: "Sender country",
   SENDER_STATE: "Sender state",
   SENDER_CITY: "Sender city",
@@ -71,7 +107,6 @@ const locale = {
   RECEIVER_FULL_NAME: "Receiver full name",
   RECEIVER_EMAIL: "Receiver email",
   RECEIVER_PHONE_NUMBER: "Receiver phone number",
-  RECEIVER_PHONE_NUMBER_1: "Receiver phone number 1",
   RECEIVER_COUNTRY: "Receiver country",
   RECEIVER_STATE: "Receiver state",
   RECEIVER_CITY: "Receiver state",
@@ -408,13 +443,9 @@ const locale = {
   VIEW_MERCHANT: "View Merchant",
   SETTLED: "Settled",
   PAYMENT_BLOCK: "Payment Blocked",
-  ACCEPT_EXTRA_WEIGHT_TERMS_AND_CONDITIONS:
-    "Accept extra weight terms and conditions",
   EXTRA_WEIGHT_POLICY_TITLE: "Extra Weight Policy",
   EXTRA_WEIGHT_POLICY_MESSAGE:
     "In order to provide a distinguished and high-quality shipping service, please adhere to the following excess weight policy:\n\nPermitted weight:\nThe basic price includes a weight ranging from 1 to 15 kilograms.\n\nExcess weight fees:\nAny weight exceeding 15 kilograms is calculated as excess weight and added to the invoice at a value of:\n\n1 Saudi Riyal for each additional kilogram (all companies).\n1.5 Saudi Riyals for each additional kilogram (Aramex).\nCustomer obligations:\nThe customer must ensure the accuracy of the weight before shipping. In the event of an excess weight being calculated during shipping:\n\nExcess weight fees will be deducted directly from the customer's balance.\n\nThe company reserves the right to recalculate the costs when necessary.\nThe company has the right to suspend the service or take appropriate action until payment is made.",
-  EXTRA_WEIGHT_TERMS_REQUIRED_FIELD:
-    "Extra weight terms and conditions is required",
   NOT_ENOUGH_BALANCE: "You don't have enough balance",
   DISCOUNT_EXTRA_WEIGHT: "Discount Extra Weight Amount",
   SOMETHING_WENT_WRONG_WHEN_DISCOUNT_EXTRA_WEIGHT_PRICE:
@@ -493,23 +524,19 @@ const locale = {
   TOTAL_DISCOUNT: "Total discount",
   SHIPPING_PRICE_CALCULATOR: "Shipping Price Calculator",
   CHECK_REQUIRED_FIELDS: "Please check the highlighted fields",
-  ACCEPT_EXTRA_WEIGHT_TERMS: "I accept extra weight charges",
   CHECK_COUPON: "Check coupon",
   REMOVE_COUPON: "Remove coupon",
   CONVERT_TO_DELIVEREDS: "Mark selected as delivered",
   CREATED_AT: "Created at",
   EMAIL: "Email",
   GENERATE_RETURN_SHIPMENT: "Create a return shipment",
-  IS_COMMERCIAL: "Commercial shipment",
   PACKAGES_COUNT: "Packages count",
   PHONE_NUMBER: "Phone number",
-  SECOND_PHONE_NUMBER: "Second phone number",
   PLATFORM: "Platform",
   PRICE: "Price",
   PRODUCT_NAME: "Product name",
   QUANTITY: "Quantity",
   REVIEW_SHIPMENT_COSTS: "Review shipment costs",
-  SENDER_NAME_PREFIX: "Sender name prefix",
   STATUS: "Status",
   STREET: "Street",
   TRACKING: "Tracking",
@@ -609,7 +636,6 @@ const locale = {
   SHIPMENT_TYPE_BOXES_HINT: "Parcels and boxes",
   SHIPMENT_TYPE_DOCUMENT_HINT: "Papers and documents",
   PACKAGE_SIZE_AND_WEIGHT: "Size and weight",
-  IS_COMMERCIAL_HINT: "Add the products for customs and invoice",
   CASH_ON_DELIVERY_HINT: "The carrier collects the amount from the receiver",
   COD_AFTER_CARRIER_HINT:
     "Select a shipping company to see cash on delivery availability",
@@ -618,10 +644,39 @@ const locale = {
   NOT_SELECTED_YET: "Not selected yet",
   SENDER_AND_RECEIVERS: "Sender → Receivers",
   SHIPMENT_FORM_SUBTITLE_NEW:
-    "Fill in the details once and review the cost before you create",
+    "Enter your shipment details, choose a carrier and confirm the price",
   SHIPMENT_FORM_SUBTITLE_RETURN:
     "Sender and receiver are swapped from the original shipment",
   SHIPMENT_FORM_SUBTITLE_CALCULATOR:
     "Estimate the shipping cost without creating a shipment",
+  SHIPMENT_PROGRESS: "Shipment progress",
+  SHIPMENT_DETAILS_STEP: "Shipment details",
+  CARRIER_REVIEW_STEP: "Carrier & prices",
+  DETAILS_STEP_HINT: "Route, contacts and parcel",
+  REVIEW_STEP_HINT: "Choose a carrier, then confirm",
+  ROUTE_AND_CONTACTS: "Route & contacts",
+  ROUTE_AND_CONTACTS_HINT:
+    "Choose the shipping type and tell us where to collect and deliver.",
+  PARCEL_AND_PAYMENT: "Parcel & payment",
+  PARCEL_AND_PAYMENT_HINT:
+    "Describe the parcel and add any collection or discount options.",
+  READY_FOR_CARRIER: "Ready to choose your carrier?",
+  READY_FOR_CARRIER_HINT:
+    "Submit your details to see available carriers and review your shipping price.",
+  CONTINUE_TO_CARRIERS: "Submit & choose carrier",
+  CHOOSE_CARRIER: "Choose your shipping company",
+  CHOOSE_CARRIER_HINT:
+    "Compare the returned prices and choose a suitable company. Unavailable companies include the reasons.",
+  PRICE_REVIEW: "Review & confirm",
+  PRICE_REVIEW_HINT: "Prices from your selected shipping company",
+  SELECT_CARRIER_FOR_PRICES:
+    "Choose a shipping company to see your price breakdown here.",
+  EDIT_DETAILS: "Edit shipment details",
+  CARRIER_DETAILS_REQUIRED: "This carrier needs a few details checked",
+  FINAL_CONFIRMATION_HINT:
+    "Your shipment is only created when you confirm the reviewed price. You can go back and edit your details at any time.",
+  WEIGHT_CARRIER_HINT: "Final minimum weight depends on the carrier.",
+  PRICES_AFTER_VALIDATION:
+    "Check the highlighted details before calculating prices.",
 };
 export default locale;

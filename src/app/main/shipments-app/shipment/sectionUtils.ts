@@ -1,22 +1,21 @@
 import { shippingGeoName } from "../Utils";
 import type { ShipmentFormValues } from "../models/ShipmentSchema";
 
-export const shipmentSectionIds = [
-  "type",
-  "sender",
-  "receiver",
-  "carrier",
-  "parcel",
-  "payment",
-] as const;
+export const shipmentSectionIds = ["route", "parcel", "carrier"] as const;
 export type ShipmentSectionId = (typeof shipmentSectionIds)[number];
 
 export function sectionOfField(key: string): ShipmentSectionId {
-  if (key === "method") return "type";
-  if (key.startsWith("sender")) return "sender";
-  if (key.startsWith("receiver")) return "receiver";
-  if (key === "shippingCompanyId") return "carrier";
-  if (["isCod", "codPrice", "couponCode"].includes(key)) return "payment";
+  if (
+    key === "method" ||
+    key === "warehouseId" ||
+    key === "warehouseItems" ||
+    key === "fulfillmentSource" ||
+    key.startsWith("sender") ||
+    key.startsWith("receiver")
+  )
+    return "route";
+  if (key === "shippingCompanyId" || key === "shippingCompany")
+    return "carrier";
   return "parcel";
 }
 

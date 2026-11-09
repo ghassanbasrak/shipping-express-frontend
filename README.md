@@ -15,6 +15,42 @@ Set `VITE_BASE_URL` in a local `.env` file to use another backend. Production
 builds retain their existing backend configuration unless an environment sets
 `VITE_BASE_URL`. Demo mode never forwards API requests to the backend.
 
+## Shipment creation
+
+Shipment creation has two detail sections: **Route & contacts** and **Parcel &
+payment**. Submit those details to open a separate carrier-selection and price
+review step. `POST v1/shipments/review/companies` automatically returns suitable
+companies with prices and quote IDs, plus unsuitable companies with reasons.
+The user selects an existing offer; switching companies makes no new review call.
+Each pending receiver has its own comparison response and selected quote.
+Shipment creation requires explicit confirmation of the reviewed price.
+
+Sender names are used exactly as entered for both saved contacts and shipments.
+Shipments and shipment contacts use one main phone number. Secondary phones from
+legacy records are not shown in these forms/details or included in new saves.
+COD amounts and coupons stay with the draft when comparing carriers. Incompatible
+carriers explain why they are unavailable. Editing the details retains the draft
+and refreshes changed quotes. Returns and the price calculator use the same flow.
+
+## Storage
+
+The new **Storage** area includes warehouse and subscription-plan administration,
+merchant storage subscriptions, supply requests and owned warehouse stock.
+Stored-product and supply links unlock after subscription. Receipt confirmation
+adds stock once; shipments can select warehouse products or use the existing
+external-product flow. Run `npm run dev:demo` to review the complete local flow.
+It uses the native APIs in backend `develop`, including Moyasar subscription
+checkout and verified activation. Shipment source is chosen first. Warehouse
+shipments use the warehouse name and configured pickup contact/address as the
+automatic sender and submit warehouse/product IDs and quantities with a
+server-issued quote. Admins must complete pickup details for older warehouses.
+The commercial/manual-products and extra-weight consent controls are removed;
+only warehouse shipments submit products. This extension requires deployment
+of the matching backend implementation by its owning team before live dispatch
+acceptance. See the complete [updated backend report in Arabic](docs/backend-modifications-report.ar.md).
+Set `VITE_STORAGE_API_ENABLED=false` only when targeting an older backend. See
+[the integration and verification notes](docs/storage-api-contract.md).
+
 ## Sidebar navigation
 
 The sidebar uses persistent `group` headings with direct page links. Only two
@@ -56,6 +92,16 @@ Run `node scripts/store-removal-regression.cjs` to verify these exclusions.
 
 ## Commands
 
+Normal development/production builds default to the supplied Ashamco development
+API, `https://api.v1.dev.e5hh6.ashamcoexpress.com`; `VITE_BASE_URL` can override it.
+The 2026-11-07 storage audit verified real free subscription activation, supplies,
+receipt and SKU/name quantity merging. On 2026-11-08 the existing companies-review
+endpoint returned live suitable/unsuitable groups, prices and valid quote IDs.
+The frontend no longer calls the single-carrier `/review` endpoint. Warehouse
+pickup persistence and authoritative inventory integration still require work by
+the owning backend team before final warehouse shipment acceptance. See the
+[complete current backend report](docs/backend-modifications-report.ar.md).
+
 | Command | Purpose |
 | --- | --- |
 | `npm run dev:demo` | Start the local demo on port 3000, without a backend |
@@ -63,6 +109,9 @@ Run `node scripts/store-removal-regression.cjs` to verify these exclusions.
 | `npm run build:demo` | Build the demo configuration |
 | `npm run build` | Build the backend configuration |
 | `npm run typecheck:app` | Check the active application types |
+| `npm run test:storage` | Check native storage payloads and the local inventory workflow |
+| `npm run test:storage:backend` | Check native companies-review and quote binding with isolated dependencies |
+| `npm run test:storage:browser` | Check storage screens, checkout, supplies and warehouse shipping |
 | `npm run test:demo` | Check demo data contracts and generated report files |
 | `npm run test:demo:browser` | Smoke-check the demo build in Chromium (set `BROWSER_PATH` if needed) |
 

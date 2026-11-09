@@ -39,7 +39,6 @@ const authApi = api
         }),
       }),
       submitVerification: build.mutation<unknown, VerificationSubmission>({
-        invalidatesTags: ["VerificationRequests"],
         query: (data) => ({ url: "v1/requests", method: "POST", data }),
       }),
     }),

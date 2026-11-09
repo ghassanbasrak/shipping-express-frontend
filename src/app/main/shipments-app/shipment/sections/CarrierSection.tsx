@@ -1,223 +1,174 @@
-import { useEffect } from "react";
 import {
   Alert,
   Box,
-  Button,
   ButtonBase,
   Chip,
   Skeleton,
   Typography,
 } from "@mui/material";
-import { alpha } from "@mui/material/styles";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import FuseSvgIcon from "@fuse/core/FuseSvgIcon";
-import { useAppSelector } from "app/store/hooks";
-import { selectUser } from "src/app/auth/user/store/userSlice";
+import Currency from "src/app/main/utils/currencyFormatter";
 import {
-  useGetShipmentAccountQuery,
-  useGetShipmentCarriersQuery,
-} from "../../ShipmentsApi";
-import { carrierMissesAddress } from "../sectionUtils";
+  carrierUnsuitableReason,
+  type ShipmentCarrierChoice,
+} from "../../Utils";
 import type { ShipmentFormValues } from "../../models/ShipmentSchema";
 
 export default function CarrierSection({
-  disabled = false,
+  choices,
+  loading,
+  stale,
+  disabled,
+  receiverName,
+  onChoose,
 }: {
+  choices: ShipmentCarrierChoice[];
+  loading: boolean;
+  stale: boolean;
   disabled?: boolean;
+  receiverName: (key: string) => string;
+  onChoose: () => void;
 }) {
   const { t } = useTranslation("shipmentsApp"),
-    user = useAppSelector(selectUser),
-    {
-      watch,
-      setValue,
-      getValues,
-      formState: { errors },
-    } = useFormContext<ShipmentFormValues>(),
-    carriers = useGetShipmentCarriersQuery(),
-    account = useGetShipmentAccountQuery("me"),
-    form = watch(),
-    method = form.method,
-    carrierId = form.shippingCompanyId,
-    company = form.shippingCompany;
-  const active =
-      carriers.currentData?.results.filter((item) => item.isActive) || [],
-    choices = active.filter((item) => item.shippingMethods?.includes(method));
-  useEffect(() => {
-    const selected = active.find((item) => item.id === carrierId);
-    if (selected && !getValues("shippingCompany"))
-      setValue("shippingCompany", structuredClone(selected));
-  }, [carriers.currentData, carrierId, getValues, setValue]);
-  const authorized = account.currentData?.isAuthorized ?? user?.isAuthorized;
-  const selectedMisses =
-    !!company && !!carrierId && carrierMissesAddress(company, form);
-
-  function choose(item: (typeof choices)[number]) {
-    if (item.id === carrierId) return;
-    // Canonical address IDs stay; the geography fields refresh the carrier names.
-    setValue("shippingCompanyId", item.id, {
-      shouldDirty: true,
-      shouldValidate: true,
-    });
-    setValue("shippingCompany", structuredClone(item));
-    setValue("isCod", false);
-    setValue("codPrice", 0);
-    setValue("couponCodeId", "");
-    setValue("coupon", null);
-  }
-
+    { watch, setValue } = useFormContext<ShipmentFormValues>(),
+    selectedId = watch("shippingCompanyId");
+  const groups = [
+    { eligible: true, title: "SUITABLE_CARRIERS" },
+    { eligible: false, title: "UNSUITABLE_CARRIERS" },
+  ];
   return (
-    <div className="space-y-16">
-      {carriers.isError && (
-        <Alert
-          severity="error"
-          action={
-            <Button onClick={() => carriers.refetch()}>{t("RETRY")}</Button>
-          }
+    <div className="space-y-24" data-testid="carrier-comparison-results">
+      {loading && (
+        <div
+          className="grid grid-cols-1 sm:grid-cols-2 gap-12"
+          role="status"
+          aria-label={t("REVIEWING_ALL_CARRIERS")}
         >
-          {t("CARRIERS_LOAD_ERROR")}
-        </Alert>
-      )}
-      {!carrierId && !carriers.isError && (
-        <Alert severity="info" icon={false} sx={{ borderRadius: "12px" }}>
-          {t("CARRIER_AFTER_ADDRESS_HINT")}
-        </Alert>
-      )}
-      {carriers.isLoading && (
-        <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 xl:grid-cols-3">
-          {[0, 1, 2].map((item) => (
-            <Skeleton
-              key={item}
-              variant="rounded"
-              height={92}
-              sx={{ borderRadius: "16px" }}
-            />
+          {[0, 1, 2].map((index) => (
+            <Skeleton key={index} variant="rounded" height={120} />
           ))}
         </div>
       )}
-      {!carriers.isLoading && !carriers.isError && !choices.length && (
-        <Alert severity="warning">{t("NO_CARRIERS_FOR_TYPE")}</Alert>
+      {stale && choices.length > 0 && (
+        <Alert severity="info">{t("QUOTE_CHANGED")}</Alert>
       )}
-      <div
-        role="radiogroup"
-        aria-label={t("SHIPPING_COMPANY")}
-        className="grid grid-cols-1 gap-12 sm:grid-cols-2 xl:grid-cols-3"
-        style={{ maxHeight: 460, overflowY: "auto", padding: 4, margin: -4 }}
-      >
-        {choices.map((item) => {
-          const selected = carrierId === item.id,
-            needsAuthorization = item.isAuthorizationRequired && !authorized,
-            misses = carrierMissesAddress(item, form),
-            blocked = disabled || needsAuthorization || misses;
-          return (
-            <ButtonBase
-              key={item.id}
-              role="radio"
-              aria-checked={selected}
-              disabled={blocked && !selected}
-              data-testid={`carrier-${item.id}`}
-              onClick={() => choose(item)}
-              sx={(theme) => ({
-                position: "relative",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "flex-start",
-                gap: 1.5,
-                textAlign: "start",
-                p: 1.5,
-                minHeight: 92,
-                borderRadius: "16px",
-                border: `2px solid ${selected ? theme.palette.primary.main : theme.palette.divider}`,
-                backgroundColor: selected
-                  ? alpha(theme.palette.primary.main, 0.07)
-                  : theme.palette.background.paper,
-                opacity: blocked && !selected ? 0.6 : 1,
-                transition: "all .2s ease",
-                "&:hover": {
-                  borderColor: theme.palette.primary.light,
-                  boxShadow: `0 8px 20px -12px ${alpha(theme.palette.primary.main, 0.5)}`,
-                },
-              })}
+      {!loading && !choices.length && (
+        <Alert severity="info">{t("NO_COMPARISON_RESULTS")}</Alert>
+      )}
+      {groups.map((group) => {
+        const rows = choices.filter(
+          (choice) => choice.eligible === group.eligible,
+        );
+        if (!rows.length) return null;
+        return (
+          <div
+            key={group.title}
+            className="space-y-12"
+            data-testid={
+              group.eligible ? "suitable-carriers" : "unsuitable-carriers"
+            }
+          >
+            <div className="flex items-center gap-8">
+              <Typography className="font-semibold text-16">
+                {t(group.title)}
+              </Typography>
+              <Chip size="small" label={rows.length} />
+            </div>
+            <div
+              role={group.eligible ? "radiogroup" : undefined}
+              aria-label={t(group.title)}
+              className="grid grid-cols-1 sm:grid-cols-2 gap-12"
             >
-              <Box
-                sx={(theme) => ({
-                  width: 56,
-                  height: 56,
-                  flexShrink: 0,
-                  display: "grid",
-                  placeItems: "center",
-                  borderRadius: "12px",
-                  overflow: "hidden",
-                  backgroundColor: theme.palette.common.white,
-                  border: `1px solid ${theme.palette.divider}`,
-                })}
-              >
-                {item.logoUrl ? (
-                  <img
-                    src={item.logoUrl}
-                    alt=""
-                    className="h-40 w-40 object-contain"
-                  />
-                ) : (
-                  <FuseSvgIcon color="disabled">
-                    heroicons-outline:truck
-                  </FuseSvgIcon>
-                )}
-              </Box>
-              <span className="min-w-0 flex-1 space-y-4">
-                <Typography className="text-14 font-bold leading-tight">
-                  {item.name}
-                </Typography>
-                <span className="flex flex-wrap gap-4">
-                  {method === "local" &&
-                    item.shippingMethods?.includes("cashOnDelivery") && (
-                      <Chip
-                        size="small"
-                        label={t("CASH_ON_DELIVERY")}
-                        sx={{ height: 20, fontSize: 11 }}
-                      />
+              {rows.map((choice) => {
+                const company = choice.shippingCompany,
+                  selected = group.eligible && selectedId === company.id;
+                return (
+                  <ButtonBase
+                    key={company.id}
+                    role={group.eligible ? "radio" : undefined}
+                    aria-checked={group.eligible ? selected : undefined}
+                    disabled={!group.eligible || disabled || stale || loading}
+                    data-testid={`carrier-${company.id}`}
+                    onClick={() => {
+                      setValue("shippingCompanyId", company.id, {
+                        shouldDirty: true,
+                      });
+                      setValue("shippingCompany", structuredClone(company), {
+                        shouldDirty: true,
+                      });
+                      onChoose();
+                    }}
+                    className="w-full rounded-16 border-2 p-16 text-start items-start flex flex-col gap-12"
+                    sx={{
+                      borderColor: selected ? "primary.main" : "divider",
+                      bgcolor: selected
+                        ? "action.selected"
+                        : "background.paper",
+                      opacity: stale ? 0.55 : 1,
+                    }}
+                  >
+                    <div className="flex w-full items-center gap-12">
+                      <Box
+                        className="h-48 w-48 shrink-0 rounded-12 flex items-center justify-center overflow-hidden border-1"
+                        sx={{ borderColor: "divider", bgcolor: "common.white" }}
+                      >
+                        {company.logoUrl ? (
+                          <img
+                            src={company.logoUrl}
+                            alt=""
+                            className="h-36 w-36 object-contain"
+                          />
+                        ) : (
+                          <FuseSvgIcon color="disabled">
+                            heroicons-outline:truck
+                          </FuseSvgIcon>
+                        )}
+                      </Box>
+                      <Typography className="text-14 font-bold flex-1 min-w-0">
+                        {company.name}
+                      </Typography>
+                      {selected && (
+                        <FuseSvgIcon color="primary">
+                          heroicons-solid:check-circle
+                        </FuseSvgIcon>
+                      )}
+                    </div>
+                    {group.eligible ? (
+                      <div className="w-full flex items-end justify-between gap-8">
+                        <Typography className="text-12" color="text.secondary">
+                          {t("CARRIER_TOTAL_PRICE")}
+                        </Typography>
+                        <Typography
+                          className="font-bold text-20"
+                          color="primary.main"
+                          data-testid={`carrier-price-${company.id}`}
+                        >
+                          {Currency(choice.total)}
+                        </Typography>
+                      </div>
+                    ) : (
+                      <ul className="m-0 ps-16 space-y-4 text-12 min-w-0 max-w-full break-words">
+                        {choice.reasons.map((reason, index) => (
+                          <li key={index}>
+                            {receiverName(reason.key)
+                              ? `${receiverName(reason.key)}: `
+                              : ""}
+                            {carrierUnsuitableReason[reason.code]
+                              ? t(carrierUnsuitableReason[reason.code])
+                              : reason.message || t("CARRIER_RESULT_MISSING")}
+                          </li>
+                        ))}
+                      </ul>
                     )}
-                  {item.isEnglish && (
-                    <Chip
-                      size="small"
-                      label="EN"
-                      sx={{ height: 20, fontSize: 11 }}
-                    />
-                  )}
-                </span>
-                {needsAuthorization && (
-                  <Typography color="warning.main" className="block text-11">
-                    {t("SHIPPING_COMPANY_REQUIRED_AUTHORIZATION")}
-                  </Typography>
-                )}
-                {!needsAuthorization && misses && (
-                  <Typography color="warning.main" className="block text-11">
-                    {t("CARRIER_DOES_NOT_COVER_ADDRESS")}
-                  </Typography>
-                )}
-              </span>
-              {selected && (
-                <FuseSvgIcon size={22} color="primary">
-                  heroicons-solid:check-circle
-                </FuseSvgIcon>
-              )}
-            </ButtonBase>
-          );
-        })}
-      </div>
-      {selectedMisses && (
-        <Alert severity="warning">{t("CITY_NOT_AVAILABLE_FOR_CARRIER")}</Alert>
-      )}
-      {company?.isEnglish && (
-        <Alert severity="info">
-          {t("SHIPPING_COMPANY_SUPPORT_ONLY_ENGLISH_LANGUAGE")}
-        </Alert>
-      )}
-      {errors.shippingCompanyId && (
-        <Alert severity="error">
-          {String(errors.shippingCompanyId.message)}
-        </Alert>
-      )}
+                  </ButtonBase>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }

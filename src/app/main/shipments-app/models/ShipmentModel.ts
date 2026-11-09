@@ -10,8 +10,6 @@ export const newShipmentReceiver = (): ShipmentReceiverValues => ({
   receiverEmail: "",
   receiverPhone: "",
   receiverPhoneCountry: "+966",
-  receiverPhone1: "",
-  receiverPhoneCountry1: "+966",
   receiverCountryId: defaultCountryId,
   receiverCountryName: defaultCountry.name.en,
   receiverCountryCode: defaultCountryCode,
@@ -26,19 +24,31 @@ export const newShipmentReceiver = (): ShipmentReceiverValues => ({
 export default function ShipmentModel(
   data: Partial<ShipmentFormValues> = {},
 ): ShipmentFormValues {
+  const editable = structuredClone(data);
+  for (const field of [
+    "senderPhone1",
+    "senderPhoneCountry1",
+    "receiverPhone1",
+    "receiverPhoneCountry1",
+    "isCommercial",
+    "acceptExtraWeightTerms",
+    "products",
+  ])
+    delete editable[field];
+  editable.receivers?.forEach((receiver) => {
+    delete receiver["receiverPhone1"];
+    delete receiver["receiverPhoneCountry1"];
+  });
   return {
     ...structuredClone({
       shippingCompanyId: "",
       shippingCompany: null,
       method: "local",
       senderId: "new",
-      senderNamePrefix: "متجر",
       senderName: "",
       senderEmail: "",
       senderPhone: "",
       senderPhoneCountry: "+966",
-      senderPhone1: "",
-      senderPhoneCountry1: "+966",
       senderCountryId: defaultCountryId,
       senderCountryName: defaultCountry.name.en,
       senderCountryCode: defaultCountryCode,
@@ -57,18 +67,19 @@ export default function ShipmentModel(
       weight: 1,
       packagesCount: 1,
       description: "",
-      isCommercial: false,
       imageUrl: "",
-      acceptExtraWeightTerms: false,
       isCod: false,
       codPrice: 0,
       couponCode: "",
       couponCodeId: "",
       coupon: null,
-      ...data,
+      fulfillmentSource: "external",
+      warehouseId: "",
+      warehouseItems: [],
+      ...editable,
     }),
-    receivers: data.receivers
-      ? structuredClone(data.receivers)
+    receivers: editable.receivers
+      ? structuredClone(editable.receivers)
       : [newShipmentReceiver()],
   };
 }

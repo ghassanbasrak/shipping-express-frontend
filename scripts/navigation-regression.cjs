@@ -105,6 +105,7 @@ const groups = [
   "group-accounts",
   "group-insights",
   "group-settings",
+  "group-storage",
   "group-administration",
 ];
 check(
@@ -141,6 +142,10 @@ check(
     assert.deepEqual(
       ids(all.filter((item) => item.url)).sort(),
       [
+        "storage",
+        "storage-warehouses",
+        "storage-plans",
+        "storage-supplies-admin",
         "home",
         "affiliate-merchants",
         "affiliate-profile",
@@ -159,10 +164,8 @@ check(
         "merchant-statistics",
         "affiliate-withdraw-requests",
         "bank-transfers",
-        "applications",
         "shipment-users",
         "coupons",
-        "alerts",
         "plans",
         "admins",
         "states",
@@ -210,6 +213,7 @@ check(
       "group-shipping",
       "group-finance",
       "group-accounts",
+      "group-storage",
     ]);
     const visibleIds = ids(flatten(items));
     assert(visibleIds.includes("profile"));

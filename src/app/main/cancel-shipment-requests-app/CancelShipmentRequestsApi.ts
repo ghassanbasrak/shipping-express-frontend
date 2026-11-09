@@ -2,6 +2,7 @@ import { apiService as api } from "app/store/apiService";
 import type { User } from "src/app/auth/user";
 import ICancelShipmentRequest from "./models/ICancelShipmentRequest";
 export const addTagTypes = [
+  "StorageProducts",
   "CancelShipmentRequests",
   "Shipments",
   "Shipment",
@@ -63,6 +64,7 @@ const CancelShipmentRequestsApi = api
                 "Shipments",
                 "ShipmentSummary",
                 "ShipmentAccount",
+                "StorageProducts",
                 "Transactions",
                 "MerchantDues",
                 "MerchantDuesSummary",

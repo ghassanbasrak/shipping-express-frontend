@@ -105,8 +105,8 @@ async function main() {
     () => {
       assert.equal(form.phone, "501234567");
       assert.equal(form.phoneCountry, "+966");
-      assert.equal(form.phone1, "2025550123");
-      assert.equal(form.phoneCountry1, "+1");
+      assert.equal(form.phone1, undefined);
+      assert.equal(form.phoneCountry1, undefined);
       assert.equal(
         utils.splitShipmentUserPhone("+966501234567").number,
         "501234567",
@@ -127,14 +127,14 @@ async function main() {
     },
   );
   check(
-    "national address without street and blank secondary phone remain editable",
+    "national address without street stays editable without a secondary phone",
     () => {
       const saved = utils.toShipmentUserSaveValues({
         ...form,
         phone1: "",
         address: { ...form.address, street: "" },
       });
-      assert.equal(saved.phone1, "");
+      assert.equal(saved.phone1, undefined);
       assert.equal(
         saved.address.street,
         utils.nationalAddressSeparator + "ABCD1234",
@@ -162,7 +162,6 @@ async function main() {
         "fullName",
         "id",
         "phone",
-        "phone1",
         "type",
       ]);
       assert.equal(value.address.country, undefined);
@@ -188,7 +187,7 @@ async function main() {
       );
   });
   check(
-    "legacy optional city, street, ZIP, email and secondary phone are preserved",
+    "optional city, street, ZIP and email remain supported",
     () => {
       assert.equal(
         schema.safeParse({
@@ -333,6 +332,7 @@ async function main() {
           assert.equal(value.id, undefined);
           assert.equal(value.senderShipmentsCount, undefined);
           assert.equal(value.phone, "+966-501234567");
+          assert.equal(value.phone1, undefined);
           return [200, { ...value, id: "created" }];
         });
         assert.equal(
@@ -341,6 +341,7 @@ async function main() {
               ...utils.toShipmentUserSaveValues(form),
               userId: "foreign",
               senderShipmentsCount: 99,
+          phone1: "+1-2025550123",
             })
           ).id,
           "created",
@@ -354,12 +355,13 @@ async function main() {
           const value = JSON.parse(config.data);
           assert.equal(value.id, undefined);
           assert.equal(value.userId, undefined);
-          assert.equal(value.phone1, "+1-2025550123");
+          assert.equal(value.phone1, undefined);
           return [200, { ...value, id: "contact-1" }];
         });
         await query("updateShipmentUser", {
           ...utils.toShipmentUserSaveValues(form),
           userId: "foreign",
+          phone1: "+1-2025550123",
         });
       },
     );

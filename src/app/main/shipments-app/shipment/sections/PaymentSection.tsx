@@ -30,11 +30,6 @@ export default function PaymentSection({
       if (!coupon) throw new Error(t("INVALID_COUPON"));
       if (coupon.expiresAt && new Date(coupon.expiresAt) <= new Date())
         throw new Error(t("EXPIRED_COUPON"));
-      if (
-        coupon.shippingCompanyId &&
-        coupon.shippingCompanyId !== form.shippingCompanyId
-      )
-        throw new Error(t("COUPON_NOT_AVILABLE_SHIPPING_COMPANY"));
       if (coupon.startTime && new Date(coupon.startTime) >= new Date())
         throw new Error(t("NOT_YET_COUPON"));
       setValue("couponCodeId", coupon.id);
@@ -43,9 +38,7 @@ export default function PaymentSection({
       setError(error instanceof Error ? error.message : t("INVALID_COUPON"));
     }
   }
-  const supportsCod =
-    form.method === "local" &&
-    form.shippingCompany?.shippingMethods?.includes("cashOnDelivery");
+  const supportsCod = form.method === "local";
   return (
     <div className="grid grid-cols-1 gap-24 sm:grid-cols-2">
       {!returned && (
@@ -94,6 +87,7 @@ export default function PaymentSection({
           />
           {form.coupon ? (
             <Button
+              variant="outlined"
               disabled={disabled}
               color="error"
               sx={{ height: 56, borderRadius: "12px", flexShrink: 0 }}
@@ -109,6 +103,7 @@ export default function PaymentSection({
             </Button>
           ) : (
             <LoadingButton
+              color="primary"
               variant="contained"
               disabled={disabled || !form.couponCode}
               loading={isFetching}

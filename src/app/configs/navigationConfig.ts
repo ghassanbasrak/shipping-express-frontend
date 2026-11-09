@@ -7,6 +7,9 @@ import authRoles from "src/app/auth/authRoles";
 i18next.addResourceBundle("en", "navigation", en);
 i18next.addResourceBundle("ar", "navigation", ar);
 
+const canSeeStorageAdmin = (user: import("../auth/user").User) =>
+  user?.role === "admin";
+
 const navigationConfig: FuseNavItemType[] = [
   {
     id: "group-overview",
@@ -55,7 +58,7 @@ const navigationConfig: FuseNavItemType[] = [
         type: "item",
         icon: "heroicons-outline:calculator",
         url: "/shipping-price-calculator",
-        auth: authRoles.user,
+        auth: authRoles.onlyUser,
       },
       {
         id: "shipment-users",
@@ -64,7 +67,7 @@ const navigationConfig: FuseNavItemType[] = [
         type: "item",
         icon: "heroicons-outline:identification",
         url: "/shipment-users/all",
-        auth: authRoles.user,
+        auth: authRoles.onlyUser,
       },
       {
         id: "cancel-shipment-requests",
@@ -304,6 +307,56 @@ const navigationConfig: FuseNavItemType[] = [
             auth: authRoles.admin,
           },
         ],
+      },
+    ],
+  },
+  {
+    id: "group-storage",
+    title: "Storage",
+    translate: "GROUP_STORAGE",
+    type: "group",
+    children: [
+      {
+        id: "storage",
+        title: "Storage subscription",
+        translate: "STORAGE",
+        type: "item",
+        icon: "heroicons-outline:cube",
+        url: "/storage",
+        auth: ["admin", "user"],
+        hasPermissionGetter: (user) =>
+          user?.role === "user" || canSeeStorageAdmin(user),
+        end: true,
+      },
+      {
+        id: "storage-warehouses",
+        title: "Warehouses",
+        translate: "STORAGE_WAREHOUSES",
+        type: "item",
+        icon: "heroicons-outline:office-building",
+        url: "/storage/warehouses",
+        auth: ["admin"],
+        hasPermissionGetter: canSeeStorageAdmin,
+      },
+      {
+        id: "storage-plans",
+        title: "Storage plans",
+        translate: "STORAGE_PLANS",
+        type: "item",
+        icon: "heroicons-outline:collection",
+        url: "/storage/plans",
+        auth: ["admin"],
+        hasPermissionGetter: canSeeStorageAdmin,
+      },
+      {
+        id: "storage-supplies-admin",
+        title: "Supply requests",
+        translate: "STORAGE_SUPPLIES",
+        type: "item",
+        icon: "heroicons-outline:inbox-in",
+        url: "/storage/supply-requests",
+        auth: ["admin"],
+        hasPermissionGetter: canSeeStorageAdmin,
       },
     ],
   },

@@ -62,11 +62,6 @@ export default function ShipmentUserCard({
         <Typography dir="ltr" className="text-14">
           {row.phone}
         </Typography>
-        {row.phone1 && (
-          <Typography dir="ltr" className="text-14">
-            {row.phone1}
-          </Typography>
-        )}
         <Chip
           size="small"
           label={`${count ?? 0} ${t("sHIPMENTS")}`}

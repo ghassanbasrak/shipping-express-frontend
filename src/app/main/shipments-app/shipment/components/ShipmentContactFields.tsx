@@ -52,8 +52,10 @@ export default function ShipmentContactFields({
     for (const [key, value] of Object.entries(
       savedShipmentContact(selected.currentData, prefix),
     ))
-      setValue(`${path}${key}`, value);
-    if (prefix === "sender") setValue("senderNamePrefix", "");
+      setValue(`${path}${key}`, value, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
     applied.current = chosen;
   }, [chosen, selected.currentData, path, prefix, getValues, setValue]);
   const options = [
@@ -83,6 +85,7 @@ export default function ShipmentContactFields({
           render={({ field: country }) => (
             <div dir="ltr" className="min-w-0">
               <PhoneInput
+                key={`${id}:${applied.current || ""}`}
                 name={name}
                 value={`${country.value || "+966"}${field.value || ""}`}
                 onChange={(value) => {
@@ -111,8 +114,7 @@ export default function ShipmentContactFields({
       )}
     />
   );
-  const showState = !company || company.hasState,
-    isNewSender = prefix === "sender" && id === "new";
+  const showState = true;
   return (
     <div className="w-full min-w-0" data-testid={`${path}${prefix}-contact`}>
       {!calculator && (users.isError || selected.isError) && (
@@ -167,7 +169,6 @@ export default function ShipmentContactFields({
                     "Name",
                     "Email",
                     "Phone",
-                    "Phone1",
                     "StateId",
                     "StateName",
                     "CityId",
@@ -204,18 +205,11 @@ export default function ShipmentContactFields({
                 />
               )}
             />
-            {isNewSender && (
-              <ShipmentField
-                name="senderNamePrefix"
-                label={t("SENDER_NAME_PREFIX")}
-                disabled={disabled}
-              />
-            )}
             <ShipmentField
               name={`${path}${prefix}Name`}
               label={t("NAME")}
               icon="heroicons-outline:user"
-              className={isNewSender ? undefined : "sm:col-span-2"}
+              className="sm:col-span-2"
               required
               disabled={disabled}
             />
@@ -225,50 +219,38 @@ export default function ShipmentContactFields({
               t("PHONE_NUMBER"),
               true,
             )}
-            {phone(
-              `${path}${prefix}Phone1`,
-              `${path}${prefix}PhoneCountry1`,
-              t("SECOND_PHONE_NUMBER"),
-            )}
             <ShipmentField
               name={`${path}${prefix}Email`}
               label={t("EMAIL")}
               icon="heroicons-outline:mail"
               disabled={disabled}
             />
-            <ShipmentField
-              name={`${path}${prefix}NationalAddress`}
-              label={t("NATIONAL_ADDRESS")}
-              icon="heroicons-outline:identification"
-              required
-              disabled={disabled}
-            />
           </>
         )}
-        <div
+        {/* <div
           className={`grid grid-cols-1 gap-16 sm:col-span-2 ${showState ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}
-        >
+        > */}
+        <ShipmentGeoField
+          prefix={prefix}
+          path={path}
+          kind="country"
+          disabled={disabled}
+        />
+        {showState && (
           <ShipmentGeoField
             prefix={prefix}
             path={path}
-            kind="country"
+            kind="state"
             disabled={disabled}
           />
-          {showState && (
-            <ShipmentGeoField
-              prefix={prefix}
-              path={path}
-              kind="state"
-              disabled={disabled}
-            />
-          )}
-          <ShipmentGeoField
-            prefix={prefix}
-            path={path}
-            kind="city"
-            disabled={disabled}
-          />
-        </div>
+        )}
+        <ShipmentGeoField
+          prefix={prefix}
+          path={path}
+          kind="city"
+          disabled={disabled}
+        />
+        {/* </div> */}
         <ShipmentField
           name={`${path}${prefix}Street`}
           label={t("STREET")}
@@ -280,6 +262,13 @@ export default function ShipmentContactFields({
           name={`${path}${prefix}ZipCode`}
           label={t("ZIP_CODE")}
           required={!local}
+          disabled={disabled}
+        />
+        <ShipmentField
+          name={`${path}${prefix}NationalAddress`}
+          label={t("NATIONAL_ADDRESS")}
+          icon="heroicons-outline:identification"
+          required
           disabled={disabled}
         />
       </div>

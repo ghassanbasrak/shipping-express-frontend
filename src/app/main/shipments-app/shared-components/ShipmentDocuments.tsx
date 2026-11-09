@@ -205,7 +205,6 @@ export default function ShipmentDocuments({ row }: { row: IShipment }) {
                           "Name",
                           "Email",
                           "Phone",
-                          "Phone1",
                           "CountryName",
                           "StateName",
                           "CityName",

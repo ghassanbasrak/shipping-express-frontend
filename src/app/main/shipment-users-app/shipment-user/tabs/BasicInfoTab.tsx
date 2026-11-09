@@ -76,12 +76,6 @@ export default function BasicInfoTab({
         required
         disabled={disabled}
       />
-      <PhoneField
-        name="phone1"
-        codeName="phoneCountry1"
-        label={t("PHONE_NUMBER_1")}
-        disabled={disabled}
-      />
       <Controller
         name="address.nationalAddress"
         control={control}

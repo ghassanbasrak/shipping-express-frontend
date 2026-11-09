@@ -29,7 +29,6 @@ const locale = {
   BASIC_INFO: "المعلومات الرئيسية",
   FULL_NAME: "الاسم الكامل",
   PHONE_NUMBER: "رقم الهاتف المحمول",
-  PHONE_NUMBER_1: "رقم الهاتف المحمول الآخر",
   COUNTRY: "الدولة",
   STATE: "المحافظة",
   EMAIL: "البريد الإلكتروني",
