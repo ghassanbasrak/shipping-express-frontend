@@ -86,12 +86,6 @@ const features = {
     "Manage merchant accounts and profile details.",
     "إدارة حسابات التجار وبيانات ملفاتهم.",
   ],
-  "plans-app": [
-    "collection",
-    "SETTINGS",
-    "Manage payment plans and shipping prices.",
-    "إدارة خطط الدفع وأسعار الشحن.",
-  ],
   "shipment-users-app": [
     "identification",
     "OPERATIONS",

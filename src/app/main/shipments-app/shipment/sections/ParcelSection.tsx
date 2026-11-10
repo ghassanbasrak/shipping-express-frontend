@@ -2,9 +2,8 @@ import { Box, Typography } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { UploadFileInput } from "src/app/main/auth-app/verify-account/VerifyAccountPage";
-import { useAppSelector } from "app/store/hooks";
-import { selectUser } from "src/app/auth/user/store/userSlice";
+import MediaInput from "app/shared-components/media-input/MediaInput";
+import { MediaInputTypes } from "app/shared-components/media-input/Utils";
 import { shipmentVolumetricWeight } from "../../Utils";
 import type { ShipmentFormValues } from "../../models/ShipmentSchema";
 import ShipmentField from "../components/ShipmentField";
@@ -20,7 +19,6 @@ export default function ParcelSection({
   onUploadBusy: (busy: boolean) => void;
 }) {
   const { t } = useTranslation("shipmentsApp"),
-    user = useAppSelector(selectUser),
     { watch, setValue, formState } = useFormContext<ShipmentFormValues>(),
     form = watch();
   const needsImage =
@@ -123,11 +121,12 @@ export default function ParcelSection({
                 p: 2,
               })}
             >
-              <UploadFileInput
+              <MediaInput
+                type={MediaInputTypes.file}
                 name="imageUrl"
-                userId={user.id}
                 label={t("SHIPMENT_IMAGE")}
                 accept="image/*"
+                disabled={disabled}
                 onBusy={onUploadBusy}
               />
             </Box>

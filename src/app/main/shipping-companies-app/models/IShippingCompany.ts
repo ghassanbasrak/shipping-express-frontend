@@ -24,7 +24,6 @@ export default interface IShippingCompany {
   iconUrl?: string;
   shippingMethods?: string[];
   shipmentsCount?: number;
-  packageRequestsCount?: number;
   shipmentCountriesCount?: number;
   shipmentStatesCount?: number;
   shipmentCitiesCount?: number;

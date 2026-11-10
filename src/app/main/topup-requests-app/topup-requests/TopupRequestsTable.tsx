@@ -2,7 +2,7 @@ import { hasOperationPermission as merchantProfilePermission } from "src/app/aut
 import Currency from "../../utils/currencyFormatter";
 import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
-import { Alert, Button, Chip, Typography } from "@mui/material";
+import { Alert, Button, Typography } from "@mui/material";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import CustomTable from "app/shared-components/custom-table/CustomTable";
@@ -24,11 +24,6 @@ import {
   invalidTopupDates,
   toTopupRequestStatusTitle,
   toTopupRequestStatusColor,
-  topupRequestEntityTypes,
-  toTopupRequestEntityTypeImage,
-  toTopupRequestEntityTypeTitle,
-  getPayTabsResultCodeError,
-  getHyperpayResultCodeError,
   topupRequestStatus,
 } from "../Utils";
 import {
@@ -38,9 +33,8 @@ import {
   setTopupRequestsPage,
   setTopupRequestsPageSize,
 } from "../store/topupRequestsSlice";
-import RecreateCheckoutButton from "../shared-components/RecreateCheckoutButton";
 export default function TopupRequestsTable() {
-  const { t, i18n } = useTranslation("topupRequestsApp"),
+  const { t } = useTranslation("topupRequestsApp"),
     dispatch = useAppDispatch(),
     user = useAppSelector(selectUser),
     { userId = "all" } = useParams(),
@@ -98,7 +92,7 @@ export default function TopupRequestsTable() {
     [query.data],
   );
   const details = (row: ITopupRequest) =>
-    `${row.transactionId || t("NOT_EXIST_TRANSACTION_ID")}${row.status !== topupRequestStatus.confirmed && (row.reference || row.code || row.responseStatus) ? ` / ${row.code || row.responseStatus ? getPayTabsResultCodeError(row.responseStatus, String(row.code), row.responseMessage, i18n.language) : getHyperpayResultCodeError(row.reference, i18n.language)}` : ""}${row.notes ? ` / ${t("TRANSACTION_NOTES")}: ${row.notes}` : ""}`;
+    `${row.transactionId || t("NOT_EXIST_TRANSACTION_ID")}${row.status !== topupRequestStatus.confirmed && row.responseMessage ? ` / ${row.responseMessage}` : ""}${row.notes ? ` / ${t("TRANSACTION_NOTES")}: ${row.notes}` : ""}`;
   const fields: TableFieldProps<ITopupRequest>[] = [
     {
       id: "reference",
@@ -137,25 +131,14 @@ export default function TopupRequestsTable() {
     {
       id: "paymentMethodType",
       label: t("PAYMENT_METHOD"),
-      type: TableDataTypes.image,
-      flex: 0.5,
-      minWidth: 50,
-      renderCell: ({ row }) =>
-        Object.values(topupRequestEntityTypes).includes(
-          row.paymentMethodType,
-        ) ? (
-          <img
-            className="max-h-32 max-w-full object-contain"
-            src={`/assets/images/payment-methods/${toTopupRequestEntityTypeImage(row.paymentMethodType)}`}
-            alt={t(toTopupRequestEntityTypeTitle(row.paymentMethodType))}
-          />
-        ) : (
-          <span>—</span>
-        ),
+      type: TableDataTypes.normal,
+      flex: 0.7,
+      minWidth: 70,
       valueGetter: (row) =>
-        Object.values(topupRequestEntityTypes).includes(row.paymentMethodType)
-          ? `/assets/images/payment-methods/${toTopupRequestEntityTypeImage(row.paymentMethodType)}`
-          : "",
+        row.metadata?.gateway === "moyasar" ||
+        row.paymentMethodType?.toLowerCase() === "moyasar"
+          ? t("ONLINE_PAYMENT")
+          : row.paymentMethodType || "—",
     },
     {
       id: "transactionId",
@@ -186,13 +169,6 @@ export default function TopupRequestsTable() {
       renderCell: ({ row }) => (
         <div className="py-8 space-y-8">
           <Typography>{Currency(row.total ?? 0)}</Typography>
-          {row.isPlan && (row.paymentPlan?.name || row.plan?.name) && (
-            <Chip
-              size="small"
-              color="secondary"
-              label={row.paymentPlan?.name || row.plan?.name}
-            />
-          )}
         </div>
       ),
     },
@@ -240,7 +216,6 @@ export default function TopupRequestsTable() {
                 >
                   {t("DETAILS")}
                 </Button>
-                <RecreateCheckoutButton payment={row} />
               </div>
             ),
           },

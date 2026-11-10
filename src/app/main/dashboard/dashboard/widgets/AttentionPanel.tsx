@@ -17,7 +17,6 @@ export default function AttentionPanel({ period }: { period: string }) {
       ["urgent_support_tickets", "URGENT_SUPPORT"],
       ["shipments_delayed", "DELAYED_SHIPMENTS"],
       ["pending_payments", "PENDING_PAYMENTS"],
-      ["merchants_need_approval", "MERCHANTS_AWAITING_APPROVAL"],
     ];
   return (
     <OverviewSection

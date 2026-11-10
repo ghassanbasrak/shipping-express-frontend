@@ -7,10 +7,12 @@ import tr from "./i18n/tr";
 i18next.addResourceBundle("en", "topupRequestsApp", en);
 i18next.addResourceBundle("ar", "topupRequestsApp", ar);
 i18next.addResourceBundle("tr", "topupRequestsApp", tr);
+const PaymentReturn = lazy(() => import("./PaymentReturn"));
 const TopupRequests = lazy(() => import("./topup-requests/TopupRequests")),
   TopupRequest = lazy(() => import("./topup-request/TopupRequest"));
 export default {
   routes: [
+    { path: "wallet/payment-result", element: <PaymentReturn />, auth: authRoles.onlyUser },
     {
       path: "topup-requests/:userId",
       element: <TopupRequests />,

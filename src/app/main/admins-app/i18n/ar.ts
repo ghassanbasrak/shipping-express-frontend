@@ -68,7 +68,6 @@ const locale = {
   PAYMENTS: "سجلات شحن الرصيد",
   WITHDRAW_REQUESTS: "طلبات سحب المستحقات",
   BANK_TRANSFERS: "التحويلات البنكية",
-  PACKAGE_REQUESTS: "طلبات المغلفات",
   CANCEL_SHIPMENT_REQUESTS: "طلبات الغاء الشحنات",
   MERCHANTS: "التجار",
   MERCHANT_STATISTICS: "احصائيات التجار",

@@ -15,7 +15,7 @@ export default function AuthLayout({
 }: {
   title: string;
   children: ReactNode;
-  onboardingStep?: 0 | 1 | 2;
+  onboardingStep?: 0 | 1;
   description?: string;
   product?: boolean;
   wide?: boolean;
@@ -108,7 +108,7 @@ export default function AuthLayout({
               )}
               {onboardingStep !== undefined && (
                 <Stepper activeStep={onboardingStep} alternativeLabel sx={{ mb: 4 }} aria-label={t("ONBOARDING_PROGRESS")}>
-                  {["STEP_ACCOUNT", "STEP_PROFILE", "STEP_VERIFICATION"].map((key) => (
+                  {["STEP_ACCOUNT", "STEP_PROFILE"].map((key) => (
                     <Step key={key}><StepLabel>{t(key)}</StepLabel></Step>
                   ))}
                 </Stepper>
@@ -144,7 +144,7 @@ export default function AuthLayout({
         </Typography>
         {onboardingStep !== undefined && (
           <Stepper activeStep={onboardingStep} alternativeLabel className="mb-32" aria-label={t("ONBOARDING_PROGRESS")}>
-            {["STEP_ACCOUNT", "STEP_PROFILE", "STEP_VERIFICATION"].map((key) => (
+            {["STEP_ACCOUNT", "STEP_PROFILE"].map((key) => (
               <Step key={key}>
                 <StepLabel>{t(key)}</StepLabel>
               </Step>

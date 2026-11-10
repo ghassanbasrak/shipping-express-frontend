@@ -1,10 +1,9 @@
 import { Button, MenuItem, TextField, Typography } from "@mui/material";
 import { Controller, useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { useAppSelector } from "app/store/hooks";
-import { selectUser } from "src/app/auth/user/store/userSlice";
 import { banks, toBankTitle } from "../../../../bank-transfers-app/Utils";
-import { UploadFileInput } from "src/app/main/auth-app/verify-account/VerifyAccountPage";
+import MediaInput from "app/shared-components/media-input/MediaInput";
+import { MediaInputTypes } from "app/shared-components/media-input/Utils";
 export default function WithdrawRequestDecisionForm({
   approval,
   walletCharge,
@@ -18,8 +17,7 @@ export default function WithdrawRequestDecisionForm({
   disabled: boolean;
   onUploading: (value: boolean) => void;
 }) {
-  const { t } = useTranslation("withdrawRequestsApp"),
-    user = useAppSelector(selectUser);
+  const { t } = useTranslation("withdrawRequestsApp");
   const { control, watch, setValue } = useFormContext<{
     bank: string;
     transactionReference: string;
@@ -104,11 +102,12 @@ export default function WithdrawRequestDecisionForm({
               />
             )}
           />
-          <UploadFileInput
+          <MediaInput
+            type={MediaInputTypes.file}
             name="transactionImageUrl"
             label={t("UPLOAD_TRANSACTION_IMAGE")}
-            userId={user.id}
             accept="image/*"
+            disabled={disabled}
             onBusy={onUploading}
           />
           {image && (

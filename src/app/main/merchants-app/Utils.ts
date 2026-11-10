@@ -11,46 +11,6 @@ export const merchantLoyaltyTypes = {
   normal: "normal",
   custom: "custom",
 };
-export const merchantVerificationStatus = {
-  notSubmitted: "notSubmitted",
-  pending: "pending",
-  approved: "approved",
-  rejected: "rejected",
-};
-export const getUserVerificationDaysCountRemaining = (user) => {
-  if (!user?.verificationExpiresAt) return 0;
-  const expireDate = new Date(user.verificationExpiresAt);
-  const date = new Date();
-  return Math.floor(
-    (expireDate.getTime() - date.getTime()) / (1000 * 60 * 60 * 24),
-  );
-};
-export const toMerchantVerificationStatusTitle = (status) => {
-  switch (status) {
-    case merchantVerificationStatus.notSubmitted:
-      return "NOT_SUBMITTED";
-    case merchantVerificationStatus.pending:
-      return "IN_REVIEW";
-    case merchantVerificationStatus.approved:
-      return "APPROVED";
-    case merchantVerificationStatus.rejected:
-      return "REJECTED";
-  }
-  return "NOT_SUBMITTED";
-};
-export const toMerchantVerificationStatusColor = (status) => {
-  switch (status) {
-    case merchantVerificationStatus.notSubmitted:
-      return "bg-amber-500";
-    case merchantVerificationStatus.pending:
-      return "bg-blue-500";
-    case merchantVerificationStatus.approved:
-      return "bg-green-500";
-    case merchantVerificationStatus.rejected:
-      return "bg-red-500";
-  }
-  return "bg-amber-500";
-};
 export const toMerchantLoyaltyTypeShortTitle = (type) => {
   switch (type) {
     case merchantLoyaltyTypes.normal:

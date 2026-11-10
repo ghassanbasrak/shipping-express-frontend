@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import FileFieldInput from "./FileFieldInput";
 import ImageFieldInput from "./ImageFieldInput";
 import ImageInput from "./ImageInput";
+import FileInput from "./FileInput";
 import { MediaInputData, MediaInputProps, MediaInputTypes } from "./Utils";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "app/store/store";
@@ -164,6 +165,8 @@ function MediaInput(props: MediaInputProps) {
         return ImageFieldInput;
       case MediaInputTypes.fileField:
         return FileFieldInput;
+      case MediaInputTypes.file:
+        return FileInput;
       default:
         return ImageInput;
     }

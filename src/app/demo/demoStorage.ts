@@ -166,6 +166,11 @@ export async function handleDemoStorage(
   const { db, path, data } = context;
   const method = context.method.toUpperCase(),
     userId = getDemoUser().id;
+  const paymentRead = /^v1\/payments\/([^/]+)$/.exec(path);
+  if (paymentRead && method === "GET") {
+    const payment = db.storage.payments.find(row => row.id === paymentRead[1]);
+    if (payment) return payment.userId === userId ? [200, payment] : fail("Payment not found", 404);
+  }
   const paymentStatus = /^v1\/payments\/([^/]+)\/check-status$/.exec(path);
   if (
     !path.startsWith("v1/storage/") &&

@@ -1,9 +1,56 @@
 const locale = {
+  INCOMPLETE_RETURN:
+    "This payment return is incomplete. Open your payment history or return from checkout after completing payment.",
+  USE_BANK_INSTEAD: "Use bank transfer instead",
+  CHOOSE_METHOD: "How would you like to add funds?",
+  ONLINE_PAYMENT: "Pay Online",
+  ONLINE_DESCRIPTION: "Pay securely online. Payment is checked automatically.",
+  BANK_TRANSFER: "Bank transfer",
+  BANK_DESCRIPTION:
+    "Submit your transfer for admin review. Funds are credited after approval.",
+  GROSS_ONLINE_AMOUNT: "Total to pay (including VAT)",
+  GROSS_TRANSFER_AMOUNT: "Amount transferred (including VAT)",
+  TOPUP_BALANCE_HINT:
+    "The entered total includes 15% VAT. Wallet credit excludes VAT; review the amounts below.",
+  TRANSFER_INSTRUCTIONS:
+    "Transfer to the Ashamco bank account provided by the team, then enter your transfer reference or attach the receipt. Do not submit until the transfer has been made.",
+  TRANSFER_REFERENCE: "Transfer reference",
+  TRANSFER_RECEIPT: "Transfer receipt (optional)",
+  TRANSFER_NOTES: "Notes (optional)",
+  TRANSFER_PROOF_REQUIRED: "Enter the transfer reference or attach a receipt.",
+  ONLINE_CREDIT_HINT:
+    "The checkout shows the final server-calculated total before you pay. Only server-verified successful payments add wallet funds.",
+  BANK_CREDIT_HINT:
+    "The administrator checks your transfer. Approval credits the amount excluding VAT; rejection does not change your wallet.",
+  SUBMIT_BANK_TRANSFER: "Submit for bank-transfer review",
+  CONTINUE_MOYASAR: "Pay Online",
+  ONLINE_HISTORY: "Online payment history",
+  BANK_HISTORY: "Bank transfer history",
+  MOYASAR_CHECKOUT: "Pay Online",
+  SERVER_TOTAL_HINT:
+    "Review these final amounts returned by the system before paying.",
+  CHECKING_PAYMENT: "Checking your saved payment…",
+  PAYMENT_STATUS: "View payment status",
+  ACCEPTED_CHECK_HISTORY:
+    "The request was accepted. Check its history before starting another request.",
+  POSITIVE_AMOUNT: "Enter an amount greater than zero",
+  TWO_DECIMALS: "Use at most two decimal places",
+  CREDIT_PROCESSING:
+    "Payment received. Wallet credit is still processing; check your balance again shortly.",
+  SERVER_CONFIRMED:
+    "Payment confirmed by the server. Your wallet balance has been refreshed where available.",
+  PAYMENT_CHECK_HINT:
+    "Pending payments do not credit your wallet. Return from checkout or refresh the status after completing payment.",
+  RETRY_PAYMENT_CHECK: "Refresh payment status",
+  TOPUP_CREATE_DESCRIPTION:
+    "Choose online payment or bank transfer, then review the tax and wallet credit.",
+  CREATE_ERROR:
+    "Could not complete the request. Your details have been kept. Check history if the connection was interrupted.",
+
   WALLET_AND_PAYMENTS: "WALLET & PAYMENTS",
   TOPUP_LIST_DESCRIPTION:
     "Track payments and keep your wallet funding in view.",
-  TOPUP_CREATE_DESCRIPTION:
-    "Choose an amount and continue to secure checkout to fund your wallet.",
+
   TOPUP_DETAIL_DESCRIPTION:
     "Review your payment details and checkout status in one place.",
   TOPUP_FILTERS: "Filters",
@@ -70,8 +117,7 @@ const locale = {
   TOPUP_BALANCE: "Topup Balance",
   TOPUP_BALANCE_DETAILS: "Topup Balance Details",
   TOPUP_BALANCE_AMOUNT: "Topup balance amount",
-  TOPUP_BALANCE_HINT:
-    "The topup amount that is entered is the amount that will be added to your electronic wallet, and the tax value will not be deducted from it or added to it",
+
   SUBTOTAL: "Subtotal",
   PAYMENT_METHOD_FEES: "Payment method fees",
   TAX: "Tax",
@@ -183,8 +229,7 @@ const locale = {
   LOAD_ERROR: "Could not load top-up requests",
   USER_LOOKUP_ERROR: "Could not load merchant details",
   FILTER_REQUESTS: "Filter top-ups",
-  CREATE_ERROR:
-    "Could not create the checkout. Your amount has been kept; please retry.",
+
   RECREATE_ERROR: "Could not recreate checkout. Please retry.",
   CHECKOUT_LINK_ERROR:
     "The checkout was saved but its payment link is unavailable. Retry checkout or return to your top-up history.",

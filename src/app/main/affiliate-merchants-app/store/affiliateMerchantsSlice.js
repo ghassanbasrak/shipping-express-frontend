@@ -7,7 +7,6 @@ export const affiliateMerchantsInitialState = {
   searchText: "",
   balanceTypeFilter: "all",
   typeFilter: "all",
-  verificationStatusFilter: "all",
   balanceSorting: "",
   codBalanceSorting: "",
   statusFilter: "all",
@@ -39,10 +38,6 @@ export const affiliateMerchantsAppSlice = createSlice({
     },
     setAffiliateMerchantsTypeFilter: (state, action) => {
       state.typeFilter = valueOf(action.payload) || "all";
-      state.page = 0;
-    },
-    setAffiliateMerchantsVerificationStatusFilter: (state, action) => {
-      state.verificationStatusFilter = valueOf(action.payload) || "all";
       state.page = 0;
     },
     setAffiliateMerchantsBalanceSorting: (state, action) => {
@@ -85,7 +80,6 @@ export const {
   setAffiliateMerchantsSearchText,
   setAffiliateMerchantsBalanceTypeFilter,
   setAffiliateMerchantsTypeFilter,
-  setAffiliateMerchantsVerificationStatusFilter,
   setAffiliateMerchantsBalanceSorting,
   setAffiliateMerchantsCodBalanceSorting,
   setAffiliateMerchantsStatusFilter,

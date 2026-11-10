@@ -15,7 +15,6 @@ import ShippingCompaniesAppConfig from "../main/shipping-companies-app/ShippingC
 import StatesAppConfig from "../main/states-app/StatesAppConfig";
 import CitiesAppConfig from "../main/cities-app/CitiesAppConfig";
 
-import PlansAppConfig from "../main/plans-app/PlansAppConfig";
 import AdminsAppConfig from "../main/admins-app/AdminsAppConfig";
 
 import CouponsAppConfig from "../main/coupons-app/CouponsAppConfig";
@@ -71,7 +70,6 @@ const routeConfigs: FuseRouteConfigsType = [
   StatesAppConfig,
   CitiesAppConfig,
   ShippingCompaniesAppConfig,
-  PlansAppConfig,
   AdminsAppConfig,
   CouponsAppConfig,
   AlertsAppConfig,

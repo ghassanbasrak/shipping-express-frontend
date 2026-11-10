@@ -6,7 +6,7 @@ import FeatureHeader, {
 } from "app/shared-components/feature-header/FeatureHeader";
 import { Alert, Button, Input } from "@mui/material";
 
-import { useParams, useLocation } from "react-router-dom";
+import { Link, useParams, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import FuseSvgIcon from "@fuse/core/FuseSvgIcon";
@@ -61,6 +61,7 @@ export default function BankTransfersHeader() {
               : t("BANK_TRANSFERS")}
           </FeatureHeaderHeading>
         </div>
+        {user.role === "user" && <Button component={Link} to="/topup-requests/all/new?method=bankTransfer" variant="contained" color="primary">{t("ADD_BANK_TRANSFER")}</Button>}
       </FeatureHeaderRow>
       <FeatureHeaderToolbar
         search={

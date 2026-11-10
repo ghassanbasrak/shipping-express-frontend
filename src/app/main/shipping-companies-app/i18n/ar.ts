@@ -66,7 +66,6 @@ const locale = {
   CASH_ON_DELIVERY_SERVICE_PRICE: "سعر خدمة الدفع عند الإستلام",
   APPEARANCE_CONFIG: "إعدادات المظهر",
   SUMMARY: "ملخّص",
-  PACKAGE_REQUESTS: "طلبات المغلّفات",
   totalEarnings: "الأرباح الإجمالية",
   VIEW_SHIPMENTS: "عرض الشحنات",
   VIEW_PACKAGE_REQUESTS: "عرض طلبات المغلّفات",

@@ -55,3 +55,5 @@ Thumbs.db
 
 # Local browser test artifacts
 /test-results/
+/qa-browser-2026-11-10/
+/docs/

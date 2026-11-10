@@ -7,7 +7,6 @@ export const merchantsInitialState = {
   searchText: "",
   balanceTypeFilter: "all",
   typeFilter: "all",
-  verificationStatusFilter: "all",
   balanceSorting: "",
   codBalanceSorting: "",
   statusFilter: "all",
@@ -39,10 +38,6 @@ export const merchantsAppSlice = createSlice({
     },
     setMerchantsTypeFilter: (state, action) => {
       state.typeFilter = valueOf(action.payload) || "all";
-      state.page = 0;
-    },
-    setMerchantsVerificationStatusFilter: (state, action) => {
-      state.verificationStatusFilter = valueOf(action.payload) || "all";
       state.page = 0;
     },
     setMerchantsBalanceSorting: (state, action) => {
@@ -85,7 +80,6 @@ export const {
   setMerchantsSearchText,
   setMerchantsBalanceTypeFilter,
   setMerchantsTypeFilter,
-  setMerchantsVerificationStatusFilter,
   setMerchantsBalanceSorting,
   setMerchantsCodBalanceSorting,
   setMerchantsStatusFilter,

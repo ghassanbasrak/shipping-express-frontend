@@ -8,7 +8,7 @@ const locale = {
   GROUP_OVERVIEW: "نظرة عامة",
   GROUP_SHIPPING: "الشحن",
   GROUP_FINANCE: "المدفوعات والمالية",
-  GROUP_ACCOUNTS: "الحسابات والموافقات",
+  GROUP_ACCOUNTS: "الحسابات",
   GROUP_INSIGHTS: "التقارير والتسويق",
   GROUP_SETTINGS: "إعدادات الشحن",
   GROUP_ADMINISTRATION: "الإدارة",
@@ -36,7 +36,6 @@ const locale = {
 
   MERCHANT_STATISTICS: "ملخص حسابات التاجر",
 
-  PACKAGE_REQUESTS: "طلبات التغليف",
   AFFILIATE_WITHDRAW_REQUESTS: "طلبات سحب المسوقين",
   BANK_TRANSFERS: "التحويلات البنكية",
   APPLICATIONS: "التطبيقات",

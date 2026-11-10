@@ -100,6 +100,9 @@ export default function TopupRequestsHeader() {
               {t("TOPUP_BALANCE")}
             </Button>
           )}
+          <Button component={Link} variant="outlined" to={user.role === "user" ? "/bank-transfers/all" : `/bank-transfers/${filters.userIdFilter || "all"}`}>
+            {t("BANK_HISTORY")}
+          </Button>
           {canAdjustTopupBalance(user, filters.userIdFilter) && (
             <Button
               color="primary"

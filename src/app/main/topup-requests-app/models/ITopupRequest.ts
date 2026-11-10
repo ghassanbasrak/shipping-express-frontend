@@ -1,5 +1,4 @@
 import type { User } from "src/app/auth/user";
-import IPlan from "../../plans-app/models/IPlan";
 export default interface ITopupRequest {
   id: string;
   _id?: string;
@@ -21,11 +20,15 @@ export default interface ITopupRequest {
   paymentMethodId?: string;
   paymentMethodType?: string;
   isPlan?: boolean;
-  planId?: string;
-  plan?: IPlan;
-  paymentPlanId?: string;
-  paymentPlan?: IPlan;
+  storagePlanId?: string;
+  metadata?: ITopupPaymentMetadata;
   zohoCreditId?: string;
   createdAt?: string;
   updatedAt?: string;
+}
+
+export interface ITopupPaymentMetadata {
+  gateway?: string;
+  balanceUpdateFailed?: boolean;
+  [key: string]: unknown;
 }

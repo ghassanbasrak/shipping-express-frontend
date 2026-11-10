@@ -1,0 +1,152 @@
+.merchant-profile {
+  max-width: 1320px;
+  margin-inline: auto;
+}
+.mp-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: 20px;
+  padding: 32px;
+  color: #fff;
+  background: radial-gradient(ellipse at 88% 0%, #406789 0, transparent 58%),
+    linear-gradient(115deg, #152b41, #254559);
+  box-shadow: 0 12px 32px #16334d12;
+}
+.mp-hero-orbit {
+  position: absolute;
+  inset-inline-end: -65px;
+  top: -115px;
+  width: 360px;
+  height: 360px;
+  border: 1px solid #ffffff14;
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 48px #ffffff05,
+    0 0 0 96px #ffffff04;
+  z-index: -1;
+}
+.merchant-profile .mp-avatar {
+  width: 82px;
+  height: 82px;
+  border: 3px solid #ffffff35;
+  background: #ffffff18;
+  color: #fff;
+  font-size: 32px;
+  font-weight: 700;
+}
+.mp-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #c1d4df;
+}
+.mp-hero-subtitle {
+  color: #c1d4df;
+  margin-top: 10px;
+  font-size: 14px;
+}
+.mp-status,
+.mp-price-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  background: #ffffff12;
+  border: 1px solid #ffffff1f;
+}
+.mp-status {
+  color: #b6ecd3;
+}
+.mp-status > span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #8bd7b4;
+}
+.mp-status-blocked {
+  color: #ffd6d6;
+}
+.mp-status-blocked > span {
+  background: #f5aaaa;
+}
+.mp-price-badge {
+  color: #d4e4ed;
+}
+.merchant-profile .mp-hero-button {
+  border-color: #ffffff50;
+  color: #fff;
+  border-radius: 10px;
+  padding: 10px 16px;
+  flex-shrink: 0;
+}
+.merchant-profile .mp-hero-button:hover {
+  border-color: #fff;
+  background: #ffffff0e;
+}
+.mp-balance {
+  background-image: linear-gradient(125deg, #63839905, #63839900);
+}
+.mp-label {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--profile-muted, #697e8e);
+}
+.mp-description {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--profile-muted, #697e8e);
+}
+.mp-overline {
+  font-size: 11px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--profile-muted, #697e8e);
+}
+.mp-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
+  flex-shrink: 0;
+}
+.mp-icon-wallet {
+  background: #29916b12;
+  color: #208365;
+}
+.mp-icon-cod {
+  background: #477da612;
+  color: #457da4;
+}
+.mp-detail-icon {
+  padding-top: 2px;
+  color: #8299a9;
+}
+.merchant-profile dd {
+  font-size: 14px;
+}
+.dark .merchant-profile {
+  --profile-muted: #a9bbc9;
+}
+@media (max-width: 600px) {
+  .mp-hero {
+    padding: 24px;
+  }
+  .merchant-profile .mp-avatar {
+    width: 66px;
+    height: 66px;
+    font-size: 26px;
+  }
+  .merchant-profile .mp-hero-button {
+    align-self: flex-start;
+  }
+  .mp-hero-subtitle {
+    line-height: 1.8;
+  }
+}

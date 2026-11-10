@@ -1,3 +1,4 @@
+import type { MoyasarFormConfig } from "app/shared-components/moyasar-checkout/MoyasarCheckout";
 import { apiService as api } from "app/store/apiService";
 import type { User } from "src/app/auth/user";
 import ITopupRequest from "./models/ITopupRequest";
@@ -49,38 +50,17 @@ const TopupRequestsApi = api.enhanceEndpoints({ addTagTypes }).injectEndpoints({
       CreateTopupRequestApiArg
     >({
       query: (value) => ({
-        url: "v1/payments/paytabs",
+        url: "v1/payments/moyasar",
         method: "POST",
-        data: {
-          amount: value.amount,
-          total: value.total,
-          feeTotal: value.feeTotal,
-          taxTotal: value.taxTotal,
-          isPlan: false,
-          userId: value.userId,
-        },
+        data: { amount: value.amount },
       }),
       invalidatesTags: ["TopupRequests"],
-    }),
-    recreateTopupCheckout: build.mutation<CheckoutApiResponse, string>({
-      query: (id) => ({
-        url: `v1/payments/${id}/recreate-checkout`,
-        method: "POST",
-      }),
-      invalidatesTags: (_, __, id) => [
-        "TopupRequests",
-        { type: "TopupRequest", id },
-      ],
     }),
     checkTopupStatus: build.mutation<ITopupRequest, CheckTopupStatusApiArg>({
       query: (value) => ({
         url: `v1/payments/${value.id}/check-status`,
         method: "POST",
-        data: value.resourcePath
-          ? { resourcePath: value.resourcePath }
-          : value.transactionId
-            ? { resourcePath: `/v1/checkouts/${value.transactionId}/payment` }
-            : {},
+        data: { moyasarPaymentId: value.moyasarPaymentId },
       }),
       invalidatesTags: (_, __, value) => [
         "TopupRequests",
@@ -110,19 +90,12 @@ export type GetTopupRequestsApiArg = {
   dateFromInvalid?: boolean;
   dateToInvalid?: boolean;
 };
-export type CheckoutApiResponse = Partial<ITopupRequest> & { link?: string };
-export type CreateTopupRequestApiArg = {
-  amount: number;
-  total: number;
-  feeTotal: number;
-  taxTotal: number;
-  userId: string;
+export type CheckoutApiResponse = {
+  payment: ITopupRequest;
+  checkout: MoyasarFormConfig;
 };
-export type CheckTopupStatusApiArg = {
-  id: string;
-  resourcePath?: string;
-  transactionId?: string;
-};
+export type CreateTopupRequestApiArg = { amount: number };
+export type CheckTopupStatusApiArg = { id: string; moyasarPaymentId: string };
 export const {
   useGetTopupRequestsQuery,
   useLazyGetTopupRequestsQuery,
@@ -130,7 +103,6 @@ export const {
   useLazyGetTopupRequestQuery,
   useGetTopupRequestsUserQuery,
   useCreateTopupRequestMutation,
-  useRecreateTopupCheckoutMutation,
   useCheckTopupStatusMutation,
 } = TopupRequestsApi;
 export default TopupRequestsApi;

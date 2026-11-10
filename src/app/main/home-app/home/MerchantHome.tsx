@@ -222,12 +222,6 @@ export default function MerchantHome() {
               description={t("MY_ACCOUNT_HINT")}
               icon="verified_user"
             />
-            <QuickAction
-              to="/package-requests/all"
-              title={t("PACKAGING_REQUESTS")}
-              description={t("PACKAGING_HINT")}
-              icon="inventory_2"
-            />
           </div>
         </OverviewSection>
       </div>

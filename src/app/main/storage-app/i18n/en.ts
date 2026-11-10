@@ -24,7 +24,7 @@ const locale = {
   NATIVE_FEATURES_HINT:
     "Enter one storage type per line, such as dry, standard or chilled. Merchants can select only these exact values.",
   NATIVE_SUBSCRIBE_HINT:
-    "Continue to secure card payment through Moyasar. Review the total including tax before paying. Your subscription activates after payment verification.",
+    "Continue to secure online payment. Review the total including tax before paying. Your subscription activates after payment verification.",
   NATIVE_PICKUP_HINT:
     "Use the warehouse pickup contact and shipping address in the sender section.",
   EXCLUDES_TAX: "excluding tax",

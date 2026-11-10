@@ -1,6 +1,7 @@
 import { Dispatch } from "@reduxjs/toolkit";
 
 export enum MediaInputTypes {
+  file = "file",
   image = "image",
   imageField = "imageField",
   fileField = "fileField",
@@ -117,6 +118,9 @@ export interface FileFieldInputProps {
 }
 
 export interface MediaInputProps {
+  /** Options for the box-style file variant. */
+  accept?: string;
+  onBusy?: (busy: boolean) => void;
   type?: MediaInputTypes;
   name: string;
   label: string;

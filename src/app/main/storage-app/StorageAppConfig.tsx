@@ -8,7 +8,7 @@ const StorageList = lazy(() => import("./lists/StorageList"));
 const Warehouse = lazy(() => import("./warehouse/Warehouse"));
 const StoragePlan = lazy(() => import("./plan/StoragePlan"));
 const SupplyRequest = lazy(() => import("./supply/SupplyRequest"));
-const StoragePaymentResult = lazy(() => import("./StoragePaymentResult"));
+const StoragePaymentResult = lazy(() => import("../topup-requests-app/PaymentReturn"));
 i18next.addResourceBundle("en", "storageApp", en);
 i18next.addResourceBundle("ar", "storageApp", ar);
 const StorageAppConfig: FuseRouteConfigType = {
@@ -16,7 +16,6 @@ const StorageAppConfig: FuseRouteConfigType = {
   routes: [
     { path: "storage", element: <StorageHome /> },
     { path: "storage/payment-result", element: <StoragePaymentResult /> },
-    { path: "wallet/payment-result", element: <StoragePaymentResult /> },
     { path: "storage/warehouses", element: <StorageList kind="warehouses" /> },
     { path: "storage/warehouses/:warehouseId/*", element: <Warehouse /> },
     { path: "storage/plans", element: <StorageList kind="plans" /> },

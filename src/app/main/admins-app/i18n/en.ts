@@ -75,7 +75,6 @@ const locale = {
   PAYMENTS: "Topup Balance Requests",
   WITHDRAW_REQUESTS: "Withdraw Requests",
   BANK_TRANSFERS: "Bank Transfers",
-  PACKAGE_REQUESTS: "Package Requests",
   CANCEL_SHIPMENT_REQUESTS: "Cancel Shipment Requests",
   MERCHANTS: "Merchants",
   MERCHANT_STATISTICS: "Merchant Statistics",

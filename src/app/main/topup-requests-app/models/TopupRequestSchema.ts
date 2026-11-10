@@ -2,16 +2,44 @@ import { z } from "zod";
 import { TFunction } from "i18next";
 import { requiredNumberValidation } from "src/app/main/utils/validations";
 import { topupMinimumExceptions } from "../Utils";
-export type TopupRequestForm = { amount: number };
+export type TopupRequestForm = {
+  amount: number;
+  method: "online" | "bankTransfer";
+  transactionReference: string;
+  transactionImageUrl: string;
+  description: string;
+};
 export const topupRequestSchema = (t: TFunction, userId: string) =>
-  z.object({
-    amount: requiredNumberValidation({ error: t("REQUIRED_FIELD") })
-      .finite()
-      .superRefine((amount, context) => {
-        if (!topupMinimumExceptions.includes(userId) && amount < 100)
-          context.addIssue({
-            code: "custom",
-            message: t("SHOULD_BE_MORE_THAN_100"),
-          });
-      }),
-  });
+  z
+    .object({
+      amount: requiredNumberValidation({ error: t("REQUIRED_FIELD") })
+        .finite()
+        .positive(t("POSITIVE_AMOUNT"))
+        .refine(
+          (value) => Math.abs(value * 100 - Math.round(value * 100)) < 1e-7,
+          t("TWO_DECIMALS"),
+        )
+        .superRefine((amount, context) => {
+          if (!topupMinimumExceptions.includes(userId) && amount < 100)
+            context.addIssue({
+              code: "custom",
+              message: t("SHOULD_BE_MORE_THAN_100"),
+            });
+        }),
+      method: z.enum(["online", "bankTransfer"]),
+      transactionReference: z.string().trim(),
+      transactionImageUrl: z.union([z.literal(""), z.string().url()]),
+      description: z.string().trim(),
+    })
+    .superRefine((values, context) => {
+      if (
+        values.method === "bankTransfer" &&
+        !values.transactionReference &&
+        !values.transactionImageUrl
+      )
+        context.addIssue({
+          code: "custom",
+          path: ["transactionReference"],
+          message: t("TRANSFER_PROOF_REQUIRED"),
+        });
+    });

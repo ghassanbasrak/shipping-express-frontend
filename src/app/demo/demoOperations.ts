@@ -619,9 +619,6 @@ function dashboard(db: Db, ctx: Context): Reply | null {
           .length,
         pending_payments: db.payments.filter((s) => s.status === "pending")
           .length,
-        merchants_need_approval: db.users.filter(
-          (u) => u.role === "user" && u.verificationStatus === "pending",
-        ).length,
       },
     ];
   if (path === "v1/admin/dashboard/recent-activity")
@@ -700,20 +697,6 @@ export async function handleDemoOperations(
       ];
     }
     const user = account(db, id);
-    if (action === "add-payment-plan" || action === "cancel-payment-plan") {
-      if (!staff()) return error("Staff access required", 403);
-      if (!user) return error("Account not found", 404);
-      const plan = db.plans.find((r) => r.id === data.paymentPlanId);
-      if (action === "add-payment-plan" && !plan)
-        return error("Plan not found", 404);
-      user.paymentPlanId = plan?.id;
-      user.paymentPlan = plan;
-      user.loyaltyType = plan ? "custom" : "normal";
-      user.prices = plan ? plan.prices.map((r: DemoRow) => ({ ...r })) : [];
-      user.updatedAt = now();
-      save();
-      return [200, user];
-    }
     if (method === "post" && !id) {
       if (!staff()) return error("Staff access required", 403);
       const created = {
@@ -727,7 +710,6 @@ export async function handleDemoOperations(
         isAffiliate: false,
         isBlocked: false,
         isRegistered: true,
-        verificationStatus: "pending",
         createdAt: now(),
         updatedAt: now(),
       };
@@ -797,50 +779,16 @@ export async function handleDemoOperations(
       : [200, paginate(rows, p)];
   }
   if (resource === "payments") {
-    if (id === "paytabs" && method === "post") {
-      const userId = owner(data.userId);
-      if (!account(db, userId) || !(Number(data.amount) > 0))
-        return error("Invalid top-up");
-      const payment = {
-        ...data,
-        id: uid(),
-        userId,
-        status: "pending",
-        platform: "demo",
-        isPlan: false,
-        transactionId: uid(),
-        reference: `DEMO-PAY-${Date.now()}`,
-        createdAt: now(),
-        updatedAt: now(),
-      };
-      db.payments.unshift(payment);
-      save();
-      // Checkout stays in the local app and uses the existing callback and status workflow.
-      return [
-        201,
-        {
-          ...payment,
-          link: `${window.location.origin}/payment/${payment.userId}/${payment.id}/success?paymentId=${encodeURIComponent(payment.transactionId)}`,
-        },
-      ];
-    }
-    if (id === "payment-status" && method === "post") {
-      const payment = db.payments.find(
-        (r) => r.transactionId === data.key && allowed(r),
-      );
-      return payment
-        ? [
-            200,
-            {
-              Data: {
-                CustomerReference: payment.id,
-                InvoiceStatus: "Paid",
-                InvoiceId: payment.transactionId,
-                InvoiceTransactions: [],
-              },
-            },
-          ]
-        : error("Payment not found", 404);
+    if (id === "moyasar" && method === "post") {
+      const userId = getDemoUser().id;
+      if (staff() || !account(db, userId) || !(Number(data.amount) > 0)) return error("Invalid top-up");
+      const amount = Number(data.amount), total = round(amount * 1.15);
+      const payment = { id: uid(), userId, amount, taxTotal: round(total - amount), feeTotal: 0, total,
+        status: "pending", paymentMethodType: "moyasar", metadata: { gateway: "moyasar" },
+        transactionId: uid(), createdAt: now(), updatedAt: now() };
+      db.payments.unshift(payment); save();
+      return [201, { payment, checkout: { publishable_api_key: "demo", amount: Math.round(total * 100), currency: "SAR",
+        description: `Wallet top-up ${payment.id}`, callback_url: `${window.location.origin}/wallet/payment-result?paymentId=${encodeURIComponent(payment.id)}`, methods: ["creditcard"] } }];
     }
     const payment = db.payments.find((r) => r.id === id);
     if (!id && method === "get")
@@ -858,29 +806,9 @@ export async function handleDemoOperations(
     if (!allowed(payment)) return error("Not available for this account", 403);
     if (method === "get")
       return [200, { ...payment, user: account(db, payment.userId) }];
-    if (method === "post" && action === "recreate-checkout") {
-      if (payment.status === "success")
-        return error("Payment already completed", 409);
-      return [
-        200,
-        {
-          ...payment,
-          link: `${window.location.origin}/payment/${payment.userId}/${payment.id}/success?paymentId=${encodeURIComponent(payment.transactionId)}`,
-        },
-      ];
-    }
-    if (
-      (method === "post" && action === "check-status") ||
-      method === "patch"
-    ) {
-      if (action === "check-status" || data.status === "success")
-        completePayment(db, payment);
-      else if (!payment.balanceApplied)
-        Object.assign(payment, {
-          status: data.status || payment.status,
-          updatedAt: now(),
-        });
-      save();
+    if (method === "post" && action === "check-status") {
+      if (staff() || data.moyasarPaymentId !== "demo-moyasar-" + payment.id) return error("Invalid Moyasar payment");
+      completePayment(db, payment); save();
       return [200, { ...payment, user: account(db, payment.userId) }];
     }
     return error("Unsupported payment action", 405);

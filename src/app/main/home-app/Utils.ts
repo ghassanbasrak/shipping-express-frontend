@@ -65,11 +65,4 @@ export const staffWorkspaceLinks = [
     icon: "request_quote",
     path: "/withdraw-requests/all",
   },
-  {
-    feature: "package-requests",
-    title: "PACKAGING_REQUESTS",
-    description: "STAFF_PACKAGING",
-    icon: "inventory_2",
-    path: "/package-requests/all",
-  },
 ];

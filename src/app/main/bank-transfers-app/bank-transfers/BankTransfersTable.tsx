@@ -49,6 +49,7 @@ export default function BankTransfersTable() {
     id: string;
     userId?: string;
     bank?: string;
+    amount: number;
     status: string;
     next: "approved" | "rejected";
   }>();
@@ -102,6 +103,7 @@ export default function BankTransfersTable() {
       id: row.id,
       userId: row.userId,
       bank: row.bank,
+      amount: row.amount,
       status: row.status,
       next,
     });
@@ -144,17 +146,6 @@ export default function BankTransfersTable() {
       type: TableDataTypes.money,
       flex: 0.7,
       minWidth: 70,
-    },
-    {
-      id: "paymentPlan",
-      label: t("PLAN"),
-      type: TableDataTypes.normal,
-      valueGetter: (row) => row.paymentPlan?.name,
-      chip: true,
-      toChipTitle: (value) => value,
-      toChipColor: () => "bg-blue-500",
-      flex: 1,
-      minWidth: 100,
     },
     {
       id: "status",

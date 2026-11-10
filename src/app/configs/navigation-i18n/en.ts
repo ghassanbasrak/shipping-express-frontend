@@ -8,7 +8,7 @@ const locale = {
   GROUP_OVERVIEW: "Overview",
   GROUP_SHIPPING: "Shipping",
   GROUP_FINANCE: "Payments & Finance",
-  GROUP_ACCOUNTS: "Accounts & Approvals",
+  GROUP_ACCOUNTS: "Accounts",
   GROUP_INSIGHTS: "Reports & Marketing",
   GROUP_SETTINGS: "Shipping Settings",
   GROUP_ADMINISTRATION: "Administration",
@@ -36,7 +36,6 @@ const locale = {
 
   MERCHANT_STATISTICS: "Merchant Statistics",
 
-  PACKAGE_REQUESTS: "Package Requests",
   AFFILIATE_WITHDRAW_REQUESTS: "Affiliate Withdraw Requests",
   BANK_TRANSFERS: "Bank Transfers",
   APPLICATIONS: "Applications",

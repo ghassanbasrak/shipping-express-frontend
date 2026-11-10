@@ -69,9 +69,7 @@ const locale = {
   NEXT_STEPS: "Keep your business moving",
   NEXT_STEPS_HINT: "Useful services for your daily shipping work",
   MY_ACCOUNT: "My account",
-  MY_ACCOUNT_HINT: "View your details, documents and pricing",
-  PACKAGING_REQUESTS: "Packaging supplies",
-  PACKAGING_HINT: "Request supplies for your next deliveries",
+  MY_ACCOUNT_HINT: "View your details and pricing",
   STAFF_WORKSPACE: "Team workspace",
   STAFF_INTRO:
     "Your daily work, organized around the access assigned to your account.",
@@ -89,6 +87,5 @@ const locale = {
   STAFF_COD: "Review cash on delivery activity",
   WITHDRAWALS: "Withdrawal requests",
   STAFF_REQUESTS: "Review withdrawal requests",
-  STAFF_PACKAGING: "Review packaging requests",
 };
 export default locale;

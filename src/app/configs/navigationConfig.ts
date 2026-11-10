@@ -171,7 +171,7 @@ const navigationConfig: FuseNavItemType[] = [
   },
   {
     id: "group-accounts",
-    title: "Accounts & Approvals",
+    title: "Accounts",
     translate: "GROUP_ACCOUNTS",
     type: "group",
     children: [
@@ -261,15 +261,6 @@ const navigationConfig: FuseNavItemType[] = [
         type: "item",
         icon: "heroicons-outline:truck",
         url: "/shipping-companies",
-        auth: authRoles.staff,
-      },
-      {
-        id: "plans",
-        title: "Payment Plans",
-        translate: "PAYMENT_PLANS",
-        type: "item",
-        icon: "heroicons-outline:credit-card",
-        url: "/plans",
         auth: authRoles.staff,
       },
       {

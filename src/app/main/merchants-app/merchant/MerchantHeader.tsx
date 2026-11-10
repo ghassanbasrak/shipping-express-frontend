@@ -35,7 +35,7 @@ export default function MerchantHeader({
           className="flex items-center self-start gap-4 text-12 font-medium hover:underline"
           component={Link}
           role="button"
-          to={self ? "/profile" : "/merchants"}
+          to={self ? (view ? "/home" : "/profile") : "/merchants"}
           color="inherit"
         >
           <FuseSvgIcon size={20}>
@@ -52,15 +52,16 @@ export default function MerchantHeader({
         <div className="flex-1 min-w-0">
           <FeatureHeaderHeading
             feature="merchants-app"
+            description={self ? t("PROFILE_HEADER_DESCRIPTION") : undefined}
             leading={
-              view && (
+              !view && (
                 <Avatar src={image} alt={title}>
                   {title?.[0]}
                 </Avatar>
               )
             }
           >
-            {title}
+            {view ? t(self ? "MY_ACCOUNT" : "MERCHANT_PROFILE") : title}
           </FeatureHeaderHeading>
         </div>
         <FeatureHeaderActions>
