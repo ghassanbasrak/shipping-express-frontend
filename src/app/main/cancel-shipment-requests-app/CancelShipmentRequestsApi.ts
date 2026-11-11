@@ -1,8 +1,8 @@
 import { apiService as api } from "app/store/apiService";
 import type { User } from "src/app/auth/user";
-import type IAdmin from "../admins-app/models/IAdmin";
-
+import ICancelShipmentRequest from "./models/ICancelShipmentRequest";
 export const addTagTypes = [
+  "StorageProducts",
   "CancelShipmentRequests",
   "Shipments",
   "Shipment",
@@ -12,7 +12,6 @@ export const addTagTypes = [
   "MerchantDues",
   "MerchantDuesSummary",
 ] as const;
-
 const CancelShipmentRequestsApi = api
   .enhanceEndpoints({ addTagTypes })
   .injectEndpoints({
@@ -37,7 +36,9 @@ const CancelShipmentRequestsApi = api
             ...(filters.updatedByIdFilter && filters.updatedByIdFilter !== "all"
               ? { updatedById: filters.updatedByIdFilter }
               : {}),
-            ...(filters.dateFromFilter ? { dateFrom: filters.dateFromFilter } : {}),
+            ...(filters.dateFromFilter
+              ? { dateFrom: filters.dateFromFilter }
+              : {}),
             ...(filters.dateToFilter ? { dateTo: filters.dateToFilter } : {}),
           },
         }),
@@ -47,7 +48,7 @@ const CancelShipmentRequestsApi = api
         query: (id) => ({ url: `v1/users/${id}` }),
       }),
       setCancelShipmentRequestStatus: build.mutation<
-        CancelShipmentRequestPreview,
+        ICancelShipmentRequest,
         SetCancelShipmentRequestStatusApiArg
       >({
         query: (value) => ({
@@ -63,6 +64,7 @@ const CancelShipmentRequestsApi = api
                 "Shipments",
                 "ShipmentSummary",
                 "ShipmentAccount",
+                "StorageProducts",
                 "Transactions",
                 "MerchantDues",
                 "MerchantDuesSummary",
@@ -74,28 +76,8 @@ const CancelShipmentRequestsApi = api
     }),
     overrideExisting: false,
   });
-
-// Read-only API projections until shipments-app owns the full shipment entity.
-export type CancellationShipmentPreview = {
-  id: string;
-  trackingNumber?: string;
-  trackingUrl?: string;
-};
-export type CancelShipmentRequestPreview = {
-  id: string;
-  type?: string;
-  status?: string;
-  userId?: string;
-  user?: User;
-  updatedById?: string;
-  updatedBy?: IAdmin;
-  shipmentId?: string;
-  shipment?: CancellationShipmentPreview;
-  createdAt?: string;
-  updatedAt?: string;
-};
 export type GetCancelShipmentRequestsApiResponse = {
-  results: CancelShipmentRequestPreview[];
+  results: ICancelShipmentRequest[];
   total: number;
 };
 export type GetCancelShipmentRequestsApiArg = {
@@ -107,6 +89,9 @@ export type GetCancelShipmentRequestsApiArg = {
   updatedByIdFilter?: string;
   dateFromFilter?: string;
   dateToFilter?: string;
+  dateFromInvalid?: boolean;
+  dateToInvalid?: boolean;
+  instanceKey?: string;
 };
 export type SetCancelShipmentRequestStatusApiArg = {
   id: string;

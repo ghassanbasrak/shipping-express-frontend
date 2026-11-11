@@ -21,6 +21,7 @@ function TableActionsMenu<T extends object>({
   return (
     <>
       <IconButton
+        color="primary"
         className="-ms-8 p-0 w-20 h-32"
         size="small"
         aria-label="More"

@@ -1,4 +1,4 @@
-import { styled } from "@mui/material/styles";
+import { styled, Theme } from "@mui/material/styles";
 import AppContext from "app/AppContext";
 import { lazy, memo, ReactNode, Suspense, useContext } from "react";
 import { useRoutes } from "react-router-dom";
@@ -15,7 +15,19 @@ import RightSideLayout1 from "./components/RightSideLayout1";
 const FuseDialog = lazy(() => import("@fuse/core/FuseDialog/FuseDialog"));
 
 const Root = styled("div")(
-  ({ config }: { config: Layout1ConfigDefaultsType }) => ({
+  ({
+    config,
+    theme,
+  }: {
+    config: Layout1ConfigDefaultsType;
+    theme?: Theme;
+  }) => ({
+    backgroundColor: theme.palette.background.default,
+    backgroundImage: [
+      "radial-gradient(900px 420px at 100% -5%, rgba(124, 77, 255, 0.10), transparent 60%)",
+      "radial-gradient(800px 420px at 0% 105%, rgba(44, 94, 245, 0.10), transparent 60%)",
+    ].join(", "),
+    backgroundAttachment: "fixed",
     ...(config.mode === "boxed" && {
       clipPath: "inset(0)",
       maxWidth: `${config.containerWidth}px`,

@@ -159,6 +159,8 @@ export function ResendProfileCode({
       {error && <Alert severity="error">{t("ERROR")}</Alert>}
       <AuthField name="code" label={t("CODE")} />
       <Button
+        color="primary"
+        variant="outlined"
         disabled={loading || challenge.seconds > 0}
         onClick={async () => {
           setLoading(true);
@@ -183,6 +185,8 @@ export function ResendProfileCode({
         {t("RESEND")} {challenge.seconds > 0 && `(${challenge.seconds})`}
       </Button>
       <Button
+        color="primary"
+        variant="outlined"
         onClick={() => {
           challenge.clear();
           setValue("code", "");

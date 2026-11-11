@@ -76,7 +76,6 @@ const locale = {
   WITHDRAW_REQUESTS: "Withdraw Requests",
   BANK_TRANSFERS: "Bank Transfers",
   PACKAGE_REQUESTS: "Package Requests",
-  VERIFICATION_REQUESTS: "Verification Requests",
   CANCEL_SHIPMENT_REQUESTS: "Cancel Shipment Requests",
   MERCHANTS: "Merchants",
   MERCHANT_STATISTICS: "Merchant Statistics",
@@ -92,7 +91,7 @@ const locale = {
   EMPLOYEE: "Employee",
   ADMIN_MESSAGE: "Has all permissions in all features",
   EMPLOYEE_MESSAGE:
-    "Employee with access to operational features except Verification Requests, Admins, Coupons, Plans, Shipping Companies, and Applications",
+    "Employee with access to operational features except Admins, Coupons, Plans, Shipping Companies, and Applications",
   ADMIN_PERMISSIONS: "Admin/Employee Permissions",
   NO_FEATURES: "No Features",
   ACCESS_OPTIONS: "Access Options",

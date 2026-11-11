@@ -1,94 +1,151 @@
 import { apiService as api } from "app/store/apiService";
-
-export const dashboardTagTypes = ["DashboardOverview"] as const;
-const DashboardApi = api
-  .enhanceEndpoints({ addTagTypes: dashboardTagTypes })
-  .injectEndpoints({
-    endpoints: (build) => ({
-      getDashboardActiveMerchants: build.query<ActiveMerchantsResponse, DashboardFilters>({
-        query: (filters) => ({
-          url: "v1/admin/merchants/active-summary",
-          params: periodAndCarrier(filters),
-        }),
-        providesTags: ["DashboardOverview"],
+import IShipmentFlow from "./models/IShipmentFlow";
+import IDashboardMerchant from "./models/IDashboardMerchant";
+export const addTagTypes = ["DashboardOverview"] as const;
+const DashboardApi = api.enhanceEndpoints({ addTagTypes }).injectEndpoints({
+  endpoints: (build) => ({
+    getDashboardActiveMerchants: build.query<
+      GetActiveMerchantsResponse,
+      DashboardFilters
+    >({
+      query: (f) => ({
+        url: "v1/admin/merchants/active-summary",
+        params: {
+          period: f.period,
+          ...(f.companyId ? { companyId: f.companyId } : {}),
+        },
       }),
-      getDashboardShipmentsTotal: build.query<ShipmentsTotalResponse, DashboardShipmentFilters>({
-        query: (filters) => ({
-          url: "v1/shipments/admin/shipments/total-summary",
-          params: {
-            ...periodAndCarrier(filters),
-            ...(filters.status && filters.status !== "all" ? { status: filters.status } : {}),
-          },
-        }),
-        providesTags: ["DashboardOverview"],
-      }),
-      getDashboardRevenue: build.query<RevenueResponse, DashboardFilters>({
-        query: (filters) => ({
-          url: "v1/admin/revenue/summary",
-          params: periodAndCarrier(filters),
-        }),
-        providesTags: ["DashboardOverview"],
-      }),
-      getDashboardGrowth: build.query<GrowthResponse, DashboardFilters>({
-        query: (filters) => ({
-          url: "v1/admin/revenue/growth",
-          params: periodAndCarrier(filters),
-        }),
-        providesTags: ["DashboardOverview"],
-      }),
-      getDashboardFlow: build.query<ShipmentFlowResponse, DashboardFlowFilters>({
-        query: (filters) => ({
-          url: "v1/shipments/admin/shipments/process-flow",
-          params: { ...periodAndCarrier(filters), types: filters.types.join(",") },
-        }),
-        providesTags: ["DashboardOverview"],
-      }),
-      getDashboardTopMerchants: build.query<TopMerchantsResponse, TopMerchantFilters>({
-        query: (filters) => ({
-          url: "v1/admin/merchants/top-performance",
-          params: { period: filters.period, sortBy: filters.sortBy, limit: filters.limit },
-        }),
-        providesTags: ["DashboardOverview"],
-      }),
-      getDashboardAlerts: build.query<DashboardAlertsResponse, { period: string }>({
-        query: (filters) => ({
-          url: "v1/admin/dashboard/alerts",
-          params: { period: filters.period },
-        }),
-        providesTags: ["DashboardOverview"],
-      }),
-      getDashboardActivity: build.query<DashboardActivityResponse, { time_filter: string }>({
-        query: (filters) => ({
-          url: "v1/admin/dashboard/recent-activity",
-          params: { time_filter: filters.time_filter },
-        }),
-        providesTags: ["DashboardOverview"],
-      }),
+      providesTags: ["DashboardOverview"],
     }),
-    overrideExisting: false,
-  });
-
-function periodAndCarrier(filters: DashboardFilters) {
-  return {
-    period: filters.period,
-    ...(filters.companyId ? { companyId: filters.companyId } : {}),
-  };
-}
+    getDashboardShipmentsTotal: build.query<
+      GetShipmentsTotalResponse,
+      DashboardShipmentFilters
+    >({
+      query: (f) => ({
+        url: "v1/shipments/admin/shipments/total-summary",
+        params: {
+          period: f.period,
+          ...(f.companyId ? { companyId: f.companyId } : {}),
+          ...(f.status && f.status !== "all" ? { status: f.status } : {}),
+        },
+      }),
+      providesTags: ["DashboardOverview"],
+    }),
+    getDashboardRevenue: build.query<GetRevenueResponse, DashboardFilters>({
+      query: (f) => ({
+        url: "v1/admin/revenue/summary",
+        params: {
+          period: f.period,
+          ...(f.companyId ? { companyId: f.companyId } : {}),
+        },
+      }),
+      providesTags: ["DashboardOverview"],
+    }),
+    getDashboardGrowth: build.query<GetGrowthResponse, DashboardFilters>({
+      query: (f) => ({
+        url: "v1/admin/revenue/growth",
+        params: {
+          period: f.period,
+          ...(f.companyId ? { companyId: f.companyId } : {}),
+        },
+      }),
+      providesTags: ["DashboardOverview"],
+    }),
+    getDashboardFlow: build.query<
+      GetShipmentFlowResponse,
+      DashboardFlowFilters
+    >({
+      query: (f) => ({
+        url: "v1/shipments/admin/shipments/process-flow",
+        params: {
+          period: f.period,
+          types: f.types.join(","),
+          ...(f.companyId ? { companyId: f.companyId } : {}),
+        },
+      }),
+      providesTags: ["DashboardOverview"],
+    }),
+    getDashboardTopMerchants: build.query<
+      GetTopMerchantsResponse,
+      TopMerchantFilters
+    >({
+      query: (f) => ({
+        url: "v1/admin/merchants/top-performance",
+        params: { period: f.period, sortBy: f.sortBy, limit: f.limit },
+      }),
+      providesTags: ["DashboardOverview"],
+    }),
+    getDashboardAlerts: build.query<
+      GetDashboardAlertsResponse,
+      { period: string }
+    >({
+      query: (f) => ({
+        url: "v1/admin/dashboard/alerts",
+        params: { period: f.period },
+      }),
+      providesTags: ["DashboardOverview"],
+    }),
+    getDashboardActivity: build.query<
+      GetDashboardActivityResponse,
+      { time_filter: string }
+    >({
+      query: (f) => ({
+        url: "v1/admin/dashboard/recent-activity",
+        params: { time_filter: f.time_filter },
+      }),
+      providesTags: ["DashboardOverview"],
+    }),
+  }),
+});
 export type DashboardFilters = { period: string; companyId?: string };
 export type DashboardShipmentFilters = DashboardFilters & { status?: string };
 export type DashboardFlowFilters = DashboardFilters & { types: string[] };
-export type TopMerchantFilters = { period: string; sortBy: string; limit: number };
-export type ActiveMerchantsResponse = { activeMerchants?: number | string | null; activeMerchantsChange?: number | string | null };
-export type ShipmentsTotalResponse = { total?: number | string | null; change?: number | string | null };
-export type RevenueResponse = { revenue?: number | string | null; change?: number | string | null; currency?: string };
-export type GrowthResponse = { growth?: number | string | null; period?: string };
-export type ShipmentFlowCounts = { order?: number | string | null; processing?: number | string | null; delivered?: number | string | null; canceled?: number | string | null; returned?: number | string | null; refundedToCustomer?: number | string | null };
-export type ShipmentFlowResponse = { local?: ShipmentFlowCounts; international?: ShipmentFlowCounts; cod?: ShipmentFlowCounts };
-export type DashboardMerchant = { merchant_name?: string; orders_count?: number | string | null; total_sales?: number | string | null; growth_percentage?: number | string | null; currency?: string };
-export type TopMerchantsResponse = DashboardMerchant[] | { data?: DashboardMerchant[] };
-export type DashboardAlerts = { urgent_support_tickets?: number | string | null; shipments_delayed?: number | string | null; pending_payments?: number | string | null; merchants_need_approval?: number | string | null };
-export type DashboardAlertsResponse = DashboardAlerts | { data?: DashboardAlerts };
-export type DashboardActivityResponse = { new_orders?: number | string | null; shipments_sent?: number | string | null; deliveries_completed?: number | string | null; new_merchants?: number | string | null; time_filter?: string };
+export type TopMerchantFilters = {
+  period: string;
+  sortBy: string;
+  limit: number;
+};
+export type GetActiveMerchantsResponse = {
+  activeMerchants?: number | string | null;
+  activeMerchantsChange?: number | string | null;
+};
+export type GetShipmentsTotalResponse = {
+  total?: number | string | null;
+  change?: number | string | null;
+};
+export type GetRevenueResponse = {
+  revenue?: number | string | null;
+  change?: number | string | null;
+  currency?: string;
+};
+export type GetGrowthResponse = {
+  growth?: number | string | null;
+  period?: string;
+};
+export type GetShipmentFlowResponse = {
+  local?: IShipmentFlow;
+  international?: IShipmentFlow;
+  cod?: IShipmentFlow;
+};
+export type GetTopMerchantsResponse =
+  | IDashboardMerchant[]
+  | { data?: IDashboardMerchant[] };
+export type DashboardAlerts = {
+  urgent_support_tickets?: number | string | null;
+  shipments_delayed?: number | string | null;
+  pending_payments?: number | string | null;
+  merchants_need_approval?: number | string | null;
+};
+export type GetDashboardAlertsResponse =
+  | DashboardAlerts
+  | { data?: DashboardAlerts };
+export type GetDashboardActivityResponse = {
+  new_orders?: number | string | null;
+  shipments_sent?: number | string | null;
+  deliveries_completed?: number | string | null;
+  new_merchants?: number | string | null;
+  time_filter?: string;
+};
 export const {
   useGetDashboardActiveMerchantsQuery,
   useGetDashboardShipmentsTotalQuery,

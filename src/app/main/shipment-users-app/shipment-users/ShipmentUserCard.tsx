@@ -62,11 +62,6 @@ export default function ShipmentUserCard({
         <Typography dir="ltr" className="text-14">
           {row.phone}
         </Typography>
-        {row.phone1 && (
-          <Typography dir="ltr" className="text-14">
-            {row.phone1}
-          </Typography>
-        )}
         <Chip
           size="small"
           label={`${count ?? 0} ${t("sHIPMENTS")}`}
@@ -76,6 +71,7 @@ export default function ShipmentUserCard({
       <div className="flex gap-8 items-center justify-end p-8 border-t-1">
         {hasOperationPermission("shipment-users", "delete", user) && (
           <LoadingButton
+            variant="outlined"
             color="error"
             loading={loadingRemove}
             onClick={() => handleRemoveItem(row)}
@@ -84,7 +80,12 @@ export default function ShipmentUserCard({
             {t("REMOVE")}
           </LoadingButton>
         )}
-        <Button component={Link} to={`${shipmentUsersPath(type)}/${row.id}`}>
+        <Button
+          color="primary"
+          variant="outlined"
+          component={Link}
+          to={`${shipmentUsersPath(type)}/${row.id}`}
+        >
           {t(
             hasOperationPermission("shipment-users", "update", user)
               ? "EDIT"

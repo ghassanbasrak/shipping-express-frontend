@@ -8,8 +8,8 @@ export default function PhoneField({
   disabled = false,
   required = false,
 }: {
-  name: "phone" | "phone1";
-  codeName: "phoneCountry" | "phoneCountry1";
+  name: "phone";
+  codeName: "phoneCountry";
   label: string;
   disabled?: boolean;
   required?: boolean;

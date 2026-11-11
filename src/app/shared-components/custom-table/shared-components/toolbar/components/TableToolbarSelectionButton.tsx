@@ -126,8 +126,13 @@ function TableToolbarSelectionButton<T extends object>({
                               !(field.label in addedRow)
                             ) {
                               if (field.id === footer.sumField) {
-                                var sum = result.data.reduce(
-                                  (acc, item) => acc + item[footer.sumField],
+                                let sum: number | string = result.data.reduce(
+                                  (acc, item) =>
+                                    acc +
+                                    Number(
+                                      getFilterField(item, footer.sumField) ??
+                                        0,
+                                    ),
                                   0,
                                 );
                                 if (!footer.sumIsNotCurrency) {
@@ -151,6 +156,20 @@ function TableToolbarSelectionButton<T extends object>({
                           });
                           rows.push(addedRow);
                         }
+                      }
+                      if (footer?.countRows) {
+                        const countRow = {};
+                        const fields = result.fields.filter(
+                          (field) =>
+                            field.exportable !== false &&
+                            field.type !== TableDataTypes.actions,
+                        );
+                        if (fields[0])
+                          countRow[fields[0].label] =
+                            footer.countRowsLabel ?? t("COUNT");
+                        if (fields[1])
+                          countRow[fields[1].label] = result.data.length;
+                        rows.push(countRow);
                       }
                       const worksheet = XLSX.utils.json_to_sheet(rows);
                       const workbook = XLSX.utils.book_new();

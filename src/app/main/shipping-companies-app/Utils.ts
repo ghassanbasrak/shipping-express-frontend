@@ -57,7 +57,7 @@ export const shippingCompanySummaryLinks: {
     title: "SHIPMENTS",
     count: "shipmentsCount",
     path: (id) => `/shipments/${id}/all`,
-    available: false,
+    available: true,
   },
   {
     title: "PACKAGE_REQUESTS",

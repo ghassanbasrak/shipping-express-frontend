@@ -45,8 +45,7 @@ function load(file, imports = {}, globals = {}) {
   return exports;
 }
 const plain = (x) => JSON.parse(JSON.stringify(x));
-const base = "src/app/main/merchant-statistics-app/",
-  newer = "src/app/main/merchant-statistics-new-app/";
+const base = "src/app/main/merchant-statistics-app/";
 const validators = load("src/app/main/utils/validations.ts", {
   "src/i18n": { t: (key) => key },
   validator: require(path.join(target, "node_modules/validator")),
@@ -54,20 +53,9 @@ const validators = load("src/app/main/utils/validations.ts", {
 const schemas = load(base + "models/MerchantStatisticsSchema.ts", {
   "src/app/main/utils/validations": validators,
 });
-const newSchemas = load(newer + "models/MerchantStatisticsSchema.ts", {
-  "src/app/main/utils/validations": validators,
-  "../../merchant-statistics-app/models/MerchantStatisticsSchema": schemas,
-});
-const oldSchema = schemas.merchantStatisticsSchema((key) => key),
-  newSchema = newSchemas.merchantStatisticsSchema((key) => key);
+const oldSchema = schemas.merchantStatisticsSchema((key) => key);
 const model = load(base + "models/MerchantStatisticsModel.ts");
-const newModel = load(newer + "models/MerchantStatisticsModel.ts", {
-  "../../merchant-statistics-app/models/MerchantStatisticsModel": model,
-});
 const utils = load(base + "Utils.ts");
-const newUtils = load(newer + "Utils.ts", {
-  "../merchant-statistics-app/Utils": utils,
-});
 const valid = {
   userId: "merchant-1",
   dateFrom: new Date("2026-01-01T00:00:00Z"),
@@ -86,37 +74,17 @@ async function check(name, run) {
   console.log("PASS " + name);
 }
 async function main() {
-  await check(
-    "six-month defaults use independent Date objects and new adjustment amounts start at zero",
-    () => {
-      const a = model.default(),
-        b = model.default();
-      assert.equal(a.userId, "");
-      assert.ok(a.dateFrom < a.dateTo);
-      assert.notEqual(a.dateFrom, b.dateFrom);
-      assert.notEqual(a.dateFrom, a.dateTo);
-      const n = newModel.default();
-      assert.equal(n.bankTransferTotals, 0);
-      assert.equal(n.otherFees, 0);
-    },
-  );
-  await check("merchant selection is required in both report forms", () => {
+  await check("six-month defaults use independent Date objects", () => {
+    const a = model.default(),
+      b = model.default();
+    assert.equal(a.userId, "");
+    assert.ok(a.dateFrom < a.dateTo);
+    assert.notEqual(a.dateFrom, b.dateFrom);
+    assert.notEqual(a.dateFrom, a.dateTo);
+  });
+  await check("merchant selection is required", () => {
     assert.equal(oldSchema.safeParse(valid).success, true);
     assert.equal(oldSchema.safeParse({ ...valid, userId: "" }).success, false);
-    assert.equal(
-      newSchema.safeParse({ ...valid, bankTransferTotals: 0, otherFees: 0 })
-        .success,
-      true,
-    );
-    assert.equal(
-      newSchema.safeParse({
-        ...valid,
-        userId: "",
-        bankTransferTotals: 0,
-        otherFees: 0,
-      }).success,
-      false,
-    );
   });
   await check(
     "optional date bounds retain open ended and all-date reports",
@@ -135,39 +103,7 @@ async function main() {
       { ...valid, dateFrom: new Date("invalid") },
     ])
       assert.equal(oldSchema.safeParse(values).success, false);
-    assert.equal(
-      newSchema.safeParse({
-        ...valid,
-        dateTo: new Date("2025-01-01"),
-        bankTransferTotals: 0,
-        otherFees: 0,
-      }).success,
-      false,
-    );
   });
-  await check(
-    "manual adjustments require finite numbers while preserving zero and signed source values",
-    () => {
-      for (const amount of [0, -12.5, 55.25])
-        assert.equal(
-          newSchema.safeParse({
-            ...valid,
-            bankTransferTotals: amount,
-            otherFees: amount,
-          }).success,
-          true,
-        );
-      for (const amount of [undefined, "", NaN, "12"])
-        assert.equal(
-          newSchema.safeParse({
-            ...valid,
-            bankTransferTotals: amount,
-            otherFees: 0,
-          }).success,
-          false,
-        );
-    },
-  );
   await check(
     "request serialization sends exact ISO bounds without populated accounts or unknown metadata",
     () => {
@@ -198,24 +134,6 @@ async function main() {
     () => {
       assert.doesNotThrow(() =>
         utils.statisticsRequest({ ...valid, dateFrom: new Date("invalid") }),
-      );
-    },
-  );
-  await check(
-    "new payload keeps zero/negative adjustments and strips backend populations",
-    () => {
-      assert.deepEqual(
-        plain(
-          newUtils.statisticsNewRequest({
-            ...valid,
-            dateFrom: null,
-            dateTo: null,
-            bankTransferTotals: 0,
-            otherFees: -7.5,
-            userBalance: { walletBalance: 100 },
-          }),
-        ),
-        { userId: "merchant-1", bankTransferTotals: 0, otherFees: -7.5 },
       );
     },
   );
@@ -262,9 +180,6 @@ async function main() {
   load(base + "MerchantStatisticsApi.ts", {
     "app/store/apiService": { apiService: api },
   });
-  load(newer + "MerchantStatisticsApi.ts", {
-    "app/store/apiService": { apiService: api },
-  });
   const store = configureStore({
     reducer: { [api.reducerPath]: api.reducer },
     middleware: (get) => get().concat(api.middleware),
@@ -284,32 +199,12 @@ async function main() {
         await request("getMerchantStatistics", {
           ...utils.statisticsRequest(valid),
           user: valid.user,
-          bankTransferTotals: 99,
+          ignoredField: 99,
         });
         assert.deepEqual(requests.at(-1), {
           url: "v1/users/statistics",
           method: "POST",
           data: plain(utils.statisticsRequest(valid)),
-        });
-      },
-    );
-    await check(
-      "new report endpoint retains statistics-new and exact adjustment property names",
-      async () => {
-        await request("getMerchantStatisticsNew", {
-          ...utils.statisticsRequest(valid),
-          bankTransferTotals: 0,
-          otherFees: -12.5,
-          messages: ["do not send"],
-        });
-        assert.deepEqual(requests.at(-1), {
-          url: "v1/users/statistics-new",
-          method: "POST",
-          data: {
-            ...plain(utils.statisticsRequest(valid)),
-            bankTransferTotals: 0,
-            otherFees: -12.5,
-          },
         });
       },
     );
@@ -386,17 +281,6 @@ async function main() {
       "../../Utils": utils,
     },
   );
-  const newReport = load(
-    newer + "merchant-statistics/sections/MerchantStatisticsReport.tsx",
-    {
-      ...reportImports,
-      "../../../merchant-statistics-app/merchant-statistics/components/StatisticsAmounts":
-        amountModule,
-      "../../../merchant-statistics-app/merchant-statistics/components/StatisticsReportHeader":
-        headerModule,
-      "../../Utils": newUtils,
-    },
-  );
   await check(
     "original report renders every source financial group and retains zero totals",
     () => {
@@ -442,82 +326,9 @@ async function main() {
     },
   );
   await check(
-    "new report renders all shipment statuses/counts and COD settlement categories",
-    () => {
-      captured.length = 0;
-      const shipments = Object.fromEntries(
-        newUtils.shipmentStatisticRows.map(([key], i) => [
-          key,
-          { count: i, fees: i * 10 },
-        ]),
-      );
-      renderToStaticMarkup(
-        React.createElement(newReport.default, {
-          report: {
-            request: {
-              userId: "merchant-1",
-              bankTransferTotals: 0,
-              otherFees: 3,
-            },
-            statistics: {
-              localShipments: shipments,
-              internationalShipments: shipments,
-              codShipments: shipments,
-              codBalance: {
-                pending: { count: 0, total: 0 },
-                settled: { count: 2, total: 20 },
-              },
-            },
-          },
-        }),
-      );
-      assert.equal(captured.length, 5);
-      assert.deepEqual(
-        plain(captured[1].rows.map((x) => [x.count, x.amount])),
-        [
-          [0, 0],
-          [1, 10],
-          [2, 20],
-          [3, 30],
-          [4, 40],
-        ],
-      );
-      assert.equal(captured[4].rows.length, 5);
-      assert.equal(captured[4].rows[0].count, 0);
-    },
-  );
-  await check(
-    "case-sensitive backend bank-transfer balance and multiline report notes are retained",
-    () => {
-      captured.length = 0;
-      const html = renderToStaticMarkup(
-        React.createElement(newReport.default, {
-          report: {
-            request: {
-              userId: "merchant-1",
-              bankTransferTotals: 0,
-              otherFees: 0,
-            },
-            statistics: {
-              userBalance: { walletBalance: 0, BankTransferChargeAmount: 73.5 },
-              messages: [{ message: "Account note", note: "First\nSecond" }],
-            },
-          },
-        }),
-      );
-      const rows = captured.find((x) => x.title === "MERCHANT_STATISTIC").rows;
-      assert.equal(
-        rows.find((x) => x.key === "BankTransferChargeAmount").amount,
-        73.5,
-      );
-      assert.equal(rows.find((x) => x.key === "walletBalance").amount, 0);
-      assert.ok(html.includes("First\nSecond"));
-    },
-  );
-  await check(
     "null/empty reports show the empty state while zero-valued groups remain printable",
     () => {
-      for (const report of [oldReport, newReport]) {
+      for (const report of [oldReport]) {
         assert.equal(report.hasMerchantStatistics(null), false);
         assert.equal(report.hasMerchantStatistics({}), false);
         assert.ok(
@@ -528,10 +339,6 @@ async function main() {
       }
       assert.equal(
         oldReport.hasMerchantStatistics({ financialAssets: { total: 0 } }),
-        true,
-      );
-      assert.equal(
-        newReport.hasMerchantStatistics({ userBalance: { walletBalance: 0 } }),
         true,
       );
     },
@@ -598,48 +405,21 @@ async function main() {
     },
   );
   const permissions = load("src/app/auth/permissions.ts");
-  await check(
-    "old and new statistics grants remain separate without inventing default permissions",
-    () => {
-      const employee = {
-        id: "staff",
-        role: "employee",
-        features: [{ feature: "merchant-statistics", accessView: true }],
-      };
-      assert.equal(
-        permissions.hasPagePermission("/merchant-statistics", employee),
-        true,
-      );
-      assert.equal(
-        permissions.hasPagePermission("/merchant-statistics-new", employee),
-        false,
-      );
-      assert.equal(
-        permissions.hasOperationPermission(
-          "merchant-statistics-new",
-          "view",
-          employee,
-        ),
-        false,
-      );
-      const newEmployee = {
-        ...employee,
-        features: [{ feature: "merchant-statistics-new", accessView: true }],
-      };
-      assert.equal(
-        permissions.hasPagePermission("/merchant-statistics-new", newEmployee),
-        true,
-      );
-      assert.equal(
-        permissions.hasPagePermission("/merchant-statistics", newEmployee),
-        false,
-      );
-    },
-  );
+  await check("statistics view grants retain staff-only access", () => {
+    const employee = {
+      id: "staff",
+      role: "employee",
+      features: [{ feature: "merchant-statistics", accessView: true }],
+    };
+    assert.equal(
+      permissions.hasPagePermission("/merchant-statistics", employee),
+      true,
+    );
+  });
   await check(
     "all displayed report keys exist in English Arabic and Turkish resources",
     () => {
-      for (const folder of [base, newer]) {
+      for (const folder of [base]) {
         const bundles = ["en", "ar", "tr"].map(
           (l) => load(folder + "i18n/" + l + ".ts").default,
         );

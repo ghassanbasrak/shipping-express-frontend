@@ -65,7 +65,7 @@ function ImageCropperDialog({
         <span>{title}</span>
         <IconButton
           edge="end"
-          color="inherit"
+          color="primary"
           onClick={() => dispatch(closeDialog())}
           aria-label="close"
         >
@@ -92,6 +92,8 @@ function ImageCropperDialog({
       </DialogContent>
       <DialogActions>
         <Button
+          color="primary"
+          variant="outlined"
           {...cancelButtonProps}
           onClick={() => {
             dispatch(closeDialog());
@@ -101,6 +103,8 @@ function ImageCropperDialog({
           {cancelButtonTitle ?? t("CANCEL")}
         </Button>
         <LoadingButton
+          color="success"
+          variant="contained"
           {...submitButtonProps}
           onClick={() => {
             setLoadingUpload(true);

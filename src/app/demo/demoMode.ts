@@ -11,7 +11,7 @@ export function getDemoIdentity(): DemoIdentity {
   return saved === "merchant" || saved === "affiliate" ? saved : "admin";
 }
 
-export function getDemoUser(): User {
+function getDefaultDemoUser(): User {
   if (getDemoIdentity() === "affiliate")
     return {
       ...demoUser,
@@ -37,6 +37,24 @@ export function getDemoUser(): User {
       codBalance: 1800,
     };
   return demoUser;
+}
+
+let cachedSnapshot: string | null = null;
+let cachedUsers: User[] = [];
+export function getDemoUser(): User {
+  const fallback = getDefaultDemoUser();
+  // Read saved profile/balances at startup and after demo writes, without changing live auth.
+  try {
+    const snapshot = localStorage.getItem(demoStorageKey);
+    if (snapshot !== cachedSnapshot) {
+      cachedSnapshot = snapshot;
+      cachedUsers = snapshot ? JSON.parse(snapshot).users || [] : [];
+    }
+    const saved = cachedUsers.find((user) => user.id === fallback.id);
+    return saved ? { ...fallback, ...saved } : fallback;
+  } catch {
+    return fallback;
+  }
 }
 
 export function switchDemoIdentity(identity: DemoIdentity) {

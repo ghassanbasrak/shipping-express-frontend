@@ -35,7 +35,6 @@ const locale = {
   BASIC_INFO: "Basic Info",
   FULL_NAME: "Full name",
   PHONE_NUMBER: "Phone number",
-  PHONE_NUMBER_1: "Phone number 1",
   COUNTRY: "Country",
   STATE: "State",
   EMAIL: "Email",

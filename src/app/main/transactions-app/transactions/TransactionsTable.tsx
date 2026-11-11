@@ -25,12 +25,18 @@ import {
   setTransactionsPage,
   setTransactionsPageSize,
 } from "../store/transactionsSlice";
-export default function TransactionsTable() {
+export default function TransactionsTable({
+  fixedUserId,
+  fixedBalance,
+}: { fixedUserId?: string; fixedBalance?: string } = {}) {
   const { t } = useTranslation("transactionsApp"),
     dispatch = useAppDispatch(),
     user = useAppSelector(selectUser),
     location = useLocation();
-  const { userId = "all", relatedBalance = "wallet" } = useParams(),
+  const {
+      userId = fixedUserId || "all",
+      relatedBalance = fixedBalance || "wallet",
+    } = useParams(),
     filters = useSelector(selectTransactionsFilters) as GetTransactionsApiArg;
   const [ready, setReady] = useState<string>();
   const key = `${userId}/${relatedBalance}/${user.id}/${user.role}/${location.search}`;
@@ -62,7 +68,9 @@ export default function TransactionsTable() {
   );
   const scoped = {
     ...filters,
-    userIdFilter: user.role === "user" ? "all" : filters.userIdFilter,
+    ...(fixedBalance ? { relatedBalanceTypeFilter: fixedBalance } : {}),
+    userIdFilter:
+      user.role === "user" ? "all" : fixedUserId || filters.userIdFilter,
     createdByIdFilter: user.role === "admin" ? filters.createdByIdFilter : "",
   };
   const authorizedBalance =

@@ -5,7 +5,7 @@ const http = require("node:http");
 const { spawn } = require("node:child_process");
 const assert = require("node:assert/strict");
 const target = path.resolve(__dirname, "..");
-const build = path.join(target, "build");
+const build = path.resolve(target, process.env.SHIPMENT_USERS_BUILD_DIR || "build");
 const output = path.join(target, "test-results/shipment-users-browser");
 fs.mkdirSync(output, { recursive: true });
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -568,6 +568,8 @@ async function main() {
     ),
     1,
   );
+  assert.equal(await evaluate("Boolean(document.querySelector('[name=phone1]'))"), false);
+  assert.equal(await evaluate("document.body.innerText.includes('+1-2025550123')"), false);
   await screenshot("desktop-editor");
   pass("Stored phones, national address and custom ZIP restore in the sidebar");
   await fillField("fullName", "Unsaved Contact");
@@ -619,7 +621,7 @@ async function main() {
   await until("location.pathname==='/shipment-users/all'", "successful update");
   const update = calls.filter((x) => x.method === "PATCH").at(-1).body;
   assert.equal(update.phone, "+966-501234567");
-  assert.equal(update.phone1, "+1-2025550123");
+  assert.equal(update.phone1, undefined);
   assert.equal(update.address.street, "Main Street" + marker + "ABCD1234");
   assert.equal(update.userId, undefined);
   pass(
@@ -683,7 +685,7 @@ async function main() {
   assert.equal(created.address.stateId, "state-1");
   assert.equal(created.phone, "+966-501234567");
   assert.equal(created.address.street, marker + "EFGH5678");
-  assert.equal(created.phone1, "");
+  assert.equal(created.phone1, undefined);
   pass(
     "New sender validates required fields and supports optional city/street",
   );

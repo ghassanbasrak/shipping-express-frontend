@@ -1,7 +1,6 @@
 import NavLinkAdapter from "@fuse/core/NavLinkAdapter";
 import { alpha, styled } from "@mui/material/styles";
 import Collapse from "@mui/material/Collapse";
-import IconButton from "@mui/material/IconButton";
 import ListItemText from "@mui/material/ListItemText";
 import clsx from "clsx";
 import { useEffect, useMemo, useState } from "react";
@@ -29,24 +28,38 @@ type ListComponentProps = ListProps & {
 
 const Root = styled(List)<ListComponentProps>(({ theme, ...props }) => ({
   padding: 0,
-  "&.open": {},
+  "&.open > .fuse-list-item": {
+    color: theme.palette.text.primary,
+    backgroundColor: alpha(theme.palette.common.white, 0.06),
+  },
   "& > .fuse-list-item": {
     minHeight: 44,
     width: "100%",
-    borderRadius: "6px",
+    borderRadius: 12,
     margin: "0 0 4px 0",
-    paddingRight: 16,
-    paddingLeft: props.itempadding > 80 ? 80 : props.itempadding,
-    paddingTop: 10,
-    paddingBottom: 10,
-    color: alpha(theme.palette.text.primary, 0.7),
+    paddingRight: 14,
+    paddingLeft: props.itempadding,
+    paddingTop: 9,
+    paddingBottom: 9,
+    color: alpha(theme.palette.text.primary, 0.68),
+    transition: "background-color .2s ease, color .2s ease",
     "&:hover": {
       color: theme.palette.text.primary,
+      backgroundColor: alpha(theme.palette.common.white, 0.08),
     },
     "& > .fuse-list-item-icon": {
-      marginRight: 16,
+      marginRight: 14,
       color: "inherit",
     },
+  },
+  "& .collapse-children": {
+    marginLeft: 22,
+    paddingLeft: 6,
+    borderLeft: `1px dashed ${alpha(theme.palette.common.white, 0.16)}`,
+  },
+  "& .collapse-children .fuse-list-item-text-primary": {
+    whiteSpace: "normal",
+    lineHeight: 1.5,
   },
 }));
 
@@ -65,7 +78,7 @@ function FuseNavVerticalCollapse(props: FuseNavItemComponentProps) {
 
   const [open, setOpen] = useState(() => needsToBeOpened(location, item));
 
-  const itempadding = nestedLevel > 0 ? 38 + nestedLevel * 16 : 16;
+  const itempadding = nestedLevel > 0 ? 12 : 14;
   const [remoteChildren, setRemoteChildren] = useState<FuseNavItemType[]>([]);
 
   const { data: remoteData } = item.useRemote
@@ -75,18 +88,18 @@ function FuseNavVerticalCollapse(props: FuseNavItemComponentProps) {
   function getRemoteItemValue(
     keyName: string,
     item: object,
-    isLocale?: boolean | null
+    isLocale?: boolean | null,
   ) {
     const value: any = keyName.includes("%")
       ? keyName
           .replace(
             `%{${keyName.substring(
               keyName.indexOf("{") + 1,
-              keyName.indexOf("}")
+              keyName.indexOf("}"),
             )}`,
             item[
               keyName.substring(keyName.indexOf("{") + 1, keyName.indexOf("}"))
-            ]
+            ],
           )
           .replace("}", "")
       : item[keyName];
@@ -131,7 +144,7 @@ function FuseNavVerticalCollapse(props: FuseNavItemComponentProps) {
           metadata: remoteItem,
         }));
         setRemoteChildren(
-          list.map((item) => convertRemoteItemToLocalItem(item))
+          list.map((item) => convertRemoteItemToLocalItem(item)),
         );
       }
     }
@@ -144,7 +157,7 @@ function FuseNavVerticalCollapse(props: FuseNavItemComponentProps) {
     }
   }, [location, item]);
 
-  const component = item.url ? NavLinkAdapter : "li";
+  const component = item.url ? NavLinkAdapter : "button";
 
   let itemProps = {};
 
@@ -156,13 +169,13 @@ function FuseNavVerticalCollapse(props: FuseNavItemComponentProps) {
       role: "button",
     };
   }
-  if (
-    (checkPermission && !item?.hasPermission) ||
-    (item.hasPermissionGetter && !item.hasPermissionGetter(user))
-  ) {
-    return null;
-  }
   return useMemo(() => {
+    if (
+      (checkPermission && !item.hasPermission) ||
+      (item.hasPermissionGetter && !item.hasPermissionGetter(user))
+    ) {
+      return null;
+    }
     const children =
       item.children || remoteChildren.length > 0
         ? [
@@ -183,6 +196,7 @@ function FuseNavVerticalCollapse(props: FuseNavItemComponentProps) {
         <ListItemButton
           component={component}
           className="fuse-list-item"
+          aria-expanded={open}
           onClick={() => {
             setOpen(!open);
           }}
@@ -222,15 +236,9 @@ function FuseNavVerticalCollapse(props: FuseNavItemComponentProps) {
 
           {item.badge && <FuseNavBadge className="mx-4" badge={item.badge} />}
 
-          <IconButton
-            disableRipple
-            className="-mx-12 h-20 w-20 p-0 hover:bg-transparent focus:bg-transparent"
-            onClick={(ev) => {
-              ev.preventDefault();
-              ev.stopPropagation();
-              setOpen(!open);
-            }}
-            size="large"
+          <span
+            className="flex h-20 w-20 shrink-0 items-center justify-center"
+            aria-hidden="true"
           >
             <FuseSvgIcon size={16} className="arrow-icon" color="inherit">
               {open
@@ -239,11 +247,16 @@ function FuseNavVerticalCollapse(props: FuseNavItemComponentProps) {
                   ? "heroicons-solid:chevron-left"
                   : "heroicons-solid:chevron-right"}
             </FuseSvgIcon>
-          </IconButton>
+          </span>
         </ListItemButton>
 
         {(item.children || remoteChildren.length > 0) && (
-          <Collapse in={open} className="collapse-children">
+          <Collapse
+            in={open}
+            className="collapse-children"
+            role="group"
+            aria-label={item.title}
+          >
             {children.map((_item) => (
               <FuseNavItem
                 key={_item.id}
@@ -259,12 +272,10 @@ function FuseNavVerticalCollapse(props: FuseNavItemComponentProps) {
       </Root>
     );
   }, [
-    item.badge,
-    item.children,
-    item.icon,
-    item.iconClass,
-    item.title,
-    item.url,
+    item,
+    checkPermission,
+    user,
+    theme.direction,
     itempadding,
     nestedLevel,
     onItemClick,

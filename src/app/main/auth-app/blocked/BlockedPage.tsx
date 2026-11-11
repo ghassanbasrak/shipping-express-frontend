@@ -9,7 +9,9 @@ export default function BlockedPage() {
     <AuthLayout title={t("TITLE")}>
       <p>{t("BLOCKED")}</p>
       <a href="mailto:info@ashamcoex.com">{t("SUPPORT")}</a>
-      <Button onClick={auth.signOut}>{t("SIGN_OUT")}</Button>
+      <Button color="primary" variant="outlined" onClick={auth.signOut}>
+        {t("SIGN_OUT")}
+      </Button>
     </AuthLayout>
   );
 }
