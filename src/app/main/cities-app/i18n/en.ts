@@ -1,4 +1,6 @@
 const locale = {
+  EXPORT_ALL_CSV: "Export all as CSV",
+  DATE_FILTER_UNAVAILABLE: "Date filters are unavailable until the API supports them.",
   CITIES: "Cities",
   SEARCH_CITIES: "Search Cities",
   ADD_CITY: "Add City",

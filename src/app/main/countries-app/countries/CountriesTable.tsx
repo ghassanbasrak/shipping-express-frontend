@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import ICountry from "../models/ICountry";
-import { GetCountriesApiArg, useGetCountriesQuery } from "../CountriesApi";
+import { GetCountriesApiArg, useGetCountriesQuery, useLazyGetCountriesQuery } from "../CountriesApi";
 import {
   newCountriesInstance,
   resetCountries,
@@ -27,6 +27,11 @@ export default function CountriesTable() {
   const { shippingCompanyId = "all" } = useParams();
   const filters = useSelector(selectCountriesFilters) as GetCountriesApiArg;
   const [ready, setReady] = useState<string>();
+  const [getCountryPage] = useLazyGetCountriesQuery();
+  const [carrierRows, setCarrierRows] = useState<ICountry[]>([]);
+  const [carrierLoading, setCarrierLoading] = useState(false);
+  const [carrierError, setCarrierError] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
   const { t } = useTranslation("countriesApp");
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -42,10 +47,51 @@ export default function CountriesTable() {
     },
     [dispatch],
   );
+  const carrierMode = Boolean(filters.shippingCompanyIdFilter && filters.shippingCompanyIdFilter !== "all");
   const { data, isFetching, isError, refetch } = useGetCountriesQuery(filters, {
-    skip: ready !== shippingCompanyId,
+    skip: ready !== shippingCompanyId || carrierMode,
     refetchOnMountOrArgChange: true,
   });
+  useEffect(() => {
+    if (ready !== shippingCompanyId || !carrierMode) return;
+    let cancelled = false;
+    setCarrierLoading(true);
+    setCarrierError(false);
+    setCarrierRows([]);
+    (async () => {
+      try {
+        const rows: ICountry[] = [];
+        let page = 0;
+        let total = 0;
+        do {
+          const response = await getCountryPage({
+            ...filters,
+            shippingCompanyIdFilter: "all",
+            page,
+            pageSize: 250,
+          }).unwrap();
+          if (cancelled) return;
+          rows.push(...response.results);
+          total = response.total;
+          if (!response.results.length && rows.length < total)
+            throw new Error("Country pagination ended early");
+          page += 1;
+        } while (rows.length < total);
+        setCarrierRows(rows.filter((country) => country.shipmentCountries?.some(
+          (row) => row.shippingCompanyId === filters.shippingCompanyIdFilter,
+        )));
+      } catch {
+        if (!cancelled) setCarrierError(true);
+      } finally {
+        if (!cancelled) setCarrierLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [ready, shippingCompanyId, carrierMode, filters.searchText, filters.shippingCompanyIdFilter, getCountryPage, retryCount]);
+  const shownRows = carrierMode
+    ? carrierRows.slice(filters.page * filters.pageSize, (filters.page + 1) * filters.pageSize)
+    : data?.results || [];
+  const failed = carrierMode ? carrierError : isError;
   const fields: TableFieldProps<ICountry>[] = [
     {
       id: "name",
@@ -125,10 +171,10 @@ export default function CountriesTable() {
   ];
   return (
     <div className="w-full flex flex-col h-full">
-      {isError && (
+      {failed && (
         <Alert
           severity="error"
-          action={<Button onClick={() => refetch()}>{t("RETRY")}</Button>}
+          action={<Button onClick={() => carrierMode ? setRetryCount((n) => n + 1) : refetch()}>{t("RETRY")}</Button>}
         >
           {t("SOMETHING_WENT_WRONG_WHEN_GET_COUNTRIES")}
         </Alert>
@@ -136,25 +182,17 @@ export default function CountriesTable() {
       <CustomTable<ICountry>
         fields={fields}
         status={
-          isError
+          failed
             ? FetchStatus.error
-            : ready !== shippingCompanyId || isFetching
+            : ready !== shippingCompanyId || (carrierMode ? carrierLoading : isFetching)
               ? FetchStatus.loading
               : FetchStatus.done
         }
         error={
-          isError ? t("SOMETHING_WENT_WRONG_WHEN_GET_COUNTRIES") : undefined
+          failed ? t("SOMETHING_WENT_WRONG_WHEN_GET_COUNTRIES") : undefined
         }
-        data={(data?.results || []).filter(
-          (country) =>
-            !filters.shippingCompanyIdFilter ||
-            filters.shippingCompanyIdFilter === "all" ||
-            country.shipmentCountries?.some(
-              (row) =>
-                row.shippingCompanyId === filters.shippingCompanyIdFilter,
-            ),
-        )}
-        total={data?.total || 0}
+        data={shownRows}
+        total={carrierMode ? carrierRows.length : data?.total || 0}
         page={filters.page}
         pageSize={filters.pageSize}
         onChangePagination={({ page, pageSize }) => {

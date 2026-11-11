@@ -15,8 +15,6 @@ import {
   selectStatesFilters,
   setStatesSearchText,
   setStatesShippingCompanyIdFilter,
-  setStatesDateFromFilter,
-  setStatesDateToFilter,
 } from "../store/statesSlice";
 import { statesPath, displayName } from "../Utils";
 export default function StatesHeader() {
@@ -70,39 +68,11 @@ export default function StatesHeader() {
                 ],
                 closeOnChange: false,
               },
-              {
-                type: FilterTypes.dateTime,
-                title: t("START_DATE"),
-                value: filters.dateFromFilter
-                  ? new Date(filters.dateFromFilter)
-                  : null,
-                maxDate: filters.dateToFilter
-                  ? new Date(filters.dateToFilter)
-                  : undefined,
-                onChange: (date) => dispatch(setStatesDateFromFilter(date)),
-                disableTime: true,
-                closeOnChange: false,
-              },
-              {
-                type: FilterTypes.dateTime,
-                title: t("END_DATE"),
-                value: filters.dateToFilter
-                  ? new Date(filters.dateToFilter)
-                  : null,
-                minDate: filters.dateFromFilter
-                  ? new Date(filters.dateFromFilter)
-                  : undefined,
-                onChange: (date) => dispatch(setStatesDateToFilter(date)),
-                disableTime: true,
-                closeOnChange: false,
-              },
             ]}
             changesCount={
               [
                 filters.shippingCompanyIdFilter !== "all",
                 filters.countryIdFilter !== "all",
-                !!filters.dateFromFilter,
-                !!filters.dateToFilter,
               ].filter(Boolean).length
             }
           />
@@ -143,6 +113,7 @@ export default function StatesHeader() {
           </Button>
         </div>
       </div>
+      <Typography variant="caption" color="text.secondary">{t("DATE_FILTER_UNAVAILABLE")}</Typography>
       {companies.isError && (
         <Alert
           severity="error"

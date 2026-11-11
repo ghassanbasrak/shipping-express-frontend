@@ -29,10 +29,6 @@ const StatesApi = api.enhanceEndpoints({ addTagTypes }).injectEndpoints({
           ...(filters.countryIdFilter && filters.countryIdFilter !== "all"
             ? { countryId: filters.countryIdFilter }
             : {}),
-          ...(filters.dateFromFilter
-            ? { dateFrom: filters.dateFromFilter }
-            : {}),
-          ...(filters.dateToFilter ? { dateTo: filters.dateToFilter } : {}),
         },
       }),
       providesTags: ["States"],
@@ -100,7 +96,9 @@ const StatesApi = api.enhanceEndpoints({ addTagTypes }).injectEndpoints({
             ? `v1/shipment-states/${row.id || row._id}`
             : "v1/shipment-states",
         method: row.id || row._id ? "PATCH" : "POST",
-        data: _.pick(row, ["stateId", "shippingCompanyId", "name", "isActive"]),
+        data: _.pick(row, row.id || row._id
+          ? ["name", "isActive"]
+          : ["stateId", "shippingCompanyId", "name", "isActive"]),
       }),
       invalidatesTags: (_, __, row) => [
         "States",

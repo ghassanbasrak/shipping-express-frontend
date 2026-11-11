@@ -31,10 +31,6 @@ const CitiesApi = api.enhanceEndpoints({ addTagTypes }).injectEndpoints({
           ...(filters.stateIdFilter && filters.stateIdFilter !== "all"
             ? { stateId: filters.stateIdFilter }
             : {}),
-          ...(filters.dateFromFilter
-            ? { dateFrom: filters.dateFromFilter }
-            : {}),
-          ...(filters.dateToFilter ? { dateTo: filters.dateToFilter } : {}),
         },
       }),
       providesTags: ["Cities"],
@@ -99,7 +95,9 @@ const CitiesApi = api.enhanceEndpoints({ addTagTypes }).injectEndpoints({
             ? `v1/shipment-cities/${row.id || row._id}`
             : "v1/shipment-cities",
         method: row.id || row._id ? "PATCH" : "POST",
-        data: _.pick(row, ["cityId", "shippingCompanyId", "name", "isActive"]),
+        data: _.pick(row, row.id || row._id
+          ? ["name", "isActive"]
+          : ["cityId", "shippingCompanyId", "name", "isActive"]),
       }),
       invalidatesTags: (_, __, row) => [
         "Cities",

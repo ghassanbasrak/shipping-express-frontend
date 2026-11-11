@@ -573,6 +573,7 @@ async function main() {
     await evaluate("getComputedStyle(document.body).direction"),
     "rtl",
   );
+  assert(await evaluate("[...document.images].some(img => img.src.includes('/brand/logos/') && img.complete && img.naturalWidth > 0 && img.getBoundingClientRect().width >= 120 && img.getBoundingClientRect().height > 0)"), "Brand logo failed to load on Arabic sign-in");
   const mobile = await send("Page.captureScreenshot", { format: "png" });
   fs.writeFileSync(
     path.join(output, "sign-in-ar-mobile.png"),

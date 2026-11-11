@@ -16,8 +16,6 @@ import {
   selectCountriesFilters,
   setCountriesSearchText,
   setCountriesShippingCompanyIdFilter,
-  setCountriesDateFromFilter,
-  setCountriesDateToFilter,
 } from "../store/countriesSlice";
 import { countriesPath, displayName } from "../Utils";
 export default function CountriesHeader() {
@@ -57,38 +55,10 @@ export default function CountriesHeader() {
                 ],
                 closeOnChange: false,
               },
-              {
-                type: FilterTypes.dateTime,
-                title: t("START_DATE"),
-                value: filters.dateFromFilter
-                  ? new Date(filters.dateFromFilter)
-                  : null,
-                maxDate: filters.dateToFilter
-                  ? new Date(filters.dateToFilter)
-                  : undefined,
-                onChange: (date) => dispatch(setCountriesDateFromFilter(date)),
-                disableTime: true,
-                closeOnChange: false,
-              },
-              {
-                type: FilterTypes.dateTime,
-                title: t("END_DATE"),
-                value: filters.dateToFilter
-                  ? new Date(filters.dateToFilter)
-                  : null,
-                minDate: filters.dateFromFilter
-                  ? new Date(filters.dateFromFilter)
-                  : undefined,
-                onChange: (date) => dispatch(setCountriesDateToFilter(date)),
-                disableTime: true,
-                closeOnChange: false,
-              },
             ]}
             changesCount={
               [
                 filters.shippingCompanyIdFilter !== "all",
-                !!filters.dateFromFilter,
-                !!filters.dateToFilter,
               ].filter(Boolean).length
             }
           />
@@ -129,6 +99,7 @@ export default function CountriesHeader() {
           </Button>
         </div>
       </div>
+      <Typography variant="caption" color="text.secondary">{t("DATE_FILTER_UNAVAILABLE")}</Typography>
       {companies.isError && (
         <Alert
           severity="error"

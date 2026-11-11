@@ -130,6 +130,7 @@
     {
       "feature": "cancel-shipment-requests-app",
       "status": "pending",
+      "apiGroundwork": "Read-only cancellation list/account queries and status-only decision PATCH are defined; no route or review screen is connected. The shipment domain dependency remains pending.",
       "sourceConfigs": [
         "src/app/main/cancel-shipment-requests-app/CancelShipmentRequestsAppConfig.js"
       ],
@@ -165,12 +166,14 @@
     {
       "feature": "dashboard",
       "status": "pending",
+      "apiGroundwork": "Read-only DashboardApi.ts defines the eight historical aggregate queries; no dashboard screen is registered or connected.",
       "sourceConfigs": ["src/app/main/dashboard/DashboardPageConfig.js"],
       "sourceRoutes": ["/dashboard"]
     },
     {
       "feature": "home-app",
       "status": "partial",
+      "apiGroundwork": "Read-only HomeApi.ts defines summary, current-account, and six recent-shipment queries; the welcome page remains unchanged and does not call them.",
       "sourceConfigs": ["src/app/main/home-app/HomeAppConfig.js"],
       "sourceRoutes": ["home"]
     },
@@ -440,7 +443,7 @@
   },
   "home": {
     "status": "partial",
-    "note": "Only the welcome/sign-out landing page exists. Original merchant/home content and the separate administrator dashboard remain pending."
+    "note": "Only the welcome/sign-out landing page exists. Read-only Home and dashboard API modules are prepared but not connected to a screen. Original merchant/home content and the separate administrator dashboard remain pending."
   },
   "deferredIntegrationLinks": [
     "shipping-company shipment summary (packaging-request summary is now available)",

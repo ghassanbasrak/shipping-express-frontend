@@ -240,8 +240,11 @@
     "test:countries": "node scripts/countries-regression.cjs",
     "test:countries:browser": "npm run build && node scripts/countries-browser-smoke.cjs",
     "test:shipping-companies": "node scripts/shipping-companies-regression.cjs",
+    "test:home-dashboard-api": "node scripts/home-dashboard-api-regression.cjs",
+    "test:cancellation-api": "node scripts/cancellation-api-regression.cjs",
     "test:shipping-companies:browser": "npm run build && node scripts/shipping-companies-browser-smoke.cjs",
     "test:geography": "node scripts/geography-regression.cjs",
+    "test:cities-csv": "node scripts/cities-csv-regression.cjs",
     "test:geography:browser": "npm run build && node scripts/geography-browser-smoke.cjs",
     "test:foundations": "node scripts/foundations-regression.cjs",
     "test:foundations:browser": "npm run build && node scripts/foundations-browser-smoke.cjs",
@@ -262,7 +265,8 @@
     "test:statistics": "node scripts/statistics-regression.cjs",
     "test:statistics:browser": "npm run build && node scripts/statistics-browser-smoke.cjs",
     "test:transactions": "node scripts/transactions-regression.cjs",
-    "test:transactions:browser": "npm run build && node scripts/transactions-browser-smoke.cjs"
+    "test:transactions:browser": "npm run build && node scripts/transactions-browser-smoke.cjs",
+    "test:brand-tokens": "node scripts/brand-tokens-check.cjs"
   },
   "engines": {
     "node": ">=18.0.0",
