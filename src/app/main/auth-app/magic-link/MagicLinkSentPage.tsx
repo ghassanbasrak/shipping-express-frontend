@@ -7,7 +7,7 @@ import { alpha } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
 function MagicLinkSentPage() {
-  const { t } = useTranslation("magicLink");
+  const { t, i18n } = useTranslation("magicLink");
   const theme = useTheme();
   return (
     <div className="flex flex-col flex-auto items-center sm:justify-center min-w-0">
@@ -128,7 +128,7 @@ function MagicLinkSentPage() {
         <div className="w-full max-w-320 sm:w-320 mx-auto sm:mx-0">
           <img
             className="h-48 mx-auto"
-            src={`/assets/images/logo/logo-text${theme.palette.mode === "dark" ? "-dark" : ""}.png`}
+            src={`/brand/logos/ashamco-${i18n.language.startsWith("ar") ? "ar" : "en"}-${theme.palette.mode === "dark" ? "on-purple" : "primary"}.svg`}
             alt="logo"
           />
 

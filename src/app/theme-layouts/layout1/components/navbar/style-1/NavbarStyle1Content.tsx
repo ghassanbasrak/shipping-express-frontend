@@ -48,7 +48,7 @@ type NavbarStyle1ContentProps = {
  * The navbar style 1 content.
  */
 function NavbarStyle1Content(props: NavbarStyle1ContentProps) {
-  const { t } = useTranslation("public");
+  const { t, i18n } = useTranslation("public");
   const user = useAppSelector(selectUser);
   const { className = "" } = props;
 
@@ -167,9 +167,9 @@ function NavbarStyle1Content(props: NavbarStyle1ContentProps) {
       <div className="flex flex-row items-center shrink-0 h-48 md:h-72 px-20">
         <div className="flex flex-1 space-x-8 mx-4 items-center">
           <img
-            className="w-full max-w-128"
-            src="/assets/images/logo/logo-text-dark.png"
-            alt="footer logo"
+            className="w-full max-w-160"
+            src={`/brand/logos/ashamco-${i18n.language.startsWith("ar") ? "ar" : "en"}-on-purple.svg`}
+            alt="اشامكو إكسبريس"
           />
           {/*<Typography className="ms-16 font-bold" variant="subtitle1">*/}
           {/*</Typography>*/}
@@ -189,8 +189,8 @@ function NavbarStyle1Content(props: NavbarStyle1ContentProps) {
         <div className="flex flex-0 items-center justify-center py-48 opacity-10">
           <img
             className="w-full max-w-64"
-            src="/assets/images/logo/logo-dark.png"
-            alt="footer logo"
+            src="/brand/logos/ashamco-mark-white.svg"
+            alt="اشامكو إكسبريس"
           />
         </div>
       </StyledContent>

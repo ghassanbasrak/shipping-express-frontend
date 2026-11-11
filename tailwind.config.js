@@ -3,7 +3,7 @@ const path = require("path");
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}", "./public/index.html"],
   safelist: ["pl-24", "pl-40", "pl-56", "pl-72", "pl-80"],
-  presets: [],
+  presets: [require("./src/brand/tailwind.preset.cjs")],
   darkMode: "class", // or 'class'
   theme: {
     accentColor: ({ theme }) => ({
