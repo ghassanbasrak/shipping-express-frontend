@@ -643,7 +643,6 @@ export function shipmentWarehouseSnapshot(
   return {
     id: warehouse.id,
     name: warehouse.name,
-    address: warehouse.address,
     mapAddress: warehouse.mapAddress,
     pickup: warehouse.pickup ? structuredClone(warehouse.pickup) : undefined,
   };

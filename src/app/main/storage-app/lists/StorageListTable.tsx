@@ -1,8 +1,8 @@
 import { useSelector } from "react-redux";
-import { useEffect, useMemo } from "react";
-import { Alert, Button, MenuItem, TextField } from "@mui/material";
+import { useEffect, useMemo, useState } from "react";
+import { Alert, Button, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "app/store/hooks";
 import { selectUser } from "src/app/auth/user/store/userSlice";
 import CustomTable from "app/shared-components/custom-table/CustomTable";
@@ -16,60 +16,74 @@ import {
   useGetStoragePlansQuery,
   useGetSupplyRequestsQuery,
   useGetStorageProductsQuery,
+  type ReviewSupplyArg,
 } from "../StorageApi";
 import { selectStorageLists, setStorageFilter } from "../store/storageSlice";
 import { listPaths, type StorageListKind } from "./StorageListHeader";
 import {
+  allowedSupplyTransitions,
   merchantContactUrl,
   supplyStatuses,
   toSupplyStatusTitle,
+  toSupplyStatusColor,
+  toStorageTypeTitle,
+  toStorageTypeColor,
 } from "../Utils";
+import SupplyReviewDialog from "../supply/SupplyReviewDialog";
+import { displayName } from "../../countries-app/Utils";
 type StorageRow = {
   id: string;
   name?: string;
   sku?: string;
   warehouse?: string;
   owner?: string;
+  userId?: string;
   phone?: string;
-  address?: string;
+  contactUrl?: string;
+  email?: string;
+  pickup?: string;
   warehouseId?: string;
   quantity?: number;
-  reserved?: number;
-  available?: number;
   unitPrice?: number;
   status?: string;
   type?: string;
   createdAt?: string;
+  updatedAt?: string;
   active?: boolean;
   price?: number;
+  productsCount?: number;
+  storageTypes?: string;
+  features?: string;
+  durationDays?: number;
+  products?: { name: string; warehouseProductId?: string }[];
+  mapAddress?: string;
+  information?: string;
 };
 export default function StorageListTable({ kind }: { kind: StorageListKind }) {
   const { t } = useTranslation("storageApp"),
-    navigate = useNavigate(),
     dispatch = useAppDispatch(),
     user = useAppSelector(selectUser),
-    filter = useSelector(selectStorageLists)[kind];
-  const params = { admin: user.role === "admin" };
-  const warehouses = useGetWarehousesQuery(params, {
+    filter = useSelector(selectStorageLists)[kind],
+    [params] = useSearchParams();
+  const [decision, setDecision] = useState<ReviewSupplyArg>();
+  const options = { admin: user.role === "admin" };
+  const warehouses = useGetWarehousesQuery(options, {
     skip: kind !== "warehouses",
     refetchOnMountOrArgChange: true,
   });
-  const plans = useGetStoragePlansQuery(params, {
+  const plans = useGetStoragePlansQuery(options, {
     skip: kind !== "plans",
     refetchOnMountOrArgChange: true,
   });
   const supplies = useGetSupplyRequestsQuery(
-    { ...params, userId: user.id },
+    { ...options, userId: user.id },
     { skip: kind !== "supplies", refetchOnMountOrArgChange: true },
   );
   const products = useGetStorageProductsQuery(
-    { userId: user.id },
-    {
-      skip: kind !== "products" || user.role !== "user",
-      refetchOnMountOrArgChange: true,
-    },
+    { ...options, userId: user.id, includeEmpty: true },
+    { skip: kind !== "products", refetchOnMountOrArgChange: true },
   );
-  const warehouseOptions = useGetWarehousesQuery(params, {
+  const warehouseOptions = useGetWarehousesQuery(options, {
     skip: kind !== "supplies" && kind !== "products",
   });
   const query =
@@ -80,13 +94,40 @@ export default function StorageListTable({ kind }: { kind: StorageListKind }) {
         : kind === "supplies"
           ? supplies
           : products;
+  const accountName = (row) =>
+    row.user?.companyName ||
+    [row.user?.firstName, row.user?.lastName].filter(Boolean).join(" ") ||
+    row.userId;
+  const warehouseName = (row) =>
+    row.warehouse?.name ||
+    warehouseOptions.currentData?.find((w) => w.id === row.warehouseId)?.name ||
+    row.warehouseId;
   const rows: StorageRow[] = useMemo(
     () =>
       kind === "warehouses"
         ? (warehouses.currentData || []).map((row) => ({
             id: row.id,
             name: row.name,
-            address: row.address,
+            phone: row.pickup?.phone,
+            email: row.pickup?.email,
+            pickup: [
+              displayName(row.pickup?.country?.name) || row.pickup?.countryId,
+              displayName(row.pickup?.state?.name) || row.pickup?.stateId,
+              displayName(row.pickup?.city?.name) || row.pickup?.cityId,
+              row.pickup?.street,
+              row.pickup?.nationalAddress,
+              row.pickup?.zipCode,
+            ]
+              .filter(Boolean)
+              .join(" · "),
+            productsCount: row.productsCount,
+            storageTypes: row.storageTypes
+              ?.map((v) => t(toStorageTypeTitle(v)))
+              .join(", "),
+            mapAddress: row.mapAddress,
+            information: row.information,
+            createdAt: row.createdAt,
+            updatedAt: row.updatedAt,
           }))
         : kind === "plans"
           ? (plans.currentData || []).map((row) => ({
@@ -94,47 +135,60 @@ export default function StorageListTable({ kind }: { kind: StorageListKind }) {
               name: row.name,
               price: row.discountPrice ?? row.price,
               active: row.isActive,
+              durationDays: row.durationDays,
+              features: row.features.join(" · "),
+              storageTypes: row.storageTypes
+                ?.map((v) => t(toStorageTypeTitle(v)))
+                .join(", "),
+              createdAt: row.createdAt,
+              updatedAt: row.updatedAt,
             }))
           : kind === "supplies"
-            ? (supplies.currentData || []).map((row) => ({
-                id: row.id,
-                name: row.id.slice(-8),
-                warehouse:
-                  row.warehouse?.name ||
-                  warehouseOptions.currentData?.find(
-                    (item) => item.id === row.warehouseId,
-                  )?.name ||
-                  row.warehouseId,
-                warehouseId: row.warehouseId,
-                owner:
-                  row.user?.companyName ||
-                  [row.user?.firstName, row.user?.lastName]
-                    .filter(Boolean)
-                    .join(" "),
-                phone: row.user?.phone,
-                status: row.status,
-                quantity: row.products.reduce(
-                  (sum, item) => sum + item.quantity,
-                  0,
-                ),
-                createdAt: row.createdAt,
-              }))
-            : (products.currentData || []).map((row) => ({
-                id: row.id,
-                name: row.name,
-                sku: row.sku,
-                warehouse:
-                  row.warehouse?.name ||
-                  warehouseOptions.currentData?.find(
-                    (item) => item.id === row.warehouseId,
-                  )?.name ||
-                  row.warehouseId,
-                warehouseId: row.warehouseId,
-                owner: row.user?.companyName || row.user?.firstName,
-                type: row.storageType,
-                quantity: row.quantity,
-                unitPrice: row.unitPrice,
-              })),
+            ? (supplies.currentData || [])
+                .filter(
+                  (row) => user.role === "admin" || row.userId === user.id,
+                )
+                .map((row) => ({
+                  id: row.id,
+                  name: row.id.slice(-8),
+                  warehouse: warehouseName(row),
+                  warehouseId: row.warehouseId,
+                  userId: row.userId,
+                  owner: accountName(row),
+                  phone: row.user?.phone,
+                  contactUrl: merchantContactUrl(row.user?.phone),
+                  status: row.status,
+                  quantity: row.products.reduce(
+                    (sum, p) => sum + p.quantity,
+                    0,
+                  ),
+                  productsCount: row.products.length,
+                  products: row.products,
+                  price: row.products.reduce(
+                    (sum, p) => sum + p.quantity * (p.unitPrice || 0),
+                    0,
+                  ),
+                  createdAt: row.createdAt,
+                  updatedAt: row.updatedAt,
+                }))
+            : (products.currentData || [])
+                .filter(
+                  (row) => user.role === "admin" || row.userId === user.id,
+                )
+                .map((row) => ({
+                  id: row.id,
+                  name: row.name,
+                  sku: row.sku,
+                  warehouse: warehouseName(row),
+                  warehouseId: row.warehouseId,
+                  userId: row.userId,
+                  owner: accountName(row),
+                  type: row.storageType,
+                  quantity: row.quantity,
+                  unitPrice: row.unitPrice,
+                  createdAt: row.createdAt,
+                  updatedAt: row.updatedAt,
+                })),
     [
       kind,
       warehouses.currentData,
@@ -142,6 +196,9 @@ export default function StorageListTable({ kind }: { kind: StorageListKind }) {
       supplies.currentData,
       products.currentData,
       warehouseOptions.currentData,
+      user.id,
+      user.role,
+      t,
     ],
   );
   const field = (
@@ -162,59 +219,178 @@ export default function StorageListTable({ kind }: { kind: StorageListKind }) {
   if (kind === "products")
     fields.push(
       field("sku", "SKU", 0.7),
-      field("type", "STORAGE_TYPE", 0.9),
+      {
+        ...field("type", "STORAGE_TYPE", 0.7),
+        chip: true,
+        toChipTitle: (v) => t(toStorageTypeTitle(v)),
+        toChipColor: toStorageTypeColor,
+      },
       field("quantity", "AVAILABLE", 0.6),
-      field("unitPrice", "LAST_UNIT_PRICE", 0.7),
+      field("unitPrice", "LAST_UNIT_PRICE", 0.7, TableDataTypes.money),
     );
   if (kind === "supplies" || kind === "products") {
-    fields.push(field("warehouse", "WAREHOUSE", 1));
-    if (user.role === "admin") fields.push(field("owner", "MERCHANT", 1));
+    fields.push({
+      ...field("warehouse", "WAREHOUSE", 1),
+      link: user.role === "admin",
+      linkGetter: (r) => "/storage/warehouses/" + r.warehouseId,
+    });
+    if (user.role === "admin")
+      fields.push({
+        ...field("owner", "MERCHANT", 1.1),
+        link: true,
+        linkGetter: (r) => `/merchants/${r.userId}/view`,
+      });
   }
   if (kind === "supplies")
     fields.push(
       field("quantity", "QUANTITY", 0.6),
+      field("productsCount", "PRODUCTS_COUNT", 0.6),
+      {
+        ...field("products", "PRODUCTS", 1.3),
+        valueGetter: (r) => r.products?.map((p) => p.name).join(", "),
+        renderCell: ({ row }) => (
+          <div className="flex flex-wrap gap-4">
+            {row.products?.map((p, i) =>
+              user.role === "admin" ? (
+                <Typography
+                  key={i}
+                  className="text-12 underline"
+                  color="primary"
+                  component={Link}
+                  to={
+                    p.warehouseProductId
+                      ? `/storage/products/${p.warehouseProductId}`
+                      : `/storage/products?warehouseId=${encodeURIComponent(row.warehouseId)}`
+                  }
+                >
+                  {p.name}
+                </Typography>
+              ) : (
+                <span key={i}>{p.name}</span>
+              ),
+            )}
+          </div>
+        ),
+      },
       {
         ...field("status", "STATUS", 0.7),
-        valueGetter: (row) => t(toSupplyStatusTitle(row.status)),
+        chip: true,
+        toChipTitle: (v) => t(toSupplyStatusTitle(v)),
+        toChipColor: toSupplyStatusColor,
       },
-      field("createdAt", "CREATED_AT", 0.7, TableDataTypes.date),
+      field("price", "PRODUCTS_VALUE", 0.7, TableDataTypes.money),
     );
   if (kind === "plans")
+    fields.push(
+      field("price", "PRICE", 0.7, TableDataTypes.money),
+      field("durationDays", "DURATION_DAYS", 0.6),
+      field("features", "PLAN_FEATURES", 1.3),
+      field("storageTypes", "STORAGE_TYPES", 1.1),
+      {
+        ...field("active", "ACTIVE", 0.3),
+        valueGetter: (r) => t(r.active ? "YES" : "NO"),
+      },
+    );
+  if (kind === "warehouses")
+    fields.push(
+      field("phone", "PICKUP_PHONE", 0.9),
+      field("email", "EMAIL", 0.9),
+      field("pickup", "PICKUP_DETAILS", 1.3),
+      field("storageTypes", "STORAGE_TYPES", 1.1),
+      field("productsCount", "PRODUCTS_COUNT", 0.6),
+      field("information", "WAREHOUSE_INFORMATION", 1.3),
+    );
+  fields.push(
+    field("createdAt", "CREATED_AT", 0.7, TableDataTypes.date),
+    field("updatedAt", "UPDATED_AT", 0.7, TableDataTypes.date),
+  );
+  if (kind !== "products" || user.role === "admin")
     fields.push({
-      ...field("active", "ACTIVE", 0.3),
-      valueGetter: (row) => t(row.active ? "YES" : "NO"),
-    });
-  if (kind === "warehouses") fields.push(field("address", "ADDRESS", 1.3));
-  if (kind === "plans") fields.push(field("price", "PRICE", 0.7));
-  if (kind !== "products")
-    fields.push({
-      ...field("id", "ACTIONS", 1.3, TableDataTypes.actions),
+      id: "actions",
+      label: t("ACTIONS"),
+      type: TableDataTypes.actions,
+      flex: 1.3,
+      minWidth: 130,
+      exportable: false,
       actions: [
         {
-          title: t("VIEW"),
-          color: "primary",
-          onActionClick: (row) => navigate(listPaths[kind] + "/" + row.id),
+          title: t(kind === "products" ? "EDIT" : "VIEW"),
+          color: "secondary",
+          link: true,
+          linkGetter: (row) => listPaths[kind] + "/" + row.id,
         },
+        ...(kind === "warehouses"
+          ? [
+              {
+                title: t("PRODUCTS"),
+                link: true,
+                linkGetter: (row: StorageRow) =>
+                  "/storage/products?warehouseId=" + encodeURIComponent(row.id),
+              },
+            ]
+          : []),
         ...(kind === "supplies" && user.role === "admin"
           ? [
               {
                 title: t("CONTACT_MERCHANT"),
-                color: "success" as const,
-                onActionClick: (row: StorageRow) => {
-                  const url = merchantContactUrl(row.phone);
-                  if (url) window.open(url, "_blank", "noopener,noreferrer");
-                },
+                link: true,
+                linkGetter: (row: StorageRow) => row.contactUrl,
+                target: "_blank",
+                conditions: [{ id: "contactUrl" }],
               },
+              ...[
+                supplyStatuses.approved,
+                supplyStatuses.received,
+                supplyStatuses.rejected,
+              ].map((status) => ({
+                title: t(
+                  status === supplyStatuses.approved
+                    ? "APPROVE"
+                    : status === supplyStatuses.received
+                      ? "RECEIVE"
+                      : "REJECT",
+                ),
+                color:
+                  status === supplyStatuses.rejected
+                    ? ("error" as const)
+                    : ("primary" as const),
+                conditions: [
+                  {
+                    id: "status",
+                    equalsTo:
+                      status === supplyStatuses.received
+                        ? supplyStatuses.approved
+                        : supplyStatuses.pending,
+                    ...(status === supplyStatuses.rejected
+                      ? { orEqualsTo: supplyStatuses.approved }
+                      : {}),
+                  },
+                ],
+                onActionClick: (row: StorageRow) => {
+                  if (allowedSupplyTransitions(row.status).includes(status))
+                    setDecision({ id: row.id, status });
+                },
+              })),
             ]
           : []),
       ],
     });
+  useEffect(() => {
+    dispatch(
+      setStorageFilter({
+        list: kind,
+        field: "warehouseId",
+        value: params.get("warehouseId") || "",
+      }),
+    );
+  }, [params.get("warehouseId"), kind, dispatch]);
   const filtered = rows.filter(
-    (row) =>
-      (!filter.warehouseId || row.warehouseId === filter.warehouseId) &&
-      (!filter.status || row.status === filter.status) &&
-      Object.values(row).some((value) =>
-        String(value ?? "")
+    (r) =>
+      (!filter.warehouseId || r.warehouseId === filter.warehouseId) &&
+      (!filter.status || r.status === filter.status) &&
+      (!params.get("productId") || r.id === params.get("productId")) &&
+      Object.values(r).some((v) =>
+        String(v ?? "")
           .toLowerCase()
           .includes(filter.searchText.toLowerCase()),
       ),
@@ -247,75 +423,6 @@ export default function StorageListTable({ kind }: { kind: StorageListKind }) {
       className="w-full h-full flex flex-col"
       data-testid={"storage-list-" + kind}
     >
-      {(kind === "supplies" || kind === "products") && (
-        <div className="flex flex-wrap gap-12 p-16">
-          <TextField
-            select
-            size="small"
-            className="w-full sm:w-256"
-            label={t("WAREHOUSE")}
-            value={filter.warehouseId}
-            onChange={(event) =>
-              dispatch(
-                setStorageFilter({
-                  list: kind,
-                  field: "warehouseId",
-                  value: event.target.value,
-                }),
-              )
-            }
-          >
-            <MenuItem value="">{t("ALL")}</MenuItem>
-            {(warehouseOptions.currentData || []).map((row) => (
-              <MenuItem key={row.id} value={row.id}>
-                {row.name}
-              </MenuItem>
-            ))}
-            {!!filter.warehouseId &&
-              !warehouseOptions.currentData?.some(
-                (row) => row.id === filter.warehouseId,
-              ) && (
-                <MenuItem value={filter.warehouseId}>
-                  {filter.warehouseId}
-                </MenuItem>
-              )}
-          </TextField>
-          {kind === "supplies" && (
-            <TextField
-              select
-              size="small"
-              className="w-full sm:w-200"
-              label={t("STATUS")}
-              value={filter.status}
-              onChange={(event) =>
-                dispatch(
-                  setStorageFilter({
-                    list: kind,
-                    field: "status",
-                    value: event.target.value,
-                  }),
-                )
-              }
-            >
-              <MenuItem value="">{t("ALL")}</MenuItem>
-              {Object.values(supplyStatuses).map((status) => (
-                <MenuItem key={status} value={status}>
-                  {t(toSupplyStatusTitle(status))}
-                </MenuItem>
-              ))}
-            </TextField>
-          )}
-          {warehouseOptions.isError && (
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={() => warehouseOptions.refetch()}
-            >
-              {t("RETRY")}
-            </Button>
-          )}
-        </div>
-      )}
       {query.isError && (
         <Alert
           severity="error"
@@ -351,6 +458,12 @@ export default function StorageListTable({ kind }: { kind: StorageListKind }) {
           )
         }
       />
+      {decision && (
+        <SupplyReviewDialog
+          decision={decision}
+          onClose={() => setDecision(undefined)}
+        />
+      )}
     </div>
   );
 }

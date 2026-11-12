@@ -72,7 +72,7 @@ const locale = {
   SHIPMENT_USERS: "Shipment Senders/Receivers",
   TRANSACTIONS: "Transactions & Balance",
   COD_TRANSACTIONS: "COD Transactions & Balance",
-  PAYMENTS: "Topup Balance Requests",
+  PAYMENTS: "Payments",
   WITHDRAW_REQUESTS: "Withdraw Requests",
   BANK_TRANSFERS: "Bank Transfers",
   CANCEL_SHIPMENT_REQUESTS: "Cancel Shipment Requests",

@@ -5,7 +5,7 @@ export const addTagTypes = [
   "BankTransfers",
   "BankTransfer",
   "BankTransfersUser",
-  "TopupRequestsUser",
+  "PaymentsUser",
   "Transactions",
   "TransactionAccount",
   "ShipmentAccount",
@@ -80,7 +80,7 @@ const BankTransfersApi = api.enhanceEndpoints({ addTagTypes }).injectEndpoints({
       }),
       invalidatesTags: (_, __, value) => [
         "BankTransfers",
-        "TopupRequestsUser",
+        "PaymentsUser",
         "Transactions",
         "TransactionAccount",
         "ShipmentAccount",

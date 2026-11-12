@@ -101,7 +101,7 @@ export const toFeaturesTypeComparedPath = (feature: string) => {
     case featureTypes.codTransactions:
       return "cod";
     case featureTypes.payments:
-      return "topup-requests";
+      return "payments";
     case featureTypes.withdrawRequests:
       return "withdraw-requests";
     case featureTypes.bankTransfers:

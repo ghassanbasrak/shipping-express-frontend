@@ -1,4 +1,57 @@
 const locale = {
+  STORAGE_TYPES_NOT_SAVED:
+    "The server did not retain the supported storage types. Your draft is preserved; retry updates the saved record.",
+  PLAN_FEATURES: "Features",
+  TYPE_STANDARD: "Standard",
+  TYPE_DRY: "Dry",
+  TYPE_CHILLED: "Chilled",
+  TYPE_FROZEN: "Frozen",
+  UNKNOWN_STORAGE_TYPE: "Unknown storage type",
+  STORAGE_SUBSCRIPTIONS: "Storage subscriptions",
+  SUBSCRIBE_STORAGE: "Subscribe Storage",
+  SUBSCRIPTIONS_HINT:
+    "Your storage subscriptions, payments and service periods in one place.",
+  CURRENT_SUBSCRIPTION: "Current subscription",
+  CREATE_SUBSCRIPTION: "Create subscription",
+  RENEW: "Renew",
+  UPGRADE: "Upgrade",
+  STARTS_AT: "Starts at",
+  UPDATED_AT: "Updated at",
+  SUBSCRIPTION_NUMBER: "Subscription number",
+  PLAN: "Plan",
+  PAYMENT: "Payment",
+  PAYMENT_METHOD: "Payment method",
+  EXPIRED: "Expired",
+  CANCELLED: "Cancelled",
+  FILTERS: "Filters",
+  RESET_FILTERS: "Reset filters",
+  ADMIN_SUBSCRIPTION_HINT:
+    "Activate storage immediately for the selected merchant. This action does not charge their wallet or open online payment.",
+  ACTIVATE_SUBSCRIPTION: "Activate subscription",
+  OPERATION: "Operation",
+  CHECK_SUBSCRIPTION_HISTORY:
+    "Check subscription history before submitting again.",
+  PRODUCTS_COUNT: "Products count",
+  PRODUCT_SOURCE: "Product option",
+  NEW_PRODUCT: "Create new product",
+  EXISTING_PRODUCT: "Select existing product",
+  NEW_UNIT_PRICE: "New unit price (optional)",
+  OPTIONAL_NEW_PRICE:
+    "Leave empty to keep the existing price. Zero replaces it with zero.",
+  STOCK_INCREASE_HINT:
+    "After receipt, quantity will increase from {{old}} to {{next}}.",
+  PRICE_UNCHANGED_HINT: "The existing unit price {{price}} will stay.",
+  PRICE_REPLACED_HINT: "After receipt, unit price will become {{price}}.",
+  NO_SUPPORTED_TYPES:
+    "No shared storage types. Choose another warehouse or update your plan.",
+  EDIT_PRODUCT: "Edit stored product",
+  EDIT: "Edit",
+  SUPPLY_STATUS_CHANGED: "The request status changed. Refresh and try again.",
+  TYPE_NOT_ALLOWED:
+    "This storage type is not supported by both your plan and the selected warehouse.",
+
+  HOSTED_CHECKOUT_UNAVAILABLE:
+    "The payment was created, but no valid hosted payment link was returned. Check payment history before starting another payment.",
   PICKUP_SAVE_UNSUPPORTED:
     "The warehouse was saved, but its pickup details were not retained by the server. Your draft is preserved. Update the backend before retrying; a retry updates the same warehouse.",
   SAVED_WAREHOUSE_REFERENCE: "Saved warehouse reference",
@@ -44,7 +97,7 @@ const locale = {
   BACK_TO_STORAGE: "Back to storage",
   RESUME_CHECKOUT: "Resume payment",
   CHECKOUT_SAVED:
-    "Your checkout is saved. Resume it to complete payment or verify its result.",
+    "A payment has been created. Continue payment or check its status.",
   CHECKOUT_LOAD_ERROR:
     "Unable to load the payment form. Retry loading this checkout.",
   CLOSE: "Close",
@@ -98,7 +151,6 @@ const locale = {
   DISCOUNT_HINT: "Leave empty to use the original price. Zero is a free plan.",
   DURATION_DAYS: "Duration (days)",
   DISCOUNT_LIMIT: "The discounted price cannot exceed the original price",
-  PLAN_FEATURES: "Subscription features",
   FEATURES_HINT: "Enter one feature per line",
   WAREHOUSES: "Warehouses",
   STORAGE_PLANS: "Storage plans",
@@ -160,8 +212,6 @@ const locale = {
   SUPPLY_CREATE_HINT:
     "Choose a warehouse and enter the products you will deliver.",
   SUBMIT_REQUEST: "Submit supply request",
-  TYPE_NOT_ALLOWED:
-    "This storage type is not included in your current subscription.",
   DUPLICATE_SKU: "This SKU appears more than once in the request",
   ADD_PRODUCT: "Add product",
   ALLOWED_TYPES_HINT: "Storage types available for this request",

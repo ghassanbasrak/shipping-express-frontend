@@ -65,7 +65,7 @@ const locale = {
   SHIPMENT_USERS: "مرسلين ومستلمين الشحنات",
   TRANSACTIONS: "العمليات المالية ورصيد المحفظة",
   COD_TRANSACTIONS: "العمليات المالية ورصيد الدفع عند الإستلام",
-  PAYMENTS: "سجلات شحن الرصيد",
+  PAYMENTS: "الدفعات الإلكترونية",
   WITHDRAW_REQUESTS: "طلبات سحب المستحقات",
   BANK_TRANSFERS: "التحويلات البنكية",
   CANCEL_SHIPMENT_REQUESTS: "طلبات الغاء الشحنات",

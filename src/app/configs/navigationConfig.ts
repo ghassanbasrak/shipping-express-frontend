@@ -87,12 +87,12 @@ const navigationConfig: FuseNavItemType[] = [
     type: "group",
     children: [
       {
-        id: "topup-requests",
-        title: "Top-up Requests",
-        translate: "TOPUP_REQUESTS",
+        id: "payments",
+        title: "Payments",
+        translate: "PAYMENTS",
         type: "item",
         icon: "heroicons-outline:credit-card",
-        url: "/topup-requests/all",
+        url: "/payments/all",
         auth: authRoles.user,
       },
       {
@@ -308,16 +308,19 @@ const navigationConfig: FuseNavItemType[] = [
     type: "group",
     children: [
       {
-        id: "storage",
-        title: "Storage subscription",
-        translate: "STORAGE",
+        id: "storage-subscriptions-admin",
+        title: "Storage subscriptions",
+        translate: "STORAGE_SUBSCRIPTIONS",
         type: "item",
-        icon: "heroicons-outline:cube",
-        url: "/storage",
-        auth: ["admin", "user"],
-        hasPermissionGetter: (user) =>
-          user?.role === "user" || canSeeStorageAdmin(user),
-        end: true,
+        icon: "heroicons-outline:collection",
+        url: "/storage/subscriptions",
+        auth: ["admin"],
+        hasPermissionGetter: canSeeStorageAdmin,
+      },
+      {
+        id: "storage-products-admin", title: "Stored products", translate: "STORAGE_PRODUCTS",
+        type: "item", icon: "heroicons-outline:cube", url: "/storage/products",
+        auth: ["admin"], hasPermissionGetter: canSeeStorageAdmin,
       },
       {
         id: "storage-warehouses",

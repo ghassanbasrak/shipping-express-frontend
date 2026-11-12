@@ -61,7 +61,7 @@ export default function BankTransfersHeader() {
               : t("BANK_TRANSFERS")}
           </FeatureHeaderHeading>
         </div>
-        {user.role === "user" && <Button component={Link} to="/topup-requests/all/new?method=bankTransfer" variant="contained" color="primary">{t("ADD_BANK_TRANSFER")}</Button>}
+        {user.role === "user" && <Button component={Link} to="/payments/all/new?method=bankTransfer" variant="contained" color="primary">{t("ADD_BANK_TRANSFER")}</Button>}
       </FeatureHeaderRow>
       <FeatureHeaderToolbar
         search={

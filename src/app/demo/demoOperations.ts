@@ -1,3 +1,8 @@
+import {
+  paymentType,
+  paymentMethodType,
+  paymentStatus,
+} from "../main/payments-app/Utils";
 import { getDemoUser } from "./demoMode";
 import type { Context, DemoDbForExtras, DemoRow } from "./demoExtraApi";
 
@@ -361,7 +366,17 @@ export function ensureDemoOperations(
       Array.from({ length: i < 2 ? 12 : 2 }, (_, n) => ({
         id: `demo-payment-${i + 1}-${n + 1}`,
         userId: u.id,
-        status: ["success", "pending", "failed"][n % 3],
+        type: paymentType.topup,
+        paymentMethodType: [
+          paymentMethodType.visa,
+          paymentMethodType.master,
+          paymentMethodType.mada,
+        ][n % 3],
+        status: [
+          paymentStatus.confirmed,
+          paymentStatus.pending,
+          paymentStatus.refused,
+        ][n % 3],
         amount: 100 + n * 50,
         total: round((100 + n * 50) * 1.15),
         taxTotal: round((100 + n * 50) * 0.15),
@@ -496,7 +511,7 @@ function completePayment(db: Db, payment: DemoRow) {
     payment.balanceApplied = true;
     audit(db, "Demo payment completed", payment, "payment");
   }
-  payment.status = "success";
+  payment.status = paymentStatus.confirmed;
   payment.updatedAt = now();
 }
 function dashboard(db: Db, ctx: Context): Reply | null {
@@ -781,14 +796,36 @@ export async function handleDemoOperations(
   if (resource === "payments") {
     if (id === "moyasar" && method === "post") {
       const userId = getDemoUser().id;
-      if (staff() || !account(db, userId) || !(Number(data.amount) > 0)) return error("Invalid top-up");
-      const amount = Number(data.amount), total = round(amount * 1.15);
-      const payment = { id: uid(), userId, amount, taxTotal: round(total - amount), feeTotal: 0, total,
-        status: "pending", paymentMethodType: "moyasar", metadata: { gateway: "moyasar" },
-        transactionId: uid(), createdAt: now(), updatedAt: now() };
-      db.payments.unshift(payment); save();
-      return [201, { payment, checkout: { publishable_api_key: "demo", amount: Math.round(total * 100), currency: "SAR",
-        description: `Wallet top-up ${payment.id}`, callback_url: `${window.location.origin}/wallet/payment-result?paymentId=${encodeURIComponent(payment.id)}`, methods: ["creditcard"] } }];
+      if (staff() || !account(db, userId) || !(Number(data.amount) > 0))
+        return error("Invalid top-up");
+      const amount = Number(data.amount),
+        total = round(amount * 1.15);
+      const payment = {
+        id: uid(),
+        userId,
+        amount,
+        taxTotal: round(total - amount),
+        feeTotal: 0,
+        total,
+        type: paymentType.topup,
+        status: paymentStatus.pending,
+        paymentMethodType: null,
+        transactionId: uid(),
+        createdAt: now(),
+        updatedAt: now(),
+      };
+      db.payments.unshift(payment);
+      save();
+      return [
+        201,
+        {
+          payment,
+          checkoutUrl:
+            window.location.origin +
+            "/demo/payment/" +
+            encodeURIComponent(payment.id),
+        },
+      ];
     }
     const payment = db.payments.find((r) => r.id === id);
     if (!id && method === "get")
@@ -806,9 +843,23 @@ export async function handleDemoOperations(
     if (!allowed(payment)) return error("Not available for this account", 403);
     if (method === "get")
       return [200, { ...payment, user: account(db, payment.userId) }];
+    if (method === "post" && action === "demo-complete") {
+      if (
+        staff() ||
+        !Object.values(paymentMethodType).includes(data.paymentMethodType) ||
+        data.paymentMethodType === paymentMethodType.free
+      )
+        return error("Invalid demo method");
+      if (payment.status === paymentStatus.confirmed) return [200, payment];
+      if (!payment.demoPaid) payment.paymentMethodType = data.paymentMethodType;
+      payment.demoPaid = true;
+      save();
+      return [200, payment];
+    }
     if (method === "post" && action === "check-status") {
-      if (staff() || data.moyasarPaymentId !== "demo-moyasar-" + payment.id) return error("Invalid Moyasar payment");
-      completePayment(db, payment); save();
+      if (staff()) return error("Merchant payment required", 403);
+      if (payment.demoPaid) completePayment(db, payment);
+      save();
       return [200, { ...payment, user: account(db, payment.userId) }];
     }
     return error("Unsupported payment action", 405);

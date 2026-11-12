@@ -936,7 +936,7 @@
       ]
     },
     {
-      "feature": "topup-requests-app",
+      "feature": "payments-app",
       "status": "migrated",
       "sourceConfigs": [
         "src/app/main/topup-requests-app/TopupRequestsAppConfig.js"
@@ -946,6 +946,23 @@
         "topup-requests/:userId/:topupRequestId/*"
       ],
       "includes": [
+        "Renamed Payments feature at /payments/:userId with merchant-only /payments/:userId/:paymentId/*; Payment/Payments pages, IPayment, PaymentSchema, PaymentsApi and paymentsSlice.js.",
+        "Payments / الدفعات الإلكترونية UI, navigation, searches, empty/error states, exports and account/staff/bank-transfer links.",
+        "Native payments permission, ten-row filtered v1/payments history and page-zero 500000-row export; merchant reads remain backend-account scoped.",
+        "Hosted Moyasar link initiation with net amount only, paymentId-only invoice verification and owned purpose routing; Pay Online labels and shared wallet/storage callback routing.",
+        "New payment always starts fresh with online/bank-transfer options; no persisted wallet checkout recovery.",
+        "Bank transfer submission uses existing separate requests contract and staff review; no frontend wallet credit or invented gateway endpoints.",
+        "Separately permissioned staff ledger adjustments; no restored packaging, verification or payment-plan screens.",
+        "Typed topup/storageSubscription purposes and exact visa/master/mada/amex/unionpay/applepay/free method values, using shared Utils title/color helpers in history and results."
+      ],
+      "originalFeature": "topup-requests-app",
+      "runtimeConfig": "src/app/main/payments-app/PaymentsAppConfig.tsx",
+      "runtimeRoutes": [
+        "payments/:userId",
+        "payments/:userId/:paymentId/*",
+        "wallet/payment-result"
+      ],
+      "historicalIncludes": [
         "Original /topup-requests/:userId history and merchant-only /topup-requests/:userId/:topupRequestId/* creation/results, simple RTK Query API, topupRequestsSlice.js, root ITopupRequest and canonical header/tabs/BasicInfoTab structure",
         "Existing payments view permission identifier, ten-row server pagination, account/status/date/encoded-search filters, original page-zero/500000 filtered Excel export, stable totals and read-error retries",
         "Source gateway response/reference/platform, accounting zohoCreditId, transaction/error/notes, method icons, net/gross amount, stored plan name, status and timestamp fields preserved",
@@ -1586,5 +1603,176 @@
     ],
     "inventory": "Unchanged: 26 migrated historical feature areas, 6 excluded, 0 partial, 0 pending; storage tracked separately.",
     "report": "docs/media-input-topup-update.md"
+  },
+  "paymentsFeatureRename": {
+    "date": "2026-11-10",
+    "scope": "Frontend feature rename; no new counted feature or backend edits.",
+    "status": "complete",
+    "completed": [
+      "Moved topup-requests-app to payments-app and renamed feature pages, API/hooks/types, models, JS Redux slice, i18n namespace, helpers and cache tags.",
+      "Changed history/detail/new routes to /payments/:userId and /payments/:userId/:paymentId/*; all account, ledger, home, log, staff and bank-transfer references updated.",
+      "Payments / الدفعات الإلكترونية navigation and feature UI; updated headings, empty/error states, filters and export naming.",
+      "Retained native payments permission, backend endpoints, wallet/storage callback contracts, fresh-payment behavior and online/bank-transfer choices."
+    ],
+    "validation": {
+      "activeTypecheck": "passed: npm run typecheck:app",
+      "productionBuild": "passed: npm run build -- --outDir build/payments-rename-work/production",
+      "buildLog": "test-results/payments-rename-build.log",
+      "focusedChecks": {
+        "payments": 18,
+        "navigation": 10,
+        "bankTransfers": 12,
+        "storage": 28,
+        "retirement": 9,
+        "total": 77
+      },
+      "sourceAudit": "No old feature folder/route, TopupRequest identifier or topupRequests namespace references in src.",
+      "knownTestFailure": "Broader merchants-regression.cjs stops on retired merchantVerificationStatus assertion; not counted as passing.",
+      "browser": "No live browser retest in this turn; no headless browser fallback.",
+      "backendChanges": false
+    },
+    "remaining": [
+      "Update obsolete merchant regression assertions about retired verification.",
+      "Common-page parity, eight dormant-source audits and earlier unrelated QA findings remain tracked separately.",
+      "Hosted payment backend integration and completed live financial acceptance remain outside this rename."
+    ],
+    "inventory": "Unchanged: 26 migrated, 6 excluded, 0 partial, 0 pending; storage separate.",
+    "report": "docs/payments-feature-rename.md"
+  },
+  "hostedPaymentsFrontendPreparation": {
+    "date": "2026-11-10",
+    "scope": "Frontend preparation for backend-hosted Moyasar invoices; backend unchanged and live acceptance deferred.",
+    "status": "frontend prepared; backend contract/deployment pending",
+    "contract": {
+      "createWallet": "POST v1/payments/moyasar {amount} -> {payment,checkoutUrl}",
+      "createStorage": "POST v1/storage/subscriptions/checkout {planId} -> {payment,checkoutUrl,subscription?}; free: checkoutUrl=null",
+      "verify": "POST v1/payments/:paymentId/check-status {} -> updated owned IPayment",
+      "paymentType": [
+        "topup",
+        "storageSubscription"
+      ],
+      "paymentMethodType": [
+        "visa",
+        "master",
+        "mada",
+        "amex",
+        "unionpay",
+        "applepay",
+        "free"
+      ],
+      "returns": [
+        "/wallet/payment-result?paymentId=INTERNAL_ID",
+        "/storage/payment-result?paymentId=INTERNAL_ID"
+      ]
+    },
+    "completed": [
+      "Const enum values and title/color helpers in payments-app/Utils.ts; IPayment purpose required and method typed to the exact allowed values with null/absent while unknown.",
+      "Wallet and storage redirect to the backend-returned hosted link; SDK/config widgets and stored browser checkout recovery removed.",
+      "Internal-ID-only result verification, owned backend purpose routing, pending/failure/retry states, matching storage entitlement guard and free-plan validation.",
+      "Payment purpose and method chips in history and results; actual card/source normalization remains backend-owned.",
+      "Preserved request/filter/permission/bank-transfer behavior and duplicate-create guards; isolated local demo hosted page with explicit simulation before fulfillment."
+    ],
+    "validation": {
+      "typecheck": "passed: npm run typecheck:app",
+      "productionBuild": "passed: npm run build -- --outDir build/hosted-payments-work/production",
+      "buildLog": "test-results/hosted-payments-build.log",
+      "focusedChecks": {
+        "payments": 22,
+        "hostedHandlers": 15,
+        "storageAndDemoContracts": 32,
+        "bankTransfers": 12,
+        "navigation": 10,
+        "retirement": 9,
+        "total": 100
+      },
+      "livePayments": "Not executed; backend requested changes are not yet deployed. No live credit/approval or actual provider notification was performed.",
+      "browser": "No new live embedded-browser retest in this preparation pass.",
+      "otherSuite": "Legacy demo-operations-contracts.cjs fails on retired v1/payment-plans before its payment block; not counted as passing.",
+      "backendEdits": false
+    },
+    "remaining": [
+      "Backend must return the documented checkoutUrl shape, purpose and method fields, and implement stored-invoice verification with empty request body.",
+      "Configure purpose-based success_url and public backend notification; normalize successful source (Apple Pay type first, otherwise supported creditcard company).",
+      "Backfill historical purpose/method data and verify exactly-once wallet/subscription fulfillment and failed-credit recovery.",
+      "Live wallet/storage hosted checkout, failed/back/abandoned payments, notification ordering, ownership/replays and backend deployment acceptance.",
+      "Existing common-page parity, eight dormant-source audits and unrelated earlier QA/test issues remain outside this batch."
+    ],
+    "inventory": "Unchanged: 26 migrated, 6 excluded, 0 partial, 0 pending; storage tracked separately.",
+    "report": "docs/hosted-payments-contract.md"
+  },
+  "storageOperationsUpdate": {
+    "date": "2026-11-10",
+    "status": "frontend implemented; backend contract changes and live mutation acceptance pending",
+    "completed": [
+      "Warehouse address removed; full pickup payload and persistence guard retained; shared phone input and storage types; pickup/count columns and warehouse products query link.",
+      "Plan features retained as prose lines, separate enum storageTypes shared with products and warehouses; all application phone selections use CustomPhoneNumber; money inputs show getCurrentCurrency suffix.",
+      "Added storage-subscriptions-app with owned models/API/Utils/JavaScript slice, table-only history, current summary, hosted merchant subscribe/renew/upgrade and immediate admin activation dialog.",
+      "Navigation and warehouse shipment choices follow active owned entitlement; admin product list/edit covers every editable root field and account/warehouse links.",
+      "Supply form separates new products from existing ID-based replenishment with quantity/optional price hints; supported types intersect plan/warehouse; header filters/reset, table review actions and redesigned linked details."
+    ],
+    "preparedBackendContract": {
+      "storageType": [
+        "standard",
+        "dry",
+        "chilled",
+        "frozen"
+      ],
+      "warehouse": "POST/PATCH persists pickup and storageTypes; no address; list includes productsCount and pickup geography populations.",
+      "plans": "features:string[] prose, storageTypes:StorageType[]; migrate historical type strings.",
+      "subscriptions": "GET v1/storage/subscriptions and /admin return raw populated arrays; POST /admin {userId,planId,operation}; checkout accepts {planId,operation}; operation subscribe/renew/upgrade; current and hosted callback remain native.",
+      "products": "GET v1/storage/products/admin includes all accounts/zero stock; PATCH /admin/:id accepts editable fields; merchant GET includeEmpty=true permits replenishment choices.",
+      "supplies": "Existing item {warehouseProductId,quantity,unitPrice?}; new item native fields. Omitted price preserves current value; zero explicitly replaces. Status-only transitions remain pending->approved/rejected and approved->received/rejected; stock credited exactly once on received. Full canonical product snapshots/IDs in responses.",
+      "populations": "Authorized complete root fields for user, warehouse, plan and payment; never expose credential secrets."
+    },
+    "validation": {
+      "activeTypecheck": "passed: npm run typecheck:app",
+      "productionBuild": "passed: npm run build -- --outDir build/storage-operations-work/production (33.91s); existing Browserslist/CSS/mixed-import/chunk warnings remain",
+      "regressions": {
+        "storageOperations": 34,
+        "storageAllocationAndExistingContracts": 31,
+        "phoneInput": 6,
+        "hostedPaymentHandlers": 15,
+        "payments": 22,
+        "total": 108,
+        "scope": "Local frontend handlers/schemas/API definitions and isolated demo adapter only. Native backend schema acceptance deliberately deferred because storageTypes/new operations are not present yet."
+      },
+      "embeddedBrowser": "Admin warehouse/plan forms, enum options and currency suffixes; admin activation dialog rendering; merchant active summary, renew/upgrade selection and confirmation without creation, subscribed navigation, supply list/filter/reset and correct warehouseId URL. Verified pending-status filter (4 rows -> 1), warehouse URL filter (2 matching rows), reset, compact existing-product form, and actual received-request detail summary. No live business mutations.",
+      "liveBlockers": [
+        "New subscription history endpoint currently fails on the live backend.",
+        "Shared storageTypes, admin inventory/edit/subscription writes and hosted renew/upgrade require backend implementation.",
+        "The separate isolated demo server could not be reached by the embedded browser; business flows verified through in-process demo simulations instead."
+      ],
+      "noBackendChanges": true,
+      "historicalInventory": "unchanged:32 areas,26 migrated,6 excluded,0 partial,0 pending; storage separate",
+      "remaining": "Backend integration acceptance, existing unrelated QA items, common-page parity and dormant-source audits remain outside this frontend change."
+    }
+  },
+  "tableActionsAndToolbarUpdate": {
+    "date": "2026-11-10",
+    "status": "complete",
+    "scope": "frontend table presentation and existing action wiring only; no backend changes or feature inventory changes",
+    "completed": [
+      "Converted action columns in storage, payments, logs, cancellation requests, shipments, merchant dues and affiliate transactions to TableDataTypes.actions/actions definitions like MerchantsTable.",
+      "Preserved role/owner/status visibility via mapped UI flags or native conditions; links/callbacks/colors and loading locks use the existing shared action contract.",
+      "Lifted shipment document and mutation dialogs and merchant-due operations into owning table state, retaining read/download/retry and monetary-write checks. Shipment detail-page document controls remain supported.",
+      "Removed unused MerchantDueActions row component; retained rich data cell rendering outside action columns.",
+      "Storage and subscription search use the shared header search slot; filters/reset match Payments icons, heights, padding, borders, colors and responsive arrangement without nested controls."
+    ],
+    "validation": {
+      "applicationTypecheck": "passed: npm run typecheck:app",
+      "productionBuild": "passed: build/table-actions-work/production, 39.65s; existing warnings remain",
+      "actionColumnAudit": "20 definitions, zero custom action renderers",
+      "regressionChecks": {
+        "actionsAndToolbar": 8,
+        "shipments": 40,
+        "cancellationAndCod": 27,
+        "payments": 22,
+        "storageOperations": 34,
+        "total": 131
+      },
+      "embeddedBrowser": "Verified storage toolbar and shared View navigation to the exact selected request. Subscription toolbar rendering checked separately; live history remains dependent on the missing backend endpoint. No live business writes.",
+      "notes": "Shipment/COD fixture loaders updated for existing user-role/subscription-enum dependencies; affiliate browser fixture selector updated to target the shared action button. Browser scripts were not run outside the embedded browser."
+    },
+    "remaining": "Previously recorded backend storage/payment integration acceptance and unrelated common-page/dormant audits are unchanged."
   }
 }

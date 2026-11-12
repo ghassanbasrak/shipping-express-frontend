@@ -3,7 +3,6 @@ export type Operation = "exist" | "view" | "create" | "update" | "delete";
 const featurePaths: Record<string, string> = {
   transactions: "wallet",
   "cod-transactions": "cod",
-  payments: "topup-requests",
 };
 export function hasOperationPermission(
   feature: string,

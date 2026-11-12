@@ -1,6 +1,7 @@
+import { storageSubscriptionStatus } from "../storage-subscriptions-app/Utils";
 import type { User } from "src/app/auth/user";
 import { type Operation } from "src/app/auth/permissions";
-import type IStorageSubscription from "./models/IStorageSubscription";
+import type IStorageSubscription from "../storage-subscriptions-app/models/IStorageSubscription";
 import type IStoragePlan from "./models/IStoragePlan";
 import type IWarehouse from "./models/IWarehouse";
 import type WarehouseModel from "./models/WarehouseModel";
@@ -15,9 +16,9 @@ export const warehouseSaveValues = (
   value: ReturnType<typeof WarehouseModel>,
 ): WarehouseSaveArg => ({
   name: value.name.trim(),
-  address: value.address.trim(),
   mapAddress: value.mapAddress.trim(),
   information: value.information,
+  storageTypes: value.storageTypes,
   pickup: {
     phone: value.pickup.phone.trim(),
     ...(value.pickup.email?.trim() ? { email: value.pickup.email.trim() } : {}),
@@ -51,44 +52,55 @@ export const storagePlanSaveValues = (
     .split("\n")
     .map((line) => line.trim())
     .filter(Boolean),
+  storageTypes: value.storageTypes,
   isActive: value.isActive,
 });
 export const supplySaveValues = (
   value: ReturnType<typeof SupplyRequestModel>,
 ): CreateSupplyArg => ({
   warehouseId: value.warehouseId,
-  products: value.products.map((item) => ({
-    name: item.name.trim(),
-    ...(item.sku?.trim() ? { sku: item.sku.trim() } : {}),
-    quantity: item.quantity,
-    unitPrice: item.unitPrice,
-    ...(item.notes ? { notes: item.notes } : {}),
-    storageType: item.storageType,
-  })),
+  products: value.products.map((item) =>
+    item.mode === supplyProductMode.existing
+      ? {
+          warehouseProductId: item.warehouseProductId,
+          quantity: item.quantity,
+          ...(item.unitPrice != null ? { unitPrice: item.unitPrice } : {}),
+        }
+      : {
+          name: item.name.trim(),
+          ...(item.sku?.trim() ? { sku: item.sku.trim() } : {}),
+          quantity: item.quantity,
+          unitPrice: item.unitPrice,
+          ...(item.notes ? { notes: item.notes } : {}),
+          storageType: item.storageType as StorageType,
+        },
+  ),
 });
+export const supplyProductMode = { new: "new", existing: "existing" } as const;
 export const supplyStatuses = {
   pending: "pending",
   approved: "approved",
   received: "received",
   rejected: "rejected",
 } as const;
+export type SupplyStatus = (typeof supplyStatuses)[keyof typeof supplyStatuses];
 export const fulfillmentSources = {
   external: "external",
   warehouse: "warehouse",
 } as const;
 export const toSupplyStatusTitle = (status: string) =>
   ({
-    pending: "PENDING",
-    approved: "APPROVED",
-    received: "RECEIVED",
-    rejected: "REJECTED",
+    [supplyStatuses.pending]: "PENDING",
+    [supplyStatuses.approved]: "APPROVED",
+    [supplyStatuses.received]: "RECEIVED",
+    [supplyStatuses.rejected]: "REJECTED",
   })[status] || status;
 export const toSupplyStatusColor = (status: string) =>
   ({
-    pending: "bg-blue-600",
-    approved: "bg-amber-600",
-    received: "bg-green-600",
-    rejected: "bg-red-600",
+    [supplyStatuses.pending]: "bg-blue-600",
+    [supplyStatuses.approved]: "bg-amber-600",
+    [supplyStatuses.received]: "bg-green-600",
+    [supplyStatuses.rejected]: "bg-red-600",
   })[status] || "bg-gray-600";
 export const storagePlanPrice = (plan: IStoragePlan) =>
   plan.discountPrice ?? plan.price;
@@ -105,8 +117,8 @@ export function hasActiveStorageSubscription(
   return (
     !!subscription &&
     subscription.userId === userId &&
-    subscription.status === "active" &&
-    Array.isArray(subscription.plan?.features) &&
+    subscription.status === storageSubscriptionStatus.active &&
+    !!subscription.plan &&
     Number.isFinite(Date.parse(subscription.startsAt)) &&
     Date.parse(subscription.startsAt) <= now &&
     Number.isFinite(Date.parse(subscription.endsAt)) &&
@@ -123,9 +135,54 @@ export function merchantContactUrl(phone?: string) {
   const digits = (phone || "").replace(/[^0-9]/g, "");
   return digits.length >= 7 ? "https://wa.me/" + digits : undefined;
 }
-export const allowedSupplyTransitions = (status: string) =>
+export const allowedSupplyTransitions = (
+  status: string,
+): (
+  | typeof supplyStatuses.approved
+  | typeof supplyStatuses.received
+  | typeof supplyStatuses.rejected
+)[] =>
   status === supplyStatuses.pending
-    ? ["approved", "rejected"]
+    ? [supplyStatuses.approved, supplyStatuses.rejected]
     : status === supplyStatuses.approved
-      ? ["received", "rejected"]
+      ? [supplyStatuses.received, supplyStatuses.rejected]
       : [];
+
+export const storageType = {
+  standard: "standard",
+  dry: "dry",
+  chilled: "chilled",
+  frozen: "frozen",
+} as const;
+export type StorageType = (typeof storageType)[keyof typeof storageType];
+export const toStorageTypeTitle = (value: string) =>
+  ({
+    [storageType.standard]: "TYPE_STANDARD",
+    [storageType.dry]: "TYPE_DRY",
+    [storageType.chilled]: "TYPE_CHILLED",
+    [storageType.frozen]: "TYPE_FROZEN",
+  })[value] || "UNKNOWN_STORAGE_TYPE";
+export const toStorageTypeColor = (value: string) =>
+  ({
+    [storageType.standard]: "bg-slate-600",
+    [storageType.dry]: "bg-amber-600",
+    [storageType.chilled]: "bg-blue-600",
+    [storageType.frozen]: "bg-cyan-700",
+  })[value] || "bg-gray-600";
+export const supportedStorageTypes = (
+  plan: IStoragePlan,
+  warehouse: IWarehouse,
+): StorageType[] =>
+  Object.values(storageType).filter(
+    (value) =>
+      plan?.storageTypes?.includes(value) &&
+      warehouse?.storageTypes?.includes(value),
+  );
+
+export const storageTypesWereSaved = (
+  actual: StorageType[],
+  expected: StorageType[],
+) =>
+  Array.isArray(actual) &&
+  actual.length === expected.length &&
+  expected.every((value) => actual.includes(value));

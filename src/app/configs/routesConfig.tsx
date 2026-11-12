@@ -22,7 +22,6 @@ import AlertsAppConfig from "../main/alerts-app/AlertsAppConfig";
 
 import ShipmentUsersAppConfig from "../main/shipment-users-app/ShipmentUsersAppConfig";
 
-
 import ApplicationsAppConfig from "../main/applications-app/ApplicationsAppConfig";
 
 import BankTransfersAppConfig from "../main/bank-transfers-app/BankTransfersAppConfig";
@@ -42,21 +41,23 @@ import MerchantDuesAppConfig from "../main/merchant-dues-app/MerchantDuesAppConf
 import WithdrawRequestsAppConfig from "../main/withdraw-requests-app/WithdrawRequestsAppConfig";
 import LogsConfig from "../main/logs-app/LogsConfig";
 
-import TopupRequestsAppConfig from "../main/topup-requests-app/TopupRequestsAppConfig";
+import PaymentsAppConfig from "../main/payments-app/PaymentsAppConfig";
 import PaymentAppConfig from "../main/payment-app/PaymentAppConfig";
 import MerchantsAppConfig from "../main/merchants-app/MerchantsAppConfig";
 import AffiliateMerchantsAppConfig from "../main/affiliate-merchants-app/AffiliateMerchantsAppConfig";
 import DashboardPageConfig from "../main/dashboard/DashboardPageConfig";
+import StorageSubscriptionsAppConfig from "../main/storage-subscriptions-app/StorageSubscriptionsAppConfig";
 import StorageAppConfig from "../main/storage-app/StorageAppConfig";
 const routeConfigs: FuseRouteConfigsType = [
   StorageAppConfig,
+  StorageSubscriptionsAppConfig,
   DashboardPageConfig,
   AffiliateMerchantsAppConfig,
   ...CommonConfigs,
   ...AuthAppConfigs,
   HomeAppConfig,
   MerchantsAppConfig,
-  TopupRequestsAppConfig,
+  PaymentsAppConfig,
   PaymentAppConfig,
   WithdrawRequestsAppConfig,
   LogsConfig,

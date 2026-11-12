@@ -1,3 +1,4 @@
+import CustomPhoneNumber from "app/shared-components/custom-phone-number/CustomPhoneNumber";
 import { Controller, useFormContext } from "react-hook-form";
 import { Paper, TextField, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
@@ -19,8 +20,6 @@ export default function BasicInfoTab({ disabled }: { disabled: boolean }) {
             "lastName",
             "companyName",
             "email",
-            "phoneCountry",
-            "phone",
             "taxNumber",
           ] as const
         ).map((name) => (
@@ -53,6 +52,14 @@ export default function BasicInfoTab({ disabled }: { disabled: boolean }) {
             )}
           />
         ))}
+        <CustomPhoneNumber
+          name="phone"
+          codeName="phoneCountry"
+          label={t("PHONE_NUMBER")}
+          disabled={disabled}
+          required={false}
+          className="w-full"
+        />
       </div>
       <div className="pt-24 border-t border-divider">
         <Typography className="text-18 font-semibold mb-20">

@@ -5,7 +5,7 @@ import {
   appendNavigationItem,
   removeNavigationItem,
 } from "app/theme-layouts/shared-components/navigation/store/navigationSlice";
-import { useGetStorageSubscriptionQuery } from "./StorageApi";
+import { useGetStorageSubscriptionQuery } from "../storage-subscriptions-app/StorageSubscriptionsApi";
 import { hasActiveStorageSubscription } from "./Utils";
 import { storageEnabled } from "./storageConfig";
 export default function StorageNavigation() {
@@ -33,6 +33,15 @@ export default function StorageNavigation() {
   useEffect(() => {
     const items = [
       {
+        id: "storage-subscriptions-merchant",
+        title: "Storage subscriptions",
+        translate: "STORAGE_SUBSCRIPTIONS",
+        type: "item",
+        icon: "heroicons-outline:collection",
+        url: "/storage/subscriptions",
+        auth: ["user"],
+      },
+      {
         id: "storage-products-merchant",
         title: "Stored products",
         translate: "STORAGE_PRODUCTS",
@@ -51,15 +60,41 @@ export default function StorageNavigation() {
         auth: ["user"],
       },
     ];
+    const subscribe = {
+      id: "storage-subscribe-merchant",
+      title: "Subscribe Storage",
+      translate: "SUBSCRIBE_STORAGE",
+      type: "item",
+      icon: "heroicons-outline:cube",
+      url: "/storage/subscribe",
+      auth: ["user"],
+    };
+    if (
+      storageEnabled &&
+      user?.role === "user" &&
+      !active &&
+      !subscription.isFetching &&
+      !subscription.isError
+    )
+      void dispatch(appendNavigationItem(subscribe, "group-storage"));
+    else void dispatch(removeNavigationItem(subscribe.id));
     for (const item of items) {
       if (active) void dispatch(appendNavigationItem(item, "group-storage"));
       else void dispatch(removeNavigationItem(item.id));
     }
     return () => {
+      void dispatch(removeNavigationItem(subscribe.id));
       items.forEach((item) => {
         void dispatch(removeNavigationItem(item.id));
       });
     };
-  }, [active, user?.id, dispatch]);
+  }, [
+    active,
+    user?.id,
+    user?.role,
+    subscription.isFetching,
+    subscription.isError,
+    dispatch,
+  ]);
   return null;
 }

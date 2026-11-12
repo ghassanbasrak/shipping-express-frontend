@@ -119,7 +119,7 @@ export default function MerchantHome() {
               : overviewMoney(own?.balance, i18n.language, currency)}
           </strong>
           <p className="ov-note">{t("DISPLAY_CURRENCY", { currency })}</p>
-          <OverviewLink to="/topup-requests/all/new">
+          <OverviewLink to="/payments/all/new">
             {t("TOP_UP_WALLET")}
           </OverviewLink>
           <QueryFeedback query={account} />

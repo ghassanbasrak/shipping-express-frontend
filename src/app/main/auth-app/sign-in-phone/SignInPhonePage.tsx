@@ -1,3 +1,4 @@
+import CustomPhoneNumber from "app/shared-components/custom-phone-number/CustomPhoneNumber";
 import { z } from "zod";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -23,8 +24,12 @@ export default function SignInPhonePage() {
           );
         }}
       >
-        <AuthField name="phoneCountry" label={t("PHONE_COUNTRY")} type="tel" />
-        <AuthField name="phone" label={t("PHONE")} type="tel" />
+        <CustomPhoneNumber
+          name="phone"
+          codeName="phoneCountry"
+          label={t("PHONE")}
+          className="w-full"
+        />
       </AuthForm>
       <Link className="block mt-24" to="/sign-in">
         {t("SIGN_IN")}

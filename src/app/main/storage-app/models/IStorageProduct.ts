@@ -1,3 +1,4 @@
+import type { StorageType } from "../Utils";
 import type { User } from "src/app/auth/user";
 import type IWarehouse from "./IWarehouse";
 export default interface IStorageProduct {
@@ -9,7 +10,7 @@ export default interface IStorageProduct {
   name: string;
   sku?: string;
   quantity: number;
-  storageType: string;
+  storageType: StorageType;
   unitPrice: number;
   createdAt?: string;
   updatedAt?: string;

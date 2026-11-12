@@ -1,3 +1,4 @@
+import ShipmentDocuments from "../shared-components/ShipmentDocuments";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Navigate, useLocation, useParams } from "react-router-dom";
@@ -27,7 +28,10 @@ import {
   setShipmentsPage,
   setShipmentsPageSize,
 } from "../store/shipmentsSlice";
-import shipmentFields from "../shared-components/ShipmentFields";
+import shipmentFields, {
+  toShipmentTableRow,
+  type ShipmentDocumentMode,
+} from "../shared-components/ShipmentFields";
 import {
   ShipmentOperationDialog,
   ShipmentOperation,
@@ -55,6 +59,10 @@ export default function ShipmentsTable({
       rows: IShipment[];
       operation: ShipmentOperation;
     }>();
+  const [document, setDocument] = useState<{
+    row: IShipment;
+    mode: ShipmentDocumentMode;
+  }>();
   const key = `${shippingCompanyId}/${shippingType}/${user.id}/${user.role}/${location.search}/${fixedUserId || ""}`,
     allowed = canViewShipments(user);
   useEffect(() => {
@@ -71,6 +79,8 @@ export default function ShipmentsTable({
       }),
     );
     setReady(key);
+    setDocument(undefined);
+    setOperation(undefined);
   }, [dispatch, key]);
   useEffect(
     () => () => {
@@ -117,7 +127,11 @@ export default function ShipmentsTable({
         ),
       );
   }, [currentData, isFetching, filters.page, filters.pageSize, dispatch]);
-  const fields = shipmentFields(t, user, shippingCompanyId, shippingType);
+  const fields = shipmentFields(t, user, shippingCompanyId, shippingType, {
+    onDocument: (row, mode) => setDocument({ row: structuredClone(row), mode }),
+    onOperation: (row, operation) =>
+      setOperation({ rows: [structuredClone(row)], operation }),
+  });
   async function labels(rows: IShipment[]) {
     setError("");
     try {
@@ -166,7 +180,11 @@ export default function ShipmentsTable({
       {!datesValid && <Alert severity="error">{t("INVALID_DATE_RANGE")}</Alert>}
       <CustomTable
         fields={fields}
-        data={ready === key && datesValid ? data?.results || [] : []}
+        data={
+          ready === key && datesValid
+            ? (data?.results || []).map((row) => toShipmentTableRow(row, user))
+            : []
+        }
         total={data?.total || 0}
         page={filters.page}
         pageSize={filters.pageSize}
@@ -241,6 +259,14 @@ export default function ShipmentsTable({
           row.returnedFromShipmentId || row.orderReturned ? "error" : undefined
         }
       />
+      {document && (
+        <ShipmentDocuments
+          key={document.row.id + document.mode}
+          row={document.row}
+          initialMode={document.mode}
+          onClose={() => setDocument(undefined)}
+        />
+      )}
       {operation && (
         <ShipmentOperationDialog
           {...operation}

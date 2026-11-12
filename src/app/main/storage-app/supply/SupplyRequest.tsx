@@ -10,13 +10,16 @@ import { useAppSelector } from "app/store/hooks";
 import { selectUser } from "src/app/auth/user/store/userSlice";
 import {
   useCreateSupplyRequestMutation,
-  useGetStorageSubscriptionQuery,
   useGetWarehousesQuery,
+  useGetStorageProductsQuery,
 } from "../StorageApi";
+import { useGetStorageSubscriptionQuery } from "../../storage-subscriptions-app/StorageSubscriptionsApi";
 import {
   hasActiveStorageSubscription,
   storageError,
   supplySaveValues,
+  supportedStorageTypes,
+  supplyProductMode,
 } from "../Utils";
 import SupplyRequestModel from "../models/SupplyRequestModel";
 import { supplyRequestSchema } from "../models/StorageSchemas";
@@ -38,8 +41,15 @@ function NewSupplyRequest() {
   const currentWarehouse = warehouse.currentData?.find(
     (row) => row.id === warehouseId,
   );
-  const types = subscription.currentData?.plan?.features || [];
-  const allowed = types;
+  const types = subscription.currentData?.plan?.storageTypes || [];
+  const allowed = supportedStorageTypes(
+    subscription.currentData?.plan,
+    currentWarehouse,
+  );
+  const inventory = useGetStorageProductsQuery(
+    { warehouseId, userId: user.id, includeEmpty: true },
+    { skip: !warehouseId, refetchOnMountOrArgChange: true },
+  );
   const schema = useMemo(() => supplyRequestSchema(t, allowed), [t, allowed]);
   const methods = useForm({
     mode: "onChange" as const,
@@ -51,7 +61,9 @@ function NewSupplyRequest() {
       warehouse.isError ||
       warehouse.isFetching ||
       subscription.isError ||
-      subscription.isFetching;
+      subscription.isFetching ||
+      inventory.isFetching ||
+      inventory.isError;
   const save = methods.handleSubmit(async (values) => {
     if (busy.current || submitted.current || unavailable) return;
     busy.current = true;
@@ -70,7 +82,10 @@ function NewSupplyRequest() {
         throw new Error(t("SUBSCRIPTION_REQUIRED"));
       const validated = supplyRequestSchema(
         t,
-        currentSubscription.plan.features,
+        supportedStorageTypes(
+          currentSubscription.plan,
+          warehouses.find((row) => row.id === values.warehouseId),
+        ),
       ).safeParse(values);
       if (validated.success === false) {
         validated.error.issues.forEach((issue) =>
@@ -80,6 +95,24 @@ function NewSupplyRequest() {
           }),
         );
         throw new Error(t("TYPE_NOT_ALLOWED"));
+      }
+      const currentInventory = await inventory.refetch().unwrap();
+      for (const item of values.products) {
+        if (item.mode !== supplyProductMode.existing) continue;
+        const stored = currentInventory.find(
+          (row) =>
+            row.id === item.warehouseProductId &&
+            row.userId === user.id &&
+            row.warehouseId === values.warehouseId,
+        );
+        if (
+          !stored ||
+          !supportedStorageTypes(
+            currentSubscription.plan,
+            warehouses.find((row) => row.id === values.warehouseId),
+          ).includes(stored.storageType)
+        )
+          throw new Error(t("STOCK_UNAVAILABLE"));
       }
       posted = true;
       await create(supplySaveValues(values)).unwrap();
@@ -140,13 +173,16 @@ function NewSupplyRequest() {
             </Tabs>
             <div className="p-16 sm:p-24 space-y-20 max-w-6xl">
               {error && <Alert severity="error">{error}</Alert>}
-              {(warehouse.isError || subscription.isError) && (
+              {(warehouse.isError ||
+                subscription.isError ||
+                inventory.isError) && (
                 <Alert
                   severity="error"
                   action={
                     <Button
                       onClick={() => {
                         if (warehouse.isError) void warehouse.refetch();
+                        if (inventory.isError) void inventory.refetch();
                         if (subscription.isError) void subscription.refetch();
                       }}
                     >

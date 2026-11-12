@@ -16,15 +16,55 @@ import {
   toShipmentStatusColor,
   toShipmentPaymentStatusTitle,
   toShipmentPaymentStatusColor,
+  canUpdateShipment,
+  canSettleShipment,
+  canReturnShipmentStatus,
+  canRequestShipmentCancel,
+  canGenerateReturnedShipment,
 } from "../Utils";
-import ShipmentDocuments from "./ShipmentDocuments";
-import ShipmentOperations from "./ShipmentOperations";
+import type { ShipmentOperation } from "./ShipmentOperations";
+export type ShipmentDocumentMode = "label" | "invoice" | "image";
+export type ShipmentTableRow = IShipment & {
+  actionAccess: Record<string, boolean>;
+};
+export const toShipmentTableRow = (
+  row: IShipment,
+  user: User,
+): ShipmentTableRow => {
+  const view = user.role !== "user" || row.status !== "failed",
+    update = canUpdateShipment(user);
+  return {
+    ...row,
+    actionAccess: {
+      view,
+      label: !!row.trackingNumber && view,
+      tracking: !!row.trackingUrl,
+      invoiceDocument:
+        row.method === "international" &&
+        !!row.trackingNumber &&
+        !!row.labelUrl,
+      image: row.method === "international" && !!row.imageUrl,
+      settle: canSettleShipment(user, row),
+      processing: update && ["canceled", "failed"].includes(row.status),
+      delivered: update && row.status !== "delivered",
+      returned: canReturnShipmentStatus(user, row),
+      cancel: canRequestShipmentCancel(user, row),
+      weight: update,
+      invoice: update,
+      returnShipment: canGenerateReturnedShipment(user, row),
+    },
+  };
+};
 export default function shipmentFields(
   t: TFunction,
   user: User,
   carrier = "all",
   type = "all",
-): TableFieldProps<IShipment>[] {
+  handlers: {
+    onDocument?: (row: IShipment, mode: ShipmentDocumentMode) => void;
+    onOperation?: (row: IShipment, operation: ShipmentOperation) => void;
+  } = {},
+): TableFieldProps<ShipmentTableRow>[] {
   const flat = (row: IShipment) => decompressShipment(row);
   return [
     {
@@ -234,25 +274,60 @@ export default function shipmentFields(
       exportable: false,
       flex: 1.3,
       minWidth: 130,
-      renderCell: ({ row }) => (
-        <div className="flex flex-col gap-4">
-          {(user.role !== "user" || row.status !== "failed") && (
-            <ButtonLink
-              to={shipmentPath(carrier, type, row.id)}
-              title={t("VIEW")}
-            />
-          )}
-          <ShipmentDocuments row={row} />
-          <ShipmentOperations row={row} />
-        </div>
-      ),
+      actions: [
+        {
+          title: t("VIEW"),
+          color: "secondary",
+          link: true,
+          linkGetter: (row) => shipmentPath(carrier, type, row.id),
+          conditions: [{ id: "actionAccess.view", equalsTo: true }],
+        },
+        {
+          title: t("LABEL"),
+          conditions: [{ id: "actionAccess.label", equalsTo: true }],
+          onActionClick: (row) => handlers.onDocument?.(row, "label"),
+        },
+        {
+          title: t("TRACKING"),
+          link: true,
+          linkGetter: (row) => row.trackingUrl,
+          target: "_blank",
+          conditions: [{ id: "actionAccess.tracking", equalsTo: true }],
+        },
+        {
+          title: t("INVOICE"),
+          conditions: [{ id: "actionAccess.invoiceDocument", equalsTo: true }],
+          onActionClick: (row) => handlers.onDocument?.(row, "invoice"),
+        },
+        {
+          title: t("SHIPMENT_IMAGE"),
+          conditions: [{ id: "actionAccess.image", equalsTo: true }],
+          onActionClick: (row) => handlers.onDocument?.(row, "image"),
+        },
+        ...(
+          [
+            "settle",
+            "processing",
+            "delivered",
+            "returned",
+            "cancel",
+            "weight",
+            "invoice",
+          ] as ShipmentOperation[]
+        ).map((operation) => ({
+          title: t(`OPERATION_${operation.toUpperCase()}`),
+          conditions: [{ id: `actionAccess.${operation}`, equalsTo: true }],
+          onActionClick: (row: ShipmentTableRow) =>
+            handlers.onOperation?.(row, operation),
+        })),
+        {
+          title: t("GENERATE_RETURN_SHIPMENT"),
+          link: true,
+          linkGetter: (row) =>
+            `${shipmentPath(carrier, type, "new")}?returnFrom=${row.id}`,
+          conditions: [{ id: "actionAccess.returnShipment", equalsTo: true }],
+        },
+      ],
     },
   ];
-}
-function ButtonLink({ to, title }: { to: string; title: string }) {
-  return (
-    <Link to={to} className="underline">
-      {title}
-    </Link>
-  );
 }

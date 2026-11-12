@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Alert, Button, Input, Paper, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -100,7 +100,19 @@ export default function AffiliateTransactionsTab({
   };
   const statement = (row: IAffiliateTransaction) =>
     `${row.type === "deposit" ? `${t("SHIPMENT_CREATED_FROM_CUSTOMER_1", { ns: "transactionsApp", customer: `${row.shipment?.user?.firstName || ""} ${row.shipment?.user?.lastName || ""}`.trim() })} ${Currency(row.amount || 0)}. ${t(row.status === "success" ? "SHIPMENT_CREATED_FROM_CUSTOMER_3" : "SHIPMENT_CREATED_FROM_CUSTOMER_2", { ns: "transactionsApp" })}` : row.type === "withdraw" ? `${t("WITHDRAW_REQUEST_CREATED_1", { ns: "transactionsApp" })} ${Currency(row.amount || 0)}. ${t(row.status === "rejected" ? "WITHDRAW_REQUEST_CREATED_4" : row.status === "success" ? "WITHDRAW_REQUEST_CREATED_3" : "WITHDRAW_REQUEST_CREATED_2", { ns: "transactionsApp" })}` : row.description || ""}${row.notes ? ` / ${t("TRANSACTION_NOTES", { ns: "transactionsApp" })}: ${row.notes}` : ""}`;
-  const fields: TableFieldProps<IAffiliateTransaction>[] = [
+  const syncLock = useRef(false);
+  const rows = (query.data?.results || []).map((row) => ({
+    ...row,
+    actionAccess: {
+      sync:
+        !!row.shipment?.id &&
+        row.shipment.status !== "failed" &&
+        ["aramex", "smsa", "smsacold"].includes(
+          row.shipment.shippingCompany?.serviceName,
+        ),
+    },
+  }));
+  const fields: TableFieldProps<(typeof rows)[number]>[] = [
     {
       id: "description",
       label: t("STATEMENT", { ns: "transactionsApp" }),
@@ -166,38 +178,34 @@ export default function AffiliateTransactionsTab({
     {
       id: "actions",
       label: t("ACTIONS"),
-      type: TableDataTypes.normal,
+      type: TableDataTypes.actions,
       flex: 1.1,
       minWidth: 110,
       exportable: false,
-      renderCell: ({ row }) =>
-        row.shipment?.id &&
-        row.shipment.status !== "failed" &&
-        ["aramex", "smsa", "smsacold"].includes(
-          row.shipment.shippingCompany?.serviceName,
-        ) ? (
-          <Button
-            color="primary"
-            variant="outlined"
-            disabled={!!syncing}
-            data-testid={`sync-affiliate-${row.id || row._id}`}
-            onClick={async () => {
-              if (syncing) return;
-              setSyncing(row.shipment.id);
-              setSyncError(false);
-              try {
-                await sync(row.shipment.id).unwrap();
-                await query.refetch().unwrap();
-              } catch {
-                setSyncError(true);
-              } finally {
-                setSyncing(undefined);
-              }
-            }}
-          >
-            {t(syncing === row.shipment.id ? "LOADING" : "SYNC_TRACKING")}
-          </Button>
-        ) : null,
+      actions: [
+        {
+          title: t("SYNC_TRACKING"),
+          keepOnView: true,
+          loadingGetter: () => !!syncing,
+          loadingIndicator: t("LOADING"),
+          conditions: [{ id: "actionAccess.sync", equalsTo: true }],
+          onActionClick: async (row) => {
+            if (syncLock.current || syncing || !row.actionAccess.sync) return;
+            syncLock.current = true;
+            setSyncing(row.shipment.id);
+            setSyncError(false);
+            try {
+              await sync(row.shipment.id).unwrap();
+              await query.refetch().unwrap();
+            } catch {
+              setSyncError(true);
+            } finally {
+              syncLock.current = false;
+              setSyncing(undefined);
+            }
+          },
+        },
+      ],
     },
   ];
   return (
@@ -282,10 +290,7 @@ export default function AffiliateTransactionsTab({
       )}
       <CustomTable<IAffiliateTransaction>
         fields={fields}
-        data={(query.data?.results || []).map((row) => ({
-          ...row,
-          id: row.id || row._id,
-        }))}
+        data={rows.map((row) => ({ ...row, id: row.id || row._id }))}
         total={query.data?.total || 0}
         page={filters.page}
         pageSize={filters.pageSize}

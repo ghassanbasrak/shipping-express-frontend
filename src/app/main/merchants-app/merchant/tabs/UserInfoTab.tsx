@@ -135,7 +135,7 @@ export default function UserInfoTab({ merchant }: { merchant: IMerchant }) {
               component={Link}
               to={
                 self
-                  ? "/topup-requests/all/new"
+                  ? "/payments/all/new"
                   : `/transactions/${merchant.id}/all/new`
               }
               variant="contained"

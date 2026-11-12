@@ -2,7 +2,7 @@ import { MenuItem, TextField, Typography } from "@mui/material";
 import { Controller, useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import Currency from "../../../../utils/currencyFormatter";
-import { topupTotals } from "../../../../topup-requests-app/Utils";
+import { paymentTotals } from "../../../../payments-app/Utils";
 import { banks, toBankTitle } from "../../../Utils";
 export default function BankTransferDecisionForm({
   approval,
@@ -28,8 +28,8 @@ export default function BankTransferDecisionForm({
       <div className="p-16 mt-16 rounded-12 border border-divider space-y-8">
         {[
           ["GROSS_TRANSFER_TOTAL", amount],
-          ["TRANSFER_VAT", topupTotals(amount).taxTotal],
-          ["WALLET_CREDIT", topupTotals(amount).amount],
+          ["TRANSFER_VAT", paymentTotals(amount).taxTotal],
+          ["WALLET_CREDIT", paymentTotals(amount).amount],
         ].map(([key, value]) => (
           <div key={String(key)} className="flex justify-between gap-16">
             <span>{t(String(key))}</span>

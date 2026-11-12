@@ -11,7 +11,7 @@ export const addTagTypes = [
   "Transactions",
   "TransactionAccount",
   "ShipmentAccount",
-  "TopupRequestsUser",
+  "PaymentsUser",
   "MerchantDuesSummary",
 ] as const;
 const invalidates = (id: string) => [
@@ -24,7 +24,7 @@ const invalidates = (id: string) => [
   "Transactions" as const,
   "TransactionAccount" as const,
   "ShipmentAccount" as const,
-  "TopupRequestsUser" as const,
+  "PaymentsUser" as const,
   "MerchantDuesSummary" as const,
 ];
 const MerchantsApi = api.enhanceEndpoints({ addTagTypes }).injectEndpoints({

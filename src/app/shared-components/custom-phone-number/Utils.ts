@@ -1,4 +1,6 @@
 export interface CustomPhoneNumberProps {
+  codeName?: string;
+  serialized?: boolean;
   name: string;
   label?: string;
   className?: string;

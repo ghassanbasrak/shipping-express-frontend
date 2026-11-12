@@ -110,7 +110,7 @@ const features = {
     "Manage states and shipping-company naming mappings.",
     "إدارة المناطق ومسمياتها لدى شركات الشحن.",
   ],
-  "topup-requests-app": [
+  "payments-app": [
     "credit-card",
     "PAYMENTS",
     "Track payments and keep your wallet funding in view.",

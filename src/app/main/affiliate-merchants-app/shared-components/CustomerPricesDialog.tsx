@@ -1,3 +1,4 @@
+import CurrencyAdornment from "app/shared-components/currency-adornment/CurrencyAdornment";
 import { useState } from "react";
 import {
   Alert,
@@ -112,6 +113,7 @@ export default function CustomerPricesDialog({
                         row[key === "local" ? "mainLocalPrice" : "mainCodPrice"]
                       }
                       disabled
+                      InputProps={{ endAdornment: <CurrencyAdornment /> }}
                       fullWidth
                     />
                     <Controller
@@ -126,6 +128,7 @@ export default function CustomerPricesDialog({
                               : "PROFITS_COD_COST",
                           )}
                           type="number"
+                          InputProps={{ endAdornment: <CurrencyAdornment /> }}
                           value={
                             Number.isFinite(field.value) ? field.value : ""
                           }
@@ -154,6 +157,7 @@ export default function CustomerPricesDialog({
                         (methods.watch(`prices.${index}.${key}Profits`) || 0)
                       }
                       disabled
+                      InputProps={{ endAdornment: <CurrencyAdornment /> }}
                       fullWidth
                     />
                   </div>
