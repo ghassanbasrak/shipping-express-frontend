@@ -22,14 +22,6 @@ const CountriesApi = api.enhanceEndpoints({ addTagTypes }).injectEndpoints({
           page: filters.page,
           pageSize: filters.pageSize,
           ...(filters.searchText ? { search: filters.searchText } : {}),
-          ...(filters.shippingCompanyIdFilter &&
-          filters.shippingCompanyIdFilter !== "all"
-            ? { shippingCompanyId: filters.shippingCompanyIdFilter }
-            : {}),
-          ...(filters.dateFromFilter
-            ? { dateFrom: filters.dateFromFilter }
-            : {}),
-          ...(filters.dateToFilter ? { dateTo: filters.dateToFilter } : {}),
         },
       }),
       providesTags: ["Countries"],
@@ -99,12 +91,9 @@ const CountriesApi = api.enhanceEndpoints({ addTagTypes }).injectEndpoints({
             ? `v1/shipment-countries/${row.id || row._id}`
             : "v1/shipment-countries",
         method: row.id || row._id ? "PATCH" : "POST",
-        data: _.pick(row, [
-          "countryId",
-          "shippingCompanyId",
-          "name",
-          "isActive",
-        ]),
+        data: _.pick(row, row.id || row._id
+          ? ["name", "isActive"]
+          : ["countryId", "shippingCompanyId", "name", "isActive"]),
       }),
       invalidatesTags: (_, __, row) => [
         "Countries",
@@ -193,6 +182,7 @@ export type GetCountriesShippingCompaniesApiResponse = {
 export type GetCountriesLanguagesApiResponse = { results: string[] };
 export const {
   useGetCountriesQuery,
+  useLazyGetCountriesQuery,
   useGetCountryQuery,
   useGetShipmentCountriesQuery,
   useCreateCountryMutation,

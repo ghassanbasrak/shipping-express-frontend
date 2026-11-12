@@ -1,4 +1,5 @@
 const locale = {
+  DATE_FILTER_UNAVAILABLE: "فلاتر التاريخ غير متاحة حتى تدعمها واجهة البرمجة.",
   STATES: "المحافظات",
   SEARCH_STATES: "البحث في المحافظات",
   ADD_STATE: "إضافة محافظة",

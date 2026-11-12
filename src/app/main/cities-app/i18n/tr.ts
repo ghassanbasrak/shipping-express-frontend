@@ -1,4 +1,6 @@
 const locale = {
+  EXPORT_ALL_CSV: "Tümünü CSV olarak dışa aktar",
+  DATE_FILTER_UNAVAILABLE: "Tarih filtreleri API tarafından desteklenene kadar kullanılamaz.",
   RETRY: "Retry",
   CANCEL: "Cancel",
   CLOSE: "Close",

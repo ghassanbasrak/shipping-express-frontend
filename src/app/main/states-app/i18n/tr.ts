@@ -1,4 +1,5 @@
 const locale = {
+  DATE_FILTER_UNAVAILABLE: "Tarih filtreleri API tarafından desteklenene kadar kullanılamaz.",
   RETRY: "Retry",
   CANCEL: "Cancel",
   CLOSE: "Close",

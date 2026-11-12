@@ -194,7 +194,7 @@ for (const [entity, plural, parent] of [
       f.close();
     }
   });
-  test(`${entity}: list requests retain search, carrier, parent, dates and pagination`, async () => {
+  test(`${entity}: list requests retain search, carrier, parent and pagination while omitting unsupported dates`, async () => {
     const f = fixture(entity, plural);
     try {
       f.mock.onGet(`v1/${pl}`).reply((config) => {
@@ -202,8 +202,8 @@ for (const [entity, plural, parent] of [
         assert.equal(config.params.page, 2);
         assert.equal(config.params.shippingCompanyId, "carrier-1");
         assert.equal(config.params.countryId, "country-1");
-        assert.equal(config.params.dateFrom, "2026-01-01");
-        assert.equal(config.params.dateTo, "2026-12-31");
+        assert.equal(config.params.dateFrom, undefined);
+        assert.equal(config.params.dateTo, undefined);
         if (entity === "City") assert.equal(config.params.stateId, "state-1");
         return [200, { results: [item], total: 25 }];
       });
@@ -299,6 +299,8 @@ for (const [entity, plural, parent] of [
         const data = JSON.parse(config.data);
         assert.equal(data._id, undefined);
         assert.equal(data.shippingCompany, undefined);
+        assert.equal(data[`${lower}Id`], undefined);
+        assert.equal(data.shippingCompanyId, undefined);
         return [200, { ...mapping, ...data }];
       });
       const saved = await f.run(`saveShipment${entity}`, {
@@ -348,18 +350,18 @@ for (const [entity, plural, parent] of [
     }
   });
 }
-test("City export-all retains filters and the legacy all-pages page size", async () => {
+test("City list API retains carrier and parent scope for paginated export", async () => {
   const f = fixture("City", "Cities");
   try {
     f.mock.onGet("v1/cities").reply((config) => {
-      assert.equal(config.params.pageSize, 100000);
+      assert.equal(config.params.pageSize, 2000);
       assert.equal(config.params.stateId, "state-1");
       assert.equal(config.params.shippingCompanyId, "carrier-1");
       return [200, { results: [], total: 0 }];
     });
     await f.run("getCities", {
       page: 0,
-      pageSize: 100000,
+      pageSize: 2000,
       stateIdFilter: "state-1",
       shippingCompanyIdFilter: "carrier-1",
     });

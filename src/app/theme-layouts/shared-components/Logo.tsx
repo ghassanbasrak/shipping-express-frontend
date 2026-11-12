@@ -1,4 +1,5 @@
-import { styled, useTheme } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
+import { useTranslation } from 'react-i18next';
 
 const Root = styled('div')(({ theme }) => ({
   '& > .logo-icon': {
@@ -10,14 +11,14 @@ const Root = styled('div')(({ theme }) => ({
 }));
 
 function Logo() {
-  const theme = useTheme();
+  const { i18n } = useTranslation();
 
   return (
     <Root className="flex items-center">
       <img
-        className="logo-icon h-32 w-32 object-contain"
-        src={`/assets/images/logo/logo${theme.palette.mode === 'dark' ? '-dark' : ''}.png`}
-        alt="Ashamco Express"
+        className="logo-icon h-40 w-auto object-contain"
+        src={`/brand/logos/ashamco-${i18n.language.startsWith('ar') ? 'ar' : 'en'}-on-purple.svg`}
+        alt={i18n.language.startsWith('ar') ? 'اشامكو إكسبريس' : 'Ashamco Express'}
       />
     </Root>
   );

@@ -16,12 +16,17 @@
 }
 
 * :focus {
-     outline: none !important;
+    outline: none;
+}
+
+:focus-visible {
+    outline: 3px solid var(--ax-focus-ring) !important;
+    outline-offset: 2px;
 }
 
 html {
     font-size: 62.5%;
-    font-family: LamaSans, 'Inter var', Roboto, Helvetica Neue, Arial, sans-serif;
+    font-family: 'IBM Plex Sans Arabic', Tahoma, Arial, sans-serif;
     background-color: #121212;
 }
 

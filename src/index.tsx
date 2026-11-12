@@ -1,4 +1,5 @@
 import './i18n';
+import './brand/tokens.css';
 import './styles/app-base.css';
 import './styles/app-components.css';
 import './styles/app-utilities.css';
