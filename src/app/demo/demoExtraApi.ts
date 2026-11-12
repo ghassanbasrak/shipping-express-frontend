@@ -7,12 +7,10 @@ export type DemoExtraDb = {
   shipmentStates: DemoRow[];
   shipmentCities: DemoRow[];
   users: DemoRow[];
-  plans: DemoRow[];
   coupons: DemoRow[];
   alerts: DemoRow[];
   shippingUsers: DemoRow[];
   applications: DemoRow[];
-  products: DemoRow[];
   requests: DemoRow[];
   transactions: DemoRow[];
 };
@@ -73,7 +71,7 @@ export function createDemoExtras(base: {
       features: [],
       isRegistered: true,
       isBlocked: false,
-      verificationStatus: "approved",
+
       emailVerified: true,
       phoneVerified: true,
     },
@@ -87,7 +85,7 @@ export function createDemoExtras(base: {
       features: [],
       isRegistered: true,
       isBlocked: false,
-      verificationStatus: "approved",
+
       emailVerified: true,
       phoneVerified: true,
     },
@@ -111,7 +109,7 @@ export function createDemoExtras(base: {
       codBalance: n === 0 ? 1800 : 600 + n * 90,
       address: { countryId: egypt.id, stateId: state.id, cityId: city.id },
       createdAt: date(n),
-      verificationStatus: n < 2 || n % 3 === 0 ? "approved" : "pending",
+
       isRegistered: true,
       isBlocked: false,
       emailVerified: true,
@@ -140,28 +138,6 @@ export function createDemoExtras(base: {
       }),
     );
   });
-  const plans = Array.from(
-    { length: 20 },
-    (_, n) =>
-      ["Starter", "Growth", "Business", "Enterprise"][n % 4] +
-      (n >= 4 ? ` ${Math.floor(n / 4) + 1}` : ""),
-  ).map((name, n) => ({
-    id: `demo-plan-${n + 1}`,
-    name,
-    description: `${name} shipping plan`,
-    price: n * 150 + 100,
-    features: ["local", "cashOnDelivery", "international"],
-    status: n % 5 === 3 ? "disabled" : "active",
-    prices: base.shippingCompanies.map((company, i) => ({
-      id: `demo-plan-price-${n}-${i}`,
-      shippingCompanyId: company.id,
-      localPrice: Math.max(0, 30 + i * 5 - n * 2),
-      codPrice: 10 + i,
-      internationalDiscountRate: n * 2,
-      returnFees: i === 0 ? 0 : 10 + i,
-    })),
-    createdAt: date(n),
-  }));
   const coupons = Array.from({ length: 28 }, (_, n) => ({
     id: `demo-coupon-${n + 1}`,
     shippingCompanyId:
@@ -226,20 +202,7 @@ export function createDemoExtras(base: {
     apiKey: `demo-key-${n + 1}`,
     createdAt: date(n),
   }));
-  const products = ["Small bags", "Medium bags", "Large bags", "Labels"].map(
-    (name, n) => ({
-      id: `demo-supply-${n + 1}`,
-      name: { en: name, ar: `مستلزمات ${n + 1}` },
-      description: {
-        en: `Bundle of ${10 * (n + 1)}`,
-        ar: `مجموعة ${10 * (n + 1)}`,
-      },
-      price: 45 + n * 30,
-      count: 10 * (n + 1),
-      imageUrl: "/assets/images/logo/logo.png",
-    }),
-  );
-  const requestTypes = ["bankTransfer", "affiliateWithdraw", "bags"];
+  const requestTypes = ["bankTransfer", "affiliateWithdraw"];
   const requests = requestTypes.flatMap((type, t) =>
     Array.from({ length: 24 }, (_, n) => {
       const user =
@@ -257,7 +220,7 @@ export function createDemoExtras(base: {
         userId: user.id,
         updatedById: status === "pending" ? undefined : "demo-admin",
         amount:
-          type === "bags" ? products[n % products.length].price : 80 + n * 12,
+          80 + n * 12,
         description: `Demo ${type} request ${n + 1}`,
         notes: status === "rejected" ? "Please check the details" : "",
         bank: status === "approved" ? "alrajhiBank" : undefined,
@@ -269,23 +232,6 @@ export function createDemoExtras(base: {
         userType: "company",
         taxNumber: `TX${n + 1000}`,
         crNumber: `CR${n + 1000}`,
-        paymentPlanId:
-          type === "bankTransfer" ? plans[n % plans.length].id : undefined,
-        productIds:
-          type === "bags" ? [products[n % products.length].id] : undefined,
-        fullName:
-          type === "bags" ? user.firstName + " " + user.lastName : undefined,
-        phone: type === "bags" ? user.phone : undefined,
-        shippingAddress:
-          type === "bags"
-            ? {
-                countryId: egypt.id,
-                stateId: state.id,
-                cityId: city.id,
-                street: `Street ${n + 1}`,
-              }
-            : undefined,
-        reference: `DEMO-${type.toUpperCase()}-${n + 1}`,
         createdAt: date(n),
         updatedAt: date(n),
       };
@@ -313,7 +259,7 @@ export function createDemoExtras(base: {
             "re activate canceled",
             "canceled shipment balance",
             "balance update",
-            "bags request",
+            "bank transfer",
           ];
     return {
       id: `demo-transaction-${n + 1}`,
@@ -348,12 +294,10 @@ export function createDemoExtras(base: {
     shipmentStates,
     shipmentCities,
     users,
-    plans,
     coupons,
     alerts,
     shippingUsers,
     applications,
-    products,
     requests,
     transactions,
   };
@@ -386,16 +330,6 @@ function populated(ctx: Context, resource: string, row: DemoRow): DemoRow {
         .filter((item) => item.cityId === row.id)
         .map((item) => populated(ctx, "shipment-cities", item)),
     };
-  if (resource === "payment-plans")
-    return {
-      ...row,
-      prices: (row.prices || []).map((price: DemoRow) => ({
-        ...price,
-        shippingCompany: db.shippingCompanies.find(
-          (item) => item.id === price.shippingCompanyId,
-        ),
-      })),
-    };
   if (resource === "coupons")
     return {
       ...row,
@@ -406,9 +340,6 @@ function populated(ctx: Context, resource: string, row: DemoRow): DemoRow {
   if (resource === "users")
     return {
       ...row,
-      paymentPlan:
-        db.plans.find((plan) => plan.id === row.paymentPlanId) ||
-        row.paymentPlan,
       prices: (row.prices || []).map((price: DemoRow) => ({
         ...price,
         shippingCompany: db.shippingCompanies.find(
@@ -444,10 +375,6 @@ function populated(ctx: Context, resource: string, row: DemoRow): DemoRow {
       ...row,
       user,
       updatedBy: db.users.find((item) => item.id === row.updatedById),
-      paymentPlan: db.plans.find((item) => item.id === row.paymentPlanId),
-      products: (row.productIds || [])
-        .map((id: string) => db.products.find((item) => item.id === id))
-        .filter(Boolean),
       shippingAddress: row.shippingAddress && {
         ...row.shippingAddress,
         country: db.countries.find(
@@ -489,8 +416,7 @@ function listFilter(ctx: Context, resource: string, rows: DemoRow[]) {
         if (params.role && !oneOf(row.role, params.role)) return false;
         if (
           !oneOf(row.referredById, params.referredById) ||
-          !oneOf(row.loyaltyType || "normal", params.loyaltyType) ||
-          !oneOf(row.verificationStatus, params.verificationStatus)
+          !oneOf(row.loyaltyType || "normal", params.loyaltyType)
         )
           return false;
         if (
@@ -725,12 +651,10 @@ export async function handleDemoExtra(ctx: Context): Promise<Response | null> {
     "shipment-states": "shipmentStates",
     "shipment-cities": "shipmentCities",
     users: "users",
-    "payment-plans": "plans",
     coupons: "coupons",
     alerts: "alerts",
     "shipping-users": "shippingUsers",
     applications: "applications",
-    products: "products",
     requests: "requests",
     transactions: "transactions",
   };
@@ -772,8 +696,6 @@ export async function handleDemoExtra(ctx: Context): Promise<Response | null> {
       return [403, { message: "Not available for this account" }];
     return [200, populated(ctx, resource, rows[index])];
   }
-  if (resource === "products")
-    return [405, { message: "Catalog is read only" }];
   if (method === "post" && !id) {
     const record: DemoRow = {
       ...data,
@@ -795,25 +717,12 @@ export async function handleDemoExtra(ctx: Context): Promise<Response | null> {
     if (resource === "states") record.shippingCompanyIds = [];
     if (resource === "applications") record.apiKey = `demo-key-${record.id}`;
     if (resource === "requests") {
+      if (!["bankTransfer", "withdrew", "walletCharge", "affiliateWithdraw", "cancelShipment"].includes(record.type))
+        return [400, { message: "Unsupported request type" }];
       record.userId =
         getDemoUser().role === "user" ? getDemoUser().id : data.userId;
       record.status = "pending";
-      if (record.type === "verification") {
-        const account = db.users.find((row) => row.id === record.userId);
-        if (!account) return [400, { message: "Account not found" }];
-        account.verificationStatus = "pending";
-      }
-      if (record.type === "bags") {
-        const selected = (record.productIds || []).map((key: string) =>
-          db.products.find((row) => row.id === key),
-        );
-        if (!selected.length || selected.some((row: DemoRow) => !row))
-          return [400, { message: "Invalid supplies" }];
-        record.amount = selected.reduce(
-          (total: number, row: DemoRow) => total + row.price,
-          0,
-        );
-      }
+
     }
     if (resource === "transactions") {
       if (getDemoUser().role === "user")
@@ -877,13 +786,6 @@ export async function handleDemoExtra(ctx: Context): Promise<Response | null> {
       if (before.status !== "pending")
         return [409, { message: "Request already reviewed" }];
       update.updatedById = getDemoUser().id;
-      if (before.type === "bags" && update.status === "approved") {
-        const account = db.users.find((row) => row.id === before.userId);
-        if (!account || Number(account.balance) < Number(before.amount))
-          return [409, { message: "Insufficient balance" }];
-        account.balance -= Number(before.amount);
-        account.walletBalance = account.balance;
-      }
       if (before.type === "affiliateWithdraw" && update.status === "approved") {
         db.affiliateBalances[before.userId] = Math.max(
           0,
@@ -893,7 +795,14 @@ export async function handleDemoExtra(ctx: Context): Promise<Response | null> {
       if (before.type === "bankTransfer" && update.status === "approved") {
         const account = db.users.find((row) => row.id === before.userId);
         if (account) {
-          account.balance += Number(before.amount);
+          const previousBalance = Number(account.balance), credit = Math.round(Number(before.amount) / 1.15 * 100) / 100;
+          account.balance = Math.round((previousBalance + credit) * 100) / 100;
+          const ledgerId = uid();
+          db.transactions.unshift({ id: ledgerId, userId: account.id, createdById: getDemoUser().id,
+            type: "deposit", relatedBalance: "wallet", amount: credit, previousBalance, currentBalance: account.balance,
+            transactionTitle: "bank transfer", title: {en:"Bank transfer", ar:"تحويل بنكي"},
+            status: "success", createdAt: new Date().toISOString(), notes: before.transactionReference });
+          update.relatedTransactionId = ledgerId;
           account.walletBalance = account.balance;
         }
       }

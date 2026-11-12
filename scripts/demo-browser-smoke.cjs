@@ -26,8 +26,8 @@ const routes = [
   "/affiliate-merchants",
   "/affiliate-merchants/demo-affiliate/customers",
   "/affiliate-merchants/demo-affiliate/transactions",
-  "/topup-requests/all",
-  "/topup-requests/all/demo-payment-1-1",
+  "/payments/all",
+  "/payments/all/demo-payment-1-1",
   "/withdraw-requests/all",
   "/withdraw-requests/all/demo-withdraw-request-1",
   "/merchant-dues/all/all",
@@ -287,7 +287,7 @@ async function main() {
     "/shipments/all/all",
     "/shipments/all/all/new",
     "/shipping-price-calculator",
-    "/topup-requests/all",
+    "/payments/all",
     "/withdraw-requests/all",
     "/withdraw-requests/all/new",
     "/merchant-dues/all/all",
@@ -297,7 +297,7 @@ async function main() {
     "/transaction-reports/all",
   ])
     await navigate(route);
-  await navigate("/topup-requests/all/new");
+  await navigate("/payments/all/new");
   const balanceBefore = await evaluate(
     "JSON.parse(localStorage.getItem('ashamco-demo-data-v1')).users.find(u => u.id === 'demo-merchant').balance",
   );
@@ -309,11 +309,11 @@ async function main() {
     input.dispatchEvent(new Event('change', { bubbles: true }));
   })()`);
   await until(
-    "document.querySelector('[data-testid=create-topup]') && !document.querySelector('[data-testid=create-topup]').disabled",
+    "document.querySelector('[data-testid=create-payment]') && !document.querySelector('[data-testid=create-payment]').disabled",
     "Top-up form ready",
   );
   await evaluate(
-    "document.querySelector('[data-testid=create-topup]').click()",
+    "document.querySelector('[data-testid=create-payment]').click()",
   );
   await until(
     "document.querySelector('[data-testid=payment-callback]')?.dataset.status === 'success'",
@@ -349,7 +349,7 @@ async function main() {
     "/affiliate-profile/transactions",
     "/affiliate-profile/withdraw-requests",
     "/shipments/all/all",
-    "/topup-requests/all",
+    "/payments/all",
   ])
     await navigate(route);
   await send("Emulation.setDeviceMetricsOverride", {

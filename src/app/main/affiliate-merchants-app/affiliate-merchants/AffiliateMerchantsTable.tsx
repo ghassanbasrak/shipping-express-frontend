@@ -23,8 +23,6 @@ import {
   canConvertMerchant,
   merchantDatesInvalid,
   merchantName,
-  toMerchantVerificationStatusTitle,
-  toMerchantVerificationStatusColor,
 } from "../../merchants-app/Utils";
 import {
   selectAffiliateMerchantsFilters,
@@ -152,16 +150,6 @@ export default function AffiliateMerchantsTable() {
       type: TableDataTypes.normal,
       flex: 0.3,
       minWidth: 30,
-    },
-    {
-      id: "verificationStatus",
-      label: t("VERIFICATION_STATUS"),
-      type: TableDataTypes.normal,
-      chip: true,
-      toChipTitle: (value) => t(toMerchantVerificationStatusTitle(value)),
-      toChipColor: toMerchantVerificationStatusColor,
-      flex: 0.7,
-      minWidth: 70,
     },
     {
       id: "createdAt",

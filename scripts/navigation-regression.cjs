@@ -151,7 +151,7 @@ check(
         "affiliate-profile",
         "merchants",
         "profile",
-        "topup-requests",
+        "payments",
         "withdraw-requests",
         "logs",
         "cancel-shipment-requests",
@@ -166,7 +166,6 @@ check(
         "bank-transfers",
         "shipment-users",
         "coupons",
-        "plans",
         "admins",
         "states",
         "cities",
@@ -228,27 +227,39 @@ check("affiliate retains account and withdrawal links", () => {
   assert(ids(items).includes("affiliate-withdraw-requests"));
 });
 check(
+  "payments navigation uses its native permission, new route and Arabic title",
+  () => {
+    const paymentLink = flatten(
+      visible({
+        role: "employee",
+        features: [{ feature: "payments", accessView: true }],
+      }),
+    ).find((item) => item.id === "payments");
+    assert(paymentLink);
+    assert.equal(paymentLink.url, "/payments/all");
+    language = "ar";
+    const arabic = flatten(visible({ role: "admin" })).find(
+      (item) => item.id === "payments",
+    );
+    assert.equal(arabic.title, "الدفعات الإلكترونية");
+    language = "en";
+  },
+);
+check(
   "restricted staff sees only permitted children and no empty sections",
   () => {
     const items = visible({
       role: "employee",
       features: [{ feature: "transactions", accessView: true }],
     });
-    assert.deepEqual(ids(items), [
-      "group-overview",
-      "group-shipping",
-      "group-finance",
-    ]);
+    assert.deepEqual(ids(items), ["group-overview", "group-finance"]);
     const finance = items.find((item) => item.id === "group-finance");
     assert.deepEqual(ids(finance.children), ["nav-transactions"]);
     assert.deepEqual(ids(finance.children[0].children), [
       "transactions-wallet",
       "transaction-reports",
     ]);
-    assert.deepEqual(
-      ids(items.find((item) => item.id === "group-shipping").children),
-      ["shipping-price-calculator"],
-    );
+    assert(!items.some((item) => item.id === "group-shipping"));
   },
 );
 check("switching locale translates group and collapse labels", () => {

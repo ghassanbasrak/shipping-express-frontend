@@ -51,7 +51,6 @@ export const transactionTitleTypes = {
   reactivateCanceled: "re activate canceled",
   canceledShipmentBalance: "canceled shipment balance",
   balanceUpdate: "balance update",
-  bagsRequest: "bags request",
 } as const;
 const transactionTypeTitles: Record<string, string> = {
   deposit: "DEPOSIT",

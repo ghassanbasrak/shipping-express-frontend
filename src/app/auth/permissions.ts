@@ -3,7 +3,6 @@ export type Operation = "exist" | "view" | "create" | "update" | "delete";
 const featurePaths: Record<string, string> = {
   transactions: "wallet",
   "cod-transactions": "cod",
-  payments: "topup-requests",
 };
 export function hasOperationPermission(
   feature: string,
@@ -45,7 +44,6 @@ export function hasPagePermission(pathname: string, user: User | null) {
     "sign-up",
     "register",
     "register-profile",
-    "verify-account",
     "blocked",
     "sign-out",
     "logout",
@@ -59,8 +57,6 @@ export function hasPagePermission(pathname: string, user: User | null) {
     "delete-account",
     "delete-my-account",
     "shipping-price-calculator",
-    "link-email",
-    "link-phone",
   ];
   if (!first || publicPaths.includes(first) || !user.features?.length)
     return true;
@@ -88,20 +84,9 @@ export function hasPagePermission(pathname: string, user: User | null) {
       (!["new", "invite"].includes(parts.slice(-1)[0]) || p.accessCreate),
   );
 }
-export function requiresVerification(user: User | null, now = Date.now()) {
-  if (!user || user.role !== "user" || user.verificationStatus === "approved")
-    return false;
-  const expires = user.verificationExpiresAt
-    ? new Date(user.verificationExpiresAt).getTime()
-    : 0;
-  return (
-    !Number.isFinite(expires) || Math.floor((expires - now) / 86400000) <= 0
-  );
-}
 export function accountDestination(user: User | null) {
   if (!user) return "/sign-in";
   if (user.isBlocked) return "/blocked";
   if (!user.isRegistered) return "/register";
-  if (requiresVerification(user)) return "/verify-account";
   return "/home";
 }

@@ -1,4 +1,53 @@
 const locale = {
+  STORAGE_TYPES_NOT_SAVED:
+    "لم يحتفظ الخادم بأنواع التخزين المدعومة. مسودتك محفوظة؛ إعادة المحاولة ستحدّث السجل المحفوظ.",
+  PLAN_FEATURES: "المميزات",
+  TYPE_STANDARD: "عادي",
+  TYPE_DRY: "جاف",
+  TYPE_CHILLED: "مبرد",
+  TYPE_FROZEN: "مجمد",
+  UNKNOWN_STORAGE_TYPE: "نوع تخزين غير معروف",
+  STORAGE_SUBSCRIPTIONS: "اشتراكات التخزين",
+  SUBSCRIBE_STORAGE: "اشترك في التخزين",
+  SUBSCRIPTIONS_HINT: "اشتراكات التخزين والدفعات وفترات الخدمة في مكان واحد.",
+  CURRENT_SUBSCRIPTION: "الاشتراك الحالي",
+  CREATE_SUBSCRIPTION: "إنشاء اشتراك",
+  RENEW: "تجديد",
+  UPGRADE: "ترقية",
+  STARTS_AT: "بداية الاشتراك",
+  UPDATED_AT: "آخر تحديث",
+  SUBSCRIPTION_NUMBER: "رقم الاشتراك",
+  PLAN: "الباقة",
+  PAYMENT: "الدفعة",
+  PAYMENT_METHOD: "وسيلة الدفع",
+  EXPIRED: "منتهي",
+  CANCELLED: "ملغي",
+  FILTERS: "الفلاتر",
+  RESET_FILTERS: "إعادة تعيين الفلاتر",
+  ADMIN_SUBSCRIPTION_HINT:
+    "تفعيل التخزين فوراً للتاجر المحدد. لن يتم خصم رصيده أو فتح الدفع الإلكتروني.",
+  ACTIVATE_SUBSCRIPTION: "تفعيل الاشتراك",
+  OPERATION: "العملية",
+  CHECK_SUBSCRIPTION_HISTORY: "راجع سجل الاشتراكات قبل الإرسال مجدداً.",
+  PRODUCTS_COUNT: "عدد المنتجات",
+  PRODUCT_SOURCE: "خيار المنتج",
+  NEW_PRODUCT: "إنشاء منتج جديد",
+  EXISTING_PRODUCT: "اختيار منتج موجود",
+  NEW_UNIT_PRICE: "سعر الوحدة الجديد (اختياري)",
+  OPTIONAL_NEW_PRICE:
+    "اتركه فارغاً للاحتفاظ بالسعر الحالي. الصفر يستبدل السعر بصفر.",
+  STOCK_INCREASE_HINT: "بعد الاستلام ستزداد الكمية من {{old}} إلى {{next}}.",
+  PRICE_UNCHANGED_HINT: "سيبقى سعر الوحدة الحالي {{price}}.",
+  PRICE_REPLACED_HINT: "بعد الاستلام سيصبح سعر الوحدة {{price}}.",
+  NO_SUPPORTED_TYPES:
+    "لا توجد أنواع تخزين مشتركة. اختر مستودعاً آخر أو حدّث الباقة.",
+  EDIT_PRODUCT: "تعديل المنتج المخزن",
+  EDIT: "تعديل",
+  SUPPLY_STATUS_CHANGED: "تغيرت حالة الطلب. حدّث الصفحة وحاول مجدداً.",
+  TYPE_NOT_ALLOWED: "نوع التخزين غير مدعوم في الباقة أو المستودع المحدد.",
+
+  HOSTED_CHECKOUT_UNAVAILABLE:
+    "تم إنشاء الدفعة لكن لم يُرجع النظام رابط دفع صالحاً. راجع سجل الدفعات قبل إنشاء دفعة أخرى.",
   PICKUP_SAVE_UNSUPPORTED:
     "حُفظ المستودع لكن الخادم لم يحتفظ ببيانات الاستلام. بقيت مسودتك محفوظة. يلزم تحديث backend قبل إعادة المحاولة؛ ستحدّث المحاولة المستودع نفسه دون تكراره.",
   SAVED_WAREHOUSE_REFERENCE: "مرجع المستودع المحفوظ",
@@ -23,7 +72,7 @@ const locale = {
   NATIVE_FEATURES_HINT:
     "أدخل نوع تخزين في كل سطر، مثل جاف أو عادي أو مبرد. يستطيع التاجر اختيار هذه القيم فقط.",
   NATIVE_SUBSCRIBE_HINT:
-    "تابع للدفع الآمن بالبطاقة عبر ميسر، وراجع الإجمالي شامل الضريبة قبل الدفع. يتفعل اشتراكك بعد التحقق من نجاح العملية.",
+    "تابع للدفع الإلكتروني الآمن، وراجع الإجمالي شامل الضريبة قبل الدفع. يتفعل اشتراكك بعد التحقق من نجاح العملية.",
   NATIVE_PICKUP_HINT:
     "تأكد من أن بيانات المرسل تحتوي على اسم ورقم مسؤول الاستلام وعنوان المستودع.",
   EXCLUDES_TAX: "غير شامل الضريبة",
@@ -39,7 +88,7 @@ const locale = {
   LOADING_CHECKOUT: "جارٍ تحميل نموذج الدفع الآمن…",
   BACK_TO_STORAGE: "العودة إلى التخزين",
   RESUME_CHECKOUT: "متابعة الدفع",
-  CHECKOUT_SAVED: "تم حفظ عملية الدفع. تابع لإكمالها أو للتحقق من نتيجتها.",
+  CHECKOUT_SAVED: "تم إنشاء دفعة. يمكنك متابعة الدفع أو التحقق من حالتها.",
   CHECKOUT_LOAD_ERROR:
     "تعذر تحميل نموذج الدفع. أعد تحميل عملية الدفع المحفوظة.",
   CLOSE: "إغلاق",
@@ -91,7 +140,6 @@ const locale = {
   DISCOUNT_HINT: "اتركه فارغًا لاستخدام السعر الأصلي. الصفر يعني باقة مجانية.",
   DURATION_DAYS: "المدة بالأيام",
   DISCOUNT_LIMIT: "السعر بعد الخصم لا يتجاوز السعر الأصلي",
-  PLAN_FEATURES: "ميزات الاشتراك",
   FEATURES_HINT: "أدخل كل ميزة في سطر مستقل",
   WAREHOUSES: "المستودعات",
   STORAGE_PLANS: "باقات التخزين",
@@ -150,7 +198,6 @@ const locale = {
   SUBSCRIPTION_REFRESH: "تم قبول الاشتراك. حدّث حالته قبل إجراء أي اشتراك آخر.",
   SUPPLY_CREATE_HINT: "اختر المستودع وأدخل المنتجات التي ستوردها.",
   SUBMIT_REQUEST: "إرسال طلب التوريد",
-  TYPE_NOT_ALLOWED: "نوع التخزين غير مشمول في اشتراكك الحالي.",
   DUPLICATE_SKU: "رمز المنتج مكرر في الطلب",
   ADD_PRODUCT: "إضافة منتج",
   ALLOWED_TYPES_HINT: "أنواع التخزين المتاحة لهذا الطلب",

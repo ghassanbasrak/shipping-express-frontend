@@ -51,7 +51,7 @@ function load(file, imports = {}, globals = {}) {
 
 const plain=value=>JSON.parse(JSON.stringify(value));
 const permissions=load('src/app/auth/permissions.ts'),contacts=load('src/app/main/shipment-users-app/Utils.ts');
-const shipment=load('src/app/main/shipments-app/Utils.ts',{'src/app/auth/permissions':permissions,'../shipment-users-app/Utils':contacts,'../countries-app/Utils':{displayName:value=>typeof value==='string'?value:value?.en||value?.ar||''}});
+const shipment=load('src/app/main/shipments-app/Utils.ts',{'src/app/auth/user':{userRoles:load('src/app/auth/userRoles.tsx').default},'src/app/auth/permissions':permissions,'../shipment-users-app/Utils':contacts,'../countries-app/Utils':{displayName:value=>typeof value==='string'?value:value?.en||value?.ar||''}});
 const cancellation=load('src/app/main/cancel-shipment-requests-app/Utils.ts',{'src/app/auth/permissions':permissions});
 const dues=load('src/app/main/merchant-dues-app/Utils.ts',{'src/app/auth/permissions':permissions,'../shipments-app/Utils':shipment});
 const viewer={id:'viewer',role:'employee',features:[{feature:'cancel-shipment-requests',accessView:true},{feature:'merchant-dues',accessView:true}]};

@@ -1,3 +1,4 @@
+import CurrencyAdornment from "app/shared-components/currency-adornment/CurrencyAdornment";
 import { useRef, useState } from "react";
 import {
   Alert,
@@ -240,6 +241,7 @@ export function ShipmentOperationDialog({
               fullWidth
               type="number"
               label={t("EXTRA_WEIGHT_PRICE")}
+              InputProps={{ endAdornment: <CurrencyAdornment /> }}
               value={fee}
               disabled={busy || local}
               onChange={(e) => setFee(e.target.value)}

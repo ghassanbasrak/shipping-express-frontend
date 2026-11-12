@@ -1,3 +1,4 @@
+import CustomPhoneNumber from "app/shared-components/custom-phone-number/CustomPhoneNumber";
 import { useState } from "react";
 import {
   Alert,
@@ -155,10 +156,11 @@ export default function PickupFields({ disabled }: { disabled: boolean }) {
         {t("PICKUP_DETAILS_HINT")}
       </Typography>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-16">
-        <StorageField
+        <CustomPhoneNumber
+          serialized
+          className="w-full"
           name="pickup.phone"
           label={t("PICKUP_PHONE")}
-          helper={t("PICKUP_PHONE_HINT")}
           required
           disabled={disabled}
         />

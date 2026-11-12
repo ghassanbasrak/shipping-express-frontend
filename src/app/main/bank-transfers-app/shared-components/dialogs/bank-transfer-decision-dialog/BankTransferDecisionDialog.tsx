@@ -14,6 +14,7 @@ export default function BankTransferDecisionDialog({
   id,
   userId,
   bank,
+  amount,
   status,
   next,
   onClose,
@@ -21,6 +22,7 @@ export default function BankTransferDecisionDialog({
   id: string;
   userId?: string;
   bank?: string;
+  amount: number;
   status: string;
   next: "approved" | "rejected";
   onClose: () => void;
@@ -51,7 +53,7 @@ export default function BankTransferDecisionDialog({
         approval ? bankTransferApprovalSchema(t) : bankTransferRejectionSchema()
       }
       formDefaultValues={defaults}
-      message={<BankTransferDecisionForm approval={approval} />}
+      message={<BankTransferDecisionForm approval={approval} amount={amount} />}
       formSubmitButtonTitle={t("CONVERT")}
       formSubmitButtonProps={
         {

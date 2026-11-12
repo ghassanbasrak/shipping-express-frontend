@@ -8,7 +8,6 @@ import { useAppDispatch } from "app/store/hooks";
 import { setUser, resetUser } from "./user/store/userSlice";
 import useJwtAuth from "./services/jwt/useJwtAuth";
 import useAuth from "./useAuth";
-import AccountLinking from "./AccountLinking";
 import FirebaseMessagingApp from "./services/firebase/FirebaseMessagingApp";
 
 function Authentication({ children }: { children: React.ReactNode }) {
@@ -50,7 +49,7 @@ function Authentication({ children }: { children: React.ReactNode }) {
     <BrowserRouter>
       <FirebaseMessagingApp />
       <FuseAuthorization user={user}>
-        <AccountLinking>{children}</AccountLinking>
+        {children}
       </FuseAuthorization>
     </BrowserRouter>
   );

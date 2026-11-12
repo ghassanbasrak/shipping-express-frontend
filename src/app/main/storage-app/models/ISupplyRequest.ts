@@ -1,3 +1,4 @@
+import type { StorageType, SupplyStatus } from "../Utils";
 import type { User } from "src/app/auth/user";
 import type IWarehouse from "./IWarehouse";
 export default interface ISupplyRequest {
@@ -6,16 +7,17 @@ export default interface ISupplyRequest {
   user?: User;
   warehouseId: string;
   warehouse?: IWarehouse;
-  status: "pending" | "approved" | "received" | "rejected";
+  status: SupplyStatus;
   products: ISupplyRequestProduct[];
   createdAt?: string;
   updatedAt?: string;
 }
 export interface ISupplyRequestProduct {
+  warehouseProductId?: string;
   name: string;
   sku?: string;
   quantity: number;
   notes?: string;
   unitPrice: number;
-  storageType: string;
+  storageType: StorageType;
 }

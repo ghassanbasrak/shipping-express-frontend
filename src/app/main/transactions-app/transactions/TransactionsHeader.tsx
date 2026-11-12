@@ -113,7 +113,7 @@ export default function TransactionsHeader({
                 className="rounded-[10px] shadow-none whitespace-nowrap min-h-44"
                 color="primary"
                 component={Link}
-                to="/topup-requests/all/new"
+                to="/payments/all/new"
                 variant="contained"
                 data-testid="topup-wallet"
               >

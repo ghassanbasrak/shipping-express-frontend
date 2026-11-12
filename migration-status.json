@@ -3,8 +3,8 @@
   "scope": "Feature areas registered by the legacy routesConfig; auth and common pages are tracked separately. Counts do not measure implementation effort.",
   "counts": {
     "featureAreas": 32,
-    "migrated": 28,
-    "excluded": 4,
+    "migrated": 26,
+    "excluded": 6,
     "partial": 0,
     "pending": 0
   },
@@ -809,7 +809,7 @@
     },
     {
       "feature": "package-requests-app",
-      "status": "migrated",
+      "status": "excluded",
       "sourceConfigs": [
         "src/app/main/package-requests-app/PackageRequestsAppConfig.js"
       ],
@@ -830,7 +830,8 @@
         "Searchable geographic lookups, selected-ID fallbacks, dependent clearing, city-to-state/ZIP selection and legacy phone serialization",
         "Enabled carrier packaging summary using corrected /package-requests/all list destination",
         "English/Arabic mobile RTL with LTR phone; legacy Turkish bundle retained; inactive reset/reference/edit/delete controls remain unexposed"
-      ]
+      ],
+      "reason": "Retired by explicit user request 2026-11-10; all frontend entry points, staff grants and demo catalog/request behavior removed. Storage supply requests remain separate."
     },
     {
       "feature": "payment-app",
@@ -853,14 +854,15 @@
     },
     {
       "feature": "plans-app",
-      "status": "migrated",
+      "status": "excluded",
       "sourceConfigs": [
         "src/app/main/plans-app/PlansAppConfig.js"
       ],
       "sourceRoutes": [
         "plans",
         "plans/:planId"
-      ]
+      ],
+      "reason": "Retired by explicit user request 2026-11-10. Payment plans, routes, UI, permissions and demo APIs removed; storage subscriptions retained."
     },
     {
       "feature": "shipment-users-app",
@@ -934,7 +936,7 @@
       ]
     },
     {
-      "feature": "topup-requests-app",
+      "feature": "payments-app",
       "status": "migrated",
       "sourceConfigs": [
         "src/app/main/topup-requests-app/TopupRequestsAppConfig.js"
@@ -944,6 +946,23 @@
         "topup-requests/:userId/:topupRequestId/*"
       ],
       "includes": [
+        "Renamed Payments feature at /payments/:userId with merchant-only /payments/:userId/:paymentId/*; Payment/Payments pages, IPayment, PaymentSchema, PaymentsApi and paymentsSlice.js.",
+        "Payments / الدفعات الإلكترونية UI, navigation, searches, empty/error states, exports and account/staff/bank-transfer links.",
+        "Native payments permission, ten-row filtered v1/payments history and page-zero 500000-row export; merchant reads remain backend-account scoped.",
+        "Hosted Moyasar link initiation with net amount only, paymentId-only invoice verification and owned purpose routing; Pay Online labels and shared wallet/storage callback routing.",
+        "New payment always starts fresh with online/bank-transfer options; no persisted wallet checkout recovery.",
+        "Bank transfer submission uses existing separate requests contract and staff review; no frontend wallet credit or invented gateway endpoints.",
+        "Separately permissioned staff ledger adjustments; no restored packaging, verification or payment-plan screens.",
+        "Typed topup/storageSubscription purposes and exact visa/master/mada/amex/unionpay/applepay/free method values, using shared Utils title/color helpers in history and results."
+      ],
+      "originalFeature": "topup-requests-app",
+      "runtimeConfig": "src/app/main/payments-app/PaymentsAppConfig.tsx",
+      "runtimeRoutes": [
+        "payments/:userId",
+        "payments/:userId/:paymentId/*",
+        "wallet/payment-result"
+      ],
+      "historicalIncludes": [
         "Original /topup-requests/:userId history and merchant-only /topup-requests/:userId/:topupRequestId/* creation/results, simple RTK Query API, topupRequestsSlice.js, root ITopupRequest and canonical header/tabs/BasicInfoTab structure",
         "Existing payments view permission identifier, ten-row server pagination, account/status/date/encoded-search filters, original page-zero/500000 filtered Excel export, stable totals and read-error retries",
         "Source gateway response/reference/platform, accounting zohoCreditId, transaction/error/notes, method icons, net/gross amount, stored plan name, status and timestamp fields preserved",
@@ -1412,5 +1431,348 @@
       "unchangedSourceGaps": "Historical packaging/balance-error checkout gaps remain outside this shipment review change.",
       "exclusions": "Retired account-review, commerce/platform and standalone comparison features remain excluded."
     }
+  },
+  "verificationAndPaymentPlansRetirement": {
+    "date": "2026-11-10",
+    "status": "frontend complete; live retest recorded; backend handoff pending owner",
+    "scope": "Frontend only; backend unchanged by user instruction.",
+    "removed": [
+      "Account identity-document verification and mandatory email/phone linking",
+      "Verification redirects, filters, indicators and onboarding step",
+      "Payment-plan screens, navigation, merchant assignment/cancellation, permissions and demo API"
+    ],
+    "retained": [
+      "Login and password recovery",
+      "Optional phone-code authentication",
+      "Profile completion and blocked-account guards",
+      "Carrier/account authorization and storage subscriptions"
+    ],
+    "validation": {
+      "activeApplicationTypecheck": "passed: npm run typecheck:app",
+      "productionBuild": "passed: npm run build; test-results/verification-plans-retirement-build.log",
+      "regressionChecks": {
+        "authentication": 17,
+        "featureRetirement": 9,
+        "merchantContracts": 28,
+        "demoContracts": 62,
+        "total": 116
+      },
+      "scope": "Behavioral/contract and static retirement checks; embedded browser live retest recorded separately. No headless browser fixtures executed in this pass.",
+      "buildWarnings": "Existing Browserslist, camelCase CSS properties, mixed FuseDialog imports and chunk-size warnings.",
+      "liveEmbeddedBrowser": {
+        "scenarios": 50,
+        "passed": 35,
+        "failedActions": 10,
+        "notTested": 5,
+        "uniqueOpenFindings": 9,
+        "report": "qa-browser-2026-11-10/retest/report.md",
+        "actionLog": "qa-browser-2026-11-10/retest/action-log.md",
+        "scope": "Merchant/admin sequentially, live backend, embedded browser only. Earlier results explicitly distinguished."
+      }
+    },
+    "backendHandoff": "docs/backend-verification-plans-handoff.md",
+    "remainingWork": [
+      "Backend owner acceptance of verification/plan policy",
+      "Nine reproduced issues to fix later, outside this retirement change",
+      "Unexecuted live registration, payments, uploads, pending decisions, affiliate role and carrier integration",
+      "Common-page parity and eight dormant-source import audits remain tracked separately"
+    ]
+  },
+  "walletFundingAndProfileUpdate": {
+    "date": "2026-11-10",
+    "scope": "Frontend only; inspected backend read-only before editing funding flows.",
+    "status": "frontend complete; live checkout/render verification complete; financial acceptance deferred",
+    "backendCapability": "Native POST v1/payments/moyasar, POST v1/payments/:paymentId/check-status and bankTransfer POST/PATCH v1/requests exist with wallet credit operations. Local inspection is not live payment acceptance.",
+    "completed": [
+      "Two funding methods: Moyasar online and bank-transfer review",
+      "Moyasar-only checkout/status payloads; old gateway callbacks now redirect to server-read payment history",
+      "Gross/VAT/net breakdown and server-authoritative checkout totals",
+      "Shared wallet/storage Moyasar widget and callback routing",
+      "Bank reference/receipt submission and existing permission-scoped review flow",
+      "Packaging feature retired; storage supplies retained",
+      "Responsive merchant/admin profile and edit form redesign"
+    ],
+    "remaining": [
+      "Backend deployment/payment credentials and callback URL verification",
+      "Webhook/reconciliation and initial gateway-payment ownership binding review",
+      "Live completed payment/credit/approval acceptance",
+      "Earlier unrelated QA issues remain outside this batch"
+    ],
+    "validation": {
+      "activeTypecheck": "passed: npm run typecheck:app",
+      "productionBuild": "passed: npm run build; test-results/funding-profile-build.log",
+      "regressionChecks": {
+        "walletFunding": 16,
+        "bankTransfers": 12,
+        "merchantContracts": 28,
+        "storage": 28,
+        "demoOperations": 65,
+        "retirement": 9,
+        "total": 158
+      },
+      "liveBrowser": "Embedded browser only; merchant/admin, English desktop and English/Arabic mobile. Results in qa-browser-2026-11-10/funding-profile/scenarios.json.",
+      "livePendingPayment": "6af264bdec9f4acddb3b1f5e: 100 credit +15 VAT =115 SAR pending; no card or funds submitted. Moyasar test mode observed.",
+      "financialAcceptance": "No completed live payment, bank transfer, approval, rejection or wallet credit was executed. Contract/demo passes do not establish live financial acceptance.",
+      "warnings": "Existing Browserslist, CSS properties, mixed FuseDialog imports and bundle-size warnings.",
+      "liveBrowserCounts": {
+        "passed": 18,
+        "notTested": 3,
+        "total": 21
+      }
+    },
+    "backendHandoff": "docs/wallet-funding-backend-handoff.md",
+    "report": "qa-browser-2026-11-10/funding-profile/report.md"
+  },
+  "paymentPresentationAndMediaUpdate": {
+    "date": "2026-11-10",
+    "scope": "Frontend payment presentation and whole-application MediaInput consolidation; backend read-only.",
+    "status": "frontend complete; hosted invoice integration requires backend work",
+    "completed": [
+      "Pay Online / الدفع الإلكتروني across wallet UI, history and storage guidance; native gateway identifiers and provider attribution retained.",
+      "Scoped checkout sizing: 16 px card inputs, 48 px heights and mobile card-logo separation; English/Arabic desktop/mobile verified.",
+      "All 11 source consumers use MediaInput; removed UploadFileInput and duplicate Freezed uploader; controlled builder and rich-text picker supported.",
+      "Shared MIME/size validation, dirty/validate updates, upload locks, error recovery with previous URL retained, crop cancellation and image MIME preservation."
+    ],
+    "validation": {
+      "activeTypecheck": "passed: npm run typecheck:app",
+      "productionBuild": "passed: npm run build; test-results/payment-media-build.log",
+      "focusedRegressions": {
+        "mediaInput": 13,
+        "wallet": 16,
+        "bankTransfers": 12,
+        "affiliateWithdrawals": 17,
+        "withdrawalsAndLogs": 23,
+        "shipments": 40,
+        "couponsAndAlerts": 21,
+        "shippingCompanies": 12,
+        "storage": 28,
+        "retirement": 9,
+        "total": 191
+      },
+      "embeddedBrowser": {
+        "passed": 12,
+        "deferredOrSourceOnly": 3,
+        "unresolvedChangedBusinessScenarioFailures": 0,
+        "scope": "Live embedded browser only, merchant/admin; English desktop/mobile and Arabic RTL. No completed financial actions. Other upload contexts checked through source/fixtures.",
+        "cleanup": "Final sign-out browser transport timed out; inventory showed /sign-out but signed-out screen was not verified."
+      },
+      "backendChanges": false
+    },
+    "remaining": [
+      "Hosted invoices API and owner-bound invoice verification/notification/reconciliation on backend; detailed handoff supplied.",
+      "Completed live card/credit/bank approvals remain unexecuted; payment provider test mode remains visible.",
+      "Dormant builder/rich-text picker and remaining upload screens not all exercised live; source audit is not a complete dormant-feature migration audit.",
+      "Earlier QA findings, common-page parity and eight dormant-source audits remain outside this batch."
+    ],
+    "backendHandoff": "docs/wallet-funding-backend-handoff.md",
+    "report": "qa-browser-2026-11-10/payment-media/report.md",
+    "inventory": "Unchanged: 26 migrated counted areas, 6 excluded, 0 partial, 0 pending; storage tracked separately.",
+    "supersededBy": "mediaInputAndFreshTopupCorrection: original MediaInput restored; wallet checkout storage/recovery removed."
+  },
+  "mediaInputAndFreshTopupCorrection": {
+    "date": "2026-11-10",
+    "scope": "Frontend correction; no newly migrated feature area and no backend edits.",
+    "status": "complete; browser retest unavailable",
+    "completed": [
+      "Restored MediaInput upload/reset/demo behavior and original image, image-field, file-field, Freezed and cropper implementations. Removed UploadMedia/useImagePicker helpers and controlled-value bridge.",
+      "Added only the file variant selection to MediaInput plus FileInput: a file upload box matching ImageInput, using the existing upload callbacks.",
+      "Receipt and shipment file call sites use the file box. Rich-text picking supplies its own FormProvider to the original MediaInput API.",
+      "Deleted WalletCheckout persistence helper, all wallet checkout storage reads/writes, pending-checkout automatic resume and saved-checkout resume control.",
+      "New top-up resets amount/method/proof fields on opening or reload. Old delayed initiation results do not overwrite a freshly opened page. Callback verification still uses real URL provider IDs."
+    ],
+    "validation": {
+      "activeTypecheck": "passed: npm run typecheck:app",
+      "productionBuild": "passed: npm run build -- --outDir build/media-restore-work/production",
+      "buildLog": "test-results/media-restore-build.log",
+      "initialBuild": "Default build failed because its redirected log was inside the output directory; isolated rerun passed.",
+      "regressionChecks": {
+        "fileBox": 6,
+        "freshTopupLifecycle": 4,
+        "walletFunding": 16,
+        "retirement": 9,
+        "total": 35
+      },
+      "originalImplementationComparison": "MediaInput differs from original only by FileInput import/switch; existing image/file-field/Freezed variants and cropper restored.",
+      "browser": "Not run: embedded-browser controls were unavailable in this turn. No headless browser fallback used.",
+      "backendChanges": false
+    },
+    "remaining": [
+      "Live embedded-browser visual retest for the box input/new top-up lifecycle.",
+      "Hosted checkout still requires backend invoice integration; previous handoff remains applicable.",
+      "Existing common-page parity, eight dormant-source import audits, previous unrelated QA issues and live financial acceptance remain outside this correction."
+    ],
+    "inventory": "Unchanged: 26 migrated historical feature areas, 6 excluded, 0 partial, 0 pending; storage tracked separately.",
+    "report": "docs/media-input-topup-update.md"
+  },
+  "paymentsFeatureRename": {
+    "date": "2026-11-10",
+    "scope": "Frontend feature rename; no new counted feature or backend edits.",
+    "status": "complete",
+    "completed": [
+      "Moved topup-requests-app to payments-app and renamed feature pages, API/hooks/types, models, JS Redux slice, i18n namespace, helpers and cache tags.",
+      "Changed history/detail/new routes to /payments/:userId and /payments/:userId/:paymentId/*; all account, ledger, home, log, staff and bank-transfer references updated.",
+      "Payments / الدفعات الإلكترونية navigation and feature UI; updated headings, empty/error states, filters and export naming.",
+      "Retained native payments permission, backend endpoints, wallet/storage callback contracts, fresh-payment behavior and online/bank-transfer choices."
+    ],
+    "validation": {
+      "activeTypecheck": "passed: npm run typecheck:app",
+      "productionBuild": "passed: npm run build -- --outDir build/payments-rename-work/production",
+      "buildLog": "test-results/payments-rename-build.log",
+      "focusedChecks": {
+        "payments": 18,
+        "navigation": 10,
+        "bankTransfers": 12,
+        "storage": 28,
+        "retirement": 9,
+        "total": 77
+      },
+      "sourceAudit": "No old feature folder/route, TopupRequest identifier or topupRequests namespace references in src.",
+      "knownTestFailure": "Broader merchants-regression.cjs stops on retired merchantVerificationStatus assertion; not counted as passing.",
+      "browser": "No live browser retest in this turn; no headless browser fallback.",
+      "backendChanges": false
+    },
+    "remaining": [
+      "Update obsolete merchant regression assertions about retired verification.",
+      "Common-page parity, eight dormant-source audits and earlier unrelated QA findings remain tracked separately.",
+      "Hosted payment backend integration and completed live financial acceptance remain outside this rename."
+    ],
+    "inventory": "Unchanged: 26 migrated, 6 excluded, 0 partial, 0 pending; storage separate.",
+    "report": "docs/payments-feature-rename.md"
+  },
+  "hostedPaymentsFrontendPreparation": {
+    "date": "2026-11-10",
+    "scope": "Frontend preparation for backend-hosted Moyasar invoices; backend unchanged and live acceptance deferred.",
+    "status": "frontend prepared; backend contract/deployment pending",
+    "contract": {
+      "createWallet": "POST v1/payments/moyasar {amount} -> {payment,checkoutUrl}",
+      "createStorage": "POST v1/storage/subscriptions/checkout {planId} -> {payment,checkoutUrl,subscription?}; free: checkoutUrl=null",
+      "verify": "POST v1/payments/:paymentId/check-status {} -> updated owned IPayment",
+      "paymentType": [
+        "topup",
+        "storageSubscription"
+      ],
+      "paymentMethodType": [
+        "visa",
+        "master",
+        "mada",
+        "amex",
+        "unionpay",
+        "applepay",
+        "free"
+      ],
+      "returns": [
+        "/wallet/payment-result?paymentId=INTERNAL_ID",
+        "/storage/payment-result?paymentId=INTERNAL_ID"
+      ]
+    },
+    "completed": [
+      "Const enum values and title/color helpers in payments-app/Utils.ts; IPayment purpose required and method typed to the exact allowed values with null/absent while unknown.",
+      "Wallet and storage redirect to the backend-returned hosted link; SDK/config widgets and stored browser checkout recovery removed.",
+      "Internal-ID-only result verification, owned backend purpose routing, pending/failure/retry states, matching storage entitlement guard and free-plan validation.",
+      "Payment purpose and method chips in history and results; actual card/source normalization remains backend-owned.",
+      "Preserved request/filter/permission/bank-transfer behavior and duplicate-create guards; isolated local demo hosted page with explicit simulation before fulfillment."
+    ],
+    "validation": {
+      "typecheck": "passed: npm run typecheck:app",
+      "productionBuild": "passed: npm run build -- --outDir build/hosted-payments-work/production",
+      "buildLog": "test-results/hosted-payments-build.log",
+      "focusedChecks": {
+        "payments": 22,
+        "hostedHandlers": 15,
+        "storageAndDemoContracts": 32,
+        "bankTransfers": 12,
+        "navigation": 10,
+        "retirement": 9,
+        "total": 100
+      },
+      "livePayments": "Not executed; backend requested changes are not yet deployed. No live credit/approval or actual provider notification was performed.",
+      "browser": "No new live embedded-browser retest in this preparation pass.",
+      "otherSuite": "Legacy demo-operations-contracts.cjs fails on retired v1/payment-plans before its payment block; not counted as passing.",
+      "backendEdits": false
+    },
+    "remaining": [
+      "Backend must return the documented checkoutUrl shape, purpose and method fields, and implement stored-invoice verification with empty request body.",
+      "Configure purpose-based success_url and public backend notification; normalize successful source (Apple Pay type first, otherwise supported creditcard company).",
+      "Backfill historical purpose/method data and verify exactly-once wallet/subscription fulfillment and failed-credit recovery.",
+      "Live wallet/storage hosted checkout, failed/back/abandoned payments, notification ordering, ownership/replays and backend deployment acceptance.",
+      "Existing common-page parity, eight dormant-source audits and unrelated earlier QA/test issues remain outside this batch."
+    ],
+    "inventory": "Unchanged: 26 migrated, 6 excluded, 0 partial, 0 pending; storage tracked separately.",
+    "report": "docs/hosted-payments-contract.md"
+  },
+  "storageOperationsUpdate": {
+    "date": "2026-11-10",
+    "status": "frontend implemented; backend contract changes and live mutation acceptance pending",
+    "completed": [
+      "Warehouse address removed; full pickup payload and persistence guard retained; shared phone input and storage types; pickup/count columns and warehouse products query link.",
+      "Plan features retained as prose lines, separate enum storageTypes shared with products and warehouses; all application phone selections use CustomPhoneNumber; money inputs show getCurrentCurrency suffix.",
+      "Added storage-subscriptions-app with owned models/API/Utils/JavaScript slice, table-only history, current summary, hosted merchant subscribe/renew/upgrade and immediate admin activation dialog.",
+      "Navigation and warehouse shipment choices follow active owned entitlement; admin product list/edit covers every editable root field and account/warehouse links.",
+      "Supply form separates new products from existing ID-based replenishment with quantity/optional price hints; supported types intersect plan/warehouse; header filters/reset, table review actions and redesigned linked details."
+    ],
+    "preparedBackendContract": {
+      "storageType": [
+        "standard",
+        "dry",
+        "chilled",
+        "frozen"
+      ],
+      "warehouse": "POST/PATCH persists pickup and storageTypes; no address; list includes productsCount and pickup geography populations.",
+      "plans": "features:string[] prose, storageTypes:StorageType[]; migrate historical type strings.",
+      "subscriptions": "GET v1/storage/subscriptions and /admin return raw populated arrays; POST /admin {userId,planId,operation}; checkout accepts {planId,operation}; operation subscribe/renew/upgrade; current and hosted callback remain native.",
+      "products": "GET v1/storage/products/admin includes all accounts/zero stock; PATCH /admin/:id accepts editable fields; merchant GET includeEmpty=true permits replenishment choices.",
+      "supplies": "Existing item {warehouseProductId,quantity,unitPrice?}; new item native fields. Omitted price preserves current value; zero explicitly replaces. Status-only transitions remain pending->approved/rejected and approved->received/rejected; stock credited exactly once on received. Full canonical product snapshots/IDs in responses.",
+      "populations": "Authorized complete root fields for user, warehouse, plan and payment; never expose credential secrets."
+    },
+    "validation": {
+      "activeTypecheck": "passed: npm run typecheck:app",
+      "productionBuild": "passed: npm run build -- --outDir build/storage-operations-work/production (33.91s); existing Browserslist/CSS/mixed-import/chunk warnings remain",
+      "regressions": {
+        "storageOperations": 34,
+        "storageAllocationAndExistingContracts": 31,
+        "phoneInput": 6,
+        "hostedPaymentHandlers": 15,
+        "payments": 22,
+        "total": 108,
+        "scope": "Local frontend handlers/schemas/API definitions and isolated demo adapter only. Native backend schema acceptance deliberately deferred because storageTypes/new operations are not present yet."
+      },
+      "embeddedBrowser": "Admin warehouse/plan forms, enum options and currency suffixes; admin activation dialog rendering; merchant active summary, renew/upgrade selection and confirmation without creation, subscribed navigation, supply list/filter/reset and correct warehouseId URL. Verified pending-status filter (4 rows -> 1), warehouse URL filter (2 matching rows), reset, compact existing-product form, and actual received-request detail summary. No live business mutations.",
+      "liveBlockers": [
+        "New subscription history endpoint currently fails on the live backend.",
+        "Shared storageTypes, admin inventory/edit/subscription writes and hosted renew/upgrade require backend implementation.",
+        "The separate isolated demo server could not be reached by the embedded browser; business flows verified through in-process demo simulations instead."
+      ],
+      "noBackendChanges": true,
+      "historicalInventory": "unchanged:32 areas,26 migrated,6 excluded,0 partial,0 pending; storage separate",
+      "remaining": "Backend integration acceptance, existing unrelated QA items, common-page parity and dormant-source audits remain outside this frontend change."
+    }
+  },
+  "tableActionsAndToolbarUpdate": {
+    "date": "2026-11-10",
+    "status": "complete",
+    "scope": "frontend table presentation and existing action wiring only; no backend changes or feature inventory changes",
+    "completed": [
+      "Converted action columns in storage, payments, logs, cancellation requests, shipments, merchant dues and affiliate transactions to TableDataTypes.actions/actions definitions like MerchantsTable.",
+      "Preserved role/owner/status visibility via mapped UI flags or native conditions; links/callbacks/colors and loading locks use the existing shared action contract.",
+      "Lifted shipment document and mutation dialogs and merchant-due operations into owning table state, retaining read/download/retry and monetary-write checks. Shipment detail-page document controls remain supported.",
+      "Removed unused MerchantDueActions row component; retained rich data cell rendering outside action columns.",
+      "Storage and subscription search use the shared header search slot; filters/reset match Payments icons, heights, padding, borders, colors and responsive arrangement without nested controls."
+    ],
+    "validation": {
+      "applicationTypecheck": "passed: npm run typecheck:app",
+      "productionBuild": "passed: build/table-actions-work/production, 39.65s; existing warnings remain",
+      "actionColumnAudit": "20 definitions, zero custom action renderers",
+      "regressionChecks": {
+        "actionsAndToolbar": 8,
+        "shipments": 40,
+        "cancellationAndCod": 27,
+        "payments": 22,
+        "storageOperations": 34,
+        "total": 131
+      },
+      "embeddedBrowser": "Verified storage toolbar and shared View navigation to the exact selected request. Subscription toolbar rendering checked separately; live history remains dependent on the missing backend endpoint. No live business writes.",
+      "notes": "Shipment/COD fixture loaders updated for existing user-role/subscription-enum dependencies; affiliate browser fixture selector updated to target the shared action button. Browser scripts were not run outside the embedded browser."
+    },
+    "remaining": "Previously recorded backend storage/payment integration acceptance and unrelated common-page/dormant audits are unchanged."
   }
 }

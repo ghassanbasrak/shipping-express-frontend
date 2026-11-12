@@ -3,7 +3,7 @@ export const paymentResults = {
   error: "error",
 };
 
-export const topupRequestStatus = {
+export const paymentStatus = {
   pending: "pending",
   confirmed: "success",
   refused: "failed",

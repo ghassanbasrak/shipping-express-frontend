@@ -2,7 +2,7 @@ import type IWarehouse from "./IWarehouse";
 export default function WarehouseModel(value?: IWarehouse) {
   return {
     name: value?.name || "",
-    address: value?.address || "",
+    storageTypes: value?.storageTypes || [],
     mapAddress: value?.mapAddress || "",
     information: value?.information || "",
     pickup: {

@@ -15,8 +15,6 @@ import { GetMerchantsApiArg } from "../MerchantsApi";
 import {
   merchantLoyaltyTypes,
   toMerchantLoyaltyTypeTitle,
-  merchantVerificationStatus,
-  toMerchantVerificationStatusTitle,
   merchantBalanceTypeFilters,
   toMerchantBalanceTypeFilterTitle,
   merchantActiveStatus,
@@ -29,7 +27,6 @@ import {
   setMerchantsTypeFilter,
   setMerchantsBalanceTypeFilter,
   setMerchantsStatusFilter,
-  setMerchantsVerificationStatusFilter,
   setMerchantsDateFromFilter,
   setMerchantsDateToFilter,
 } from "../store/merchantsSlice";
@@ -111,13 +108,6 @@ export default function MerchantsHeader() {
               setMerchantsStatusFilter,
               merchantActiveStatus,
               toMerchantActiveStatusTitle,
-            ),
-            dropdown(
-              "VERIFICATION_STATUS",
-              filters.verificationStatusFilter,
-              setMerchantsVerificationStatusFilter,
-              merchantVerificationStatus,
-              toMerchantVerificationStatusTitle,
             ),
             {
               type: FilterTypes.dateTime,

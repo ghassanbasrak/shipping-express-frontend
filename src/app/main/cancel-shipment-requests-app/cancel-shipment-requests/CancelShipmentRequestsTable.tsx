@@ -25,6 +25,7 @@ import {
   toCancelShipmentRequestStatusTitle,
   toCancelShipmentRequestStatusColor,
   datesValid,
+  cancelShipmentRequestStatus,
 } from "../Utils";
 import {
   selectCancelShipmentRequestsFilters,
@@ -104,7 +105,14 @@ export default function CancelShipmentRequestsTable() {
         ),
       );
   }, [currentData, isFetching, filters.page, filters.pageSize, dispatch]);
-  const fields: TableFieldProps<ICancelShipmentRequest>[] = [
+  const rows = (data?.results || []).map((row) => ({
+    ...row,
+    actionAccess: {
+      review: canReviewCancellationRequest(user, row),
+      ledger: canViewCancellationTransactions(user, row),
+    },
+  }));
+  const fields: TableFieldProps<(typeof rows)[number]>[] = [
     ...(user.role !== "user"
       ? [
           {
@@ -185,61 +193,52 @@ export default function CancelShipmentRequestsTable() {
       type: TableDataTypes.actions,
       flex: 1.3,
       minWidth: 130,
-      renderCell: ({ row }) => (
-        <div className="flex flex-wrap gap-8">
-          {canReviewCancellationRequest(user, row) && (
-            <>
-              {(["rejected", "approved"] as const).map((next) => (
-                <Button
-                  variant="outlined"
-                  key={next}
-                  size="small"
-                  color={next === "approved" ? "success" : "error"}
-                  onClick={() =>
-                    setDecision({
-                      id: row.id,
-                      status: row.status,
-                      shipmentId: row.shipmentId,
-                      next,
-                    })
-                  }
-                >
-                  {t(next === "approved" ? "ACCEPT" : "REFUSE")}
-                </Button>
-              ))}
-            </>
-          )}
-          {row.shipment?.trackingUrl && (
-            <Button
-              color="primary"
-              variant="outlined"
-              size="small"
-              component="a"
-              href={row.shipment.trackingUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {t("TRACK_SHIPMENT")}
-            </Button>
-          )}
-          {canViewCancellationTransactions(user, row) && (
-            <Button
-              color="primary"
-              variant="outlined"
-              size="small"
-              onClick={() =>
-                setLedger({
-                  id: row.id,
-                  userId: row.userId,
-                  trackingNumber: row.shipment.trackingNumber,
-                })
-              }
-            >
-              {t("TRANSACTIONS")}
-            </Button>
-          )}
-        </div>
-      ),
+      exportable: false,
+      actions: [
+        ...[
+          cancelShipmentRequestStatus.refused,
+          cancelShipmentRequestStatus.confirmed,
+        ].map((next) => ({
+          title: t(
+            next === cancelShipmentRequestStatus.confirmed
+              ? "ACCEPT"
+              : "REFUSE",
+          ),
+          color:
+            next === cancelShipmentRequestStatus.confirmed
+              ? ("success" as const)
+              : ("error" as const),
+          conditions: [{ id: "actionAccess.review", equalsTo: true }],
+          onActionClick: (row) => {
+            if (canReviewCancellationRequest(user, row))
+              setDecision({
+                id: row.id,
+                status: row.status,
+                shipmentId: row.shipmentId,
+                next: next as "approved" | "rejected",
+              });
+          },
+        })),
+        {
+          title: t("TRACK_SHIPMENT"),
+          link: true,
+          linkGetter: (row) => row.shipment.trackingUrl,
+          target: "_blank",
+          conditions: [{ id: "shipment.trackingUrl" }],
+        },
+        {
+          title: t("TRANSACTIONS"),
+          conditions: [{ id: "actionAccess.ledger", equalsTo: true }],
+          onActionClick: (row) => {
+            if (canViewCancellationTransactions(user, row))
+              setLedger({
+                id: row.id,
+                userId: row.userId,
+                trackingNumber: row.shipment.trackingNumber,
+              });
+          },
+        },
+      ],
     },
   ];
   if (!canView) return <Navigate to="/home" replace />;
@@ -259,7 +258,7 @@ export default function CancelShipmentRequestsTable() {
       {!valid && <Alert severity="error">{t("INVALID_DATE_RANGE")}</Alert>}
       <CustomTable
         fields={fields}
-        data={ready === key && valid ? data?.results || [] : []}
+        data={ready === key && valid ? rows : []}
         total={data?.total || 0}
         page={filters.page}
         pageSize={filters.pageSize}

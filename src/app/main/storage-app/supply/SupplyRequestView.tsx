@@ -1,40 +1,27 @@
-import { useRef, useState } from "react";
-import {
-  Alert,
-  Button,
-  Chip,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Paper,
-  Typography,
-} from "@mui/material";
-import { LoadingButton } from "@mui/lab";
-import { Navigate, useParams } from "react-router-dom";
+import SupplyReviewDialog from "./SupplyReviewDialog";
+import { useState } from "react";
+import { Alert, Button, Chip, Paper, Typography } from "@mui/material";
+import { Link, Navigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import FusePageCarded from "@fuse/core/FusePageCarded";
 import FuseLoading from "@fuse/core/FuseLoading";
 import { useAppSelector } from "app/store/hooks";
 import { selectUser } from "src/app/auth/user/store/userSlice";
 import Currency from "../../utils/currencyFormatter";
-import {
-  useGetSupplyRequestsQuery,
-  useReviewSupplyRequestMutation,
-  type ReviewSupplyArg,
-} from "../StorageApi";
+import { useGetSupplyRequestsQuery, type ReviewSupplyArg } from "../StorageApi";
 import {
   allowedSupplyTransitions,
   canManageStorage,
   merchantContactUrl,
-  storageError,
   toSupplyStatusColor,
   toSupplyStatusTitle,
+  toStorageTypeTitle,
+  toStorageTypeColor,
+  supplyStatuses,
 } from "../Utils";
 import StorageHeader from "../shared/StorageHeader";
 import WarehouseMap from "../shared/WarehouseMap";
 export default function SupplyRequestView() {
-  const reviewBusy = useRef(false);
   const { supplyRequestId } = useParams(),
     { t } = useTranslation("storageApp"),
     user = useAppSelector(selectUser);
@@ -45,9 +32,7 @@ export default function SupplyRequestView() {
       },
     ),
     row = query.currentData?.find((row) => row.id === supplyRequestId);
-  const [review, writing] = useReviewSupplyRequestMutation(),
-    [dialog, setDialog] = useState<ReviewSupplyArg>(),
-    [error, setError] = useState("");
+  const [dialog, setDialog] = useState<ReviewSupplyArg>();
   if (query.isError)
     return (
       <div className="p-24">
@@ -98,10 +83,15 @@ export default function SupplyRequestView() {
                 transitions.map((status: ReviewSupplyArg["status"]) => (
                   <Button
                     key={status}
-                    variant={status === "rejected" ? "outlined" : "contained"}
-                    color={status === "rejected" ? "error" : "primary"}
+                    variant={
+                      status === supplyStatuses.rejected
+                        ? "outlined"
+                        : "contained"
+                    }
+                    color={
+                      status === supplyStatuses.rejected ? "error" : "primary"
+                    }
                     onClick={() => {
-                      setError("");
                       setDialog({
                         id: row.id,
                         status,
@@ -110,9 +100,9 @@ export default function SupplyRequestView() {
                     data-testid={"supply-status-" + status}
                   >
                     {t(
-                      status === "approved"
+                      status === supplyStatuses.approved
                         ? "APPROVE"
-                        : status === "received"
+                        : status === supplyStatuses.received
                           ? "RECEIVE"
                           : "REJECT",
                     )}
@@ -127,17 +117,54 @@ export default function SupplyRequestView() {
           className="p-16 sm:p-24 space-y-20"
           data-testid="supply-request-view"
         >
-          {row.status === "received" && (
+          {row.status === supplyStatuses.received && (
             <Alert severity="success">{t("RECEIPT_APPLIED")}</Alert>
           )}
+          <Paper
+            elevation={0}
+            className="p-24 sm:p-32 rounded-24 grid grid-cols-1 sm:grid-cols-3 gap-24"
+            sx={{ bgcolor: "primary.main", color: "primary.contrastText" }}
+          >
+            {[
+              ["PRODUCTS_COUNT", row.products.length],
+              ["QUANTITY", row.products.reduce((n, p) => n + p.quantity, 0)],
+              [
+                "PRODUCTS_VALUE",
+                Currency(
+                  row.products.reduce(
+                    (n, p) => n + p.quantity * (p.unitPrice || 0),
+                    0,
+                  ),
+                ),
+              ],
+            ].map(([label, value]) => (
+              <div key={label}>
+                <Typography className="text-12 opacity-80">
+                  {t(label as string)}
+                </Typography>
+                <Typography className="text-28 font-bold">{value}</Typography>
+              </div>
+            ))}
+          </Paper>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
             <Paper variant="outlined" className="p-20 rounded-16 space-y-12">
               <Typography className="text-16 font-semibold">
                 {t("WAREHOUSE")}
               </Typography>
-              <Typography>{row.warehouse?.name || row.warehouseId}</Typography>
+              <Typography
+                component={user.role === "admin" ? Link : "span"}
+                to={
+                  user.role === "admin"
+                    ? "/storage/warehouses/" + row.warehouseId
+                    : undefined
+                }
+                color="primary"
+                className="text-20 font-bold"
+              >
+                {row.warehouse?.name || row.warehouseId}
+              </Typography>
               <Typography color="text.secondary">
-                {row.warehouse?.address}
+                {row.warehouse?.pickup?.street}
               </Typography>
               {row.warehouse && (
                 <WarehouseMap address={row.warehouse.mapAddress} />
@@ -148,7 +175,12 @@ export default function SupplyRequestView() {
                 {t("REQUEST_INFO")}
               </Typography>
               {user.role === "admin" && (
-                <Typography>
+                <Typography
+                  component={Link}
+                  to={`/merchants/${row.userId}/view`}
+                  color="primary"
+                  className="underline"
+                >
                   {t("MERCHANT")}:{" "}
                   {row.user?.companyName ||
                     [row.user?.firstName, row.user?.lastName]
@@ -171,7 +203,18 @@ export default function SupplyRequestView() {
               <Paper key={index} variant="outlined" className="p-20 rounded-12">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
                   <div>
-                    <Typography className="font-semibold">
+                    <Typography
+                      component={user.role === "admin" ? Link : "span"}
+                      to={
+                        user.role === "admin"
+                          ? item.warehouseProductId
+                            ? `/storage/products/${item.warehouseProductId}`
+                            : `/storage/products?warehouseId=${encodeURIComponent(row.warehouseId)}`
+                          : undefined
+                      }
+                      className="font-semibold text-16"
+                      color="primary"
+                    >
                       {item.name}
                     </Typography>
                     <Typography color="text.secondary" dir="ltr">
@@ -184,7 +227,15 @@ export default function SupplyRequestView() {
                   <Typography>
                     {t("UNIT_PRICE")}: {Currency(item.unitPrice)}
                   </Typography>
-                  <Typography>{item.storageType}</Typography>
+                  <div>
+                    <Chip
+                      size="small"
+                      label={t(toStorageTypeTitle(item.storageType))}
+                      className={
+                        toStorageTypeColor(item.storageType) + " text-white"
+                      }
+                    />
+                  </div>
                 </div>
                 {item.notes && (
                   <Typography
@@ -206,80 +257,12 @@ export default function SupplyRequestView() {
               ),
             )}
           </Typography>
-          <Dialog
-            open={!!dialog}
-            fullWidth
-            maxWidth="sm"
-            onClose={() => {
-              if (!writing.isLoading) setDialog(undefined);
-            }}
-          >
-            <DialogTitle>
-              {t(
-                dialog?.status === "received"
-                  ? "CONFIRM_RECEIPT"
-                  : "CONFIRM_REVIEW",
-              )}
-            </DialogTitle>
-            <DialogContent className="space-y-16">
-              <Typography>
-                {t(
-                  dialog?.status === "received"
-                    ? "RECEIPT_CONFIRM_HINT"
-                    : "REVIEW_CONFIRM_HINT",
-                )}
-              </Typography>
-              {error && <Alert severity="error">{error}</Alert>}
-            </DialogContent>
-            <DialogActions>
-              <Button
-                variant="outlined"
-                color="primary"
-                disabled={writing.isLoading}
-                onClick={() => setDialog(undefined)}
-              >
-                {t("CANCEL")}
-              </Button>
-              <LoadingButton
-                variant="contained"
-                color="primary"
-                loading={writing.isLoading}
-                onClick={async () => {
-                  if (
-                    reviewBusy.current ||
-                    !dialog ||
-                    writing.isLoading ||
-                    !canManageStorage(user, "update")
-                  )
-                    return;
-                  reviewBusy.current = true;
-                  setError("");
-                  try {
-                    const fresh = await query.refetch().unwrap();
-                    const current = fresh.find((item) => item.id === dialog.id);
-                    if (
-                      !current ||
-                      !allowedSupplyTransitions(current.status).includes(
-                        dialog.status,
-                      )
-                    ) {
-                      setDialog(undefined);
-                      return;
-                    }
-                    await review(dialog).unwrap();
-                    setDialog(undefined);
-                  } catch (e) {
-                    setError(storageError(e, t("SAVE_ERROR")));
-                  } finally {
-                    reviewBusy.current = false;
-                  }
-                }}
-                data-testid="confirm-supply-review"
-              >
-                {t("CONFIRM")}
-              </LoadingButton>
-            </DialogActions>
-          </Dialog>
+          {dialog && (
+            <SupplyReviewDialog
+              decision={dialog}
+              onClose={() => setDialog(undefined)}
+            />
+          )}
         </div>
       }
       scroll="normal"

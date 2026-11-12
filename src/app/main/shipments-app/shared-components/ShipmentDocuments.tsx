@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Alert,
   Button,
@@ -29,7 +29,15 @@ import {
   downloadShipmentInvoice,
   shipmentDocumentBlob,
 } from "./documents";
-export default function ShipmentDocuments({ row }: { row: IShipment }) {
+export default function ShipmentDocuments({
+  row,
+  initialMode,
+  onClose,
+}: {
+  row: IShipment;
+  initialMode?: "label" | "invoice" | "image";
+  onClose?: () => void;
+}) {
   const { t } = useTranslation("shipmentsApp"),
     user = useAppSelector(selectUser),
     [mode, setMode] = useState(""),
@@ -70,6 +78,14 @@ export default function ShipmentDocuments({ row }: { row: IShipment }) {
       setBusy(false);
     }
   }
+  useEffect(() => {
+    if (initialMode) void open(initialMode);
+  }, [row.id, initialMode]);
+  function close() {
+    if (busy) return;
+    setMode("");
+    onClose?.();
+  }
   async function download() {
     setBusy(true);
     setError("");
@@ -97,43 +113,40 @@ export default function ShipmentDocuments({ row }: { row: IShipment }) {
     products = value.products || [];
   return (
     <>
-      <div className="flex flex-wrap gap-8">
-        {!!row.trackingNumber &&
-          (user.role !== "user" || row.status !== "failed") && (
-            <Button size="small" onClick={() => open("label")}>
-              {t("LABEL")}
+      {!initialMode && (
+        <div className="flex flex-wrap gap-8">
+          {!!row.trackingNumber &&
+            (user.role !== "user" || row.status !== "failed") && (
+              <Button size="small" onClick={() => open("label")}>
+                {t("LABEL")}
+              </Button>
+            )}
+          {!!row.trackingUrl && (
+            <Button
+              size="small"
+              component="a"
+              href={row.trackingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {t("TRACKING")}
             </Button>
           )}
-        {!!row.trackingUrl && (
-          <Button
-            size="small"
-            component="a"
-            href={row.trackingUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {t("TRACKING")}
-          </Button>
-        )}
-        {row.method === "international" &&
-          !!row.trackingNumber &&
-          !!row.labelUrl && (
-            <Button size="small" onClick={() => open("invoice")}>
-              {t("INVOICE")}
+          {row.method === "international" &&
+            !!row.trackingNumber &&
+            !!row.labelUrl && (
+              <Button size="small" onClick={() => open("invoice")}>
+                {t("INVOICE")}
+              </Button>
+            )}
+          {row.method === "international" && !!row.imageUrl && (
+            <Button size="small" onClick={() => open("image")}>
+              {t("SHIPMENT_IMAGE")}
             </Button>
           )}
-        {row.method === "international" && !!row.imageUrl && (
-          <Button size="small" onClick={() => open("image")}>
-            {t("SHIPMENT_IMAGE")}
-          </Button>
-        )}
-      </div>
-      <Dialog
-        open={!!mode}
-        fullWidth
-        maxWidth="lg"
-        onClose={() => !busy && setMode("")}
-      >
+        </div>
+      )}
+      <Dialog open={!!mode} fullWidth maxWidth="lg" onClose={close}>
         <DialogTitle>
           {t(
             mode === "invoice"
@@ -273,7 +286,7 @@ export default function ShipmentDocuments({ row }: { row: IShipment }) {
               {t("OPEN_DOCUMENT")}
             </Button>
           )}
-          <Button disabled={busy} onClick={() => setMode("")}>
+          <Button disabled={busy} onClick={close}>
             {t("CLOSE")}
           </Button>
         </DialogActions>

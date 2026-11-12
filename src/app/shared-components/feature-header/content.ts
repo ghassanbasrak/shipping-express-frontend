@@ -86,12 +86,6 @@ const features = {
     "Manage merchant accounts and profile details.",
     "إدارة حسابات التجار وبيانات ملفاتهم.",
   ],
-  "plans-app": [
-    "collection",
-    "SETTINGS",
-    "Manage payment plans and shipping prices.",
-    "إدارة خطط الدفع وأسعار الشحن.",
-  ],
   "shipment-users-app": [
     "identification",
     "OPERATIONS",
@@ -116,7 +110,7 @@ const features = {
     "Manage states and shipping-company naming mappings.",
     "إدارة المناطق ومسمياتها لدى شركات الشحن.",
   ],
-  "topup-requests-app": [
+  "payments-app": [
     "credit-card",
     "PAYMENTS",
     "Track payments and keep your wallet funding in view.",

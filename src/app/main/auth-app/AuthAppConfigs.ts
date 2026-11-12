@@ -12,7 +12,6 @@ import ForgotPasswordConfig from "./forgot-password/ForgotPasswordConfig";
 import SignOutConfig from "./sign-out/SignOutConfig";
 import DeleteAccountConfig from "./delete-account/DeleteAccountConfig";
 import BlockedConfig from "./blocked/BlockedConfig";
-import VerifyAccountConfig from "./verify-account/VerifyAccountConfig";
 import MaintenanceConfig from "./maintenance/MaintenanceConfig";
 import AffiliateSignUpConfig from "./affiliate-sign-up/AffiliateSignUpConfig";
 export default [
@@ -25,7 +24,6 @@ export default [
   SignOutConfig,
   DeleteAccountConfig,
   BlockedConfig,
-  VerifyAccountConfig,
   MaintenanceConfig,
   AffiliateSignUpConfig,
 ];

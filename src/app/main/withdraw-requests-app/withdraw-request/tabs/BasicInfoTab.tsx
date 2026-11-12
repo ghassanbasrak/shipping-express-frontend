@@ -1,3 +1,4 @@
+import CurrencyAdornment from "app/shared-components/currency-adornment/CurrencyAdornment";
 import { useMemo, useRef } from "react";
 import {
   Alert,
@@ -143,7 +144,7 @@ export default function BasicInfoTab({ disabled }: { disabled: boolean }) {
             {...field}
             fullWidth
             label={t("AMOUNT")}
-            InputProps={{ readOnly: true }}
+            InputProps={{ readOnly: true, endAdornment: <CurrencyAdornment /> }}
             error={!!fieldState.error}
             helperText={fieldState.error?.message}
           />
