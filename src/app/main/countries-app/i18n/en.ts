@@ -1,4 +1,5 @@
 const locale = {
+  DATE_FILTER_UNAVAILABLE: "Date filters are unavailable until the API supports them.",
   COUNTRIES: "Countries",
   SEARCH_COUNTRIES: "Search Countries",
   ADD_COUNTRY: "Add Country",

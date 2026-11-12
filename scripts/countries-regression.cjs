@@ -173,13 +173,13 @@ test("Mapping comparison skips unchanged records and empty inactive drafts", () 
     1,
   );
 });
-test("List requests send encoded structured filters and retain the backend pagination response", async () => {
+test("List requests omit unsupported carrier/date parameters and retain backend pagination", async () => {
   const f = fixture();
   try {
     f.mock.onGet("v1/countries").reply((config) => {
       assert.equal(config.params.search, "Saudi & Bahrain");
-      assert.equal(config.params.shippingCompanyId, "carrier-1");
-      assert.equal(config.params.dateFrom, "2026-01-01");
+      assert.equal(config.params.shippingCompanyId, undefined);
+      assert.equal(config.params.dateFrom, undefined);
       assert.equal(config.params.page, 2);
       return [
         200,
@@ -264,6 +264,8 @@ test("Saved mapping IDs are retained and the next save PATCHes the same record",
       const body = JSON.parse(config.data);
       assert.equal(body._id, undefined);
       assert.equal(body.shippingCompany, undefined);
+      assert.equal(body.countryId, undefined);
+      assert.equal(body.shippingCompanyId, undefined);
       return [200, { ...body, _id: "persisted-id" }];
     });
     const first = await f.run("saveShipmentCountry", {

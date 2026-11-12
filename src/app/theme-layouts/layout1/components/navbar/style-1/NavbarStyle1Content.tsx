@@ -72,7 +72,7 @@ type NavbarStyle1ContentProps = {
  * The navbar style 1 content.
  */
 function NavbarStyle1Content(props: NavbarStyle1ContentProps) {
-  const { t } = useTranslation("public");
+  const { t, i18n } = useTranslation("public");
   const user = useAppSelector(selectUser);
 
   const displayName = user?.firstName
@@ -91,9 +91,9 @@ function NavbarStyle1Content(props: NavbarStyle1ContentProps) {
       <div className="relative z-10 flex h-72 shrink-0 items-center px-20 -mx-6">
         <div className="flex items-center justify-center rounded-16 bg-white/20 ring-1 ring-white/10 px-16 py-6  backdrop-blur-md w-full">
           <img
-            className="w-full max-w-120"
-            src={"assets/images/logo/logo-text-dark.png"}
-            alt="logo"
+            className="w-full max-w-160"
+            src={`/brand/logos/ashamco-${i18n.language.startsWith("ar") ? "ar" : "en"}-on-purple.svg`}
+            alt="اشامكو إكسبريس"
           />
         </div>
       </div>

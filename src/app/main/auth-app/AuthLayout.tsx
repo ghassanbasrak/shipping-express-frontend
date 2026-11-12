@@ -90,9 +90,9 @@ export default function AuthLayout({
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 2, mb: { xs: 5, sm: 7 } }}>
               <Link to="/" aria-label={t("TITLE")}>
                 <img
-                  src={`/assets/images/logo/logo-text${theme.palette.mode === "dark" ? "-dark" : ""}.png`}
+                  src={`/brand/logos/ashamco-ar-${theme.palette.mode === "dark" ? "on-purple" : "primary"}.svg`}
                   alt="Ashamco Express"
-                  style={{ display: "block", width: "auto", maxWidth: 170, maxHeight: 60, objectFit: "contain" }}
+                  style={{ display: "block", width: 170, height: 50, maxWidth: "100%", objectFit: "contain" }}
                 />
               </Link>
               <LanguageSwitcher />
@@ -132,8 +132,10 @@ export default function AuthLayout({
         <div className="flex justify-between items-center mb-24">
           <Link to="/">
             <img
-              src={`/assets/images/logo/logo-text${theme.palette.mode === "dark" ? "-dark" : ""}.png`}
+              src={`/brand/logos/ashamco-ar-${theme.palette.mode === "dark" ? "on-purple" : "primary"}.svg`}
               alt="Ashamco Express"
+              width={170}
+              height={50}
               className="max-w-200 h-auto"
             />
           </Link>

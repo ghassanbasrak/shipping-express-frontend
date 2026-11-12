@@ -68,7 +68,7 @@ async function until(expression, label) {
     await sleep(100);
   }
   throw new Error(
-    "Timed out: " + label + "\n" + (await evaluate("document.body.innerText")),
+    "Timed out: " + label + "\n" + (await evaluate("document.body?.innerText")),
   );
 }
 async function navigate(route) {
@@ -96,7 +96,7 @@ async function reset(route = "/sign-in") {
   );
   await navigate(route);
   await until(
-    "Boolean(document.querySelector('form')) || (location.pathname.includes('delete') && document.body.innerText.includes('info@ashamcoex.com'))",
+    "Boolean(document.querySelector('form')) || (location.pathname.includes('delete') && document.body?.innerText.includes('info@ashamcoex.com'))",
     route,
   );
 }
@@ -352,7 +352,9 @@ async function intercept(event) {
               (!query.search ||
                 item.name.en
                   .toLowerCase()
-                  .includes(query.search.toLowerCase())),
+                  .includes(query.search.toLowerCase())) &&
+              (query.pageSize !== "2000" || !query.shippingCompanyId ||
+                mappings[kind].some((row) => row[entity + "Id"] === item.id && row.shippingCompanyId === query.shippingCompanyId)),
           );
           const page = +query.page || 0,
             size = +query.pageSize || 10;
@@ -659,7 +661,7 @@ async function main() {
       `document.querySelector('[data-testid=save-${lower}]').click()`,
     );
     await until(
-      `document.body.innerText.includes('Something went wrong while saving') && !document.querySelector('[data-testid=save-${lower}]').disabled`,
+      `document.body?.innerText.includes('Something went wrong while saving') && !document.querySelector('[data-testid=save-${lower}]').disabled`,
       "failed parent save",
     );
     assert.equal(
@@ -739,6 +741,7 @@ async function main() {
       `PASS ${entity}: partial creation recovers parent IDs and carrier drafts without duplicates`,
     );
     checks++;
+    await until(`Boolean(document.querySelector('[data-testid=${pl}-search]'))`, `${pl} search after creation`);
     await fillSelector(`[data-testid=${pl}-search]`, "Pilot");
     await until(
       `Boolean(document.querySelector('[role=row][data-id=${created.id}]'))`,
@@ -772,7 +775,7 @@ async function main() {
     );
     await clickText("Yes", "[role=dialog] button");
     await until(
-      "document.body.innerText.includes('Something went wrong while removing')",
+      "document.body?.innerText.includes('Something went wrong while removing')",
       "failed delete",
     );
     assert.ok(records[pl].some((row) => row.id === created.id));
@@ -804,7 +807,7 @@ async function main() {
     failList = pl;
     await navigate(`/${pl}/all/all`);
     await until(
-      "document.body.innerText.includes('Something went wrong while getting')",
+      "document.body?.innerText.includes('Something went wrong while getting') || false",
       "list failure",
     );
     failList = undefined;
@@ -815,7 +818,7 @@ async function main() {
     );
     await navigate(`${base}/missing`);
     await until(
-      "document.body.innerText.includes('No such')",
+      "document.body?.innerText.includes('No such')",
       "missing entity",
     );
     console.log(`PASS ${entity}: list retries and missing-record errors`);
@@ -886,7 +889,7 @@ async function main() {
     "PASS Countries, states and cities retain their hierarchy routes",
   );
   checks++;
-  // Export all pages must keep the current state/carrier scope.
+  // CSV export must keep the current state/carrier scope.
   await navigate("/cities/carrier-1/state-1");
   await until(
     "Boolean(document.querySelector('[role=row][data-id=city-1]'))",
@@ -896,37 +899,38 @@ async function main() {
     behavior: "allow",
     downloadPath: output,
   });
-  await clickText("Export All Pages");
+  const csvPath = path.join(output, "Ashamco Express - Cities.csv");
+  if (fs.existsSync(csvPath)) fs.unlinkSync(csvPath);
+  await evaluate("window.showSaveFilePicker = undefined");
+  await clickText("Export all as CSV");
   for (
     let i = 0;
     i < 150 &&
     !calls.some(
-      (call) => call.url === "/v1/cities" && call.query.pageSize === "100000",
+      (call) => call.url === "/v1/cities" && call.query.pageSize === "2000",
     );
     i++
   )
     await sleep(50);
   const exported = calls.find(
-    (call) => call.url === "/v1/cities" && call.query.pageSize === "100000",
+    (call) => call.url === "/v1/cities" && call.query.pageSize === "2000",
   );
   assert.ok(exported);
   assert.equal(exported.query.stateId, "state-1");
   assert.equal(exported.query.shippingCompanyId, "carrier-1");
   for (
     let i = 0;
-    i < 100 && !fs.readdirSync(output).some((name) => name.endsWith(".xlsx"));
+    i < 100 && !fs.readdirSync(output).some((name) => name.endsWith(".csv"));
     i++
   )
     await sleep(50);
-  const workbookFile = fs
+  const csvFile = fs
     .readdirSync(output)
-    .find((name) => name.endsWith(".xlsx"));
-  assert.ok(workbookFile);
-  const XLSX = require(path.join(target, "node_modules/xlsx")),
-    workbook = XLSX.readFile(path.join(output, workbookFile)),
-    rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-  assert.ok(rows.length > 0);
-  assert.ok(Object.hasOwn(rows[0], "Company Name"));
+    .find((name) => name.endsWith(".csv"));
+  assert.ok(csvFile);
+  const csv = fs.readFileSync(path.join(output, csvFile), "utf8");
+  assert.ok(csv.includes("Company Name"));
+  assert.ok(csv.includes("City Unsaved Draft"));
   console.log(
     "PASS City export-all downloads filtered rows with the carrier naming column",
   );
@@ -988,7 +992,7 @@ async function main() {
     for (const route of ["/states/all/all", "/cities/all/all"]) {
       await navigate(route);
       await until(
-        "location.pathname==='/home' || document.body.innerText.includes('Unauthorized Access')",
+        "location.pathname==='/home' || document.body?.innerText.includes('Unauthorized Access')",
         "geography denied",
       );
       assert.equal(

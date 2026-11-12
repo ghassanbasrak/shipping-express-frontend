@@ -1,0 +1,62 @@
+/* Tailwind CSS v4.  In your main CSS:
+     @import 'tailwindcss';
+     @import './brand/tokens.css';
+     @import './brand/tailwind.v4.css';
+   Classes: bg-brand-purple, bg-brand-purple-100, text-brand-muted, border-brand-line, bg-primary, text-on-primary, bg-surface-alt ... */
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+@theme {
+  --color-brand-purple: #3A1F5D;
+  --color-brand-mint: #5EE0B5;
+  --color-brand-purple-50: #F4F1F8;
+  --color-brand-purple-100: #E7DEF2;
+  --color-brand-purple-200: #D1C2E5;
+  --color-brand-purple-300: #B49CD3;
+  --color-brand-purple-400: #9474BE;
+  --color-brand-purple-500: #744CA9;
+  --color-brand-purple-600: #573384;
+  --color-brand-purple-700: #3A1F5D;
+  --color-brand-purple-800: #2D174A;
+  --color-brand-purple-900: #211037;
+  --color-brand-purple-950: #150A24;
+  --color-brand-mint-50: #E8FBF4;
+  --color-brand-mint-100: #DCF8EF;
+  --color-brand-mint-200: #BBF2E0;
+  --color-brand-mint-300: #8EE9CB;
+  --color-brand-mint-400: #5EE0B5;
+  --color-brand-mint-500: #4ABE98;
+  --color-brand-mint-600: #3AA482;
+  --color-brand-mint-700: #2A896B;
+  --color-brand-mint-800: #1A6E54;
+  --color-brand-mint-900: #0E5A43;
+  --color-brand-ink: #1E1030;
+  --color-brand-muted: #6E6880;
+  --color-brand-line: #E4E0EC;
+  --font-sans: 'IBM Plex Sans Arabic', Tahoma, Arial, sans-serif;
+  --font-naskh: 'Noto Naskh Arabic', 'Traditional Arabic', serif;
+  --radius-brand-sm: 6px;
+  --radius-brand-md: 10px;
+  --radius-brand-lg: 14px;
+  --radius-brand-xl: 20px;
+}
+
+/* semantic colours follow light/dark through tokens.css */
+@theme inline {
+  --color-primary: var(--ax-primary);
+  --color-on-primary: var(--ax-on-primary);
+  --color-accent: var(--ax-accent);
+  --color-on-accent: var(--ax-on-accent);
+  --color-background: var(--ax-background);
+  --color-surface: var(--ax-surface);
+  --color-surface-alt: var(--ax-surface-alt);
+  --color-text: var(--ax-text);
+  --color-text-muted: var(--ax-text-muted);
+  --color-border: var(--ax-border);
+  --color-link: var(--ax-link);
+  --color-focus-ring: var(--ax-focus-ring);
+  --color-success: var(--ax-success);
+  --color-warning: var(--ax-warning);
+  --color-error: var(--ax-error);
+  --color-info: var(--ax-info);
+}

@@ -1,5 +1,6 @@
 import RemoveCityDialog from "../shared-components/dialogs/RemoveCityDialog";
 import { Alert, Button } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
 import { useAppDispatch } from "app/store/hooks";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -17,7 +18,6 @@ import ICity from "../models/ICity";
 import {
   GetCitiesApiArg,
   useGetCitiesQuery,
-  useLazyGetCitiesQuery,
 } from "../CitiesApi";
 import {
   newCitiesInstance,
@@ -28,6 +28,7 @@ import {
 } from "../store/citiesSlice";
 import ChangeNamingConfigDialog from "./ChangeNamingConfigDialog";
 import { citiesPath, displayName } from "../Utils";
+import { exportCitiesCsv } from "./exportCitiesCsv";
 export default function CitiesTable() {
   const { shippingCompanyId = "all", stateId = "all" } = useParams();
   const routeKey = `${shippingCompanyId}/${stateId}`;
@@ -36,7 +37,9 @@ export default function CitiesTable() {
   const { t } = useTranslation("citiesApp");
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const [getAllCities] = useLazyGetCitiesQuery();
+  const [exporting, setExporting] = useState(false);
+  const [exportProgress, setExportProgress] = useState("");
+  const [exportError, setExportError] = useState("");
   useEffect(() => {
     dispatch(
       newCitiesInstance({
@@ -147,6 +150,33 @@ export default function CitiesTable() {
   ];
   return (
     <div className="w-full flex flex-col h-full">
+      <div className="flex items-center gap-12 px-16 py-8">
+        <LoadingButton
+          loading={exporting}
+          variant="outlined"
+          onClick={async () => {
+            setExporting(true);
+            setExportError("");
+            const selectedCarrier = filters.shippingCompanyIdFilter !== "all";
+            try {
+              await exportCitiesCsv(filters, [
+                t("NAME"), t("COUNTRY"), t("STATE"), t("ZIP_CODE"),
+                t("SHIPPING_COMPANIES"), t("CREATED_AT"),
+                ...(selectedCarrier ? [t("COMPANY_NAME")] : []),
+              ], (done, total) => setExportProgress(`${done}/${total}`));
+            } catch (error) {
+              if ((error as Error).name !== "AbortError")
+                setExportError((error as Error).message || t("SOMETHING_WENT_WRONG"));
+            } finally {
+              setExporting(false);
+            }
+          }}
+        >
+          {t("EXPORT_ALL_CSV")}
+        </LoadingButton>
+        {exporting && <span>{exportProgress}</span>}
+      </div>
+      {exportError && <Alert severity="error">{exportError}</Alert>}
       {isError && (
         <Alert
           severity="error"
@@ -181,44 +211,6 @@ export default function CitiesTable() {
           if (pageSize !== filters.pageSize)
             dispatch(setCitiesPageSize(pageSize));
           else dispatch(setCitiesPage(page));
-        }}
-        tableToolbarSelectionExportAllButton
-        tableToolbarSelectionExportAllButtonProps={{
-          onClick: async () => {
-            const response = await getAllCities({
-              ...filters,
-              page: 0,
-              pageSize: 100000,
-            }).unwrap();
-            const data = response.results.filter(
-              (city) =>
-                !filters.shippingCompanyIdFilter ||
-                filters.shippingCompanyIdFilter === "all" ||
-                city.shipmentCities?.some(
-                  (row) =>
-                    row.shippingCompanyId === filters.shippingCompanyIdFilter,
-                ),
-            );
-            const exportedFields: TableFieldProps<ICity>[] = [...fields];
-            if (
-              filters.shippingCompanyIdFilter &&
-              filters.shippingCompanyIdFilter !== "all"
-            )
-              exportedFields.splice(1, 0, {
-                id: "shipmentCities.0.name",
-                label: t("COMPANY_NAME"),
-                type: TableDataTypes.normal,
-                valueGetter: (row) =>
-                  row.shipmentCities?.find(
-                    (mapping) =>
-                      mapping.shippingCompanyId ===
-                      filters.shippingCompanyIdFilter,
-                  )?.name || "",
-                flex: 1,
-                minWidth: 100,
-              });
-            return { data, fields: exportedFields };
-          },
         }}
         checkboxSelection
         noDataMessage={t("NO_CITIES")}

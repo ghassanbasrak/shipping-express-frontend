@@ -512,12 +512,11 @@ async function main() {
     "document.querySelectorAll('[role=row][data-id]').length===2",
     "carrier filter",
   );
-  assert.equal(
-    calls
-      .filter((call) => call.url === "/v1/countries" && call.method === "GET")
-      .at(-1).query.shippingCompanyId,
-    "carrier-1",
-  );
+  const carrierRequest = calls
+    .filter((call) => call.url === "/v1/countries" && call.method === "GET")
+    .at(-1);
+  assert.equal(carrierRequest.query.shippingCompanyId, undefined);
+  assert.equal(carrierRequest.query.pageSize, "250");
   await send("Input.dispatchKeyEvent", {
     type: "keyDown",
     key: "Escape",
@@ -528,7 +527,7 @@ async function main() {
     key: "Escape",
     code: "Escape",
   });
-  console.log("PASS Shipping-company filter uses the original API contract");
+  console.log("PASS Shipping-company filter paginates the mapped countries");
 
   await navigate("/countries/all/country-1");
   await until(
@@ -694,6 +693,7 @@ async function main() {
     "PASS Country creation includes localized fields and carrier naming",
   );
 
+  await until("Boolean(document.querySelector('[data-testid=countries-search]'))", "country search after creation");
   await fillSelector("[data-testid=countries-search]", "Pilot");
   await until(
     `Boolean(document.querySelector('[role=row][data-id="${createdCountry.id}"]'))`,

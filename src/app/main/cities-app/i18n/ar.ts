@@ -1,4 +1,6 @@
 const locale = {
+  EXPORT_ALL_CSV: "تصدير الكل بصيغة CSV",
+  DATE_FILTER_UNAVAILABLE: "فلاتر التاريخ غير متاحة حتى تدعمها واجهة البرمجة.",
   CITIES: "المدن",
   SEARCH_CITIES: "البحث في المدن",
   ADD_CITY: "إضافة مدينة",

@@ -1,4 +1,5 @@
-const locale = {};
+const locale = {
+  DATE_FILTER_UNAVAILABLE: "Tarih filtreleri API tarafından desteklenene kadar kullanılamaz.",};
 
 Object.assign(locale, {
   RETRY: "Retry",

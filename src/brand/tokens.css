@@ -1,0 +1,157 @@
+/* Ashamco Express design tokens v1.0.0 (2026-11-08). Generated from shared/tokens.json - do not edit by hand.
+   Fonts are loaded by the <link> in web/head-snippet.html (not imported here). */
+
+:root {
+  color-scheme: light;
+  /* brand */
+  --brand-purple: #3A1F5D;
+  --brand-mint: #5EE0B5;
+  --brand-white: #FFFFFF;
+  /* scales */
+  --purple-50: #F4F1F8;
+  --purple-100: #E7DEF2;
+  --purple-200: #D1C2E5;
+  --purple-300: #B49CD3;
+  --purple-400: #9474BE;
+  --purple-500: #744CA9;
+  --purple-600: #573384;
+  --purple-700: #3A1F5D;
+  --purple-800: #2D174A;
+  --purple-900: #211037;
+  --purple-950: #150A24;
+  --mint-50: #E8FBF4;
+  --mint-100: #DCF8EF;
+  --mint-200: #BBF2E0;
+  --mint-300: #8EE9CB;
+  --mint-400: #5EE0B5;
+  --mint-500: #4ABE98;
+  --mint-600: #3AA482;
+  --mint-700: #2A896B;
+  --mint-800: #1A6E54;
+  --mint-900: #0E5A43;
+  --ink: #1E1030;
+  --gray: #6E6880;
+  --border: #E4E0EC;
+  /* semantic (light) */
+  --ax-primary: #3A1F5D;
+  --ax-on-primary: #FFFFFF;
+  --ax-accent: #5EE0B5;
+  --ax-on-accent: #3A1F5D;
+  --ax-background: #FFFFFF;
+  --ax-surface: #FFFFFF;
+  --ax-surface-alt: #F4F1F8;
+  --ax-text: #1E1030;
+  --ax-text-muted: #6E6880;
+  --ax-border: #7B708E;
+  --ax-link: #3A1F5D;
+  --ax-focus-ring: #3A1F5D;
+  --ax-success: #167A50;
+  --ax-warning: #8A570D;
+  --ax-error: #C9363E;
+  --ax-info: #2F6FD6;
+  /* type */
+  --font-sans: 'IBM Plex Sans Arabic', Tahoma, Arial, sans-serif;
+  --font-naskh: 'Noto Naskh Arabic', 'Traditional Arabic', 'Times New Roman', serif;
+  --text-display: 32px;
+  --leading-display: 40px;
+  --weight-display: 700;
+  --text-h1: 28px;
+  --leading-h1: 36px;
+  --weight-h1: 700;
+  --text-h2: 22px;
+  --leading-h2: 30px;
+  --weight-h2: 600;
+  --text-h3: 18px;
+  --leading-h3: 26px;
+  --weight-h3: 600;
+  --text-bodyLg: 16px;
+  --leading-bodyLg: 26px;
+  --weight-bodyLg: 400;
+  --text-body: 14px;
+  --leading-body: 22px;
+  --weight-body: 400;
+  --text-label: 14px;
+  --leading-label: 20px;
+  --weight-label: 500;
+  --text-caption: 12px;
+  --leading-caption: 18px;
+  --weight-caption: 500;
+  --text-overline: 11px;
+  --leading-overline: 16px;
+  --weight-overline: 500;
+  /* space, radius, shadow, motion */
+  --space-0: 0px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-pill: 999px;
+  --shadow-sm: 0 1px 2px rgba(30,16,48,.08);
+  --shadow-md: 0 6px 18px rgba(58,31,93,.10);
+  --shadow-lg: 0 18px 40px rgba(30,16,48,.18);
+  --touch-target: 48px;
+  --motion-fast: 120ms;
+  --motion-base: 200ms;
+  --motion-slow: 320ms;
+  --easing: cubic-bezier(.2,.0,.0,1);
+}
+
+/* dark mode: add data-theme="dark" on <html>, or follow the OS */
+[data-theme="dark"] {
+  color-scheme: dark;
+  --ax-primary: #D1C2E5;
+  --ax-on-primary: #150A24;
+  --ax-accent: #5EE0B5;
+  --ax-on-accent: #150A24;
+  --ax-background: #140A22;
+  --ax-surface: #1E1030;
+  --ax-surface-alt: #2A1A42;
+  --ax-text: #F4F1F8;
+  --ax-text-muted: #B8B0C8;
+  --ax-border: #9A8EAE;
+  --ax-link: #5EE0B5;
+  --ax-focus-ring: #5EE0B5;
+  --ax-success: #4CC793;
+  --ax-warning: #E2B04F;
+  --ax-error: #F06B72;
+  --ax-info: #7AA8F5;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --ax-primary: #D1C2E5;
+    --ax-on-primary: #150A24;
+    --ax-accent: #5EE0B5;
+    --ax-on-accent: #150A24;
+    --ax-background: #140A22;
+    --ax-surface: #1E1030;
+    --ax-surface-alt: #2A1A42;
+    --ax-text: #F4F1F8;
+    --ax-text-muted: #B8B0C8;
+    --ax-border: #9A8EAE;
+    --ax-link: #5EE0B5;
+    --ax-focus-ring: #5EE0B5;
+    --ax-success: #4CC793;
+    --ax-warning: #E2B04F;
+    --ax-error: #F06B72;
+    --ax-info: #7AA8F5;
+  }
+}
+
+/* base */
+html { font-family: var(--font-sans); color: var(--ax-text); background: var(--ax-background); }
+body { font-size: var(--text-body); line-height: var(--leading-body); }
+.font-naskh { font-family: var(--font-naskh); }
+.num, input[type=number], .tabular { font-variant-numeric: tabular-nums; }
+:focus-visible { outline: 3px solid var(--ax-focus-ring); outline-offset: 2px; }
+::selection { background: var(--mint-100); color: var(--purple-900); }

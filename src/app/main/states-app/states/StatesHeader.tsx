@@ -7,7 +7,7 @@ import FeatureHeader, {
 } from "app/shared-components/feature-header/FeatureHeader";
 import { useGetCountriesShippingCompaniesQuery } from "../../countries-app/CountriesApi";
 
-import { Alert, Button, Input } from "@mui/material";
+import { Alert, Button, Input, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useAppDispatch } from "app/store/hooks";
@@ -22,8 +22,6 @@ import {
   selectStatesFilters,
   setStatesSearchText,
   setStatesShippingCompanyIdFilter,
-  setStatesDateFromFilter,
-  setStatesDateToFilter,
 } from "../store/statesSlice";
 import { statesPath, displayName } from "../Utils";
 export default function StatesHeader() {
@@ -100,40 +98,12 @@ export default function StatesHeader() {
                 })),
               ],
               closeOnChange: false,
-            },
-            {
-              type: FilterTypes.dateTime,
-              title: t("START_DATE"),
-              value: filters.dateFromFilter
-                ? new Date(filters.dateFromFilter)
-                : null,
-              maxDate: filters.dateToFilter
-                ? new Date(filters.dateToFilter)
-                : undefined,
-              onChange: (date) => dispatch(setStatesDateFromFilter(date)),
-              disableTime: true,
-              closeOnChange: false,
-            },
-            {
-              type: FilterTypes.dateTime,
-              title: t("END_DATE"),
-              value: filters.dateToFilter
-                ? new Date(filters.dateToFilter)
-                : null,
-              minDate: filters.dateFromFilter
-                ? new Date(filters.dateFromFilter)
-                : undefined,
-              onChange: (date) => dispatch(setStatesDateToFilter(date)),
-              disableTime: true,
-              closeOnChange: false,
-            },
+            },  
           ]}
           changesCount={
             [
               filters.shippingCompanyIdFilter !== "all",
               filters.countryIdFilter !== "all",
-              !!filters.dateFromFilter,
-              !!filters.dateToFilter,
             ].filter(Boolean).length
           }
         />
@@ -152,6 +122,9 @@ export default function StatesHeader() {
           {t("RESET_FILTERS")}
         </Button>
       </FeatureHeaderToolbar>
+      <Typography variant="caption" color="text.secondary">
+        {t("DATE_FILTER_UNAVAILABLE")}
+      </Typography>
       {companies.isError && (
         <>
           <Alert

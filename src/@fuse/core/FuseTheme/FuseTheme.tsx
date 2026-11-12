@@ -94,11 +94,13 @@ function FuseTheme(props: FuseThemeProps) {
 
 	useEnhancedEffect(() => {
 		document.body.dir = direction;
+		document.documentElement.dir = direction;
 	}, [direction]);
 
 	useEffect(() => {
 		document.body.classList.add(mode === 'light' ? 'light' : 'dark');
 		document.body.classList.remove(mode === 'light' ? 'dark' : 'light');
+		document.documentElement.dataset.theme = mode;
 	}, [mode]);
 
 	// console.warn('FuseTheme:: rendered',mainTheme);
