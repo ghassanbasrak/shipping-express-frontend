@@ -6,12 +6,7 @@ import InvoiceSummary from "./InvoiceSummary";
 import { forwardRef } from "react";
 
 const Root = styled("div")(({ theme }) => ({
-  "&, & *": {
-    fontFamily:
-      theme.direction === "rtl"
-        ? "'Cairo', sans-serif !important"
-        : "'Inter var', sans-serif !important",
-  },
+  fontFamily: theme.typography.fontFamily,
   ".pageLayout": { display: "flex" },
   ".header": {
     display: "flex",

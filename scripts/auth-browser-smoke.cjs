@@ -66,11 +66,16 @@ async function evaluate(expression) {
   return result.result.value;
 }
 async function assertTypographyFont(font) {
-  const families = await evaluate(`(async () => {
+  const result = await evaluate(`(async () => {
+    const loaded = await document.fonts.load('400 14px "${font}"', 'Hello مرحبا');
     await document.fonts.ready;
-    return [...document.querySelectorAll('.MuiTypography-root')]
-      .map(element => getComputedStyle(element).fontFamily);
+    return {
+      loaded: loaded.length,
+      families: [...document.querySelectorAll('.MuiTypography-root, input[name=email]')]
+        .map(element => getComputedStyle(element).fontFamily),
+    };
   })()`);
+  const { families, loaded } = result;
   assert.ok(families.length > 0, "Rendered MUI Typography is present");
   assert.ok(
     families.every(
@@ -79,7 +84,7 @@ async function assertTypographyFont(font) {
     ),
     `Expected ${font} on every Typography, received ${JSON.stringify(families)}`,
   );
-  assert.equal(await evaluate(`document.fonts.check('14px "${font}"')`), true);
+  assert.ok(loaded > 0, `${font} font faces failed to load`);
 }
 async function until(expression, label) {
   for (let i = 0; i < 150; i++) {
@@ -381,7 +386,7 @@ async function main() {
     "protected-route redirect",
   );
   console.log("PASS Guest protected-route redirect");
-  await assertTypographyFont("Inter var");
+  await assertTypographyFont("IBM Plex Sans Arabic");
   assert.equal(
     await evaluate("document.querySelector('a[href=\"/sign-up\"]') !== null"),
     true,
@@ -648,7 +653,7 @@ async function main() {
     Buffer.from(mobile.data, "base64"),
   );
   console.log("PASS Arabic RTL and mobile sign-in");
-  await assertTypographyFont("LamaSans");
+  await assertTypographyFont("IBM Plex Sans Arabic");
   assert.equal(
     await evaluate(
       "document.documentElement.scrollWidth <= document.documentElement.clientWidth",
