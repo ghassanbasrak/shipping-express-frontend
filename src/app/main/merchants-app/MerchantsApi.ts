@@ -11,7 +11,7 @@ export const addTagTypes = [
   "Transactions",
   "TransactionAccount",
   "ShipmentAccount",
-  "TopupRequestsUser",
+  "PaymentsUser",
   "MerchantDuesSummary",
 ] as const;
 const invalidates = (id: string) => [
@@ -24,7 +24,7 @@ const invalidates = (id: string) => [
   "Transactions" as const,
   "TransactionAccount" as const,
   "ShipmentAccount" as const,
-  "TopupRequestsUser" as const,
+  "PaymentsUser" as const,
   "MerchantDuesSummary" as const,
 ];
 const MerchantsApi = api.enhanceEndpoints({ addTagTypes }).injectEndpoints({
@@ -46,10 +46,7 @@ const MerchantsApi = api.enhanceEndpoints({ addTagTypes }).injectEndpoints({
           ...(filters.statusFilter && filters.statusFilter !== "all"
             ? { active: filters.statusFilter }
             : {}),
-          ...(filters.verificationStatusFilter &&
-          filters.verificationStatusFilter !== "all"
-            ? { verificationStatus: filters.verificationStatusFilter }
-            : {}),
+
           ...(filters.dateFromFilter
             ? { dateFrom: filters.dateFromFilter }
             : {}),
@@ -115,24 +112,6 @@ const MerchantsApi = api.enhanceEndpoints({ addTagTypes }).injectEndpoints({
         url: `v1/users/${id}`,
         method: "PATCH",
         data: { role: "employee" },
-      }),
-      invalidatesTags: (_, __, id) => invalidates(id),
-    }),
-    addMerchantPaymentPlan: build.mutation<
-      unknown,
-      { id: string; paymentPlanId: string }
-    >({
-      query: (value) => ({
-        url: `v1/users/${value.id}/add-payment-plan`,
-        method: "POST",
-        data: { paymentPlanId: value.paymentPlanId },
-      }),
-      invalidatesTags: (_, __, value) => invalidates(value.id),
-    }),
-    cancelMerchantPaymentPlan: build.mutation<unknown, string>({
-      query: (id) => ({
-        url: `v1/users/${id}/cancel-payment-plan`,
-        method: "DELETE",
       }),
       invalidatesTags: (_, __, id) => invalidates(id),
     }),
@@ -204,7 +183,6 @@ export type GetMerchantsApiArg = {
   typeFilter?: string;
   balanceTypeFilter?: string;
   statusFilter?: string;
-  verificationStatusFilter?: string;
   balanceSorting?: string;
   codBalanceSorting?: string;
   dateFromFilter?: string;
@@ -239,8 +217,6 @@ export const {
   useSetMerchantBlockedMutation,
   useSetMerchantAffiliateMutation,
   useConvertMerchantToEmployeeMutation,
-  useAddMerchantPaymentPlanMutation,
-  useCancelMerchantPaymentPlanMutation,
   useCloseMerchantBalanceMutation,
   useGetMerchantContactsQuery,
   useLazyGetMerchantContactsQuery,

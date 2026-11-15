@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
-  Alert,
   Button,
   Dialog,
   MenuItem,
@@ -13,14 +12,9 @@ import { useTranslation } from "react-i18next";
 import CustomDialog from "app/shared-components/custom-dialog/CustomDialog";
 import { useAppSelector } from "app/store/hooks";
 import { selectUser } from "src/app/auth/user/store/userSlice";
-import {
-  requiredStringValidation,
-  optionalStringValidation,
-} from "../../utils/validations";
-import { useGetPlansQuery } from "../../plans-app/PlansApi";
+import { optionalStringValidation } from "../../utils/validations";
 import IMerchant from "../models/IMerchant";
 import {
-  canUpdateMerchant,
   canBlockMerchant,
   canConvertMerchant,
   canLockMerchantBalance,
@@ -30,15 +24,11 @@ import {
   useSetMerchantBlockedMutation,
   useSetMerchantAffiliateMutation,
   useConvertMerchantToEmployeeMutation,
-  useAddMerchantPaymentPlanMutation,
-  useCancelMerchantPaymentPlanMutation,
   useCloseMerchantBalanceMutation,
 } from "../MerchantsApi";
 export type MerchantAction =
   | "block"
   | "affiliate"
-  | "subscribe"
-  | "cancelPlan"
   | "closeBalance"
   | "convert";
 function ActionFields({
@@ -51,67 +41,12 @@ function ActionFields({
   busy: boolean;
 }) {
   const { t } = useTranslation("merchantsApp"),
-    { control, getValues, setValue } = useFormContext(),
-    plans = useGetPlansQuery(
-      { page: 0, pageSize: 500 },
-      { skip: action !== "subscribe" },
-    );
-  useEffect(() => {
-    if (
-      action === "subscribe" &&
-      !getValues("paymentPlanId") &&
-      plans.currentData?.results[0]
-    )
-      setValue("paymentPlanId", plans.currentData.results[0].id);
-  }, [plans.currentData, action]);
+    { control } = useFormContext();
   return (
     <div className="space-y-16 mt-16">
       <Typography>{merchantName(merchant)}</Typography>
       {action === "convert" && (
         <Typography>{t("CONVERT_TO_EMPLOYEE_MESSAGE")}</Typography>
-      )}
-      {action === "cancelPlan" && (
-        <Typography>{t("CANCEL_PAYMENT_PLAN_MESSAGE")}</Typography>
-      )}
-      {action === "subscribe" && (
-        <>
-          {merchant.referredById && (
-            <Alert severity="warning">
-              {t("THE_AFFILIATE_CUSTOM_PRICES_WILL_BE_REMOVED_WITH_PLAN")}
-            </Alert>
-          )}
-          {plans.isError && (
-            <Alert
-              severity="error"
-              action={
-                <Button onClick={() => plans.refetch()}>{t("RETRY")}</Button>
-              }
-            >
-              {t("LOOKUP_ERROR")}
-            </Alert>
-          )}
-          <Controller
-            name="paymentPlanId"
-            control={control}
-            render={({ field, fieldState }) => (
-              <TextField
-                {...field}
-                fullWidth
-                select
-                disabled={busy || plans.isFetching || plans.isError}
-                label={t("PAYMENT_PLAN")}
-                error={!!fieldState.error}
-                helperText={fieldState.error?.message}
-              >
-                {(plans.currentData?.results || []).map((plan) => (
-                  <MenuItem key={plan.id} value={plan.id}>
-                    {plan.name}
-                  </MenuItem>
-                ))}
-              </TextField>
-            )}
-          />
-        </>
       )}
       {action === "closeBalance" && (
         <>
@@ -168,24 +103,18 @@ export default function MerchantActionDialog({
     [block] = useSetMerchantBlockedMutation(),
     [affiliate] = useSetMerchantAffiliateMutation(),
     [convert] = useConvertMerchantToEmployeeMutation(),
-    [subscribe] = useAddMerchantPaymentPlanMutation(),
-    [cancel] = useCancelMerchantPaymentPlanMutation(),
     [closeBalance] = useCloseMerchantBalanceMutation();
   const allowed =
     action === "convert"
       ? canConvertMerchant(user)
       : action === "block" || action === "affiliate"
         ? canBlockMerchant(user)
-        : action === "closeBalance"
-          ? canLockMerchantBalance(user)
-          : canUpdateMerchant(user);
+        : canLockMerchantBalance(user);
   const title = {
     block: merchant.isBlocked ? "ACTIVATE_ACCOUNT" : "DEACTIVATE_ACCOUNT",
     affiliate: merchant.isAffiliate
       ? "DEACTIVATE_AFFILIATE"
       : "ACTIVATE_AFFILIATE",
-    subscribe: "SUBSCRIBE_PLAN_TITLE",
-    cancelPlan: "CANCEL_PAYMENT_PLAN_TITLE",
     closeBalance: "LOCK_MERCHANT_BALANCE",
     convert: "CONVERT_TO_EMPLOYEE_TITLE",
   }[action];
@@ -204,20 +133,14 @@ export default function MerchantActionDialog({
         }}
         form
         formMode="onSubmit"
-        formDefaultValues={{ paymentPlanId: "", type: "wallet", notes: "" }}
+        formDefaultValues={{ type: "wallet", notes: "" }}
         formSchema={
-          action === "subscribe"
+          action === "closeBalance"
             ? z.object({
-                paymentPlanId: requiredStringValidation({
-                  error: t("REQUIRED_FIELD"),
-                }),
+                type: z.enum(["wallet", "cod"]),
+                notes: optionalStringValidation(),
               })
-            : action === "closeBalance"
-              ? z.object({
-                  type: z.enum(["wallet", "cod"]),
-                  notes: optionalStringValidation(),
-                })
-              : z.object({})
+            : z.object({})
         }
         message={
           <ActionFields action={action} merchant={merchant} busy={busy} />
@@ -231,7 +154,6 @@ export default function MerchantActionDialog({
         }
         formCancelButtonProps={{ disabled: busy }}
         handleSubmitForm={async (data: {
-          paymentPlanId?: string;
           type?: string;
           notes?: string;
         }) => {
@@ -247,12 +169,6 @@ export default function MerchantActionDialog({
                 isAffiliate: !merchant.isAffiliate,
               }).unwrap();
             else if (action === "convert") await convert(id).unwrap();
-            else if (action === "subscribe")
-              await subscribe({
-                id,
-                paymentPlanId: data.paymentPlanId,
-              }).unwrap();
-            else if (action === "cancelPlan") await cancel(id).unwrap();
             else {
               const result = await closeBalance({
                 id,

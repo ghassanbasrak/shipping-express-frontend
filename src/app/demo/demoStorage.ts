@@ -1,3 +1,12 @@
+import {
+  storageSubscriptionOperation,
+  storageSubscriptionStatus,
+} from "../main/storage-subscriptions-app/Utils";
+import {
+  paymentType,
+  paymentMethodType,
+  paymentStatus as paymentStatuses,
+} from "../main/payments-app/Utils";
 // Local simulation of the storage contracts in backend develop (175f3c3).
 // It never calls a payment gateway or a live backend.
 import type { User } from "../auth/user";
@@ -6,20 +15,25 @@ import type { DemoOperationsDb } from "./demoOperations";
 import { getDemoUser } from "./demoMode";
 import type IWarehouse from "../main/storage-app/models/IWarehouse";
 import type IStoragePlan from "../main/storage-app/models/IStoragePlan";
-import type IStorageSubscription from "../main/storage-app/models/IStorageSubscription";
+import type IStorageSubscription from "../main/storage-subscriptions-app/models/IStorageSubscription";
 import type IStorageProduct from "../main/storage-app/models/IStorageProduct";
 import type ISupplyRequest from "../main/storage-app/models/ISupplyRequest";
-import type { StoragePaymentResponse } from "../main/storage-app/StorageApi";
+import { StoragePaymentResponse } from "../main/storage-subscriptions-app/StorageSubscriptionsApi";
 import {
   allowedSupplyTransitions,
   canManageStorage,
   hasActiveStorageSubscription,
   storagePlanPrice,
+  storageType,
+  supplyProductMode,
+  supplyStatuses,
+  supportedStorageTypes,
 } from "../main/storage-app/Utils";
 import {
   warehouseSchema,
   storagePlanSchema,
   supplyRequestSchema,
+  storageProductSchema,
 } from "../main/storage-app/models/StorageSchemas";
 type Reply = [number, unknown];
 export type DemoStorageDb = {
@@ -56,7 +70,17 @@ function transaction<T>(fn: () => Promise<T> | T): Promise<T> {
 export function ensureDemoStorage(
   db: DemoDbForExtras & Partial<DemoStorageDb>,
 ) {
-  if (db.storage?.schemaVersion === 2) return;
+  if (db.storage?.schemaVersion === 2) {
+    db.storage.warehouses.forEach((w) => {
+      w.storageTypes ??= Object.values(storageType);
+    });
+    db.storage.plans.forEach((p) => {
+      p.storageTypes ??= Object.values(storageType).filter((v) =>
+        p.features.some((f) => f.toLowerCase().includes(v)),
+      );
+    });
+    return;
+  }
   const country =
     db.countries.find((row) => row.code === "SA") || db.countries[0];
   const state = db.states.find((row) => row.countryId === country?.id);
@@ -76,7 +100,7 @@ export function ensureDemoStorage(
           zipCode: city?.postalCode || "",
         },
         name: "Riyadh warehouse / مستودع الرياض",
-        address: "Riyadh, Saudi Arabia / الرياض، المملكة العربية السعودية",
+        storageTypes: Object.values(storageType),
         mapAddress: "https://www.google.com/maps?q=24.7136,46.6753",
         information:
           "Incoming supplies are received after approval. / يستقبل المستودع طلبات التوريد بعد الموافقة.",
@@ -89,7 +113,11 @@ export function ensureDemoStorage(
         price: 120,
         discountPrice: 99,
         durationDays: 30,
-        features: ["Standard / عادي", "Dry / جاف"],
+        features: [
+          "Secure storage / تخزين آمن",
+          "Shipment fulfillment / تجهيز الشحنات",
+        ],
+        storageTypes: [storageType.standard, storageType.dry],
         isActive: true,
       },
       {
@@ -98,12 +126,8 @@ export function ensureDemoStorage(
         price: 240,
         discountPrice: 199,
         durationDays: 30,
-        features: [
-          "Standard / عادي",
-          "Dry / جاف",
-          "Chilled / مبرد",
-          "Frozen / مجمد",
-        ],
+        features: ["Temperature-controlled storage / تخزين بدرجة حرارة مضبوطة"],
+        storageTypes: Object.values(storageType),
         isActive: true,
       },
     ],
@@ -118,7 +142,7 @@ function current(db: Db, userId: string) {
   const row = db.storage.subscriptions.find(
     (row) =>
       row.userId === userId &&
-      row.status === "active" &&
+      row.status === storageSubscriptionStatus.active &&
       Date.parse(row.startsAt) <= Date.now() &&
       Date.parse(row.endsAt) > Date.now(),
   );
@@ -143,19 +167,35 @@ function activate(db: Db, payment: StoragePaymentResponse) {
     (row) => row.paymentId === payment.id,
   );
   if (existing) return existing;
-  if (current(db, payment.userId))
+  const active = current(db, payment.userId),
+    operation =
+      payment.metadata?.storageOperation ||
+      storageSubscriptionOperation.subscribe;
+  if (active && operation === storageSubscriptionOperation.subscribe)
     throw new Error("An active storage subscription already exists");
+  if (
+    operation !== storageSubscriptionOperation.subscribe &&
+    (!active || active.id !== payment.metadata?.storageSubscriptionId)
+  )
+    throw new Error("Current subscription changed");
   const plan = db.storage.plans.find((row) => row.id === payment.storagePlanId);
   if (!plan) throw new Error("Storage plan not found");
+  const endsBase =
+    active && operation === storageSubscriptionOperation.renew
+      ? Math.max(Date.now(), Date.parse(active.endsAt))
+      : Date.now();
+  if (active)
+    db.storage.subscriptions.find((r) => r.id === active.id).status =
+      storageSubscriptionStatus.cancelled;
   const row: IStorageSubscription = {
     id: uid(),
     userId: payment.userId,
     planId: plan.id,
     paymentId: payment.id,
-    status: "active",
+    status: storageSubscriptionStatus.active,
     price: payment.amount,
     startsAt: stamp(),
-    endsAt: new Date(Date.now() + plan.durationDays * 86400000).toISOString(),
+    endsAt: new Date(endsBase + plan.durationDays * 86400000).toISOString(),
   };
   db.storage.subscriptions.push(row);
   return row;
@@ -166,6 +206,36 @@ export async function handleDemoStorage(
   const { db, path, data } = context;
   const method = context.method.toUpperCase(),
     userId = getDemoUser().id;
+  const paymentRead = /^v1\/payments\/([^/]+)$/.exec(path);
+  if (paymentRead && method === "GET") {
+    const payment = db.storage.payments.find(
+      (row) => row.id === paymentRead[1],
+    );
+    if (payment)
+      return payment.userId === userId
+        ? [200, payment]
+        : fail("Payment not found", 404);
+  }
+  const demoComplete = /^v1\/payments\/([^/]+)\/demo-complete$/.exec(path);
+  if (demoComplete && method === "POST") {
+    const payment = db.storage.payments.find(
+      (row) => row.id === demoComplete[1],
+    );
+    if (!payment) return undefined;
+    if (payment.userId !== userId || getDemoUser().role !== "user")
+      return fail("Payment not found", 404);
+    if (payment.status === paymentStatuses.confirmed) return [200, payment];
+    if (
+      !Object.values(paymentMethodType).includes(data.paymentMethodType) ||
+      data.paymentMethodType === paymentMethodType.free
+    )
+      return fail("Invalid demo method");
+    if (!payment.metadata?.demoPaid)
+      payment.paymentMethodType = data.paymentMethodType;
+    payment.metadata = { ...payment.metadata, demoPaid: true };
+    context.save();
+    return [200, payment];
+  }
   const paymentStatus = /^v1\/payments\/([^/]+)\/check-status$/.exec(path);
   if (
     !path.startsWith("v1/storage/") &&
@@ -190,23 +260,102 @@ export async function handleDemoStorage(
         (row) => row.id === paymentStatus[1] && row.userId === userId,
       );
       if (!merchant || !payment) return fail("Payment not found", 404);
-      if (data.moyasarPaymentId !== "demo-moyasar-" + payment.id)
-        return fail("Payment verification failed");
+      if (
+        !payment.metadata?.demoPaid &&
+        payment.paymentMethodType !== paymentMethodType.free
+      )
+        return [200, payment];
       try {
         activate(db, payment);
-        payment.status = "success";
+        payment.status = paymentStatuses.confirmed;
         context.save();
         return [200, payment];
       } catch (e) {
         return fail((e as Error).message, 409);
       }
     }
+    if (
+      (path === "v1/storage/subscriptions" ||
+        path === "v1/storage/subscriptions/admin") &&
+      method === "GET"
+    ) {
+      if (path.endsWith("/admin") && !admin)
+        return fail("Admin access required", 403);
+      return [
+        200,
+        db.storage.subscriptions
+          .filter((r) => admin || r.userId === userId)
+          .map((r) => ({
+            ...r,
+            plan: db.storage.plans.find((p) => p.id === r.planId),
+            user: owner(db, r.userId),
+            payment: db.storage.payments.find((p) => p.id === r.paymentId),
+          })),
+      ];
+    }
+    if (path === "v1/storage/subscriptions/admin" && method === "POST") {
+      if (!admin) return fail("Admin access required", 403);
+      if (!db.users.some((u) => u.id === data.userId && u.role === "user"))
+        return fail("Merchant not found", 404);
+      const plan = db.storage.plans.find(
+          (p) => p.id === data.planId && p.isActive,
+        ),
+        active = current(db, data.userId);
+      if (
+        !plan ||
+        !Object.values(storageSubscriptionOperation).includes(data.operation)
+      )
+        return fail("Invalid plan or operation");
+      if (
+        (data.operation === storageSubscriptionOperation.subscribe && active) ||
+        (data.operation !== storageSubscriptionOperation.subscribe &&
+          !active) ||
+        (data.operation === storageSubscriptionOperation.renew &&
+          active?.planId !== plan.id) ||
+        (data.operation === storageSubscriptionOperation.upgrade &&
+          active?.planId === plan.id)
+      )
+        return fail("Invalid subscription operation", 409);
+      const payment: StoragePaymentResponse = {
+        id: uid(),
+        userId: data.userId,
+        storagePlanId: plan.id,
+        type: paymentType.storageSubscription,
+        paymentMethodType: paymentMethodType.free,
+        status: paymentStatuses.confirmed,
+        amount: 0,
+        taxTotal: 0,
+        total: 0,
+        metadata: {
+          storageOperation: data.operation,
+          storageSubscriptionId: active?.id,
+        },
+      };
+      db.storage.payments.push(payment);
+      const subscription = activate(db, payment);
+      context.save();
+      return [201, subscription];
+    }
     if (path === "v1/storage/subscriptions/current" && method === "GET")
       return [200, current(db, userId)];
     if (path === "v1/storage/subscriptions/checkout" && method === "POST") {
       if (!merchant) return fail("Merchant access required", 403);
-      if (current(db, userId))
+      const active = current(db, userId),
+        operation = data.operation || storageSubscriptionOperation.subscribe;
+      if (!Object.values(storageSubscriptionOperation).includes(operation))
+        return fail("Invalid operation");
+      if (active && operation === storageSubscriptionOperation.subscribe)
         return fail("An active storage subscription already exists", 409);
+      if (!active && operation !== storageSubscriptionOperation.subscribe)
+        return fail("Active subscription required", 409);
+      if (
+        active &&
+        ((operation === storageSubscriptionOperation.renew &&
+          data.planId !== active.planId) ||
+          (operation === storageSubscriptionOperation.upgrade &&
+            data.planId === active.planId))
+      )
+        return fail("Invalid plan for operation");
       const plan = db.storage.plans.find(
         (row) => row.id === data.planId && row.isActive,
       );
@@ -219,10 +368,17 @@ export async function handleDemoStorage(
         id: uid(),
         userId,
         storagePlanId: plan.id,
+        type: paymentType.storageSubscription,
+        paymentMethodType: amount === 0 ? paymentMethodType.free : null,
         amount,
+        metadata: {
+          storageOperation: operation,
+          storageSubscriptionId: active?.id,
+        },
         taxTotal: Math.round((total - amount) * 100) / 100,
         total,
-        status: amount === 0 ? "success" : "pending",
+        status:
+          amount === 0 ? paymentStatuses.confirmed : paymentStatuses.pending,
       };
       db.storage.payments.push(payment);
       const subscription = amount === 0 ? activate(db, payment) : undefined;
@@ -231,20 +387,12 @@ export async function handleDemoStorage(
         201,
         {
           payment,
-          checkout:
+          checkoutUrl:
             amount === 0
               ? null
-              : {
-                  publishable_api_key: "pk_test_demo_storage",
-                  amount: Math.round(total * 100),
-                  currency: "SAR",
-                  description: "Storage subscription " + plan.name,
-                  callback_url:
-                    window.location.origin +
-                    "/storage/payment-result?paymentId=" +
-                    encodeURIComponent(payment.id),
-                  methods: ["creditcard"],
-                },
+              : window.location.origin +
+                "/demo/payment/" +
+                encodeURIComponent(payment.id),
           ...(subscription ? { subscription } : {}),
         },
       ];
@@ -254,7 +402,15 @@ export async function handleDemoStorage(
       if (method === "GET") {
         if (path === "v1/warehouses/admin") {
           if (!admin) return fail("Admin access required", 403);
-          return [200, db.storage.warehouses];
+          return [
+            200,
+            db.storage.warehouses.map((w) => ({
+              ...w,
+              productsCount: db.storage.products.filter(
+                (p) => p.warehouseId === w.id,
+              ).length,
+            })),
+          ];
         }
         if (!current(db, userId))
           return fail("Active storage subscription required", 403);
@@ -352,10 +508,38 @@ export async function handleDemoStorage(
         const subscription = current(db, userId);
         if (!hasActiveStorageSubscription(subscription, userId))
           return fail("Active storage subscription required", 403);
+        const selectedWarehouse = db.storage.warehouses.find(
+          (w) => w.id === data.warehouseId,
+        );
+        if (!selectedWarehouse) return fail("Warehouse not found", 404);
+        const mapped = (data.products || []).map((item) => {
+          if (!item.warehouseProductId)
+            return {
+              ...item,
+              mode: supplyProductMode.new,
+              warehouseProductId: "",
+              unitPrice: item.unitPrice ?? null,
+            };
+          const stored = db.storage.products.find(
+            (p) =>
+              p.id === item.warehouseProductId &&
+              p.userId === userId &&
+              p.warehouseId === data.warehouseId,
+          );
+          if (!stored) return { ...item, mode: supplyProductMode.existing };
+          return {
+            ...stored,
+            mode: supplyProductMode.existing,
+            warehouseProductId: stored.id,
+            quantity: item.quantity,
+            unitPrice: item.unitPrice ?? stored.unitPrice,
+            updateUnitPrice: item.unitPrice != null,
+          };
+        });
         const parsed = supplyRequestSchema(
           (key) => key,
-          subscription.plan.features,
-        ).safeParse(data);
+          supportedStorageTypes(subscription.plan, selectedWarehouse),
+        ).safeParse({ ...data, products: mapped });
         if (parsed.success === false)
           return fail(parsed.error.issues[0].message);
         if (
@@ -368,8 +552,11 @@ export async function handleDemoStorage(
           id: uid(),
           userId,
           warehouseId: parsed.data.warehouseId,
-          products: parsed.data.products as ISupplyRequest["products"],
-          status: "pending",
+          products: parsed.data.products.map((p, i) => ({
+            ...p,
+            updateUnitPrice: mapped[i].updateUnitPrice,
+          })) as ISupplyRequest["products"],
+          status: supplyStatuses.pending,
           createdAt: stamp(),
           updatedAt: stamp(),
         };
@@ -387,7 +574,7 @@ export async function handleDemoStorage(
       if (!row) return fail("Supply request not found", 404);
       if (!allowedSupplyTransitions(row.status).includes(data.status))
         return fail("Invalid supply request transition");
-      if (data.status === "received")
+      if (data.status === supplyStatuses.received)
         for (const product of row.products) {
           const existing = db.storage.products.find(
             (item) =>
@@ -400,7 +587,11 @@ export async function handleDemoStorage(
           );
           if (existing) {
             existing.quantity += product.quantity;
-            existing.unitPrice = product.unitPrice;
+            if (
+              product.unitPrice != null &&
+              product["updateUnitPrice"] !== false
+            )
+              existing.unitPrice = product.unitPrice;
             existing.updatedAt = stamp();
           } else
             db.storage.products.push({
@@ -411,7 +602,7 @@ export async function handleDemoStorage(
               sku: product.sku,
               storageType: product.storageType,
               quantity: product.quantity,
-              unitPrice: product.unitPrice,
+              unitPrice: product.unitPrice ?? 0,
               createdAt: stamp(),
               updatedAt: stamp(),
             });
@@ -421,6 +612,36 @@ export async function handleDemoStorage(
       context.save();
       return [200, supplyView(db, row)];
     }
+    const productPatch = /^v1\/storage\/products\/admin\/([^/]+)$/.exec(path);
+    if (productPatch && method === "PATCH") {
+      if (!admin) return fail("Admin access required", 403);
+      const row = db.storage.products.find((p) => p.id === productPatch[1]);
+      if (!row) return fail("Product not found", 404);
+      const parsed = storageProductSchema((k) => k).safeParse(data);
+      if (!parsed.success) return fail("Invalid product");
+      if (
+        !db.storage.warehouses
+          .find((w) => w.id === data.warehouseId)
+          ?.storageTypes.includes(data.storageType)
+      )
+        return fail("Unsupported storage type");
+      if (!db.users.some((u) => u.id === data.userId && u.role === "user"))
+        return fail("Merchant not found", 404);
+      Object.assign(row, parsed.data, { updatedAt: stamp() });
+      context.save();
+      return [200, row];
+    }
+    if (path === "v1/storage/products/admin" && method === "GET") {
+      if (!admin) return fail("Admin access required", 403);
+      return [
+        200,
+        db.storage.products.map((r) => ({
+          ...r,
+          user: owner(db, r.userId),
+          warehouse: db.storage.warehouses.find((w) => w.id === r.warehouseId),
+        })),
+      ];
+    }
     if (path === "v1/storage/products" && method === "GET") {
       if (!merchant || !current(db, userId))
         return fail("Active storage subscription required", 403);
@@ -429,7 +650,9 @@ export async function handleDemoStorage(
         db.storage.products.filter(
           (row) =>
             row.userId === userId &&
-            row.quantity > 0 &&
+            (row.quantity > 0 ||
+              context.params.includeEmpty === true ||
+              context.params.includeEmpty === "true") &&
             (!context.params.warehouseId ||
               row.warehouseId === context.params.warehouseId),
         ),

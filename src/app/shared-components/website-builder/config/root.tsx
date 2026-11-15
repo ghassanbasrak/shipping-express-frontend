@@ -23,7 +23,7 @@ function Root({
   return (
     <div
       dir={language === "ar" ? "rtl" : "ltr"}
-      style={{ fontFamily: "Tajawal" }}
+      style={{ fontFamily: "var(--font-sans)" }}
     >
       {header}
       {/* <Header editMode={puck.isEditing} /> */}

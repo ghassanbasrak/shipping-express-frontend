@@ -7,10 +7,8 @@ import { forwardRef } from "react";
 import { tokens } from "../../../brand/tokens";
 
 const Root = styled("div")(({ theme }) => ({
-  "&, & *": {
-    fontFamily: `${tokens.font.stack.sans} !important`,
-    fontVariantNumeric: "tabular-nums lining-nums",
-  },
+  fontFamily: theme.typography.fontFamily,
+  fontVariantNumeric: "tabular-nums lining-nums",
   ".pageLayout": { display: "flex" },
   ".header": {
     display: "flex",

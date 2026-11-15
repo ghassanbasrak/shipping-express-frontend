@@ -35,7 +35,7 @@ function Root({
     <div
       dir={language === "ar" ? "rtl" : "ltr"}
       style={{
-        fontFamily: "Tajawal",
+        fontFamily: "var(--font-sans)",
         backgroundColor: backgroundColor ?? "white",
         backgroundImage: backgroundImageUrl && `url("${backgroundImageUrl}")`,
         backgroundSize,

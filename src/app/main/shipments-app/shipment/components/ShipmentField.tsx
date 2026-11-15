@@ -1,3 +1,4 @@
+import { getCurrentCurrency } from "../../../utils/currencyFormatter";
 import { Controller, useFormContext } from "react-hook-form";
 import {
   Box,
@@ -36,6 +37,11 @@ export default function ShipmentField({
   children?: React.ReactNode;
 }) {
   const { control } = useFormContext();
+  unit =
+    unit ||
+    (/(?:price|amount|cost|fee|total)$/i.test(name)
+      ? getCurrentCurrency()
+      : undefined);
   return (
     <Controller
       name={name}

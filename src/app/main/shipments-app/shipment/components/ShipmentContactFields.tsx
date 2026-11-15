@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Alert, Autocomplete, Button, TextField } from "@mui/material";
 import { Controller, useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import PhoneInput from "mui-phone-input";
+import CustomPhoneNumber from "app/shared-components/custom-phone-number/CustomPhoneNumber";
 import {
   useGetShipmentUsersQuery,
   useGetShipmentUserQuery,
@@ -75,43 +75,14 @@ export default function ShipmentContactFields({
     label: string,
     required = false,
   ) => (
-    <Controller
+    <CustomPhoneNumber
+      key={`${id}:${applied.current || ""}`}
       name={name}
-      control={control}
-      render={({ field, fieldState }) => (
-        <Controller
-          name={code}
-          control={control}
-          render={({ field: country }) => (
-            <div dir="ltr" className="min-w-0">
-              <PhoneInput
-                key={`${id}:${applied.current || ""}`}
-                name={name}
-                value={`${country.value || "+966"}${field.value || ""}`}
-                onChange={(value) => {
-                  country.onChange(
-                    value.countryCode ? `+${value.countryCode}` : "",
-                  );
-                  field.onChange(
-                    `${value.areaCode || ""}${value.phoneNumber || ""}`,
-                  );
-                }}
-                onBlur={field.onBlur}
-                label={label}
-                required={required}
-                disabled={disabled}
-                fullWidth
-                variant="outlined"
-                disableParentheses
-                enableSearch
-                searchVariant="standard"
-                error={!!fieldState.error}
-                helperText={fieldState.error?.message}
-              />
-            </div>
-          )}
-        />
-      )}
+      codeName={code}
+      label={label}
+      required={required}
+      disabled={disabled}
+      className="w-full min-w-0"
     />
   );
   const showState = true;

@@ -120,7 +120,7 @@ export default function MerchantHome() {
               : overviewMoney(own?.balance, i18n.language, currency)}
           </strong>
           <p className="ov-note">{t("DISPLAY_CURRENCY", { currency })}</p>
-          <OverviewLink to="/topup-requests/all/new">
+          <OverviewLink to="/payments/all/new">
             {t("TOP_UP_WALLET")}
           </OverviewLink>
           <QueryFeedback query={account} />
@@ -222,12 +222,6 @@ export default function MerchantHome() {
               title={t("MY_ACCOUNT")}
               description={t("MY_ACCOUNT_HINT")}
               icon="verified_user"
-            />
-            <QuickAction
-              to="/package-requests/all"
-              title={t("PACKAGING_REQUESTS")}
-              description={t("PACKAGING_HINT")}
-              icon="inventory_2"
             />
           </div>
         </OverviewSection>

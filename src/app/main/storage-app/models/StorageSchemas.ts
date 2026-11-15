@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { storageType, supplyProductMode } from "../Utils";
+const storageTypesSchema = z.array(z.nativeEnum(storageType)).min(1);
 import {
   requiredStringValidation,
   optionalStringValidation,
@@ -14,7 +16,7 @@ const money = () =>
 export const warehouseSchema = (t: (key: string) => string) =>
   z.object({
     name: name(t),
-    address: name(t),
+    storageTypes: storageTypesSchema,
     mapAddress: optionalStringValidation(),
     information: optionalStringValidation(),
     pickup: z.object({
@@ -45,6 +47,7 @@ export const storagePlanSchema = (t: (key: string) => string) =>
         nonZero: true,
       }).int(),
       featuresText: name(t),
+      storageTypes: storageTypesSchema,
       isActive: optionalBooleanValidation(),
     })
     .superRefine((value, ctx) => {
@@ -65,6 +68,8 @@ export const supplyRequestSchema = (
       products: z
         .array(
           z.object({
+            mode: z.nativeEnum(supplyProductMode),
+            warehouseProductId: optionalStringValidation(),
             sku: optionalStringValidation(),
             name: name(t),
             quantity: requiredNumberValidation({
@@ -73,9 +78,9 @@ export const supplyRequestSchema = (
             })
               .int()
               .max(Number.MAX_SAFE_INTEGER),
-            unitPrice: requiredNumberValidation({ positive: true }).finite(),
+            unitPrice: z.number().finite().nonnegative().nullable(),
             notes: optionalStringValidation(),
-            storageType: name(t),
+            storageType: z.union([z.nativeEnum(storageType), z.literal("")]),
           }),
         )
         .min(1, t("ADD_PRODUCT")),
@@ -83,6 +88,21 @@ export const supplyRequestSchema = (
     .superRefine((value, ctx) => {
       const seen = new Set<string>();
       value.products.forEach((item, i) => {
+        if (
+          item.mode === supplyProductMode.existing &&
+          !item.warehouseProductId
+        )
+          ctx.addIssue({
+            code: "custom",
+            path: ["products", i, "warehouseProductId"],
+            message: t("CHOOSE_PRODUCT"),
+          });
+        if (item.mode === supplyProductMode.new && item.unitPrice == null)
+          ctx.addIssue({
+            code: "custom",
+            path: ["products", i, "unitPrice"],
+            message: t("REQUIRED"),
+          });
         const identity = JSON.stringify([
           item.sku?.trim() || item.name.trim(),
           item.storageType,
@@ -102,3 +122,16 @@ export const supplyRequestSchema = (
           });
       });
     });
+
+export const storageProductSchema = (t: (key: string) => string) =>
+  z.object({
+    userId: name(t),
+    warehouseId: name(t),
+    name: name(t),
+    sku: optionalStringValidation(),
+    quantity: requiredNumberValidation({ positive: true })
+      .int()
+      .max(Number.MAX_SAFE_INTEGER),
+    unitPrice: requiredNumberValidation({ positive: true }).finite(),
+    storageType: z.nativeEnum(storageType),
+  });

@@ -5,9 +5,9 @@ const locale = {
     "Something went wrong while proceeding to the payment!",
   WAITING_PAY_ORDER_MESSAGE:
     "Opening the payment provider. Your wallet will update after payment is confirmed.",
-  ORDER_TOTAL_AMOUNT: "Topup request total amount is",
+  ORDER_TOTAL_AMOUNT: "payment total amount is",
   THIS_ORDER_IS_RELATED_TO_ANOTHER_USER:
-    "This topup request is related to other user. Please sign out and re-sign in with the correct user",
+    "This payment is related to other user. Please sign out and re-sign in with the correct user",
   THE_PROVIDED_DATA_IS_INVALID: "The provided data is invalid!",
   SOMETHING_WENT_WRONG_WHEN_GET_ORDER_DETAILS:
     "Something went wrong while getting the patyment details!",
@@ -41,7 +41,7 @@ const locale = {
   PAYMENT_ERROR_11: "Unspecified failure",
   RESET_FILTERS: "Reset filters",
   INVALID_DATE_RANGE: "Enter a valid date range",
-  LOAD_ERROR: "Could not load top-up requests",
+  LOAD_ERROR: "Could not load payments",
   USER_LOOKUP_ERROR: "Could not load merchant details",
   FILTER_REQUESTS: "Filter top-ups",
   CREATE_ERROR:
@@ -54,6 +54,6 @@ const locale = {
   CLOSE: "Close",
   DETAILS: "Details",
   PAYMENT_PENDING: "Payment is pending",
-  GO_TO_TOPUP_REQUESTS: "Go to top-up requests",
+  GO_TO_PAYMENTS: "Go to payments",
 };
 export default locale;

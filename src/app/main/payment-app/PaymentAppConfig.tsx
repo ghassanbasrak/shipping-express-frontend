@@ -23,7 +23,7 @@ export default {
   auth: authRoles.onlyUser,
   routes: [
     {
-      path: "payment/:userId/:topupRequestId/:result",
+      path: "payment/:userId/:paymentId/:result",
       element: <PaymentPage />,
     },
   ],

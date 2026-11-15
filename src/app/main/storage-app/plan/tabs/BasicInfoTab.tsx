@@ -1,3 +1,4 @@
+import StorageTypesField from "../../shared/StorageTypesField";
 import { useTranslation } from "react-i18next";
 import StorageField from "../../shared/StorageField";
 export default function BasicInfoTab({ disabled }: { disabled: boolean }) {
@@ -35,12 +36,13 @@ export default function BasicInfoTab({ disabled }: { disabled: boolean }) {
       </div>
       <StorageField
         name="featuresText"
-        label={t("ALLOWED_STORAGE_TYPES")}
+        label={t("PLAN_FEATURES")}
         type="textarea"
         required
-        helper={t("NATIVE_FEATURES_HINT")}
+        helper={t("FEATURES_HINT")}
         disabled={disabled}
       />
+      <StorageTypesField disabled={disabled} />
       <StorageField
         name="isActive"
         label={t("ACTIVE")}

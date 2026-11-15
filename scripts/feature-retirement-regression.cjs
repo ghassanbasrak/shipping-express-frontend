@@ -48,13 +48,13 @@ check(
   },
 );
 check(
-  "Merchant profiles retain verification and account flags without an authorization-request shortcut",
+  "Merchant profiles retain account authorization without retired verification controls",
   () => {
     const info = read(
       "src/app/main/merchants-app/merchant/tabs/UserInfoTab.tsx",
     );
-    assert(info.includes('to="/verify-account"'));
-    assert(info.includes('"isAuthorized"'));
+    assert(!info.includes('/verify-account'));
+    assert(info.includes('merchant.isAuthorized'));
     assert(!info.includes('t("AUTHORIZE")'));
   },
 );
@@ -88,21 +88,13 @@ check(
   },
 );
 check(
-  "Verification onboarding remains available without retired review cache tags",
+  "Verification onboarding and its API are retired",
   () => {
-    assert(
-      read("src/app/main/auth-app/AuthApi.ts").includes("submitVerification"),
-    );
     const api = read("src/app/main/auth-app/AuthApi.ts");
-    assert(api.includes('url: "v1/requests"'));
+    assert(!api.includes("submitVerification"));
     assert(!api.includes("VerificationRequests"));
-    const form = read(
-      "src/app/main/auth-app/verify-account/VerifyAccountPage.tsx",
-    );
-    assert(form.includes('type: "verification"'));
-    assert(form.includes('status: "pending"'));
-    assert(form.includes("uploadMedia"));
-    assert(read("src/app/auth/permissions.ts").includes("verificationStatus"));
+    assert(!fs.existsSync(path.join(root, "src/app/main/auth-app/verify-account")));
+    assert(!read("src/app/auth/permissions.ts").includes("verificationStatus"));
   },
 );
 check(

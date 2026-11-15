@@ -5,9 +5,9 @@ const locale = {
     "Something went wrong while proceeding to the payment!",
   WAITING_PAY_ORDER_MESSAGE:
     "Ödeme sağlayıcısı açılıyor. Ödeme onaylandıktan sonra cüzdan güncellenecek.",
-  ORDER_TOTAL_AMOUNT: "Topup request total amount is",
+  ORDER_TOTAL_AMOUNT: "payment total amount is",
   THIS_ORDER_IS_RELATED_TO_ANOTHER_USER:
-    "This topup request is related to other user. Please sign out and re-sign in with the correct user",
+    "This payment is related to other user. Please sign out and re-sign in with the correct user",
   THE_PROVIDED_DATA_IS_INVALID: "The provided data is invalid!",
   SOMETHING_WENT_WRONG_WHEN_GET_ORDER_DETAILS:
     "Something went wrong while getting the patyment details!",
@@ -52,6 +52,6 @@ const locale = {
   CLOSE: "Kapat",
   DETAILS: "Ayrıntılar",
   PAYMENT_PENDING: "Ödeme bekleniyor",
-  GO_TO_TOPUP_REQUESTS: "Bakiye yükleme taleplerine git",
+  GO_TO_PAYMENTS: "Bakiye yükleme taleplerine git",
 };
 export default locale;

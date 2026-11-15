@@ -273,43 +273,35 @@ async function main() {
     (await request("v1/users/me")).companyName === "Saved demo business",
     "Self profile updates",
   );
-  const payment = await request(
-    "v1/payments/paytabs",
+  const createdPayment = await request(
+    "v1/payments/moyasar",
     "post",
-    {
-      userId: "demo-affiliate",
-      amount: 100,
-      total: 115,
-      taxTotal: 15,
-      feeTotal: 0,
-    },
+    { amount: 100 },
     undefined,
     201,
   );
+  const payment = createdPayment.payment;
   check(
     payment.userId === "demo-merchant" &&
-      payment.link.startsWith("http://localhost:3000/payment/demo-merchant/"),
-    "Checkout is local and current-account owned",
+      payment.type === "topup" &&
+      createdPayment.checkoutUrl ===
+        "http://localhost:3000/demo/payment/" + payment.id,
+    "Hosted demo checkout is local and current-account owned",
   );
   const balance = (await request("v1/users/me")).balance;
-  const callback = await request("v1/payments/payment-status", "post", {
-    key: payment.transactionId,
-    keyType: "PaymentId",
-  });
+  await request("v1/payments/" + payment.id + "/check-status", "post", {});
   check(
-    callback.Data.CustomerReference === payment.id &&
-      callback.Data.InvoiceStatus === "Paid",
-    "Local gateway callback",
+    (await request("v1/users/me")).balance === balance,
+    "Pending invoice does not credit wallet",
   );
-  await request(`v1/payments/${payment.id}`, "patch", {
-    status: "success",
-    transactionId: payment.transactionId,
+  await request("v1/payments/" + payment.id + "/demo-complete", "post", {
+    paymentMethodType: "visa",
   });
-  await request(`v1/payments/${payment.id}/check-status`, "post", {});
-  await request(`v1/payments/${payment.id}`, "patch", { status: "success" });
+  await request("v1/payments/" + payment.id + "/check-status", "post", {});
+  await request("v1/payments/" + payment.id + "/check-status", "post", {});
   check(
     (await request("v1/users/me")).balance === balance + 100,
-    "Repeated payment confirmation credits once",
+    "Repeated invoice verification credits once",
   );
   const form = {
     shippingCompanyId: "demo-carrier-1",

@@ -15,12 +15,14 @@ export default function StorageHeader({
   description,
   actions,
   toolbar,
+  search,
   back = "/storage",
 }: {
   title: string;
   description?: string;
   actions?: ReactNode;
   toolbar?: ReactNode;
+  search?: ReactNode;
   back?: string | false;
 }) {
   const { t } = useTranslation("storageApp"),
@@ -52,7 +54,9 @@ export default function StorageHeader({
         </FeatureHeaderHeading>
         <FeatureHeaderActions>{actions}</FeatureHeaderActions>
       </FeatureHeaderRow>
-      {toolbar && <FeatureHeaderToolbar>{toolbar}</FeatureHeaderToolbar>}
+      {(toolbar || search) && (
+        <FeatureHeaderToolbar search={search}>{toolbar}</FeatureHeaderToolbar>
+      )}
     </FeatureHeader>
   );
 }

@@ -15,10 +15,10 @@ import FuseSvgIcon from "@fuse/core/FuseSvgIcon";
 import { useAppSelector } from "app/store/hooks";
 import { selectUser } from "src/app/auth/user/store/userSlice";
 import {
-  useGetStorageSubscriptionQuery,
   useGetWarehousesQuery,
   useGetStorageProductsQuery,
 } from "../../../storage-app/StorageApi";
+import { useGetStorageSubscriptionQuery } from "../../../storage-subscriptions-app/StorageSubscriptionsApi";
 import { hasActiveStorageSubscription } from "../../../storage-app/Utils";
 import { storageEnabled } from "../../../storage-app/storageConfig";
 import WarehouseMap from "../../../storage-app/shared/WarehouseMap";
@@ -137,7 +137,7 @@ export default function WarehouseFulfillment({
         });
     });
   }, [products.currentData, user.id, form.warehouseId, setValue, getValues]);
-  if (!enabled) return null;
+  if (!enabled || (!active && !isWarehouse)) return null;
   const warehouse = warehouses.currentData?.find(
       (row) => row.id === form.warehouseId,
     ),
@@ -193,15 +193,17 @@ export default function WarehouseFulfillment({
           testId="fulfillment-external"
           onClick={() => chooseSource("external")}
         />
-        <ShipmentChoiceTile
-          title={t("WAREHOUSE_SOURCE")}
-          hint={t("WAREHOUSE_SOURCE_HINT")}
-          icon="heroicons-outline:cube"
-          active={isWarehouse}
-          disabled={disabled || !active}
-          testId="fulfillment-warehouse"
-          onClick={() => chooseSource("warehouse")}
-        />
+        {active && (
+          <ShipmentChoiceTile
+            title={t("WAREHOUSE_SOURCE")}
+            hint={t("WAREHOUSE_SOURCE_HINT")}
+            icon="heroicons-outline:cube"
+            active={isWarehouse}
+            disabled={disabled || !active}
+            testId="fulfillment-warehouse"
+            onClick={() => chooseSource("warehouse")}
+          />
+        )}
       </div>
       {!active && (
         <Alert
@@ -266,7 +268,7 @@ export default function WarehouseFulfillment({
           />
           {warehouse && (
             <Paper variant="outlined" className="p-16 rounded-12 space-y-12">
-              <Typography>{warehouse.address}</Typography>
+              <Typography>{warehouse.pickup?.street}</Typography>
               <WarehouseMap address={warehouse.mapAddress} />
               <Typography className="text-13" color="text.secondary">
                 {t("AUTOMATIC_PICKUP_HINT")}

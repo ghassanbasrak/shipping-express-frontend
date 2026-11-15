@@ -19,6 +19,7 @@ import {
   storageError,
   warehouseSaveValues,
   warehousePickupWasSaved,
+  storageTypesWereSaved,
 } from "../Utils";
 import WarehouseModel from "../models/WarehouseModel";
 import { warehouseSchema } from "../models/StorageSchemas";
@@ -73,6 +74,8 @@ function WarehouseEditor() {
       savedId.current = result.id;
       if (!warehousePickupWasSaved(result, data))
         throw new Error(t("PICKUP_SAVE_UNSUPPORTED"));
+      if (!storageTypesWereSaved(result.storageTypes, data.storageTypes))
+        throw new Error(t("STORAGE_TYPES_NOT_SAVED"));
       navigate("/storage/warehouses", { replace: true });
     } catch (e) {
       setError(storageError(e, t("SAVE_ERROR")));

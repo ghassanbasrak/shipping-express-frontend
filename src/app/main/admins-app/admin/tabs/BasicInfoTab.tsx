@@ -1,3 +1,4 @@
+import CustomPhoneNumber from "app/shared-components/custom-phone-number/CustomPhoneNumber";
 import { MenuItem, TextField, Typography } from "@mui/material";
 import { Controller, useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -37,12 +38,12 @@ export default function BasicInfoTab({
         inputProps={{ dir: "ltr" }}
         value={values.email || ""}
       />
-      <TextField
-        fullWidth
-        disabled
+      <CustomPhoneNumber
+        name="phone"
         label={t("PHONE_NUMBER")}
-        inputProps={{ dir: "ltr" }}
-        value={values.phone || ""}
+        disabled
+        required={false}
+        className="w-full"
       />
       <Controller
         name="role"

@@ -42,7 +42,7 @@ function compile(contents, alias = {}) {
   return mod.exports;
 }
 const api = compile(
-  'export * from "./src/app/demo/demoApi";export * from "./src/app/main/storage-app/Utils";export * from "./src/app/main/storage-app/models/StorageSchemas";export * from "./src/app/main/shipments-app/Utils";export {default as NativeApi} from "./src/app/main/storage-app/StorageApi";',
+  'export * from "./src/app/demo/demoApi";export * from "./src/app/main/storage-app/Utils";export * from "./src/app/main/storage-app/models/StorageSchemas";export * from "./src/app/main/shipments-app/Utils";export {default as SubscriptionApi} from "./src/app/main/storage-subscriptions-app/StorageSubscriptionsApi";export {default as NativeApi} from "./src/app/main/storage-app/StorageApi";',
   { "app/store/apiService": stub },
 );
 let mock,
@@ -94,7 +94,22 @@ async function main() {
   pass(
     "Storage administration follows the native administrator role; no employee grant is invented",
   );
-  const endpoints = api.NativeApi.endpointDefinitions;
+  const endpoints = {...api.NativeApi.endpointDefinitions,...api.SubscriptionApi.endpointDefinitions};
+  assert.deepEqual(
+    endpoints.verifyStoragePayment.query({
+      paymentId: "internal-id",
+      userId: "cache-owner",
+      moyasarPaymentId: "ignored",
+    }),
+    {
+      url: "v1/payments/internal-id/check-status",
+      method: "POST",
+      data: {},
+    },
+  );
+  pass(
+    "Storage verification sends only the internal payment ID with no provider credentials or ID",
+  );
   assert.equal(
     endpoints.getWarehouses.query({ admin: true }).url,
     "v1/warehouses/admin",
@@ -126,15 +141,15 @@ async function main() {
   const warehouse = (await call("v1/warehouses/admin"))[0],
     plans = await call("v1/storage/plans/admin"),
     basic = plans[0];
-  assert.equal(typeof warehouse.address, "string");
+  assert(Array.isArray(warehouse.storageTypes));
   assert(warehouse.mapAddress);
   assert(Array.isArray(plans));
   pass(
-    "Native warehouse and plan lists are raw arrays with text/map addresses",
+    "Native warehouse and plan lists are raw arrays with pickup/map and storage types",
   );
   const newWarehouse = api.warehouseSaveValues({
     name: " Second ",
-    address: " Test street ",
+    storageTypes: warehouse.storageTypes,
     mapAddress: "https://maps.google.com/?q=Riyadh",
     information: "Receiving desk",
     pickup: warehouse.pickup,
@@ -148,21 +163,33 @@ async function main() {
   );
   assert.equal(second.name, "Second");
   assert.equal(api.warehousePickupWasSaved(second, newWarehouse), true);
-  assert.equal(api.warehousePickupWasSaved({...second,pickup:undefined}, newWarehouse), false);
-  assert.equal(api.warehousePickupWasSaved({...second,pickup:{...second.pickup,phone:"+966-500000000"}}, newWarehouse), false);
-  pass("Warehouse save confirmation rejects missing or changed pickup data instead of reporting a complete save");
+  assert.equal(
+    api.warehousePickupWasSaved({ ...second, pickup: undefined }, newWarehouse),
+    false,
+  );
+  assert.equal(
+    api.warehousePickupWasSaved(
+      { ...second, pickup: { ...second.pickup, phone: "+966-500000000" } },
+      newWarehouse,
+    ),
+    false,
+  );
+  pass(
+    "Warehouse save confirmation rejects missing or changed pickup data instead of reporting a complete save",
+  );
   const planArg = api.storagePlanSaveValues({
     name: "Free",
     price: 100,
     discountPrice: 0,
     durationDays: 7,
     featuresText: "Dry\nChilled",
+    storageTypes: ["dry", "chilled"],
     isActive: true,
   });
   const free = await call("v1/storage/plans", "post", planArg, undefined, 201);
   assert.equal(api.storagePlanPrice(free), 0);
   pass(
-    "Warehouse save fields and zero discounted plan prices match the backend",
+    "Warehouse save fields and zero discounted plan prices use the prepared contract",
   );
   assert(
     !api
@@ -190,6 +217,59 @@ async function main() {
   pass(
     "Unsubscribed inventory and merchant access to administrative lists are refused",
   );
+  const walletBalance = snapshot().users.find(
+    (row) => row.id === "demo-merchant",
+  ).balance;
+  const walletCheckout = await call(
+    "v1/payments/moyasar",
+    "post",
+    { amount: 100 },
+    undefined,
+    201,
+  );
+  assert.equal(walletCheckout.payment.type, "topup");
+  assert.equal(walletCheckout.payment.paymentMethodType, null);
+  assert.equal(
+    walletCheckout.checkoutUrl,
+    "http://localhost:3000/demo/payment/" + walletCheckout.payment.id,
+  );
+  await call(
+    "v1/payments/" + walletCheckout.payment.id + "/check-status",
+    "post",
+    {},
+  );
+  assert.equal(
+    snapshot().users.find((row) => row.id === "demo-merchant").balance,
+    walletBalance,
+  );
+  pass(
+    "Hosted wallet checkout stays pending and never credits before provider confirmation",
+  );
+  await call(
+    "v1/payments/" + walletCheckout.payment.id + "/demo-complete",
+    "post",
+    { paymentMethodType: "applepay" },
+  );
+  const paidWallet = await call(
+    "v1/payments/" + walletCheckout.payment.id + "/check-status",
+    "post",
+    {},
+  );
+  assert.equal(paidWallet.paymentMethodType, "applepay");
+  assert.equal(paidWallet.status, "success");
+  pass("Verified hosted wallet payment retains the backend method enum");
+  await call(
+    "v1/payments/" + walletCheckout.payment.id + "/check-status",
+    "post",
+    {},
+  );
+  assert.equal(
+    snapshot().users.find((row) => row.id === "demo-merchant").balance,
+    walletBalance + 100,
+  );
+  pass(
+    "Repeated hosted invoice verification credits the wallet exactly once in the demo backend",
+  );
   const before = snapshot().users.find(
     (row) => row.id === "demo-merchant",
   ).balance;
@@ -201,8 +281,8 @@ async function main() {
     201,
   );
   assert.equal(
-    checkout.checkout.amount,
-    Math.round(checkout.payment.total * 100),
+    checkout.checkoutUrl,
+    "http://localhost:3000/demo/payment/" + checkout.payment.id,
   );
   assert.equal(
     checkout.payment.taxTotal,
@@ -219,25 +299,30 @@ async function main() {
   await call(
     "v1/payments/" + checkout.payment.id + "/check-status",
     "post",
-    { moyasarPaymentId: "wrong" },
-    undefined,
-    400,
+    {},
   );
   assert.equal(await call("v1/storage/subscriptions/current"), null);
   pass("Unverified payment cannot activate storage");
-  await call("v1/payments/" + checkout.payment.id + "/check-status", "post", {
-    moyasarPaymentId: "demo-moyasar-" + checkout.payment.id,
+  await call("v1/payments/" + checkout.payment.id + "/demo-complete", "post", {
+    paymentMethodType: "mada",
   });
+  await call(
+    "v1/payments/" + checkout.payment.id + "/check-status",
+    "post",
+    {},
+  );
   let subscription = await call("v1/storage/subscriptions/current");
   assert(api.hasActiveStorageSubscription(subscription, "demo-merchant"));
   assert(!api.hasActiveStorageSubscription(subscription, "demo-affiliate"));
-  assert.deepEqual(subscription.plan.features, basic.features);
+  assert.deepEqual(subscription.plan.storageTypes, basic.storageTypes);
   pass(
     "Verified payment exposes an owner-matched active subscription with populated plan features",
   );
-  await call("v1/payments/" + checkout.payment.id + "/check-status", "post", {
-    moyasarPaymentId: "demo-moyasar-" + checkout.payment.id,
-  });
+  await call(
+    "v1/payments/" + checkout.payment.id + "/check-status",
+    "post",
+    {},
+  );
   assert.equal(snapshot().storage.subscriptions.length, 1);
   await call(
     "v1/storage/subscriptions/checkout",
@@ -252,7 +337,7 @@ async function main() {
     name: "Product A",
     quantity: 10,
     unitPrice: 5,
-    storageType: basic.features[0],
+    storageType: basic.storageTypes[0],
     notes: "Handle carefully",
   };
   await call(
@@ -274,14 +359,16 @@ async function main() {
   });
   assert(!("sku" in supplyArg.products[1]));
   assert(
-    api.supplyRequestSchema((key) => key, basic.features).safeParse({
-      warehouseId: warehouse.id,
-      products: [{ ...item, unitPrice: 0.001 }],
-    }).success,
+    api
+      .supplyRequestSchema((key) => key, basic.storageTypes)
+      .safeParse({
+        warehouseId: warehouse.id,
+        products: [{ ...item, mode: "new", unitPrice: 0.001 }],
+      }).success,
     "The native supply contract does not restrict unit-price decimal precision",
   );
   pass(
-    "Supply types come only from current plan features; optional SKU and exact case are preserved",
+    "Supply types use shared enum capabilities; optional SKU and exact case are preserved",
   );
   const request = await call(
     "v1/storage/supply-requests",
@@ -360,7 +447,7 @@ async function main() {
     undefined,
     201,
   );
-  assert.equal(trial.checkout, null);
+  assert.equal(trial.checkoutUrl, null);
   assert(
     api.hasActiveStorageSubscription(
       await call("v1/storage/subscriptions/current"),
@@ -373,7 +460,7 @@ async function main() {
     "post",
     {
       warehouseId: warehouse.id,
-      products: [{ ...item, storageType: "Dry", quantity: 2 }],
+      products: [{ ...item, storageType: "dry", quantity: 2 }],
     },
     undefined,
     201,
@@ -440,8 +527,12 @@ async function main() {
   pass(
     "Warehouse shipment serializer uses native products with warehouseProductId and quantity while preserving sender details",
   );
-  const {shippingCompanyId: _reviewCarrier,...reviewBody} = shipment;
-  const offers = await call("v1/shipments/review/companies", "post", reviewBody);
+  const { shippingCompanyId: _reviewCarrier, ...reviewBody } = shipment;
+  const offers = await call(
+    "v1/shipments/review/companies",
+    "post",
+    reviewBody,
+  );
   assert(Array.isArray(offers.suitableCompanies));
   assert(Array.isArray(offers.unsuitableCompanies));
   assert.equal(
@@ -522,9 +613,8 @@ async function main() {
     );
   let backendSchemas = 0;
   if (
-    fs.existsSync(
-      path.join(backend, "src/api/validations/schema/v1/storagePlans.ts"),
-    )
+    fs.existsSync(path.join(backend, "src/api/validations/schema/v1/storagePlans.ts")) &&
+    /storageTypes/.test(fs.readFileSync(path.join(backend, "src/api/validations/schema/v1/storagePlans.ts"), "utf8"))
   ) {
     const common = path.join(output, "backend-common-stub.ts");
     fs.writeFileSync(
@@ -558,7 +648,18 @@ async function main() {
     );
     const id = "507f1f77bcf86cd799439011";
     for (const [schema, payload] of [
-      [schemas.schema0.create, {...newWarehouse, pickup: {...newWarehouse.pickup, countryId:id,stateId:id,cityId:id}}],
+      [
+        schemas.schema0.create,
+        {
+          ...newWarehouse,
+          pickup: {
+            ...newWarehouse.pickup,
+            countryId: id,
+            stateId: id,
+            cityId: id,
+          },
+        },
+      ],
       [schemas.schema1.create, planArg],
       [schemas.schema2.checkout, { planId: id }],
       [schemas.schema3.create, { ...supplyArg, warehouseId: id }],

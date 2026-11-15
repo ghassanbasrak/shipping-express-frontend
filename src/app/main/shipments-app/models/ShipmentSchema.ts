@@ -1,3 +1,4 @@
+import { storageSubscriptionStatus } from "../../storage-subscriptions-app/Utils";
 import { z } from "zod";
 import { TFunction } from "i18next";
 import IShipment, { IShipmentDetails } from "./IShipment";
@@ -10,10 +11,10 @@ import {
 import { shipmentVolumetricWeight } from "../Utils";
 import type IStorageProduct from "../../storage-app/models/IStorageProduct";
 import type IWarehouse from "../../storage-app/models/IWarehouse";
-import type IStorageSubscription from "../../storage-app/models/IStorageSubscription";
+import type IStorageSubscription from "../../storage-subscriptions-app/models/IStorageSubscription";
 export type ShipmentWarehouse = Pick<
   IWarehouse,
-  "id" | "name" | "address" | "mapAddress" | "pickup"
+  "id" | "name" | "mapAddress" | "pickup"
 >;
 export type ShipmentWarehouseItem = {
   productId: string;
@@ -119,7 +120,7 @@ export const shipmentSchema = (
         if (
           mode !== "create" ||
           !subscription ||
-          subscription.status !== "active" ||
+          subscription.status !== storageSubscriptionStatus.active ||
           !Number.isFinite(Date.parse(subscription.endsAt)) ||
           Date.parse(subscription.endsAt) <= Date.now()
         )

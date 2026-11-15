@@ -14,12 +14,36 @@ import {
   toShipmentStatusColor,
   toShipmentPaymentStatusTitle,
   toShipmentPaymentStatusColor,
+  canUpdateMerchantDues,
+  canSettleMerchantDue,
+  canReturnMerchantDue,
 } from "../Utils";
-import MerchantDueActions from "./MerchantDueActions";
+import type { ShipmentOperation } from "../../shipments-app/shared-components/ShipmentOperations";
+export type MerchantDueTableRow = IMerchantDue & {
+  actionAccess: Record<string, boolean>;
+};
+export const toMerchantDueTableRow = (
+  row: IMerchantDue,
+  user: User,
+): MerchantDueTableRow => ({
+  ...row,
+  actionAccess: {
+    tracking:
+      !!row.shipment.trackingUrl &&
+      (user.role !== "user" || row.shipment.status !== "failed"),
+    settle: canSettleMerchantDue(user, row),
+    returned: canReturnMerchantDue(user, row),
+    weight: canUpdateMerchantDues(user),
+    processing:
+      canUpdateMerchantDues(user) &&
+      ["canceled", "failed"].includes(row.shipment.status),
+  },
+});
 export default function merchantDueFields(
   t: TFunction,
   user: User,
-): TableFieldProps<IMerchantDue>[] {
+  onOperation?: (row: IMerchantDue, operation: ShipmentOperation) => void,
+): TableFieldProps<MerchantDueTableRow>[] {
   return [
     {
       id: "shipment.trackingNumber",
@@ -157,7 +181,43 @@ export default function merchantDueFields(
       type: TableDataTypes.actions,
       flex: 1.2,
       minWidth: 120,
-      renderCell: ({ row }) => <MerchantDueActions row={row} />,
+      exportable: false,
+      actions: [
+        {
+          title: t("TRACK"),
+          link: true,
+          linkGetter: (row) => row.shipment.trackingUrl,
+          target: "_blank",
+          conditions: [{ id: "actionAccess.tracking", equalsTo: true }],
+        },
+        ...(["settle", "returned", "weight"] as ShipmentOperation[]).map(
+          (operation) => ({
+            title: t(
+              operation === "settle"
+                ? "SETTLEMENT"
+                : operation === "returned"
+                  ? "CONVERT_TO_RETURNED"
+                  : "DISCOUNT_EXTRA_WEIGHT",
+            ),
+            conditions: [{ id: `actionAccess.${operation}`, equalsTo: true }],
+            onActionClick: (row: MerchantDueTableRow) =>
+              onOperation?.(row, operation),
+          }),
+        ),
+        ...["failed", "canceled"].map((status) => ({
+          title: t(
+            status === "failed"
+              ? "REACTIVATE_SHIPMENT"
+              : "CONVERT_TO_PROCESSING",
+          ),
+          conditions: [
+            { id: "actionAccess.processing", equalsTo: true },
+            { id: "shipment.status", equalsTo: status },
+          ],
+          onActionClick: (row: MerchantDueTableRow) =>
+            onOperation?.(row, "processing"),
+        })),
+      ],
     },
   ];
 }

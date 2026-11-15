@@ -603,13 +603,13 @@ async function escape() {
   await sleep(100);
 }
 async function list(scope = "all") {
-  await navigate("/topup-requests/" + scope);
+  await navigate("/payments/" + scope);
   await until(
-    exists("[data-testid=topup-requests-table]"),
+    exists("[data-testid=payments-table]"),
     "bank transfer list",
   );
   await until(
-    "Boolean(document.querySelector('[role=row][data-id]')) || document.body.innerText.includes('There are no topup requests')",
+    "Boolean(document.querySelector('[role=row][data-id]')) || document.body.innerText.includes('There are no payments')",
     "rows or empty list",
   );
 }
@@ -623,7 +623,7 @@ async function bank(value) {
 const patches = () => calls.filter((x) => x.method === "PATCH");
 
 async function detail(id = "new", owner = "all") {
-  await navigate("/topup-requests/" + owner + "/" + id);
+  await navigate("/payments/" + owner + "/" + id);
   await until(exists("input[name=amount]"), "top-up detail");
 }
 async function upload() {

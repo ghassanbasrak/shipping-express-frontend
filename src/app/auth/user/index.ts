@@ -21,6 +21,7 @@ export type User = {
   isAuthorized?: boolean;
   isBlocked?: boolean;
   isAffiliate?: boolean;
+  /** Historical API fields only; account access never depends on verification. */
   emailVerified?: boolean;
   phoneVerified?: boolean;
   verificationStatus?: string;

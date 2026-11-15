@@ -76,7 +76,6 @@ const locale = {
   CASH_ON_DELIVERY_SERVICE_PRICE: "Cash-on-delivery service price",
   APPEARANCE_CONFIG: "Appearance Configuration",
   SUMMARY: "Summary",
-  PACKAGE_REQUESTS: "Package Requests",
   totalEarnings: "Total Earnings",
   VIEW_SHIPMENTS: "View Shipments",
   VIEW_PACKAGE_REQUESTS: "View Package Requests",

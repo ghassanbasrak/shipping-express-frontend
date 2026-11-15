@@ -28,7 +28,7 @@ import { getDemoUser, isDemoMode } from "src/app/demo/demoMode";
 export type JwtAuthStatus = "configuring" | "authenticated" | "unauthenticated" | "unavailable";
 export class ProfileCompletionError extends Error {
   constructor() {
-    super("Profile completion failed after phone verification");
+    super("Account created; profile completion must be retried");
     this.name = "ProfileCompletionError";
   }
 }
@@ -53,27 +53,14 @@ export type JwtAuthContextType = {
     code: string,
     messageId: string,
   ) => Promise<User>;
-  signUpWithPhoneNumber: (
-    phone: string,
-    code: string,
-    messageId: string,
-    profile: Profile,
-  ) => Promise<User>;
+  signUpWithEmailAndPassword: (profile: Profile) => Promise<User>;
   completeSignUpProfile: (profile: Profile) => Promise<User>;
   sendOtpCode: (
     phone: string,
-    type?: "signIn" | "signUp" | "link",
-    email?: string,
+    type?: "signIn",
   ) => Promise<string>;
   updateMe: (profile: Profile) => Promise<User>;
   getUser: () => Promise<User>;
-  linkWithPhoneNumber: (
-    phone: string,
-    code: string,
-    messageId: string,
-  ) => Promise<User>;
-  sendEmailVerificationCode: (email: string) => Promise<void>;
-  linkWithEmail: (email: string, code: string) => Promise<User>;
   requestResetCode: (email: string) => Promise<void>;
   verifyResetCode: (
     email: string,
@@ -130,7 +117,7 @@ function JwtAuthProvider({ children }: { children: React.ReactNode }) {
   );
   const completeSignUpProfile = useCallback(
     async (profile: Profile) => {
-      const { affiliateCode, ...body } = profile;
+      const { affiliateCode, password: _password, ...body } = profile;
       const next = await updateMe(body);
       if (affiliateCode)
         await axios.post(config.applyAffiliateCode, { affiliateCode }).catch(() => {});
@@ -189,65 +176,33 @@ function JwtAuthProvider({ children }: { children: React.ReactNode }) {
     },
     [finishLogin, verifyPhone],
   );
-  const signUpWithPhoneNumber = useCallback(
-    async (
-      phone: string,
-      code: string,
-      messageId: string,
-      profile: Profile,
-    ) => {
+  const signUpWithEmailAndPassword = useCallback(
+    async (profile: Profile) => {
       const version = ++revision.current;
-      const data = await verifyPhone(phone, code, messageId);
+      const { affiliateCode, ...body } = profile;
+      const { data } = await axios.post<LoginResponse>(config.signUp, {
+        ...body,
+        ...(affiliateCode ? { affiliateCode } : {}),
+      });
       if (version !== revision.current) throw new Error("Session changed");
-      setSession(null);
-      dispatch(apiService.util.resetApiState());
-      setSession(data.accessToken, data.refreshToken);
+      // Retain the created account/session if the separate profile save fails.
+      // /register can retry PATCH without ever repeating account creation.
+      finishLogin(data);
       try {
-        return await completeSignUpProfile(profile);
+        return await completeSignUpProfile(body);
       } catch {
-        // Keep the verified session so profile PATCH can be retried without OTP.
         throw new ProfileCompletionError();
       }
     },
-    [verifyPhone, completeSignUpProfile, dispatch],
+    [finishLogin, completeSignUpProfile],
   );
   const sendOtpCode = useCallback(
-    async (
-      phone: string,
-      type: "signIn" | "signUp" | "link" = "signIn",
-      email?: string,
-    ) => {
-      const { data } = await axios.post(
-        type === "link" ? config.sendPhoneCode : config.sendOtpCode,
-        type === "link" ? { phone } : { phone, type, email },
-      );
-      if (!data.msegatId) throw new Error("Unable to send verification code");
+    async (phone: string, type: "signIn" = "signIn") => {
+      const { data } = await axios.post(config.sendOtpCode, { phone, type });
+      if (!data.msegatId) throw new Error("Unable to send sign-in code");
       return String(data.msegatId);
     },
     [],
-  );
-  const linkWithPhoneNumber = useCallback(
-    async (phone: string, code: string, messageId: string) => {
-      const data = await verifyPhone(phone, code, messageId);
-      setSession(data.accessToken, data.refreshToken);
-      return updateMe({ phone, phoneVerified: true });
-    },
-    [verifyPhone, updateMe],
-  );
-  const sendEmailVerificationCode = useCallback(async (email: string) => {
-    await axios.post(config.sendEmailCode, { email });
-  }, []);
-  const linkWithEmail = useCallback(
-    async (email: string, code: string) => {
-      const { data } = await axios.post(config.verifyEmailCode, {
-        email,
-        code,
-      });
-      if (!data.isVerified || !data.user)
-        throw new Error("Invalid verification code");
-      return updateMe({ email, emailVerified: true });
-    },
-    [updateMe],
   );
   const requestResetCode = useCallback(async (email: string) => {
     await axios.post(config.requestResetCode, { email });
@@ -302,14 +257,11 @@ function JwtAuthProvider({ children }: { children: React.ReactNode }) {
       retrySession,
       signInWithEmailAndPassword,
       signInWithPhoneNumber,
-      signUpWithPhoneNumber,
+      signUpWithEmailAndPassword,
       completeSignUpProfile,
       sendOtpCode,
       updateMe,
       getUser,
-      linkWithPhoneNumber,
-      sendEmailVerificationCode,
-      linkWithEmail,
       requestResetCode,
       verifyResetCode,
     }),
@@ -320,14 +272,11 @@ function JwtAuthProvider({ children }: { children: React.ReactNode }) {
       retrySession,
       signInWithEmailAndPassword,
       signInWithPhoneNumber,
-      signUpWithPhoneNumber,
+      signUpWithEmailAndPassword,
       completeSignUpProfile,
       sendOtpCode,
       updateMe,
       getUser,
-      linkWithPhoneNumber,
-      sendEmailVerificationCode,
-      linkWithEmail,
       requestResetCode,
       verifyResetCode,
     ],

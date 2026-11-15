@@ -67,9 +67,7 @@ const locale = {
   NEXT_STEPS: "حافظ على تقدم أعمالك",
   NEXT_STEPS_HINT: "خدمات تساعدك في أعمال الشحن اليومية",
   MY_ACCOUNT: "حسابي",
-  MY_ACCOUNT_HINT: "عرض البيانات والمستندات والأسعار",
-  PACKAGING_REQUESTS: "مستلزمات التغليف",
-  PACKAGING_HINT: "طلب مستلزمات عمليات التسليم القادمة",
+  MY_ACCOUNT_HINT: "عرض البيانات والأسعار",
   STAFF_WORKSPACE: "مساحة الفريق",
   STAFF_INTRO: "عملك اليومي منظم حسب الصلاحيات الممنوحة لحسابك.",
   ADMINISTRATOR: "مدير النظام",
@@ -86,6 +84,5 @@ const locale = {
   STAFF_COD: "مراجعة نشاط الدفع عند الاستلام",
   WITHDRAWALS: "طلبات السحب",
   STAFF_REQUESTS: "مراجعة طلبات السحب",
-  STAFF_PACKAGING: "مراجعة طلبات التغليف",
 };
 export default locale;

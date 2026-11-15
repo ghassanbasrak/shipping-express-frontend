@@ -1,3 +1,4 @@
+import CurrencyAdornment from "app/shared-components/currency-adornment/CurrencyAdornment";
 import {
   Checkbox,
   FormControlLabel,
@@ -54,6 +55,11 @@ export default function StorageField({
             required={required}
             disabled={disabled}
             label={label}
+            InputProps={
+              /(?:price|amount|balance|fee|cost|total)$/i.test(name)
+                ? { endAdornment: <CurrencyAdornment /> }
+                : undefined
+            }
             select={!!children}
             multiline={type === "textarea"}
             rows={type === "textarea" ? 3 : undefined}

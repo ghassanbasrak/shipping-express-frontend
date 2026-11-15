@@ -1,8 +1,8 @@
+import { supplyStatuses, type StorageType, type SupplyStatus } from "./Utils";
 import { apiService as api } from "app/store/apiService";
 import type IWarehouse from "./models/IWarehouse";
 import type { IWarehousePickup } from "./models/IWarehouse";
 import type IStoragePlan from "./models/IStoragePlan";
-import type IStorageSubscription from "./models/IStorageSubscription";
 import type ISupplyRequest from "./models/ISupplyRequest";
 import type IStorageProduct from "./models/IStorageProduct";
 export const addTagTypes = [
@@ -11,6 +11,9 @@ export const addTagTypes = [
   "StorageSubscription",
   "StorageSupplies",
   "StorageProducts",
+  "Payments",
+  "Payment",
+  "PaymentsUser",
 ] as const;
 const StorageApi = api.enhanceEndpoints({ addTagTypes }).injectEndpoints({
   endpoints: (build) => ({
@@ -60,32 +63,6 @@ const StorageApi = api.enhanceEndpoints({ addTagTypes }).injectEndpoints({
       }),
       invalidatesTags: ["StoragePlans"],
     }),
-    getStorageSubscription: build.query<IStorageSubscription | null, string>({
-      query: () => ({ url: "v1/storage/subscriptions/current" }),
-      providesTags: (_, __, id) => [{ type: "StorageSubscription", id }],
-    }),
-    subscribeStorage: build.mutation<
-      StorageCheckoutResponse,
-      { planId: string }
-    >({
-      query: (data) => ({
-        url: "v1/storage/subscriptions/checkout",
-        method: "POST",
-        data,
-      }),
-      invalidatesTags: ["StorageSubscription"],
-    }),
-    verifyStoragePayment: build.mutation<
-      StoragePaymentResponse,
-      { paymentId: string; moyasarPaymentId: string }
-    >({
-      query: ({ paymentId, moyasarPaymentId }) => ({
-        url: `v1/payments/${paymentId}/check-status`,
-        method: "POST",
-        data: { moyasarPaymentId },
-      }),
-      invalidatesTags: ["StorageSubscription"],
-    }),
     getSupplyRequests: build.query<
       ISupplyRequest[],
       { admin?: boolean; userId?: string }
@@ -105,6 +82,21 @@ const StorageApi = api.enhanceEndpoints({ addTagTypes }).injectEndpoints({
       }),
       invalidatesTags: ["StorageSupplies"],
     }),
+    updateStorageProduct: build.mutation<
+      IStorageProduct,
+      { id: string; data: UpdateStorageProductArg }
+    >({
+      query: ({ id, data }) => ({
+        url: `v1/storage/products/admin/${id}`,
+        method: "PATCH",
+        data,
+      }),
+      invalidatesTags: [
+        "StorageProducts",
+        "StorageWarehouses",
+        "StorageSupplies",
+      ],
+    }),
     reviewSupplyRequest: build.mutation<ISupplyRequest, ReviewSupplyArg>({
       query: ({ id, status }) => ({
         url: `v1/storage/supply-requests/admin/${id}/status`,
@@ -115,11 +107,19 @@ const StorageApi = api.enhanceEndpoints({ addTagTypes }).injectEndpoints({
     }),
     getStorageProducts: build.query<
       IStorageProduct[],
-      { warehouseId?: string; userId: string }
+      {
+        warehouseId?: string;
+        userId: string;
+        admin?: boolean;
+        includeEmpty?: boolean;
+      }
     >({
-      query: ({ warehouseId }) => ({
-        url: "v1/storage/products",
-        params: warehouseId ? { warehouseId } : undefined,
+      query: ({ warehouseId, admin, includeEmpty }) => ({
+        url: admin ? "v1/storage/products/admin" : "v1/storage/products",
+        params: {
+          ...(warehouseId ? { warehouseId } : {}),
+          ...(includeEmpty ? { includeEmpty: true } : {}),
+        },
       }),
       providesTags: ["StorageProducts"],
     }),
@@ -127,7 +127,7 @@ const StorageApi = api.enhanceEndpoints({ addTagTypes }).injectEndpoints({
 });
 export type WarehouseSaveArg = {
   name: string;
-  address: string;
+  storageTypes: StorageType[];
   mapAddress?: string;
   information?: string;
   pickup: IWarehousePickup;
@@ -138,43 +138,35 @@ export type StoragePlanSaveArg = {
   discountPrice?: number;
   durationDays: number;
   features: string[];
+  storageTypes: StorageType[];
   isActive: boolean;
 };
 export type CreateSupplyArg = {
   warehouseId: string;
-  products: {
-    name: string;
-    sku?: string;
-    quantity: number;
-    notes?: string;
-    unitPrice: number;
-    storageType: string;
-  }[];
+  products: (
+    | { warehouseProductId: string; quantity: number; unitPrice?: number }
+    | {
+        name: string;
+        sku?: string;
+        quantity: number;
+        notes?: string;
+        unitPrice: number;
+        storageType: StorageType;
+      }
+  )[];
+};
+export type UpdateStorageProductArg = {
+  userId: string;
+  warehouseId: string;
+  name: string;
+  sku?: string;
+  quantity: number;
+  unitPrice: number;
+  storageType: StorageType;
 };
 export type ReviewSupplyArg = {
   id: string;
-  status: "approved" | "received" | "rejected";
-};
-export type StoragePaymentResponse = {
-  id: string;
-  userId: string;
-  storagePlanId?: string;
-  amount: number;
-  taxTotal: number;
-  total: number;
-  status: "pending" | "success" | "failed";
-};
-export type StorageCheckoutResponse = {
-  payment: StoragePaymentResponse;
-  checkout: {
-    publishable_api_key: string;
-    amount: number;
-    currency: "SAR";
-    description: string;
-    callback_url: string;
-    methods: ["creditcard"];
-  } | null;
-  subscription?: IStorageSubscription;
+  status: Exclude<SupplyStatus, typeof supplyStatuses.pending>;
 };
 export const {
   useGetWarehousesQuery,
@@ -186,13 +178,10 @@ export const {
   useLazyGetStoragePlanQuery,
   useCreateStoragePlanMutation,
   useUpdateStoragePlanMutation,
-  useGetStorageSubscriptionQuery,
-  useLazyGetStorageSubscriptionQuery,
-  useSubscribeStorageMutation,
-  useVerifyStoragePaymentMutation,
   useGetSupplyRequestsQuery,
   useCreateSupplyRequestMutation,
   useReviewSupplyRequestMutation,
+  useUpdateStorageProductMutation,
   useGetStorageProductsQuery,
   useLazyGetStorageProductsQuery,
 } = StorageApi;

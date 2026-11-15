@@ -69,10 +69,12 @@ function App() {
    */
   const mainTheme = useSelector(selectMainTheme);
   const html = document.getElementsByTagName("html")[0];
-  html.style.fontSize = `${0.95 * 62.5}%`;
+  html.style.fontSize = `${1 * 62.5}%`;
   return (
     <>
-      <CacheProvider value={emotionCaches[langDirection === "rtl" ? "rtl" : "ltr"]}>
+      <CacheProvider
+        value={emotionCaches[langDirection === "rtl" ? "rtl" : "ltr"]}
+      >
         <FuseTheme theme={mainTheme} direction={langDirection}>
           <AppConfigProvider>
             <AuthenticationProvider>

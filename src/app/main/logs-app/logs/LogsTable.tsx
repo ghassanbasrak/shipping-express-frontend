@@ -9,7 +9,7 @@ import {
   DialogContent,
   DialogActions,
 } from "@mui/material";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import CustomTable from "app/shared-components/custom-table/CustomTable";
 import {
@@ -42,7 +42,6 @@ export default function LogsTable() {
   const { t } = useTranslation("logsApp"),
     dispatch = useAppDispatch(),
     user = useAppSelector(selectUser),
-    navigate = useNavigate(),
     filters = useSelector(selectLogsFilters) as GetLogsApiArg;
   const [ready, setReady] = useState(false),
     [raw, setRaw] = useState<ILog>();
@@ -83,12 +82,15 @@ export default function LogsTable() {
   ]);
   const rows = useMemo(
     () =>
-      query.data?.results.map((log) =>
-        log.id ? log : { ...log, id: log._id },
-      ) || [],
+      query.data?.results.map((log) => ({
+        ...log,
+        id: log.id || log._id,
+        actionShipmentPath: logShipmentPath(log),
+        actionHasReference: !!logSnapshots(log)[0]?.reference,
+      })) || [],
     [query.data],
   );
-  const fields: TableFieldProps<ILog>[] = [
+  const fields: TableFieldProps<(typeof rows)[number]>[] = [
     {
       id: "message",
       label: t("MESSAGE"),
@@ -158,71 +160,57 @@ export default function LogsTable() {
     {
       id: "actions",
       label: t("ACTIONS"),
-      type: TableDataTypes.normal,
+      type: TableDataTypes.actions,
       flex: 1.2,
       minWidth: 120,
       exportable: false,
-      renderCell: ({ row }) => (
-        <div className="flex flex-wrap gap-4 py-8">
-          <Button
-            color="primary"
-            variant="outlined"
-            size="small"
-            onClick={() =>
-              setRaw(
-                query.data?.results.find(
-                  (log) => (log.id || log._id) === row.id,
-                ) || row,
-              )
-            }
-          >
-            {t("VIEW")}
-          </Button>
-          <Button
-            color="primary"
-            variant="outlined"
-            size="small"
-            onClick={() =>
-              navigate(`/logs/${encodeURIComponent(row.id || row._id)}`)
-            }
-          >
-            {t("DETAILS")}
-          </Button>
-          {logShipmentPath(row) &&
-            hasOperationPermission("shipments", "view", user) && (
-              <Button
-                color="primary"
-                variant="outlined"
-                size="small"
-                onClick={() => navigate(logShipmentPath(row))}
-              >
-                {t("VIEW_SHIPMENT")}
-              </Button>
-            )}
-          {logSnapshots(row)[0]?.reference &&
-            hasOperationPermission("transactions", "view", user) && (
-              <Button
-                color="primary"
-                variant="outlined"
-                size="small"
-                onClick={() => navigate("/transactions/all/wallet")}
-              >
-                {t("VIEW_TRANSACTION")}
-              </Button>
-            )}
-          {logSnapshots(row)[0]?.reference &&
-            hasOperationPermission("payments", "view", user) && (
-              <Button
-                color="primary"
-                variant="outlined"
-                size="small"
-                onClick={() => navigate("/topup-requests/all")}
-              >
-                {t("VIEW_PAYMENT")}
-              </Button>
-            )}
-        </div>
-      ),
+      actions: [
+        {
+          title: t("VIEW"),
+          color: "secondary",
+          onActionClick: (row) =>
+            setRaw(
+              query.data?.results.find(
+                (log) => (log.id || log._id) === row.id,
+              ) || row,
+            ),
+        },
+        {
+          title: t("DETAILS"),
+          link: true,
+          linkGetter: (row) => `/logs/${encodeURIComponent(row.id || row._id)}`,
+        },
+        ...(hasOperationPermission("shipments", "view", user)
+          ? [
+              {
+                title: t("VIEW_SHIPMENT"),
+                link: true,
+                linkGetter: (row) => row.actionShipmentPath,
+                conditions: [{ id: "actionShipmentPath" }],
+              },
+            ]
+          : []),
+        ...(hasOperationPermission("transactions", "view", user)
+          ? [
+              {
+                title: t("VIEW_TRANSACTION"),
+                link: true,
+                linkGetter: () => "/transactions/all/wallet",
+                conditions: [{ id: "actionHasReference", equalsTo: true }],
+              },
+            ]
+          : []),
+        ...(hasOperationPermission("payments", "view", user)
+          ? [
+              {
+                title: t("VIEW_PAYMENT"),
+                link: true,
+                linkGetter: () => "/payments/all",
+                conditions: [{ id: "actionHasReference", equalsTo: true }],
+              },
+            ]
+          : []),
+      ],
     },
   ];
   if (!permitted) return <Navigate to="/home" replace />;

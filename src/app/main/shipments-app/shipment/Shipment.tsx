@@ -16,11 +16,8 @@ import useThemeMediaQuery from "@fuse/hooks/useThemeMediaQuery";
 import { useAppSelector } from "app/store/hooks";
 import { selectUser } from "src/app/auth/user/store/userSlice";
 import { useCreateShipmentUserMutation } from "src/app/main/shipment-users-app/ShipmentUsersApi";
-import {
-  useLazyGetStorageSubscriptionQuery,
-  useLazyGetStorageProductsQuery,
-  useLazyGetWarehousesQuery,
-} from "../../storage-app/StorageApi";
+import { useLazyGetStorageProductsQuery, useLazyGetWarehousesQuery } from "../../storage-app/StorageApi";
+import { useLazyGetStorageSubscriptionQuery } from "../../storage-subscriptions-app/StorageSubscriptionsApi";
 import { hasActiveStorageSubscription } from "../../storage-app/Utils";
 import {
   useGetShipmentQuery,
@@ -778,7 +775,7 @@ export default function Shipment({
                               t("STORAGE_SELECT_WAREHOUSE")}
                           </Typography>
                           <Typography color="text.secondary">
-                            {form.warehouse?.address}
+                            {form.warehouse?.pickup?.street}
                           </Typography>
                           <Typography dir="ltr">
                             {form.warehouse?.pickup?.phone}

@@ -146,7 +146,7 @@ export default function Merchant({ forView = false }: { forView?: boolean }) {
   if (ready !== key) return <FuseLoading />;
   const tabs = forView
     ? [
-        { id: "info", label: "USER_INFO" },
+        { id: "info", label: "PROFILE_OVERVIEW" },
         ...[
           ["shipments", "SHIPMENTS"],
           ["transactions", "BALANCE"],

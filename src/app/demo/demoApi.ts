@@ -107,7 +107,6 @@ function seedDb(): DemoDb {
       logoUrl: logo,
       iconUrl: logo,
       shipmentsCount: 120 + index * 7,
-      packageRequestsCount: 18 + index * 3,
       createdAt: stamp,
     }),
   );

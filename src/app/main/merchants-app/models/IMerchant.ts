@@ -3,7 +3,6 @@ import ICountry from "../../countries-app/models/ICountry";
 import IState from "../../states-app/models/IState";
 import ICity from "../../cities-app/models/ICity";
 import IShippingCompany from "../../shipping-companies-app/models/IShippingCompany";
-import IPlan from "../../plans-app/models/IPlan";
 export default interface IMerchant extends User {
   _id?: string;
   phone1?: string;
@@ -14,9 +13,6 @@ export default interface IMerchant extends User {
   country?: ICountry;
   state?: IState;
   city?: ICity;
-  paymentPlanId?: string;
-  paymentPlan?: IPlan;
-  subscriptionBalance?: number;
   shipmentsCount?: number;
   shipmentCodsCount?: number;
   referredById?: string;

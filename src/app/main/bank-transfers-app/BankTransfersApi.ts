@@ -5,6 +5,11 @@ export const addTagTypes = [
   "BankTransfers",
   "BankTransfer",
   "BankTransfersUser",
+  "PaymentsUser",
+  "Transactions",
+  "TransactionAccount",
+  "ShipmentAccount",
+  "MerchantDuesSummary",
 ] as const;
 const BankTransfersApi = api.enhanceEndpoints({ addTagTypes }).injectEndpoints({
   endpoints: (build) => ({
@@ -40,6 +45,27 @@ const BankTransfersApi = api.enhanceEndpoints({ addTagTypes }).injectEndpoints({
       query: (id) => ({ url: `v1/users/${id}` }),
       providesTags: (_, __, id) => [{ type: "BankTransfersUser", id }],
     }),
+    createBankTransfer: build.mutation<IBankTransfer, CreateBankTransferApiArg>(
+      {
+        query: ({
+          amount,
+          transactionReference,
+          transactionImageUrl,
+          description,
+        }) => ({
+          url: "v1/requests",
+          method: "POST",
+          data: {
+            type: "bankTransfer",
+            amount,
+            ...(transactionReference ? { transactionReference } : {}),
+            ...(transactionImageUrl ? { transactionImageUrl } : {}),
+            ...(description ? { description } : {}),
+          },
+        }),
+        invalidatesTags: ["BankTransfers"],
+      },
+    ),
     setBankTransferStatus: build.mutation<
       IBankTransfer,
       SetBankTransferStatusApiArg
@@ -54,6 +80,11 @@ const BankTransfersApi = api.enhanceEndpoints({ addTagTypes }).injectEndpoints({
       }),
       invalidatesTags: (_, __, value) => [
         "BankTransfers",
+        "PaymentsUser",
+        "Transactions",
+        "TransactionAccount",
+        "ShipmentAccount",
+        "MerchantDuesSummary",
         { type: "BankTransfer", id: value.id },
         ...(value.userId
           ? [{ type: "BankTransfersUser" as const, id: value.userId }]
@@ -78,6 +109,12 @@ export type GetBankTransfersApiArg = {
   dateToFilter?: string;
   updatedByIdFilter?: string;
 };
+export type CreateBankTransferApiArg = {
+  amount: number;
+  transactionReference?: string;
+  transactionImageUrl?: string;
+  description?: string;
+};
 export type SetBankTransferStatusApiArg = {
   id: string;
   status: "approved" | "rejected";
@@ -91,4 +128,5 @@ export const {
   useLazyGetBankTransfersQuery,
   useGetBankTransfersUserQuery,
   useSetBankTransferStatusMutation,
+  useCreateBankTransferMutation,
 } = BankTransfersApi;

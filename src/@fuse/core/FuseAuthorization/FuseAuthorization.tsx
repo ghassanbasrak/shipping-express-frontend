@@ -46,9 +46,7 @@ function FuseAuthorization({
       redirect = destination;
     else if (
       destination === "/home" &&
-      (["/register", "/register-profile", "/blocked"].includes(pathname) ||
-        (pathname === "/verify-account" &&
-          (user.role !== "user" || user.verificationStatus === "approved")))
+      ["/register", "/register-profile", "/blocked"].includes(pathname)
     )
       redirect = destination;
     else if (!FuseUtils.hasPermission(routeAuth, user.role)) {

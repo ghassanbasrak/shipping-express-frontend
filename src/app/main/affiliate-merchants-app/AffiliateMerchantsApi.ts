@@ -37,10 +37,7 @@ const AffiliateMerchantsApi = api
             ...(filters.statusFilter && filters.statusFilter !== "all"
               ? { active: filters.statusFilter }
               : {}),
-            ...(filters.verificationStatusFilter &&
-            filters.verificationStatusFilter !== "all"
-              ? { verificationStatus: filters.verificationStatusFilter }
-              : {}),
+
             ...(filters.dateFromFilter
               ? { dateFrom: filters.dateFromFilter }
               : {}),
@@ -159,7 +156,6 @@ export type GetAffiliateMerchantsApiArg = {
   typeFilter?: string;
   balanceTypeFilter?: string;
   statusFilter?: string;
-  verificationStatusFilter?: string;
   balanceSorting?: string;
   codBalanceSorting?: string;
   dateFromFilter?: string;

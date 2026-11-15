@@ -27,10 +27,15 @@ import {
   setMerchantDuesPage,
   setMerchantDuesPageSize,
 } from "../store/merchantDuesSlice";
-import merchantDueFields from "../shared-components/MerchantDueFields";
+import merchantDueFields, {
+  toMerchantDueTableRow,
+} from "../shared-components/MerchantDueFields";
 import IMerchantDue from "../models/IMerchantDue";
 import IShipment from "../../shipments-app/models/IShipment";
-import { ShipmentOperationDialog } from "../../shipments-app/shared-components/ShipmentOperations";
+import {
+  ShipmentOperationDialog,
+  type ShipmentOperation,
+} from "../../shipments-app/shared-components/ShipmentOperations";
 import {
   downloadShipmentBlob,
   mergeShipmentLabels,
@@ -49,6 +54,10 @@ export default function MerchantDuesTable({
     [error, setError] = useState(""),
     [printing, setPrinting] = useState(false),
     [settling, setSettling] = useState<IShipment[]>();
+  const [rowOperation, setRowOperation] = useState<{
+    rows: IShipment[];
+    operation: ShipmentOperation;
+  }>();
   const key = `${shippingCompanyId}/${userId}/${user.id}/${user.role}/${location.search}`,
     allowed = canViewMerchantDues(user);
   useEffect(() => {
@@ -65,6 +74,7 @@ export default function MerchantDuesTable({
     );
     setReady(key);
     setSettling(undefined);
+    setRowOperation(undefined);
   }, [dispatch, key]);
   useEffect(
     () => () => {
@@ -101,10 +111,19 @@ export default function MerchantDuesTable({
       );
   }, [currentData, isFetching, filters.page, filters.pageSize, dispatch]);
   const rows = useMemo(
-      () => (data?.results || []).map(toMerchantDue).filter(Boolean),
-      [data?.results],
+      () =>
+        (data?.results || [])
+          .map(toMerchantDue)
+          .filter(Boolean)
+          .map((row) => toMerchantDueTableRow(row, user)),
+      [data?.results, user],
     ),
-    fields = merchantDueFields(t, user);
+    fields = merchantDueFields(t, user, (row, operation) =>
+      setRowOperation({
+        rows: [toMerchantDueShipment(structuredClone(row))],
+        operation,
+      }),
+    );
   async function labels(values: IMerchantDue[]) {
     if (printing) return;
     setError("");
@@ -213,6 +232,13 @@ export default function MerchantDuesTable({
           ],
         }}
       />
+      {rowOperation && (
+        <ShipmentOperationDialog
+          {...rowOperation}
+          permissionFeature="merchant-dues"
+          onClose={() => setRowOperation(undefined)}
+        />
+      )}
       {settling && (
         <ShipmentOperationDialog
           rows={settling}

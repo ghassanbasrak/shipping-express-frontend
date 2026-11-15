@@ -3,12 +3,9 @@ import useJwtAuth from "src/app/auth/services/jwt/useJwtAuth";
 import AuthLayout from "../AuthLayout";
 import {
   AuthForm,
-  useOtpChallenge,
-  validation,
 } from "../shared-components/AuthForm";
 import {
   ProfileFields,
-  ResendProfileCode,
   profilePayload,
   profileSchema,
 } from "../sign-up/SignUpPage";
@@ -16,14 +13,13 @@ export default function RegisterProfilePage() {
   const { t } = useTranslation("ashamcoAuth");
   const auth = useJwtAuth();
   const { user } = auth;
-  const challenge = useOtpChallenge();
   if (!user) return null;
   const parts = (user.phone || "+966-").split("-");
   return (
     <AuthLayout title={t("REGISTER")} description={t("REGISTER_SUBTITLE")} onboardingStep={1} product wide>
       <AuthForm
         key={user.id}
-        schema={profileSchema(t, true, challenge.sent)}
+        schema={profileSchema(t, true)}
         defaults={{
           firstName: user.firstName || "",
           lastName: user.lastName || "",
@@ -41,42 +37,13 @@ export default function RegisterProfilePage() {
             ...user.address,
           },
           acceptTermsConditions: false,
-          code: "",
         }}
-        submit={t(
-          user.phoneVerified ? "SAVE" : challenge.sent ? "VERIFY" : "SEND_CODE",
-        )}
+        submit={t("SAVE")}
         onSubmit={async (values) => {
-          const phone = `${values.phoneCountry}-${values.phone}`;
-          const payload = profilePayload(values);
-          if (user.phoneVerified) {
-            await auth.updateMe(payload);
-            return;
-          }
-          if (!challenge.sent) {
-            challenge.start(
-              await auth.sendOtpCode(phone, "link", values.email),
-            );
-            return;
-          }
-          validation(t).code.parse(values.code);
-          await auth.signUpWithPhoneNumber(
-            phone,
-            values.code,
-            challenge.messageId,
-            payload,
-          );
+          await auth.completeSignUpProfile(profilePayload(values));
         }}
       >
-        <ProfileFields
-          locked={challenge.sent}
-          password={false}
-          verifiedPhone={user.phoneVerified}
-          verifiedEmail={user.emailVerified}
-        />
-        {challenge.sent && (
-          <ResendProfileCode challenge={challenge} type="link" />
-        )}
+        <ProfileFields locked={false} password={false} />
       </AuthForm>
     </AuthLayout>
   );

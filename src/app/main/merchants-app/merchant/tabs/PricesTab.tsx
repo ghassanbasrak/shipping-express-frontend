@@ -1,3 +1,4 @@
+import CurrencyAdornment from "app/shared-components/currency-adornment/CurrencyAdornment";
 import { useEffect } from "react";
 import { Alert, Button, MenuItem, TextField, Typography } from "@mui/material";
 import { Controller, useFieldArray, useFormContext } from "react-hook-form";
@@ -94,6 +95,11 @@ export default function PricesTab({ disabled }: { disabled: boolean }) {
                       {...field}
                       value={field.value ?? ""}
                       type="number"
+                      InputProps={
+                        key !== "internationalDiscountRate"
+                          ? { endAdornment: <CurrencyAdornment /> }
+                          : undefined
+                      }
                       fullWidth
                       disabled={disabled || loyalty !== "custom"}
                       label={t(

@@ -11,25 +11,39 @@ function CustomPhoneNumber({
   required = true,
   className = "mt-8 mb-16 w-full",
   hideCountryCodeSelector = false,
+  codeName,
+  serialized = false,
 }: CustomPhoneNumberProps) {
   const { t, i18n } = useTranslation("public");
   const methods = useFormContext();
-  const { control, getFieldState } = methods;
-  const error = getFieldState(name).invalid;
-  const helperText = getFieldState(name)?.error?.message;
+  const { control, watch, setValue } = methods;
+  const country = codeName ? watch(codeName) : undefined;
   return (
     <Controller
       control={control}
       name={name}
-      render={({ field }) => (
+      render={({ field, fieldState }) => (
         <PhoneInput
           {...field}
-          value={field.value || "+1"}
+          value={
+            codeName
+              ? `${country || "+966"}${field.value || ""}`
+              : (field.value || "+966").replace("-", "")
+          }
           className={className}
           lang={i18n.language}
           onChange={(e) => {
+            const code = e.countryCode ? `+${e.countryCode}` : "";
+            const national = `${e.areaCode || ""}${e.phoneNumber || ""}`;
+            if (codeName)
+              setValue(codeName, code, {
+                shouldDirty: true,
+                shouldValidate: true,
+              });
             field.onChange(
-              `${e.countryCode ? `+${e.countryCode}` : ""}${e.areaCode ? `${e.areaCode}` : ""}${e.phoneNumber ? `${e.phoneNumber}` : ""}`
+              codeName
+                ? national
+                : `${code}${serialized && code ? "-" : ""}${national}`,
             );
           }}
           disableParentheses
@@ -37,8 +51,18 @@ function CustomPhoneNumber({
           label={label ?? t("PHONE_NUMBER")}
           variant="outlined"
           fullWidth
-          error={error}
-          helperText={helperText}
+          size={size}
+          disabled={disabled}
+          required={required}
+          disableDropdown={hideCountryCodeSelector}
+          error={
+            !!fieldState.error ||
+            !!(codeName && methods.getFieldState(codeName).error)
+          }
+          helperText={
+            fieldState.error?.message ||
+            (codeName && methods.getFieldState(codeName).error?.message)
+          }
           searchVariant="standard"
           classes={{
             root: "w-full",

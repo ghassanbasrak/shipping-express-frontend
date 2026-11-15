@@ -1,4 +1,10 @@
 const locale = {
+  GROSS_TRANSFER_TOTAL: "Transferred total",
+  TRANSFER_VAT: "Included VAT",
+  WALLET_CREDIT: "Wallet credit on approval",
+  APPROVAL_CREDIT_HINT: "Approval deposits this credit through the backend. Check the bank receipt before confirming.",
+  REJECTION_CREDIT_HINT: "Rejecting the request does not credit the wallet.",
+
   RETRY: "Retry",
   LOAD_ERROR: "Unable to load bank transfers",
   USER_LOOKUP_ERROR: "Unable to load the selected account",

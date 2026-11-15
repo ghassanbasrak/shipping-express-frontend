@@ -61,12 +61,6 @@ export const shippingCompanySummaryLinks: {
     available: true,
   },
   {
-    title: "PACKAGE_REQUESTS",
-    count: "packageRequestsCount",
-    path: () => "/package-requests/all",
-    available: true,
-  },
-  {
     title: "COUNTRIES",
     count: "shipmentCountriesCount",
     path: (id) => `/countries/${id}`,

@@ -16,12 +16,7 @@
 }
 
 * :focus {
-    outline: none;
-}
-
-:focus-visible {
-    outline: 3px solid var(--ax-focus-ring) !important;
-    outline-offset: 2px;
+    outline: none !important;
 }
 
 html {

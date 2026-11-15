@@ -18,6 +18,7 @@ import {
   canManageStorage,
   storageError,
   storagePlanSaveValues,
+  storageTypesWereSaved,
 } from "../Utils";
 import StoragePlanModel from "../models/StoragePlanModel";
 import { storagePlanSchema } from "../models/StorageSchemas";
@@ -39,7 +40,8 @@ function StoragePlanEditor() {
     defaultValues: StoragePlanModel(),
     resolver: zodResolver(storagePlanSchema(t)),
   });
-  const saving = useRef(false);
+  const saving = useRef(false),
+    savedId = useRef<string>();
   const initialized = useRef<string>(),
     [ready, setReady] = useState(""),
     [error, setError] = useState("");
@@ -51,6 +53,7 @@ function StoragePlanEditor() {
     if (initialized.current === planId || (!isNew && !query.currentData))
       return;
     methods.reset(StoragePlanModel(isNew ? undefined : query.currentData));
+    savedId.current = undefined;
     initialized.current = planId;
     setReady(planId);
   }, [planId, isNew, query.currentData, methods.reset]);
@@ -61,7 +64,15 @@ function StoragePlanEditor() {
     setError("");
     const data = storagePlanSaveValues(values);
     try {
-      await (isNew ? create(data) : update({ id: planId, data })).unwrap();
+      const result = await (
+        isNew && !savedId.current
+          ? create(data)
+          : update({ id: savedId.current || planId, data })
+      ).unwrap();
+      if (!result.id) throw new Error(t("SAVE_ERROR"));
+      savedId.current = result.id;
+      if (!storageTypesWereSaved(result.storageTypes, data.storageTypes))
+        throw new Error(t("STORAGE_TYPES_NOT_SAVED"));
       navigate("/storage/plans", { replace: true });
     } catch (e) {
       setError(storageError(e, t("SAVE_ERROR")));

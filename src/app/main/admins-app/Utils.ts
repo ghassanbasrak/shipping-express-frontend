@@ -20,7 +20,6 @@ export const toAdminRoleFeatures = (type: string): IAdminFeature[] => {
           (feature) =>
             feature !== featureTypes.shippingCompanies &&
             feature !== featureTypes.coupons &&
-            feature !== featureTypes.plans &&
             feature !== featureTypes.admins &&
             feature !== featureTypes.applications,
         )
@@ -46,13 +45,11 @@ export const featureTypes = {
   payments: "payments",
   withdrawRequests: "withdraw-requests",
   bankTransfers: "bank-transfers",
-  packageRequests: "package-requests",
   cancelShipmentRequests: "cancel-shipment-requests",
   merchantStatistics: "merchant-statistics",
   admins: "admins",
   coupons: "coupons",
   shippingCompanies: "shipping-companies",
-  plans: "plans",
   alerts: "alerts",
   applications: "applications",
 };
@@ -72,8 +69,6 @@ export const toFeaturesTypeTitle = (feature: string) => {
       return "WITHDRAW_REQUESTS";
     case featureTypes.bankTransfers:
       return "BANK_TRANSFERS";
-    case featureTypes.packageRequests:
-      return "PACKAGE_REQUESTS";
     case featureTypes.cancelShipmentRequests:
       return "CANCEL_SHIPMENT_REQUESTS";
     case featureTypes.admins:
@@ -88,8 +83,6 @@ export const toFeaturesTypeTitle = (feature: string) => {
       return "COUPONS";
     case featureTypes.shippingCompanies:
       return "SHIPPING_COMPANIES";
-    case featureTypes.plans:
-      return "PLANS";
     case featureTypes.alerts:
       return "ALERTS";
     case featureTypes.applications:
@@ -108,13 +101,11 @@ export const toFeaturesTypeComparedPath = (feature: string) => {
     case featureTypes.codTransactions:
       return "cod";
     case featureTypes.payments:
-      return "topup-requests";
+      return "payments";
     case featureTypes.withdrawRequests:
       return "withdraw-requests";
     case featureTypes.bankTransfers:
       return "bank-transfers";
-    case featureTypes.packageRequests:
-      return "package-requests";
     case featureTypes.cancelShipmentRequests:
       return "cancel-shipment-requests";
     case featureTypes.admins:
@@ -129,8 +120,6 @@ export const toFeaturesTypeComparedPath = (feature: string) => {
       return "coupons";
     case featureTypes.shippingCompanies:
       return "shipping-companies";
-    case featureTypes.plans:
-      return "plans";
     case featureTypes.alerts:
       return "alerts";
     case featureTypes.applications:

@@ -5,7 +5,7 @@ import FuseLoading from "@fuse/core/FuseLoading";
 import { useAppSelector } from "app/store/hooks";
 import { selectUser } from "src/app/auth/user/store/userSlice";
 import { useTranslation } from "react-i18next";
-import { useGetStorageSubscriptionQuery } from "../StorageApi";
+import { useGetStorageSubscriptionQuery } from "../../storage-subscriptions-app/StorageSubscriptionsApi";
 import {
   canManageStorage,
   canUseStorage,

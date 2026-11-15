@@ -1,3 +1,5 @@
+> Superseded on 2026-11-10: user account verification and payment plans are retired from the frontend. See backend-verification-plans-handoff.md for the current contract. Older verification descriptions below are historical.
+
 # Authentication and onboarding integration
 
 ## Current architecture

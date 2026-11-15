@@ -1,4 +1,10 @@
 const locale = {
+  GROSS_TRANSFER_TOTAL: "إجمالي التحويل",
+  TRANSFER_VAT: "الضريبة المتضمنة",
+  WALLET_CREDIT: "رصيد المحفظة عند الموافقة",
+  APPROVAL_CREDIT_HINT: "تضيف الموافقة هذا الرصيد عبر الخادم. تحقق من إيصال البنك قبل التأكيد.",
+  REJECTION_CREDIT_HINT: "لا تضاف أموال للمحفظة عند رفض الطلب.",
+
   RETRY: "إعادة المحاولة",
   LOAD_ERROR: "تعذر تحميل التحويلات البنكية",
   USER_LOOKUP_ERROR: "تعذر تحميل الحساب المحدد",
