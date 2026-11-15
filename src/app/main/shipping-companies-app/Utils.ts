@@ -1,3 +1,4 @@
+import { tokens } from "src/brand/tokens";
 import IShippingCompany from "./models/IShippingCompany";
 
 export const shippingMethods = {
@@ -22,13 +23,13 @@ export const toShippingMethodTitle = (method: string) => {
 export const toShippingMethodColor = (method: string) => {
   switch (method) {
     case shippingMethods.local:
-      return "#5DADE2";
+      return tokens.color.purple["300"];
     case shippingMethods.international:
-      return "#99CC00";
+      return tokens.color.mint["300"];
     case shippingMethods.cashOnDelivery:
-      return "#FFBF00";
+      return tokens.color.semantic.dark.warning;
     default:
-      return "#5DADE2";
+      return tokens.color.purple["300"];
   }
 };
 

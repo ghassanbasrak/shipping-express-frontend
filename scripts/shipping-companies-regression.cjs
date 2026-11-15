@@ -58,7 +58,9 @@ const validations = load("src/app/main/utils/validations.ts", {
   "src/i18n": { t: (key) => key },
   validator: require(path.join(target, "node_modules/validator")),
 });
-const utils = load("src/app/main/shipping-companies-app/Utils.ts");
+const utils = load("src/app/main/shipping-companies-app/Utils.ts", {
+  "src/brand/tokens": load("src/brand/tokens.ts"),
+});
 const schemas = load(
   "src/app/main/shipping-companies-app/models/ShippingCompanySchema.ts",
   {
@@ -243,9 +245,10 @@ test("Methods reuse the legacy enum title and color helpers", () => {
     utils.toShippingMethodTitle("cashOnDelivery"),
     "CASH_ON_DELIVERY",
   );
-  assert.equal(utils.toShippingMethodColor("local"), "#5DADE2");
-  assert.equal(utils.toShippingMethodColor("international"), "#99CC00");
-  assert.equal(utils.toShippingMethodColor("cashOnDelivery"), "#FFBF00");
+  // brand tokens: purple-300 local, mint-300 international, warning tone COD
+  assert.equal(utils.toShippingMethodColor("local"), "#BEA8DC");
+  assert.equal(utils.toShippingMethodColor("international"), "#8EE9CB");
+  assert.equal(utils.toShippingMethodColor("cashOnDelivery"), "#E2B04F");
 });
 test("List pagination and searches use the versioned backend contract", async () => {
   const f = fixture();

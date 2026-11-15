@@ -97,11 +97,11 @@ export const toSupplyStatusTitle = (status: string) =>
   })[status] || status;
 export const toSupplyStatusColor = (status: string) =>
   ({
-    [supplyStatuses.pending]: "bg-blue-600",
-    [supplyStatuses.approved]: "bg-amber-600",
-    [supplyStatuses.received]: "bg-green-600",
-    [supplyStatuses.rejected]: "bg-red-600",
-  })[status] || "bg-gray-600";
+    [supplyStatuses.pending]: "bg-status-info-bg text-status-info-fg",
+    [supplyStatuses.approved]: "bg-status-warning-bg text-status-warning-fg",
+    [supplyStatuses.received]: "bg-status-success-bg text-status-success-fg",
+    [supplyStatuses.rejected]: "bg-status-error-bg text-status-error-fg",
+  })[status] || "bg-status-muted-bg text-status-muted-fg";
 export const storagePlanPrice = (plan: IStoragePlan) =>
   plan.discountPrice ?? plan.price;
 // Backend storage administration is role-based; it defines no storage employee grant.

@@ -23,17 +23,12 @@ const Root = styled("div")(
     theme?: Theme;
   }) => ({
     backgroundColor: theme.palette.background.default,
-    backgroundImage: [
-      "radial-gradient(900px 420px at 100% -5%, rgba(124, 77, 255, 0.10), transparent 60%)",
-      "radial-gradient(800px 420px at 0% 105%, rgba(44, 94, 245, 0.10), transparent 60%)",
-    ].join(", "),
-    backgroundAttachment: "fixed",
     ...(config.mode === "boxed" && {
       clipPath: "inset(0)",
       maxWidth: `${config.containerWidth}px`,
       margin: "0 auto",
       boxShadow:
-        "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+        "0 4px 6px -1px rgba(21, 11, 34, 0.10), 0 2px 4px -1px rgba(21, 11, 34, 0.06)",
     }),
     ...(config.mode === "container" && {
       "& .container": {

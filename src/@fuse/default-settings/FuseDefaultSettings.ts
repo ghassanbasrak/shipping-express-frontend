@@ -1,9 +1,12 @@
 import { fuseDark } from '@fuse/colors';
 import { lightBlue, red } from '@mui/material/colors';
+import { tokens } from '../../brand/tokens';
 import { createTheme } from '@mui/material/styles';
 import qs from 'qs';
 import { ThemeOptions } from '@mui/material/styles/createTheme';
 import { FuseSettingsConfigType } from '@fuse/core/FuseSettings/FuseSettings';
+
+const { purple, status, neutral, semantic } = tokens.color;
 
 /**
  * The defaultTheme object defines the default color palette for the application.
@@ -12,33 +15,33 @@ const defaultTheme = {
 	palette: {
 		mode: 'light',
 		text: {
-			primary: 'rgb(17, 24, 39)',
-			secondary: 'rgb(107, 114, 128)',
-			disabled: 'rgb(149, 156, 169)'
+			primary: neutral.ink,
+			secondary: neutral.gray,
+			disabled: '#A79BB8'
 		},
 		common: {
-			black: 'rgb(17, 24, 39)',
+			black: neutral.ink,
 			white: 'rgb(255, 255, 255)'
 		},
 		primary: {
-			light: '#bec1c5',
-			main: '#252f3e',
-			dark: '#0d121b',
+			light: purple['600'],
+			main: purple['700'],
+			dark: purple['800'],
 			contrastDefaultColor: 'light'
 		},
 		secondary: {
-			light: '#302583',
-			main: '#302583',
-			dark: '#302583'
+			light: purple['500'],
+			main: purple['600'],
+			dark: purple['700']
 		},
 		background: {
 			paper: '#FFFFFF',
-			default: '#f6f7f9'
+			default: semantic.light.background
 		},
 		error: {
-			light: '#ffcdd2',
-			main: '#f44336',
-			dark: '#b71c1c'
+			light: '#D6685D',
+			main: status.error,
+			dark: tokens.color.tone.error.fg
 		}
 	}
 };
@@ -85,10 +88,23 @@ export function getParsedQuerySettings() {
  */
 export const defaultThemeOptions = {
 	typography: {
-		fontFamily: ['IBM Plex Sans Arabic', 'Tahoma', 'Arial', 'sans-serif'].join(','),
+		fontFamily: tokens.font.stack.sans,
 		fontWeightLight: 300,
 		fontWeightRegular: 400,
-		fontWeightMedium: 500
+		fontWeightMedium: 500,
+		fontWeightBold: 700,
+		// Brand type scale (tokens.type): display 32, h1 28, h2 22, h3 18, bodyLg 16, label 14, caption 12, overline 11
+		h1: { fontSize: '3.2rem', fontWeight: 700, lineHeight: 1.25 },
+		h2: { fontSize: '2.8rem', fontWeight: 700, lineHeight: 1.29 },
+		h3: { fontSize: '2.2rem', fontWeight: 600, lineHeight: 1.36 },
+		h4: { fontSize: '1.8rem', fontWeight: 600, lineHeight: 1.44 },
+		h5: { fontSize: '1.6rem', fontWeight: 600, lineHeight: 1.5 },
+		h6: { fontSize: '1.5rem', fontWeight: 600, lineHeight: 1.5 },
+		subtitle1: { fontSize: '1.6rem', fontWeight: 500, lineHeight: 1.6 },
+		subtitle2: { fontSize: '1.4rem', fontWeight: 600, lineHeight: 1.45 },
+		button: { fontSize: '1.4rem', fontWeight: 600, lineHeight: 1.4 },
+		caption: { fontSize: '1.2rem', fontWeight: 500, lineHeight: 1.5 },
+		overline: { fontSize: '1.1rem', fontWeight: 500, lineHeight: 1.45 }
 	},
 	components: {
 		MuiAppBar: {
@@ -132,7 +148,7 @@ export const defaultThemeOptions = {
 					// lineHeight: 1,
 				},
 				sizeMedium: {
-					borderRadius: 12,
+					borderRadius: 10,
 					height: 40,
 					minHeight: 40,
 					maxHeight: 40,
@@ -141,23 +157,23 @@ export const defaultThemeOptions = {
 					borderRadius: "10px",
 				  },
 				  sizeLarge: {
-					borderRadius: "12px",
+					borderRadius: "10px",
 				  },
 				contained: {
 					boxShadow: 'none',
 					'&:hover, &:focus': {
-						boxShadow: '0 8px 18px -8px rgba(44, 94, 245, .55)'
+						boxShadow: '0 8px 18px -8px rgba(58, 31, 93, .45)'
 					}
 				}
 			}
 		},
 		MuiButtonGroup: {
 			defaultProps: {
-			  color: "secondary",
+			  color: "primary",
 			},
 			styleOverrides: {
 			  contained: {
-				borderRadius: 12,
+				borderRadius: 10,
 			  },
 			},
 		  },
@@ -172,7 +188,7 @@ export const defaultThemeOptions = {
 			styleOverrides: {
 			  paper: {
 				borderRadius: 20,
-				boxShadow: '0 30px 60px -20px rgba(15, 28, 80, .35)',
+				boxShadow: '0 30px 60px -20px rgba(21, 11, 34, .35)',
 			  },
 			},
 		  },
@@ -203,33 +219,33 @@ export const defaultThemeOptions = {
 		MuiChip: {
 			styleOverrides: {
 				root: {
-					borderRadius: 10,
-					fontWeight: 500
+					borderRadius: 20,
+					fontWeight: 600
 				}
 			}
 		},
 		MuiTextField: {
 			defaultProps: {
-				color: 'secondary'
+				color: 'primary'
 			}
 		},
 		MuiInputLabel: {
 			defaultProps: {
-				color: 'secondary'
+				color: 'primary'
 			}
 		},
 		MuiSelect: {
 			defaultProps: {
-				color: 'secondary'
+				color: 'primary'
 			}
 		},
 		MuiOutlinedInput: {
 			defaultProps: {
-				color: 'secondary'
+				color: 'primary'
 			},
 			styleOverrides: {
 				root: {
-					borderRadius: 12
+					borderRadius: 10
 				}
 			}
 		},
@@ -253,22 +269,22 @@ export const defaultThemeOptions = {
 		},
 		MuiSlider: {
 			defaultProps: {
-				color: 'secondary'
+				color: 'primary'
 			}
 		},
 		MuiCheckbox: {
 			defaultProps: {
-				color: 'secondary'
+				color: 'primary'
 			}
 		},
 		MuiRadio: {
 			defaultProps: {
-				color: 'secondary'
+				color: 'primary'
 			}
 		},
 		MuiSwitch: {
 			defaultProps: {
-				color: 'secondary'
+				color: 'primary'
 			}
 		},
 		MuiTypography: {

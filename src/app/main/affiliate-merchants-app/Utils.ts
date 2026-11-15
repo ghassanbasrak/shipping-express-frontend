@@ -23,9 +23,9 @@ export const toAffiliateTransactionStatusTitle = (status: string) =>
   ({ pending: "PENDING", success: "SUCCESS", rejected: "REJECTED" })[status] ||
   status;
 export const toAffiliateTransactionStatusColor = (status: string) =>
-  ({ pending: "bg-blue-500", success: "bg-green-500", rejected: "bg-red-500" })[
+  ({ pending: "bg-status-info-bg text-status-info-fg", success: "bg-status-success-bg text-status-success-fg", rejected: "bg-status-error-bg text-status-error-fg" })[
     status
-  ] || "bg-gray-500";
+  ] || "bg-status-muted-bg text-status-muted-fg";
 export const canViewAffiliates = (user: User) =>
   user.role === "user"
     ? !!user.isAffiliate

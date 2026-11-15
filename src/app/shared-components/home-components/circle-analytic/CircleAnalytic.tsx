@@ -1,3 +1,4 @@
+import { tokens } from "src/brand/tokens";
 import { useTheme } from "@mui/material/styles";
 import ReactApexChart from "react-apexcharts";
 import Paper from "@mui/material/Paper";
@@ -27,16 +28,7 @@ function CircleAnalytic({
   const today = new Date();
 
   const labels = series.map((e) => e.label);
-  const colors = [
-    "#3182CE",
-    "#DD6B20",
-    "#319795",
-    "#805AD5",
-    "#63B3ED",
-    "#F6AD55",
-    "#4FD1C5",
-    "#B794F4",
-  ];
+  const colors = [...tokens.color.chart, tokens.color.purple["600"]];
 
   const chartOptions: ApexCharts.ApexOptions = {
     chart: {

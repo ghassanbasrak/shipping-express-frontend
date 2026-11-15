@@ -1,3 +1,4 @@
+import { tokens } from "src/brand/tokens";
 import FusePageSimple from "@fuse/core/FusePageSimple";
 import FeatureHeader, {
   FeatureHeaderHeading,
@@ -84,7 +85,7 @@ export function OverviewShell({ children }: { children: ReactNode }) {
               "--ov-ink": theme.palette.text.primary,
               "--ov-muted": theme.palette.text.secondary,
               "--ov-border": theme.palette.divider,
-              "--ov-bg": theme.palette.mode === "dark" ? "#111b2d" : "#f4f7fb",
+              "--ov-bg": theme.palette.background.default,
             } as React.CSSProperties
           }
         >
@@ -265,7 +266,7 @@ export function MetricCard({
   scope,
   query,
   change,
-  accent = "#0f9d8c",
+  accent = tokens.color.chart[1],
   note,
   testId,
 }: {

@@ -70,8 +70,7 @@ function UserMenu() {
             height: 36,
             fontWeight: 700,
             color: "#fff",
-            background: (theme) =>
-              `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
+            backgroundColor: (theme) => theme.palette.primary.main,
             boxShadow: (theme) =>
               `0 0 0 2px #fff, 0 0 0 3px ${alpha(theme.palette.primary.main, 0.35)}`,
           }}
@@ -102,20 +101,19 @@ function UserMenu() {
               borderRadius: "16px",
               p: 1,
               border: (theme) => `1px solid ${theme.palette.divider}`,
-              boxShadow: "0 20px 40px -12px rgba(15, 28, 166, .25)",
+              boxShadow: "0 20px 40px -12px rgba(21, 11, 34, .25)",
               "& .MuiMenuItem-root": { borderRadius: "10px", minHeight: 44 },
             },
           },
         }}
       >
         {user && (
-          <div className="mb-8 flex items-center gap-12 rounded-12 bg-gray-50 p-12">
+          <div className="mb-8 flex items-center gap-12 rounded-12 bg-brand-purple-50 p-12">
             <Avatar
               src={user.avatarUrl}
               sx={{
                 color: "#fff",
-                background: (theme) =>
-                  `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
+                backgroundColor: (theme) => theme.palette.primary.main,
               }}
             >
               {(user.firstName?.[0] ?? user.email?.[0] ?? "").toUpperCase()}

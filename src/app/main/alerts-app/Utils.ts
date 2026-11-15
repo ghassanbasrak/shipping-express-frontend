@@ -21,11 +21,11 @@ export const toAlertTypeTitle = (type: string) => {
 export const toAlertTypeColor = (type: string) => {
   switch (type) {
     case alertTypes.normal:
-      return "bg-blue-500";
+      return "bg-status-info-bg text-status-info-fg";
     case alertTypes.onlyImage:
-      return "bg-purple-500";
+      return "bg-status-neutral-bg text-status-neutral-fg";
   }
-  return "bg-blue-500";
+  return "bg-status-info-bg text-status-info-fg";
 };
 
 export const toAlertViewTypeTitle = (viewType: string) => {
@@ -40,11 +40,11 @@ export const toAlertViewTypeTitle = (viewType: string) => {
 export const toAlertViewTypeColor = (viewType: string) => {
   switch (viewType) {
     case alertViewTypes.alert:
-      return "bg-amber-500";
+      return "bg-status-warning-bg text-status-warning-fg";
     case alertViewTypes.popup:
-      return "bg-green-500";
+      return "bg-status-success-bg text-status-success-fg";
   }
-  return "bg-amber-500";
+  return "bg-status-warning-bg text-status-warning-fg";
 };
 
 export function toAlertSaveValues(value: IAlert): IAlert {

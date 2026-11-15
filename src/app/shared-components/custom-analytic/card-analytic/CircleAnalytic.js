@@ -1,3 +1,4 @@
+import { tokens } from "src/brand/tokens";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import { memo, useEffect, useState } from "react";
@@ -48,16 +49,7 @@ function CircleAnalytic({ data, title, pointLabel }) {
   const labels = data.map((e) => e.label);
   console.log();
   //   const colors = data.map((_, index) => newColorFind(index));
-  const colors = [
-    "#3182CE",
-    "#DD6B20",
-    "#319795",
-    "#805AD5",
-    "#63B3ED",
-    "#F6AD55",
-    "#4FD1C5",
-    "#B794F4",
-  ];
+  const colors = [...tokens.color.chart, tokens.color.purple["600"]];
 
   const chartOptions = {
     chart: {

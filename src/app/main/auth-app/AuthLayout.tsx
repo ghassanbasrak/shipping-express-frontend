@@ -48,7 +48,7 @@ export default function AuthLayout({
             borderRadius: { xs: 0, sm: 4 },
             border: { xs: 0, sm: 1 },
             borderColor: "divider",
-            boxShadow: { xs: "none", sm: "0 22px 70px rgba(32, 20, 68, .09)" },
+            boxShadow: { xs: "none", sm: "0 22px 70px rgba(21, 11, 34, .09)" },
           }}
         >
           <Box
@@ -58,8 +58,24 @@ export default function AuthLayout({
               flexDirection: "column",
               justifyContent: wide ? "flex-start" : "space-between",
               p: 5,
-              bgcolor: "primary.dark",
+              bgcolor: "primary.main",
               color: "primary.contrastText",
+              position: "relative",
+              overflow: "hidden",
+              // decorative ring from the approved dashboard replica hero
+              "&::before": {
+                content: '""',
+                position: "absolute",
+                insetInlineEnd: -90,
+                bottom: -120,
+                width: 280,
+                height: 280,
+                borderRadius: "50%",
+                border: "34px solid var(--purple-600)",
+                opacity: 0.45,
+                pointerEvents: "none",
+              },
+              "& > *": { position: "relative" },
             }}
           >
             <Typography variant="overline" sx={{ letterSpacing: ".18em", fontWeight: 700, opacity: .82 }}>
@@ -124,8 +140,7 @@ export default function AuthLayout({
     <Box
       className="flex flex-1 min-h-full items-center justify-center p-16 sm:p-32"
       sx={{
-        background: (theme) =>
-          `linear-gradient(135deg, ${theme.palette.primary.dark}, ${theme.palette.primary.main})`,
+        backgroundColor: (theme) => theme.palette.primary.main,
       }}
     >
       <Paper className="w-full max-w-640 p-24 sm:p-40 rounded-16">

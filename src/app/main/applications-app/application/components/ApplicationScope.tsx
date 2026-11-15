@@ -43,7 +43,7 @@ export default function ApplicationScope({
       <div className="flex items-center justify-between gap-8">
         <Chip
           label={t(toApplicationFeatureTitle(feature))}
-          className={toApplicationFeatureColor(feature) + " text-white"}
+          className={toApplicationFeatureColor(feature)}
           size="small"
         />
         <Checkbox

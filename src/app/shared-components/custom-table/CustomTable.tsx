@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { tokens } from "src/brand/tokens";
 import { motion } from "framer-motion";
 import {
   Box,
@@ -47,6 +48,18 @@ import Icon from "../Icon";
 import RatingView from "../RatingView";
 import localeString from "src/app/main/utils/localeString";
 import GroupingCell from "./shared-components/grouping-cell/GroupingCell";
+
+/**
+ * Chips whose colour helper returns the brand tone classes (bg-status-*-bg text-status-*-fg) render as soft pills
+ * and must not be forced to white text.
+ */
+const isSoftChip = (column: any, params: any): boolean =>
+  !column.chipThemeColor &&
+  !column.chipSolidColor &&
+  typeof column.toChipColor === "function" &&
+  String(column.toChipColor(params.value, params.row) ?? "").includes(
+    "text-status-",
+  );
 
 function CustomTable<T extends object>({
   data,
@@ -296,7 +309,9 @@ function CustomTable<T extends object>({
                 },
                 "& .MuiDataGrid-columnsContainer": {
                   bgcolor: (theme) =>
-                    theme.palette.mode === "light" ? "#fafafa" : "#1d1d1d",
+                    theme.palette.mode === "light"
+                      ? tokens.color.purple["50"]
+                      : tokens.color.neutral.dark["900"],
                 },
                 "& .MuiDataGrid-iconSeparator": hideResizeableIcon && {
                   display: "none",
@@ -304,19 +319,23 @@ function CustomTable<T extends object>({
                 "& .MuiDataGrid-columnHeader, .MuiDataGrid-cell": {
                   borderRight: (theme) =>
                     `1px solid ${
-                      theme.palette.mode === "light" ? "#f0f0f0" : "#303030"
+                      theme.palette.mode === "light"
+                        ? tokens.color.purple["100"]
+                        : tokens.color.neutral.dark["800"]
                     }`,
                 },
                 "& .MuiDataGrid-columnsContainer, .MuiDataGrid-cell": {
                   borderBottom: (theme) =>
                     `1px solid ${
-                      theme.palette.mode === "light" ? "#f0f0f0" : "#303030"
+                      theme.palette.mode === "light"
+                        ? tokens.color.purple["100"]
+                        : tokens.color.neutral.dark["800"]
                     }`,
                 },
                 "& .MuiDataGrid-cell": {
                   color: (theme) =>
                     theme.palette.mode === "light"
-                      ? "rgba(0,0,0,.85)"
+                      ? theme.palette.text.primary
                       : "rgba(255,255,255,0.65)",
                 },
                 "& .MuiPaginationItem-root": {
@@ -779,10 +798,13 @@ function CustomTable<T extends object>({
                                 ? theme.palette[
                                     e.moneyChangesColorGetter(params.row)
                                   ].main
-                                : "white",
+                                : isSoftChip(e, params)
+                                  ? undefined
+                                  : "white",
                           }}
                           className={clsx(
-                            "text-12 font-semibold py-4 px-12 rounded-full text-white",
+                            "text-12 font-semibold py-4 px-12 rounded-full",
+                            !isSoftChip(e, params) && "text-white",
                             !e.chipThemeColor &&
                               !e.chipSolidColor &&
                               e.toChipColor(params.value, params.row),

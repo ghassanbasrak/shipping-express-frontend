@@ -16,15 +16,15 @@ export const toWithdrawRequestStatusTitle = (status: string) =>
   ] || status;
 export const toWithdrawRequestStatusColor = (status: string) =>
   ({
-    pending: "bg-blue-600",
-    approved: "bg-green-600",
-    rejected: "bg-red-600",
-  })[status] || "bg-gray-600";
+    pending: "bg-status-info-bg text-status-info-fg",
+    approved: "bg-status-success-bg text-status-success-fg",
+    rejected: "bg-status-error-bg text-status-error-fg",
+  })[status] || "bg-status-muted-bg text-status-muted-fg";
 export const toWithdrawRequestTypeTitle = (type: string) =>
   ({ withdrew: "WITHDRAW", walletCharge: "WALLET_CHARGE" })[type] || "OTHER";
 export const toWithdrawRequestTypeColor = (type: string) =>
-  ({ withdrew: "bg-purple-600", walletCharge: "bg-green-600" })[type] ||
-  "bg-gray-600";
+  ({ withdrew: "bg-status-neutral-bg text-status-neutral-fg", walletCharge: "bg-status-success-bg text-status-success-fg" })[type] ||
+  "bg-status-muted-bg text-status-muted-fg";
 export const canViewWithdrawRequests = (user: User) =>
   hasOperationPermission("withdraw-requests", "view", user);
 export const canReviewWithdrawRequest = (user: User, status: string) =>

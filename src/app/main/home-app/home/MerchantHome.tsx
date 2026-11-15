@@ -1,3 +1,4 @@
+import { tokens } from "src/brand/tokens";
 import { Button, Alert } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -43,25 +44,25 @@ export default function MerchantHome() {
         "ACTIVE_SHIPMENTS",
         summary.currentData?.activeShipments,
         "local_shipping",
-        "#0f9d8c",
+        tokens.color.chart[1],
       ],
       [
         "CANCELED_SHIPMENTS",
         summary.currentData?.canceledShipments,
         "close",
-        "#b58146",
+        tokens.color.chart[5],
       ],
       [
         "LOCAL_SHIPMENTS",
         summary.currentData?.localShipments,
         "inventory_2",
-        "#5475d2",
+        tokens.color.chart[0],
       ],
       [
         "INTERNATIONAL_SHIPMENTS",
         summary.currentData?.internationalShipments,
         "public",
-        "#8170b6",
+        tokens.color.chart[2],
       ],
     ] as const;
   return (

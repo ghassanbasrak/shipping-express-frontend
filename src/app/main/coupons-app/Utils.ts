@@ -16,11 +16,11 @@ export const toCouponTypeTitle = (status: string) => {
 export const toCouponTypeColor = (status: string) => {
   switch (status) {
     case couponTypes.fixed:
-      return "bg-blue-500";
+      return "bg-status-info-bg text-status-info-fg";
     case couponTypes.percentage:
-      return "bg-amber-500";
+      return "bg-status-warning-bg text-status-warning-fg";
   }
-  return "bg-blue-500";
+  return "bg-status-info-bg text-status-info-fg";
 };
 
 export const couponsPath = (shippingCompanyId = "all", userId = "all") =>

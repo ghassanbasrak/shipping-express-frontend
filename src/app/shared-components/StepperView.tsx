@@ -1,3 +1,4 @@
+import { tokens } from "src/brand/tokens";
 import FuseSvgIcon from "@fuse/core/FuseSvgIcon";
 import {
   Box,
@@ -37,7 +38,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     backgroundColor:
       theme.palette.mode === "dark"
         ? theme.palette.background.default
-        : "#eaeaf0",
+        : tokens.color.purple["100"],
     padding: 10,
     borderRadius: "50%",
   },
@@ -93,7 +94,7 @@ const StepperConnector = styled(StepConnector)(({ theme }) => ({
     height: 5,
     border: 0,
     backgroundColor:
-      theme.palette.mode === "dark" ? theme.palette.grey[800] : "#eaeaf0",
+      theme.palette.mode === "dark" ? theme.palette.grey[800] : tokens.color.purple["100"],
     borderRadius: 1,
   },
 }));

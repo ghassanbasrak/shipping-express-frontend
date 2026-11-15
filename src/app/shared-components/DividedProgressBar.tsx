@@ -29,15 +29,15 @@ const DividedProgressBar = ({
 }) => {
   const progress = (current + 1 / total) * 100;
   const backgroundColors = {
-    red: "bg-red-400",
-    blue: "bg-blue-400",
-    green: "bg-green-400",
+    red: "bg-status-error-fg",
+    blue: "bg-status-info-fg",
+    green: "bg-status-success-fg",
     white: "bg-white",
   };
   const backgroundHoverColors = {
-    red: "hover:bg-red-600",
-    blue: "hover:bg-blue-600",
-    green: "hover:bg-green-600",
+    red: "hover:bg-status-error-fg",
+    blue: "hover:bg-status-info-fg",
+    green: "hover:bg-status-success-fg",
     white: "hover:bg-grey-200",
   };
 

@@ -49,7 +49,7 @@ function load(file, imports = {}, globals = {}) {
 
 const plain=value=>JSON.parse(JSON.stringify(value)),base='src/app/main/shipments-app/';
 const permissions=load('src/app/auth/permissions.ts'),contacts=load('src/app/main/shipment-users-app/Utils.ts');
-const utils=load(base+'Utils.ts',{'src/app/auth/user':{userRoles:load('src/app/auth/userRoles.tsx').default},'src/app/auth/permissions':permissions,'../shipment-users-app/Utils':contacts,'../countries-app/Utils':{displayName:value=>typeof value==='string'?value:value?.en||value?.ar||''}});
+const utils=load(base+'Utils.ts',{'src/brand/tokens':load('src/brand/tokens.ts'),'src/app/auth/user':{userRoles:load('src/app/auth/userRoles.tsx').default},'src/app/auth/permissions':permissions,'../shipment-users-app/Utils':contacts,'../countries-app/Utils':{displayName:value=>typeof value==='string'?value:value?.en||value?.ar||''}});
 const model=load(base+'models/ShipmentModel.ts',{'../Utils':utils});
 const validators=load('src/app/main/utils/validations.ts',{'src/i18n':{t:key=>key},validator:require(path.join(target,'node_modules/validator'))});
 const schemas=load(base+'models/ShipmentSchema.ts',{'../../storage-subscriptions-app/Utils':load('src/app/main/storage-subscriptions-app/Utils.ts'),'../Utils':utils,'src/app/main/utils/validations':validators});

@@ -666,7 +666,20 @@ module.exports = {
       DEFAULT: "1",
     },
     fontFamily: {
-      sans: ['"IBM Plex Sans Arabic"', "Tahoma", "Arial", "sans-serif"],
+      sans: [
+        "IBM Plex Sans",
+        "IBM Plex Sans Arabic",
+        "Tahoma",
+        "Arial",
+        "sans-serif",
+      ],
+      long: [
+        "Noto Sans",
+        "Noto Naskh Arabic",
+        "Traditional Arabic",
+        '"Times New Roman"',
+        "serif",
+      ],
       serif: [
         "ui-serif",
         "Georgia",

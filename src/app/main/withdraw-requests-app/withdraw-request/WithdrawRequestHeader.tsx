@@ -151,7 +151,7 @@ export default function WithdrawRequestHeader({
               <Chip
                 label={t(toWithdrawRequestStatusTitle(watch("status")))}
                 className={
-                  toWithdrawRequestStatusColor(watch("status")) + " text-white"
+                  toWithdrawRequestStatusColor(watch("status"))
                 }
               />
             </>

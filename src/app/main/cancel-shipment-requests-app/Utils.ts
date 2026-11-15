@@ -14,10 +14,10 @@ export const toCancelShipmentRequestStatusTitle = (value: string) =>
       : "PENDING";
 export const toCancelShipmentRequestStatusColor = (value: string) =>
   value === "approved"
-    ? "bg-green-600"
+    ? "bg-status-success-bg text-status-success-fg"
     : value === "rejected"
-      ? "bg-red-600"
-      : "bg-blue-600";
+      ? "bg-status-error-bg text-status-error-fg"
+      : "bg-status-info-bg text-status-info-fg";
 export const canViewCancellationRequests = (user: User) =>
   hasOperationPermission("cancel-shipment-requests", "view", user);
 export const canReviewCancellationRequest = (

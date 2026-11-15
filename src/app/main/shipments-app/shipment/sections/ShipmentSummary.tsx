@@ -198,7 +198,7 @@ export default function ShipmentSummary({
           px: 2.5,
           py: 2,
           color: theme.palette.primary.contrastText,
-          background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
+          backgroundColor: theme.palette.primary.main,
         })}
       >
         <Typography className="text-16 font-bold" color="inherit">

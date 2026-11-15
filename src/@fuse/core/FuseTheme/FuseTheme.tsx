@@ -42,7 +42,7 @@ const inputGlobalStyles = (
 				borderColor: theme.palette.divider
 			},
 			"a:not([role=button]):not(.MuiButtonBase-root)": {
-				color: theme.palette.secondary.main,
+				color: theme.palette.primary.main,
 				// textDecoration: "underline",
 				"&:hover": {},
 			  },
@@ -52,7 +52,7 @@ const inputGlobalStyles = (
 				// borderBottom: `1px solid ${theme.palette.divider}`,
 				// textDecoration: "none",
 				"&:hover": {
-				  background: alpha(theme.palette.secondary.main, 0.3),
+				  background: alpha(theme.palette.primary.main, 0.16),
 				  // textDecoration: "none",
 				},
 			  },
@@ -71,12 +71,12 @@ const inputGlobalStyles = (
 
 			'::-webkit-scrollbar-thumb': {
 				boxShadow: `inset 0 0 0 20px ${
-					theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.24)' : 'rgba(255, 255, 255, 0.24)'
+					theme.palette.mode === 'light' ? 'rgba(58, 31, 93, 0.28)' : 'rgba(255, 255, 255, 0.24)'
 				}`
 			},
 			'::-webkit-scrollbar-thumb:active': {
 				boxShadow: `inset 0 0 0 20px ${
-					theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.37)' : 'rgba(255, 255, 255, 0.37)'
+					theme.palette.mode === 'light' ? 'rgba(58, 31, 93, 0.42)' : 'rgba(255, 255, 255, 0.37)'
 				}`
 			}
 		})}

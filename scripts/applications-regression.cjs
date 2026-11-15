@@ -219,7 +219,7 @@ async function main() {
       );
       assert.equal(
         utils.toApplicationFeatureColor("shipments"),
-        "bg-green-600",
+        "bg-status-success-bg text-status-success-fg",
       );
       assert.equal(utils.applicationUserLabel(valid.user), "Account One");
       assert.equal(

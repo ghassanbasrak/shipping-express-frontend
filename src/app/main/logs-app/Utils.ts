@@ -17,12 +17,12 @@ export const toLogsTypeTitle = (type: string) =>
   })[type] || "SHIPMENT";
 export const toLogsTypeColor = (type: string) =>
   ({
-    transaction: "bg-blue-600",
-    payment: "bg-green-600",
-    shipment: "bg-red-600",
-    user: "bg-blue-600",
-    request: "bg-red-600",
-  })[type] || "bg-blue-600";
+    transaction: "bg-status-info-bg text-status-info-fg",
+    payment: "bg-status-success-bg text-status-success-fg",
+    shipment: "bg-status-error-bg text-status-error-fg",
+    user: "bg-status-info-bg text-status-info-fg",
+    request: "bg-status-error-bg text-status-error-fg",
+  })[type] || "bg-status-info-bg text-status-info-fg";
 export const canViewLogs = (user: User) => user?.role === "admin";
 export const logSnapshots = (log: ILog): ILogData[] => {
   const data = log.meta?.data ?? log.data;

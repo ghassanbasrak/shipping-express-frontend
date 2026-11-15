@@ -120,10 +120,7 @@ export default function AffiliateWithdrawRequestHeader({
                 label={t(
                   toAffiliateWithdrawRequestStatusTitle(watch("status")),
                 )}
-                className={
-                  toAffiliateWithdrawRequestStatusColor(watch("status")) +
-                  " text-white"
-                }
+                className={toAffiliateWithdrawRequestStatusColor(watch("status"))}
               />
             </>
           )}

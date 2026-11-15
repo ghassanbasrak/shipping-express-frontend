@@ -58,7 +58,7 @@ export default function FirebaseMessagingApp() {
         if (active && payload.notification?.title)
           new Notification(payload.notification.title, {
             body: payload.notification.body,
-            icon: "/favicon.png",
+            icon: "/icon-192.png",
           });
       });
     }

@@ -6,7 +6,7 @@ function load(file, imports={}) {
  }).outputText,{exports,require:name=>{if(name==='react/jsx-runtime')return jsx;if(name in imports)return imports[name];throw Error('Unexpected import '+name);}});return exports;
 }
 const permissions=load('src/app/auth/permissions.ts'), roles=load('src/app/auth/userRoles.tsx').default;
-const shipments=load('src/app/main/shipments-app/Utils.ts',{'src/app/auth/user':{userRoles:roles},'src/app/auth/permissions':permissions,'../shipment-users-app/Utils':load('src/app/main/shipment-users-app/Utils.ts'),'../countries-app/Utils':{displayName:v=>v?.en||v?.ar||v||''}});
+const shipments=load('src/app/main/shipments-app/Utils.ts',{'src/brand/tokens':load('src/brand/tokens.ts'),'src/app/auth/user':{userRoles:roles},'src/app/auth/permissions':permissions,'../shipment-users-app/Utils':load('src/app/main/shipment-users-app/Utils.ts'),'../countries-app/Utils':{displayName:v=>v?.en||v?.ar||v||''}});
 const dues=load('src/app/main/merchant-dues-app/Utils.ts',{'src/app/auth/permissions':permissions,'../shipments-app/Utils':shipments});
 const table={TableDataTypes:{normal:0,money:1,date:2,actions:3}};
 const shared={'src/app/auth/permissions':permissions,'react-router-dom':{Link:'Link'},'@mui/material':{Typography:'Typography'},'app/shared-components/custom-table/Utils':table};

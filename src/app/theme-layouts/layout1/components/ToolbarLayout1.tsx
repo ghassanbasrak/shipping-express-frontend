@@ -24,14 +24,13 @@ const ToggleWrapper = styled("div")(({ theme }) => ({
   "& .MuiIconButton-root": {
     width: 42,
     height: 42,
-    borderRadius: 14,
+    borderRadius: 10,
     backgroundColor: theme.palette.background.paper,
     border: `1px solid ${theme.palette.divider}`,
-    boxShadow: "0 2px 6px -2px rgba(15, 28, 166, .12)",
     transition: "all .2s ease",
     "&:hover": {
-      backgroundColor: alpha(theme.palette.secondary.main, 0.08),
-      borderColor: alpha(theme.palette.secondary.main, 0.4),
+      backgroundColor: theme.palette.action.hover,
+      borderColor: alpha(theme.palette.primary.main, 0.4),
     },
   },
 }));
@@ -45,9 +44,8 @@ const ActionsCluster = styled("div")(({ theme }) => ({
   borderRadius: 16,
   backgroundColor: theme.palette.background.paper,
   border: `1px solid ${theme.palette.divider}`,
-  boxShadow: "0 2px 8px -4px rgba(15, 28, 166, .15)",
   "& .MuiIconButton-root, & .MuiButton-root": {
-    borderRadius: 12,
+    borderRadius: 10,
   },
 }));
 
@@ -87,17 +85,8 @@ function ToolbarLayout1(props: ToolbarLayout1Props) {
         className={clsx("z-20 flex", className)}
         color="default"
         sx={{
-          backgroundColor: (theme) =>
-            alpha(
-              theme.palette.mode === "light"
-                ? toolbarTheme.palette.background.default
-                : toolbarTheme.palette.background.paper,
-              0.72,
-            ),
-          backdropFilter: "blur(16px) saturate(160%)",
-          WebkitBackdropFilter: "blur(16px) saturate(160%)",
-          borderBottom: (theme) =>
-            `1px solid ${alpha(theme.palette.divider, 0.7)}`,
+          backgroundColor: toolbarTheme.palette.background.paper,
+          borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
           boxShadow: "none",
         }}
         position={className?.includes("sticky") ? "sticky" : "static"}
@@ -136,7 +125,7 @@ function ToolbarLayout1(props: ToolbarLayout1Props) {
               <LanguageSwitcher />
               <AdjustFontSize />
               <FullScreenToggle />
-              <span className="mx-4 h-24 w-1 bg-gray-200" />
+              <span className="mx-4 h-24 w-1 bg-brand-purple-100" />
               <UserMenu />
             </ActionsCluster>
           </div>

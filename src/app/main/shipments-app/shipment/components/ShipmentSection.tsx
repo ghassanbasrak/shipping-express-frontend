@@ -55,7 +55,7 @@ export default function ShipmentSection({
           gap: 1.5,
           px: { xs: 2, sm: 3 },
           py: 2,
-          background: `linear-gradient(to ${theme.direction === "rtl" ? "left" : "right"}, ${alpha(theme.palette.primary.main, 0.08)}, transparent)`,
+          backgroundColor: theme.palette.background.paper,
           borderBottom: `1px solid ${theme.palette.divider}`,
         })}
       >
@@ -68,8 +68,7 @@ export default function ShipmentSection({
             display: "grid",
             placeItems: "center",
             color: theme.palette.primary.contrastText,
-            background: `linear-gradient(135deg, ${theme.palette.primary.light}, ${theme.palette.primary.main})`,
-            boxShadow: `0 6px 14px -6px ${alpha(theme.palette.primary.main, 0.6)}`,
+            backgroundColor: theme.palette.primary.main,
           })}
         >
           <FuseSvgIcon size={22} color="inherit">
