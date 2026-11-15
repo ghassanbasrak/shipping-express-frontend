@@ -152,7 +152,7 @@ export default function BankTransfersTable() {
       valueGetter: (row) => row.paymentPlan?.name,
       chip: true,
       toChipTitle: (value) => value,
-      toChipColor: () => "bg-blue-500",
+      toChipColor: () => "bg-status-info-bg text-status-info-fg",
       flex: 1,
       minWidth: 100,
     },

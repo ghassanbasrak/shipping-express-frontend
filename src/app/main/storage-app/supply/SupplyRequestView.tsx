@@ -79,7 +79,7 @@ export default function SupplyRequestView() {
             <>
               <Chip
                 label={t(toSupplyStatusTitle(row.status))}
-                className={toSupplyStatusColor(row.status) + " text-white"}
+                className={toSupplyStatusColor(row.status)}
               />
               {canManageStorage(user) && (
                 <Button

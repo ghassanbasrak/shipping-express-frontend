@@ -1,3 +1,4 @@
+import { tokens } from "src/brand/tokens";
 import { useState } from "react";
 import { Autocomplete, Button, TextField } from "@mui/material";
 import { Link } from "react-router-dom";
@@ -173,7 +174,7 @@ export default function DashboardContent() {
           value={overviewCount(shipments.currentData?.total, i18n.language)}
           change={shipments.currentData?.change}
           icon="local_shipping"
-          accent="#5475d2"
+          accent={tokens.color.chart[1]}
           scope={scope}
           query={shipments}
           testId="metric-total-shipments"
@@ -188,7 +189,7 @@ export default function DashboardContent() {
           )}
           change={revenue.currentData?.change}
           icon="payments"
-          accent="#a7793b"
+          accent={tokens.color.chart[5]}
           scope={`${t(toDashboardPeriodTitle(revenuePeriod))} · ${carrier?.name || t("ALL_CARRIERS")}`}
           query={revenue}
           note={
@@ -202,7 +203,7 @@ export default function DashboardContent() {
           title={t("REVENUE_GROWTH")}
           value={overviewPercent(growth.currentData?.growth, i18n.language)}
           icon="trending_up"
-          accent="#8170b6"
+          accent={tokens.color.chart[0]}
           scope={`${t(toDashboardPeriodTitle(growth.currentData?.period || period))} · ${carrier?.name || t("ALL_CARRIERS")}`}
           query={growth}
           note={t("REPORTED_PERCENTAGE")}

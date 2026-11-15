@@ -161,8 +161,8 @@ export default function PaymentPage() {
         }
       >
         <img
-          src="/assets/images/logo/logo-text.png"
-          alt="Ashamco Express"
+          src="/brand/logos/ashamco-ar-primary.svg"
+          alt="اشامكو إكسبريس"
           className="h-64 max-w-full object-contain mx-auto"
         />
         {state.busy ? (

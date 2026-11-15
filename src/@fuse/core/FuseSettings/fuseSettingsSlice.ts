@@ -16,6 +16,7 @@ import {
 import settingsConfig from "app/configs/settingsConfig";
 import themeLayoutConfigs from "app/theme-layouts/themeLayoutConfigs";
 import { darkPaletteText, lightPaletteText } from "app/configs/themesConfig";
+import { tokens } from "../../../brand/tokens";
 import {
   FuseSettingsConfigType,
   FuseThemesType,
@@ -237,15 +238,12 @@ function generateMuiTheme(
   direction: directionType,
   language: string,
 ) {
-  const fonts = defaultThemeOptions.typography.fontFamily.split(",");
-  fonts[0] = language.split("-")[0] === "ar" ? "LamaSans" : "Inter var";
-
+  // One brand stack for every language: IBM Plex Sans (Latin) + IBM Plex Sans Arabic (see src/brand/tokens.json).
   const data = _.merge(
     {},
     defaultThemeOptions,
     theme,
     mustHaveThemeOptions,
-    { typography: { fontFamily: fonts.join(",") } },
   ) as ThemeOptions;
 
   return createTheme(
@@ -278,10 +276,10 @@ function changeThemeMode(
     dark: {
       palette: {
         mode: "dark",
-        divider: "rgba(241,245,249,.12)",
+        divider: tokens.color.semantic.dark.border,
         background: {
-          paper: "#1E2125",
-          default: "#121212",
+          paper: tokens.color.semantic.dark.surface,
+          default: tokens.color.semantic.dark.background,
         },
         text: darkPaletteText,
       },
@@ -289,10 +287,10 @@ function changeThemeMode(
     light: {
       palette: {
         mode: "light",
-        divider: "#e2e8f0",
+        divider: tokens.color.semantic.light.border,
         background: {
           paper: "#FFFFFF",
-          default: "#F7F7F7",
+          default: tokens.color.semantic.light.background,
         },
         text: lightPaletteText,
       },

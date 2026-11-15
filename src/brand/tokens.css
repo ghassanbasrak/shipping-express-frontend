@@ -1,5 +1,5 @@
-/* Ashamco Express design tokens v1.0.0 (2026-11-08). Generated from shared/tokens.json - do not edit by hand.
-   Fonts are loaded by the <link> in web/head-snippet.html (not imported here). */
+/* Ashamco Express design tokens v1.1.0 (2026-11-15). Generated from src/brand/tokens.json - do not edit by hand (npm run brand:generate).
+   Fonts are loaded by the <link> in index.html (not imported here). */
 
 :root {
   color-scheme: light;
@@ -8,17 +8,18 @@
   --brand-mint: #5EE0B5;
   --brand-white: #FFFFFF;
   /* scales */
+  --purple-25: #FBFAFD;
   --purple-50: #F4F1F8;
-  --purple-100: #E7DEF2;
-  --purple-200: #D1C2E5;
-  --purple-300: #B49CD3;
-  --purple-400: #9474BE;
-  --purple-500: #744CA9;
-  --purple-600: #573384;
+  --purple-100: #EAE3F2;
+  --purple-200: #D7C8E9;
+  --purple-300: #BEA8DC;
+  --purple-400: #9D75D1;
+  --purple-500: #7D47C2;
+  --purple-600: #6436A1;
   --purple-700: #3A1F5D;
-  --purple-800: #2D174A;
-  --purple-900: #211037;
-  --purple-950: #150A24;
+  --purple-800: #2E194A;
+  --purple-900: #211236;
+  --purple-950: #150B22;
   --mint-50: #E8FBF4;
   --mint-100: #DCF8EF;
   --mint-200: #BBF2E0;
@@ -29,29 +30,43 @@
   --mint-700: #2A896B;
   --mint-800: #1A6E54;
   --mint-900: #0E5A43;
-  --ink: #1E1030;
-  --gray: #6E6880;
-  --border: #E4E0EC;
+  --ink: #150B22;
+  --gray: #6E5F81;
+  --border: #EAE3F2;
   /* semantic (light) */
   --ax-primary: #3A1F5D;
   --ax-on-primary: #FFFFFF;
   --ax-accent: #5EE0B5;
   --ax-on-accent: #3A1F5D;
-  --ax-background: #FFFFFF;
+  --ax-background: #FBFAFD;
   --ax-surface: #FFFFFF;
   --ax-surface-alt: #F4F1F8;
-  --ax-text: #1E1030;
-  --ax-text-muted: #6E6880;
-  --ax-border: #7B708E;
+  --ax-text: #150B22;
+  --ax-text-muted: #6E5F81;
+  --ax-border: #EAE3F2;
+  --ax-border-strong: #D7C8E9;
   --ax-link: #3A1F5D;
-  --ax-focus-ring: #3A1F5D;
-  --ax-success: #167A50;
+  --ax-focus-ring: #9D75D1;
+  --ax-success: #14593F;
   --ax-warning: #8A570D;
-  --ax-error: #C9363E;
+  --ax-error: #C0392B;
   --ax-info: #2F6FD6;
+  /* status tones: soft pills (tinted background, dark text) */
+  --ax-tone-success-bg: #DFF5EC;
+  --ax-tone-success-fg: #14593F;
+  --ax-tone-warning-bg: #FBEFD5;
+  --ax-tone-warning-fg: #6B430A;
+  --ax-tone-error-bg: #FBE7E4;
+  --ax-tone-error-fg: #8E2A20;
+  --ax-tone-info-bg: #E3ECFB;
+  --ax-tone-info-fg: #1F4F9E;
+  --ax-tone-neutral-bg: #EAE3F2;
+  --ax-tone-neutral-fg: #3A1F5D;
+  --ax-tone-muted-bg: #EFEBF3;
+  --ax-tone-muted-fg: #4A4057;
   /* type */
-  --font-sans: 'IBM Plex Sans Arabic', Tahoma, Arial, sans-serif;
-  --font-naskh: 'Noto Naskh Arabic', 'Traditional Arabic', 'Times New Roman', serif;
+  --font-sans: 'IBM Plex Sans', 'IBM Plex Sans Arabic', Tahoma, Arial, sans-serif;
+  --font-long: 'Noto Sans', 'Noto Naskh Arabic', 'Traditional Arabic', 'Times New Roman', serif;
   --text-display: 32px;
   --leading-display: 40px;
   --weight-display: 700;
@@ -94,11 +109,13 @@
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
+  --radius-card: 16px;
   --radius-xl: 20px;
+  --radius-icon: 9px;
   --radius-pill: 999px;
-  --shadow-sm: 0 1px 2px rgba(30,16,48,.08);
+  --shadow-sm: 0 1px 2px rgba(21,11,34,.08);
   --shadow-md: 0 6px 18px rgba(58,31,93,.10);
-  --shadow-lg: 0 18px 40px rgba(30,16,48,.18);
+  --shadow-lg: 0 18px 40px rgba(21,11,34,.18);
   --touch-target: 48px;
   --motion-fast: 120ms;
   --motion-base: 200ms;
@@ -106,21 +123,22 @@
   --easing: cubic-bezier(.2,.0,.0,1);
 }
 
-/* dark mode: add data-theme="dark" on <html>, or follow the OS */
+/* dark mode: add data-theme="dark" on <html> */
 [data-theme="dark"] {
   color-scheme: dark;
-  --ax-primary: #D1C2E5;
-  --ax-on-primary: #150A24;
+  --ax-primary: #D7C8E9;
+  --ax-on-primary: #150B22;
   --ax-accent: #5EE0B5;
-  --ax-on-accent: #150A24;
-  --ax-background: #140A22;
-  --ax-surface: #1E1030;
-  --ax-surface-alt: #2A1A42;
+  --ax-on-accent: #150B22;
+  --ax-background: #120F15;
+  --ax-surface: #1C1820;
+  --ax-surface-alt: #26212C;
   --ax-text: #F4F1F8;
-  --ax-text-muted: #B8B0C8;
-  --ax-border: #9A8EAE;
-  --ax-link: #5EE0B5;
-  --ax-focus-ring: #5EE0B5;
+  --ax-text-muted: #B6ADC2;
+  --ax-border: #352E3E;
+  --ax-border-strong: #4A4057;
+  --ax-link: #BEA8DC;
+  --ax-focus-ring: #9D75D1;
   --ax-success: #4CC793;
   --ax-warning: #E2B04F;
   --ax-error: #F06B72;
@@ -129,18 +147,19 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --ax-primary: #D1C2E5;
-    --ax-on-primary: #150A24;
+    --ax-primary: #D7C8E9;
+    --ax-on-primary: #150B22;
     --ax-accent: #5EE0B5;
-    --ax-on-accent: #150A24;
-    --ax-background: #140A22;
-    --ax-surface: #1E1030;
-    --ax-surface-alt: #2A1A42;
+    --ax-on-accent: #150B22;
+    --ax-background: #120F15;
+    --ax-surface: #1C1820;
+    --ax-surface-alt: #26212C;
     --ax-text: #F4F1F8;
-    --ax-text-muted: #B8B0C8;
-    --ax-border: #9A8EAE;
-    --ax-link: #5EE0B5;
-    --ax-focus-ring: #5EE0B5;
+    --ax-text-muted: #B6ADC2;
+    --ax-border: #352E3E;
+    --ax-border-strong: #4A4057;
+    --ax-link: #BEA8DC;
+    --ax-focus-ring: #9D75D1;
     --ax-success: #4CC793;
     --ax-warning: #E2B04F;
     --ax-error: #F06B72;
@@ -151,7 +170,7 @@
 /* base */
 html { font-family: var(--font-sans); color: var(--ax-text); background: var(--ax-background); }
 body { font-size: var(--text-body); line-height: var(--leading-body); }
-.font-naskh { font-family: var(--font-naskh); }
-.num, input[type=number], .tabular { font-variant-numeric: tabular-nums; }
+.font-long, .long-text, .letter { font-family: var(--font-long); line-height: 1.9; }
+.num, input[type=number], .tabular, .amount { font-variant-numeric: tabular-nums lining-nums; }
 :focus-visible { outline: 3px solid var(--ax-focus-ring); outline-offset: 2px; }
-::selection { background: var(--mint-100); color: var(--purple-900); }
+::selection { background: var(--purple-100); color: var(--purple-900); }

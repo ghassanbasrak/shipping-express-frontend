@@ -1,3 +1,4 @@
+import { tokens } from "src/brand/tokens";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAppSelector } from "app/store/hooks";
@@ -51,7 +52,7 @@ export default function RecentShipments() {
           const known = Object.values(shipmentStatus).includes(row.status),
             color = known
               ? toShipmentStatusColor(row.status, false)
-              : "#64748b";
+              : tokens.color.solid.muted;
           return (
             <div
               key={row.id || index}
@@ -79,7 +80,7 @@ export default function RecentShipments() {
                 <span
                   className="ov-status"
                   style={{
-                    color: color === "#99CC00" ? "#5b7c00" : color,
+                    color,
                     background: `${color}12`,
                   }}
                 >

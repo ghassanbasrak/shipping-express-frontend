@@ -41,15 +41,15 @@ export const toMerchantVerificationStatusTitle = (status) => {
 export const toMerchantVerificationStatusColor = (status) => {
   switch (status) {
     case merchantVerificationStatus.notSubmitted:
-      return "bg-amber-500";
+      return "bg-status-warning-bg text-status-warning-fg";
     case merchantVerificationStatus.pending:
-      return "bg-blue-500";
+      return "bg-status-info-bg text-status-info-fg";
     case merchantVerificationStatus.approved:
-      return "bg-green-500";
+      return "bg-status-success-bg text-status-success-fg";
     case merchantVerificationStatus.rejected:
-      return "bg-red-500";
+      return "bg-status-error-bg text-status-error-fg";
   }
-  return "bg-amber-500";
+  return "bg-status-warning-bg text-status-warning-fg";
 };
 export const toMerchantLoyaltyTypeShortTitle = (type) => {
   switch (type) {
@@ -88,17 +88,17 @@ export const merchantActiveStatus = {
 export const toMerchantActiveStatusTitle = (status: string) =>
   status === "true" ? "ACTIVE" : "INACTIVE";
 export const toMerchantActiveStatusColor = (status: string) =>
-  status === "true" ? "bg-green-500" : "bg-red-500";
+  status === "true" ? "bg-status-success-bg text-status-success-fg" : "bg-status-error-bg text-status-error-fg";
 export const merchantSortDirections = { asc: "asc", desc: "desc" } as const;
 export const toMerchantSortDirectionTitle = (direction: string) =>
   direction === "asc" ? "ASCENDING" : "DESCENDING";
-export const toMerchantSortDirectionColor = () => "bg-blue-500";
+export const toMerchantSortDirectionColor = () => "bg-status-info-bg text-status-info-fg";
 export const toMerchantLoyaltyTypeColor = (type: string) =>
-  type === "custom" ? "bg-purple-500" : "bg-blue-500";
+  type === "custom" ? "bg-status-neutral-bg text-status-neutral-fg" : "bg-status-info-bg text-status-info-fg";
 export const toMerchantBalanceTypeFilterColor = (type: string) =>
-  ({ positive: "bg-green-500", zero: "bg-gray-500", negative: "bg-red-500" })[
+  ({ positive: "bg-status-success-bg text-status-success-fg", zero: "bg-status-muted-bg text-status-muted-fg", negative: "bg-status-error-bg text-status-error-fg" })[
     type
-  ] || "bg-gray-500";
+  ] || "bg-status-muted-bg text-status-muted-fg";
 export const canViewMerchants = (user: User) =>
   user.role !== "user" && hasOperationPermission("merchants", "view", user);
 export const canUpdateMerchant = (user: User) =>

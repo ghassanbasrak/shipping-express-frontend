@@ -150,11 +150,11 @@ export const toAdminRoleTitle = (role: string) => {
 export const toAdminRoleColor = (role: string) => {
   switch (role) {
     case adminRoles.employee:
-      return "bg-blue-500";
+      return "bg-status-info-bg text-status-info-fg";
     case adminRoles.admin:
-      return "bg-green-500";
+      return "bg-status-success-bg text-status-success-fg";
   }
-  return "bg-blue-500";
+  return "bg-status-info-bg text-status-info-fg";
 };
 
 export const adminRelatedLinks = [

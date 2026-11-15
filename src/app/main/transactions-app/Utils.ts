@@ -62,16 +62,16 @@ export const toTransactionTypeTitle = (value: string) =>
 export const toTransactionTypeColor = (value: string) =>
   (
     ({
-      deposit: "bg-green-400",
-      withdraw: "bg-red-400",
-      reset: "bg-amber-600",
-      pending: "bg-blue-500",
-      success: "bg-green-500",
-      rejected: "bg-red-500",
-      wallet: "bg-blue-500",
-      cod: "bg-green-500",
+      deposit: "bg-status-success-bg text-status-success-fg",
+      withdraw: "bg-status-error-bg text-status-error-fg",
+      reset: "bg-status-warning-bg text-status-warning-fg",
+      pending: "bg-status-info-bg text-status-info-fg",
+      success: "bg-status-success-bg text-status-success-fg",
+      rejected: "bg-status-error-bg text-status-error-fg",
+      wallet: "bg-status-info-bg text-status-info-fg",
+      cod: "bg-status-success-bg text-status-success-fg",
     }) as Record<string, string>
-  )[value] || "bg-blue-500";
+  )[value] || "bg-status-info-bg text-status-info-fg";
 const relatedBalanceTypeTitles: Record<string, string> = {
   wallet: "WALLET_BALANCE",
   cod: "COD_BALANCE",
@@ -81,16 +81,16 @@ export const toRelatedBalanceTypeTitle = (value: string) =>
 export const toRelatedBalanceTypeColor = (value: string) =>
   (
     ({
-      deposit: "bg-green-400",
-      withdraw: "bg-red-400",
-      reset: "bg-amber-600",
-      pending: "bg-blue-500",
-      success: "bg-green-500",
-      rejected: "bg-red-500",
-      wallet: "bg-blue-500",
-      cod: "bg-green-500",
+      deposit: "bg-status-success-bg text-status-success-fg",
+      withdraw: "bg-status-error-bg text-status-error-fg",
+      reset: "bg-status-warning-bg text-status-warning-fg",
+      pending: "bg-status-info-bg text-status-info-fg",
+      success: "bg-status-success-bg text-status-success-fg",
+      rejected: "bg-status-error-bg text-status-error-fg",
+      wallet: "bg-status-info-bg text-status-info-fg",
+      cod: "bg-status-success-bg text-status-success-fg",
     }) as Record<string, string>
-  )[value] || "bg-blue-500";
+  )[value] || "bg-status-info-bg text-status-info-fg";
 const addTransactionTypeTitles: Record<string, string> = {
   deposit: "DEPOSIT",
   withdraw: "WITHDRAW",
@@ -101,16 +101,16 @@ export const toAddTransactionTypeTitle = (value: string) =>
 export const toAddTransactionTypeColor = (value: string) =>
   (
     ({
-      deposit: "bg-green-400",
-      withdraw: "bg-red-400",
-      reset: "bg-amber-600",
-      pending: "bg-blue-500",
-      success: "bg-green-500",
-      rejected: "bg-red-500",
-      wallet: "bg-blue-500",
-      cod: "bg-green-500",
+      deposit: "bg-status-success-bg text-status-success-fg",
+      withdraw: "bg-status-error-bg text-status-error-fg",
+      reset: "bg-status-warning-bg text-status-warning-fg",
+      pending: "bg-status-info-bg text-status-info-fg",
+      success: "bg-status-success-bg text-status-success-fg",
+      rejected: "bg-status-error-bg text-status-error-fg",
+      wallet: "bg-status-info-bg text-status-info-fg",
+      cod: "bg-status-success-bg text-status-success-fg",
     }) as Record<string, string>
-  )[value] || "bg-blue-500";
+  )[value] || "bg-status-info-bg text-status-info-fg";
 const affiliateTransactionStatusTitles: Record<string, string> = {
   pending: "PENDING",
   success: "SUCCESS",
@@ -121,16 +121,16 @@ export const toAffiliateTransactionStatusTitle = (value: string) =>
 export const toAffiliateTransactionStatusColor = (value: string) =>
   (
     ({
-      deposit: "bg-green-400",
-      withdraw: "bg-red-400",
-      reset: "bg-amber-600",
-      pending: "bg-blue-500",
-      success: "bg-green-500",
-      rejected: "bg-red-500",
-      wallet: "bg-blue-500",
-      cod: "bg-green-500",
+      deposit: "bg-status-success-bg text-status-success-fg",
+      withdraw: "bg-status-error-bg text-status-error-fg",
+      reset: "bg-status-warning-bg text-status-warning-fg",
+      pending: "bg-status-info-bg text-status-info-fg",
+      success: "bg-status-success-bg text-status-success-fg",
+      rejected: "bg-status-error-bg text-status-error-fg",
+      wallet: "bg-status-info-bg text-status-info-fg",
+      cod: "bg-status-success-bg text-status-success-fg",
     }) as Record<string, string>
-  )[value] || "bg-blue-500";
+  )[value] || "bg-status-info-bg text-status-info-fg";
 const depositTransactionTypeTitles: Record<string, string> = {
   custom: "CUSTOM",
   bankTransferRajhi: "BANK_TRANSFER_RAJHI",
@@ -143,16 +143,16 @@ export const toDepositTransactionTypeTitle = (value: string) =>
 export const toDepositTransactionTypeColor = (value: string) =>
   (
     ({
-      deposit: "bg-green-400",
-      withdraw: "bg-red-400",
-      reset: "bg-amber-600",
-      pending: "bg-blue-500",
-      success: "bg-green-500",
-      rejected: "bg-red-500",
-      wallet: "bg-blue-500",
-      cod: "bg-green-500",
+      deposit: "bg-status-success-bg text-status-success-fg",
+      withdraw: "bg-status-error-bg text-status-error-fg",
+      reset: "bg-status-warning-bg text-status-warning-fg",
+      pending: "bg-status-info-bg text-status-info-fg",
+      success: "bg-status-success-bg text-status-success-fg",
+      rejected: "bg-status-error-bg text-status-error-fg",
+      wallet: "bg-status-info-bg text-status-info-fg",
+      cod: "bg-status-success-bg text-status-success-fg",
     }) as Record<string, string>
-  )[value] || "bg-blue-500";
+  )[value] || "bg-status-info-bg text-status-info-fg";
 const withdrawTransactionTypeTitles: Record<string, string> = {
   custom: "CUSTOM",
   visaFees: "VISA_FEES",
@@ -163,16 +163,16 @@ export const toWithdrawTransactionTypeTitle = (value: string) =>
 export const toWithdrawTransactionTypeColor = (value: string) =>
   (
     ({
-      deposit: "bg-green-400",
-      withdraw: "bg-red-400",
-      reset: "bg-amber-600",
-      pending: "bg-blue-500",
-      success: "bg-green-500",
-      rejected: "bg-red-500",
-      wallet: "bg-blue-500",
-      cod: "bg-green-500",
+      deposit: "bg-status-success-bg text-status-success-fg",
+      withdraw: "bg-status-error-bg text-status-error-fg",
+      reset: "bg-status-warning-bg text-status-warning-fg",
+      pending: "bg-status-info-bg text-status-info-fg",
+      success: "bg-status-success-bg text-status-success-fg",
+      rejected: "bg-status-error-bg text-status-error-fg",
+      wallet: "bg-status-info-bg text-status-info-fg",
+      cod: "bg-status-success-bg text-status-success-fg",
     }) as Record<string, string>
-  )[value] || "bg-blue-500";
+  )[value] || "bg-status-info-bg text-status-info-fg";
 const transactionTitleTypeTitles: Record<string, string> = {
   "shipment extra weight fees": "SHIPMENT_EXTRA_WEIGHT_FEES",
   "returned shipment fees": "RETURNED_SHIPMENT_FEES",
@@ -193,16 +193,16 @@ export const toTransactionTitleTypeTitle = (value: string) =>
 export const toTransactionTitleTypeColor = (value: string) =>
   (
     ({
-      deposit: "bg-green-400",
-      withdraw: "bg-red-400",
-      reset: "bg-amber-600",
-      pending: "bg-blue-500",
-      success: "bg-green-500",
-      rejected: "bg-red-500",
-      wallet: "bg-blue-500",
-      cod: "bg-green-500",
+      deposit: "bg-status-success-bg text-status-success-fg",
+      withdraw: "bg-status-error-bg text-status-error-fg",
+      reset: "bg-status-warning-bg text-status-warning-fg",
+      pending: "bg-status-info-bg text-status-info-fg",
+      success: "bg-status-success-bg text-status-success-fg",
+      rejected: "bg-status-error-bg text-status-error-fg",
+      wallet: "bg-status-info-bg text-status-info-fg",
+      cod: "bg-status-success-bg text-status-success-fg",
     }) as Record<string, string>
-  )[value] || "bg-blue-500";
+  )[value] || "bg-status-info-bg text-status-info-fg";
 
 export const transactionFeature = (balance: string) =>
   balance === relatedBalanceTypes.cod ? "cod-transactions" : "transactions";

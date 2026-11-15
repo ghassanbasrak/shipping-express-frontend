@@ -1,3 +1,4 @@
+import { tokens } from "src/brand/tokens";
 import type IPlan from "./models/IPlan";
 import type { IPlanPrice } from "./models/IPlan";
 import type { PlanFormValues } from "./models/PlanSchema";
@@ -6,7 +7,9 @@ export const planStatus = { disabled: "disabled", active: "active" } as const;
 export const toPlanStatusTitle = (status: string) =>
   status === planStatus.active ? "ACTIVE" : "DISABLED";
 export const toPlanStatusColor = (status: string) =>
-  status === planStatus.active ? "green" : "red";
+  status === planStatus.active
+    ? tokens.color.solid.success
+    : tokens.color.solid.error;
 
 export function toPlanFormValues(plan: IPlan): PlanFormValues {
   return {

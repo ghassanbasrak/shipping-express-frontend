@@ -275,7 +275,8 @@
     "test:shipments": "node scripts/shipments-regression.cjs",
     "test:shipments:browser": "npm run build && node scripts/shipments-browser-smoke.cjs",
     "test:cod-operations": "node scripts/cod-operations-regression.cjs",
-    "test:cod-operations:browser": "npm run build && node scripts/cod-operations-browser-smoke.cjs"
+    "test:cod-operations:browser": "npm run build && node scripts/cod-operations-browser-smoke.cjs",
+    "brand:generate": "node scripts/generate-brand-tokens.cjs"
   },
   "engines": {
     "node": ">=18.0.0",

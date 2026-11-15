@@ -1412,5 +1412,40 @@
       "unchangedSourceGaps": "Historical packaging/balance-error checkout gaps remain outside this shipment review change.",
       "exclusions": "Retired account-review, commerce/platform and standalone comparison features remain excluded."
     }
+  },
+  "brandStyleAlignment": {
+    "date": "2026-11-15",
+    "status": "complete for the agreed full pass; fixture/browser checks only, no live backend acceptance",
+    "source": "Palette and fonts follow 'Ashamco Express Fonts.html' (client locked dashboard replica); logos, mint and status proposals come from Ashamco-Express-Dev-Handoff v1.0.0. The two references differ on purple tints 100-600 and 800-950: Fonts.html values were chosen by the user.",
+    "master": "src/brand/tokens.json (tracked). npm run brand:generate rebuilds tokens.css/ts, tailwind.preset.{js,cjs} and tailwind.v4.css; npm run test:brand-tokens verifies them.",
+    "completed": [
+      "Purple scale 25-950 from Fonts.html, muted/ink/neutral-dark values, soft status tones (success/warning/error/info/neutral/muted) and chart palette in tokens.",
+      "MUI themes (ashamcoLight/Dark/Navbar) read tokens: brand text colours, solid and tone status palettes, purple secondary (mint kept for brand/logo only), radius 10 buttons/inputs, 20 chips, brand typography scale and purple-tinted shadows.",
+      "Fonts: IBM Plex Sans + IBM Plex Sans Arabic for UI, Noto Sans + Noto Naskh Arabic for long text (.font-long); LamaSans/Inter override removed; invoice font stack and accent updated.",
+      "Shell: flat purple-900 sidebar with purple-700 section blocks and white active item, flat toolbar, flat page background, flat feature header/auth hero with ring, gradients and blue/violet/navy shadows removed.",
+      "Status chips: ~150 palette classes in feature Utils.ts mapped to bg-status-*-bg text-status-*-fg; CustomTable renders soft pills; hex helpers use token solids. Shipment delivered uses the neutral tone so it stays distinct from pending (info).",
+      "Charts/overview: Chakra, teal, indigo and bronze palettes replaced by token chart colours; overview hero is purple-700; KPI values no longer break inside numbers.",
+      "HTML head: dark theme-color, favicon links, og image size, font preconnects; stale manifest.json/favicon.png removed; payment callback and website-builder header use the brand logo."
+    ],
+    "decisionsToConfirm": [
+      "Warning and info solid colours come from the Dev Handoff because Fonts.html defines none; error tone background/foreground pairs are derived from #C0392B.",
+      "Control height stays 40px (matches the replica) instead of the Dev Handoff 48px touch target.",
+      "Dark theme is retained but unreachable in layout1; Fonts.html is light-only.",
+      "Focus ring is purple-400 (Fonts.html) instead of the Dev Handoff mint ring."
+    ],
+    "outOfScope": [
+      "unDraw error-page illustrations",
+      "website-builder demo block palettes and old PNG logos in builder blocks",
+      "Flutter/mobile assets",
+      "colors.jpeg (older gold/charcoal palette used by neither reference)"
+    ],
+    "validation": {
+      "typecheck": "npx tsc --project tsconfig.app.json --noEmit passes",
+      "productionBuild": "npx vite build passes",
+      "brandTokens": "npm run test:brand-tokens passes",
+      "regressionChecks": "auth, foundations, applications, shipments, shipping-companies, topups, merchants, transactions and the other previously passing suites pass; harness stubs and expected colours/fonts updated for tokens. Failing before and after this change (unchanged): cod-operations, coupons-alerts, navigation, overviews, packaging, services-balance, storage-backend.",
+      "browser": "Demo-mode Chrome checks: /home and /dashboard (Arabic desktop, English desktop), /shipments list (Arabic desktop and 390px mobile). Computed styles confirmed: font IBM Plex Sans/IBM Plex Sans Arabic loaded, page #FBFAFD, text #150B22, sidebar #211236, secondary button #6436A1 radius 10, soft chips; 0 console errors. Sign-in, other lists, detail forms and dialogs were not screenshotted.",
+      "notRun": "full-source lint and the browser-smoke suites (auth-browser-smoke fonts assertions updated but not executed)"
+    }
   }
 }

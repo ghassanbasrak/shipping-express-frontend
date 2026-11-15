@@ -1,3 +1,4 @@
+import { tokens } from "src/brand/tokens";
 import { useTranslation } from "react-i18next";
 import { OverviewSection } from "app/shared-components/overview/Overview";
 import {
@@ -33,7 +34,7 @@ export default function AttentionPanel({ period }: { period: string }) {
               className="ov-dot"
               style={{
                 background:
-                  overviewNumber(data[key]) === 0 ? "#91a3b4" : "#d3973a",
+                  overviewNumber(data[key]) === 0 ? tokens.color.solid.muted : tokens.color.solid.warning,
               }}
             />
             <span>{t(title)}</span>

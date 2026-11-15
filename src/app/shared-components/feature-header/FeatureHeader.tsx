@@ -20,7 +20,7 @@ export default function FeatureHeader({
       className={`flex flex-col gap-24 w-full min-w-0 p-16 border-b-1 ${className}`}
       sx={(theme) => ({
         borderColor: theme.palette.divider,
-        background: `linear-gradient(120deg, ${alpha(theme.palette.primary.main, 0.045)}, ${theme.palette.background.paper} 75%)`,
+        backgroundColor: theme.palette.background.paper,
       })}
     >
       {children}

@@ -208,10 +208,9 @@ export default function UserInfoTab({ merchant }: { merchant: IMerchant }) {
           label={t(
             toMerchantVerificationStatusTitle(merchant.verificationStatus),
           )}
-          className={
-            toMerchantVerificationStatusColor(merchant.verificationStatus) +
-            " text-white"
-          }
+          className={toMerchantVerificationStatusColor(
+            merchant.verificationStatus,
+          )}
         />
         <Chip label={t(toMerchantLoyaltyTypeTitle(merchant.loyaltyType))} />
         {[

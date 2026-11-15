@@ -50,7 +50,10 @@ function load(file, imports = {}) {
 const lodash = require(path.join(target, "node_modules/lodash"));
 const plansPath = "src/app/main/plans-app/";
 const adminsPath = "src/app/main/admins-app/";
-const planUtils = load(plansPath + "Utils.ts");
+const brandTokens = load("src/brand/tokens.ts");
+const planUtils = load(plansPath + "Utils.ts", {
+  "src/brand/tokens": brandTokens,
+});
 const planModel = load(plansPath + "models/PlanModel.ts", {
   "@lodash": lodash,
   "../Utils": planUtils,
@@ -156,7 +159,7 @@ async function main() {
   check("plan defaults and enum titles", () => {
     assert.equal(planModel.default({}).status, "active");
     assert.equal(planUtils.toPlanStatusTitle("disabled"), "DISABLED");
-    assert.equal(planUtils.toPlanStatusColor("active"), "green");
+    assert.equal(planUtils.toPlanStatusColor("active"), brandTokens.tokens.color.solid.success);
   });
   check(
     "plan name, positive price and at least one feature are required",

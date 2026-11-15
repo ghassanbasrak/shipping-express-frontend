@@ -1,23 +1,56 @@
 import { fuseDark, skyBlue } from '@fuse/colors'
 import { blueGrey } from '@mui/material/colors'
 import { FuseThemesType } from '@fuse/core/FuseSettings/FuseSettings'
+import { tokens } from '../../brand/tokens'
+
+const { purple, status, tone, neutral, semantic } = tokens.color
 
 /**
- * The lightPaletteText object defines the text color palette for the light theme.
+ * The lightPaletteText object defines the text color palette for the light theme (brand ink / muted).
  */
 export const lightPaletteText = {
-  primary: 'rgb(17, 24, 39)',
-  secondary: 'rgb(107, 114, 128)',
-  disabled: 'rgb(149, 156, 169)',
+  primary: neutral.ink,
+  secondary: neutral.gray,
+  disabled: '#A79BB8',
 }
 
 /**
  * The darkPaletteText object defines the text color palette for the dark theme.
  */
 export const darkPaletteText = {
-  primary: 'rgb(255,255,255)',
-  secondary: 'rgb(148, 163, 184)',
-  disabled: 'rgb(156, 163, 175)',
+  primary: semantic.dark.text,
+  secondary: semantic.dark.textMuted,
+  disabled: '#8A8096',
+}
+
+/**
+ * Status palettes: solid colour for buttons/alerts, soft tone pair for chips (see tokens.color.tone).
+ */
+export const statusPalette = {
+  success: {
+    light: '#2F7D5F',
+    main: status.success,
+    dark: '#0E4430',
+    contrastText: '#FFFFFF',
+  },
+  warning: {
+    light: '#B7791F',
+    main: status.warning,
+    dark: tone.warning.fg,
+    contrastText: '#FFFFFF',
+  },
+  error: {
+    light: '#D6685D',
+    main: status.error,
+    dark: tone.error.fg,
+    contrastText: '#FFFFFF',
+  },
+  info: {
+    light: '#5C8FE0',
+    main: status.info,
+    dark: tone.info.fg,
+    contrastText: '#FFFFFF',
+  },
 }
 
 /**
@@ -27,46 +60,52 @@ export const themesConfig: FuseThemesType = {
   ashamcoLight: {
     palette: {
       mode: 'light',
-      divider: '#E4E0EC',
+      divider: neutral.border,
       text: lightPaletteText,
       primary: {
-        light: '#573384',
-        main: '#3A1F5D',
-        dark: '#2D174A',
+        light: purple['600'],
+        main: purple['700'],
+        dark: purple['800'],
         contrastText: '#FFFFFF',
       },
+      // The approved dashboard replica has one purple accent; mint stays a logo/brand-accent token only.
       secondary: {
-        light: '#5EE0B5',
-        main: '#2A896B',
-        dark: '#1A6E54',
+        light: purple['500'],
+        main: purple['600'],
+        dark: purple['700'],
         contrastText: '#FFFFFF',
       },
+      ...statusPalette,
       background: {
         paper: '#FFFFFF',
-        default: '#F4F1F8',
+        default: semantic.light.background,
       },
     },
   },
   ashamcoDark: {
     palette: {
       mode: 'dark',
-      divider: 'rgba(255,255,255,.12)',
+      divider: semantic.dark.border,
       text: darkPaletteText,
       primary: {
-        light: '#E7DEF2',
-        main: '#D1C2E5',
-        dark: '#B49CD3',
-        contrastText: '#150A24',
+        light: purple['100'],
+        main: purple['200'],
+        dark: purple['300'],
+        contrastText: purple['950'],
       },
       secondary: {
-        light: '#5EE0B5',
-        main: '#2A896B',
-        dark: '#1A6E54',
-        contrastText: '#150A24',
+        light: purple['200'],
+        main: purple['300'],
+        dark: purple['400'],
+        contrastText: purple['950'],
       },
+      success: { ...statusPalette.success, main: semantic.dark.success },
+      warning: { ...statusPalette.warning, main: semantic.dark.warning, contrastText: purple['950'] },
+      error: { ...statusPalette.error, main: semantic.dark.error, contrastText: purple['950'] },
+      info: { ...statusPalette.info, main: semantic.dark.info, contrastText: purple['950'] },
       background: {
-        paper: '#1E1030',
-        default: '#140A22',
+        paper: semantic.dark.surface,
+        default: semantic.dark.background,
       },
     },
   },
@@ -76,20 +115,22 @@ export const themesConfig: FuseThemesType = {
       divider: 'rgba(255,255,255,.12)',
       text: darkPaletteText,
       primary: {
-        light: '#573384',
-        main: '#3A1F5D',
-        dark: '#2D174A',
+        light: purple['600'],
+        main: purple['700'],
+        dark: purple['800'],
         contrastText: '#FFFFFF',
       },
+      // The approved dashboard replica has one purple accent; mint stays a logo/brand-accent token only.
       secondary: {
-        light: '#5EE0B5',
-        main: '#2A896B',
-        dark: '#1A6E54',
+        light: purple['500'],
+        main: purple['600'],
+        dark: purple['700'],
         contrastText: '#FFFFFF',
       },
+      ...statusPalette,
       background: {
-        paper: '#3A1F5D',
-        default: '#3A1F5D',
+        paper: purple['900'],
+        default: purple['900'],
       },
     },
   },

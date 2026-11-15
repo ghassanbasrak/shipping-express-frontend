@@ -15,43 +15,10 @@ import { selectUser } from "src/app/auth/user/store/userSlice";
 
 const Root = styled("div")(({ theme }) => ({
   position: "relative",
-  borderRadius: 24,
+  borderRadius: 20,
   color: theme.palette.text.primary,
-  background: `linear-gradient(165deg, ${alpha(theme.palette.primary.main, 0.8)} 0%, ${alpha(theme.palette.primary.main, 0.8)} 38%, ${alpha(theme.palette.primary.dark, 0.8)} 100%)`,
-  border: `1px solid ${alpha("#ffffff", 0.1)}`,
-  boxShadow:
-    "0 24px 48px -16px rgba(9, 20, 80, .55), inset 0 1px 0 rgba(255,255,255,.08)",
-  "&::before, &::after": {
-    content: '""',
-    position: "absolute",
-    borderRadius: "50%",
-    pointerEvents: "none",
-    filter: "blur(40px)",
-  },
-  "&::before": {
-    width: 220,
-    height: 220,
-    top: -90,
-    right: -80,
-    background:
-      "radial-gradient(circle, rgba(124,77,255,.55), transparent 70%)",
-  },
-  "&::after": {
-    width: 240,
-    height: 240,
-    bottom: -100,
-    left: -90,
-    background: "radial-gradient(circle, rgba(44,94,245,.5), transparent 70%)",
-  },
-  "& .navbar-dots": {
-    position: "absolute",
-    inset: 0,
-    pointerEvents: "none",
-    opacity: 0.5,
-    backgroundImage:
-      "radial-gradient(rgba(255,255,255,.07) 1px, transparent 1px)",
-    backgroundSize: "18px 18px",
-  },
+  // Flat brand panel (purple-900), as in the approved dashboard replica
+  backgroundColor: theme.palette.background.default,
   "& ::-webkit-scrollbar-thumb": {
     boxShadow: "inset 0 0 0 20px rgba(255, 255, 255, 0.18)",
   },
@@ -86,12 +53,11 @@ function NavbarStyle1Content(props: NavbarStyle1ContentProps) {
         props.className,
       )}
     >
-      <div className="navbar-dots" />
-
-      <div className="relative z-10 flex h-72 shrink-0 items-center px-20 -mx-6">
-        <div className="flex items-center justify-center rounded-16 bg-white/20 ring-1 ring-white/10 px-16 py-6  backdrop-blur-md w-full">
+      <div className="relative z-10 flex shrink-0 items-center justify-center px-20 pb-4 pt-20">
+        <div className="flex w-full items-center justify-center">
           <img
-            className="w-full max-w-160"
+            className="w-full"
+            style={{ maxWidth: 136 }}
             src={`/brand/logos/ashamco-${i18n.language.startsWith("ar") ? "ar" : "en"}-on-purple.svg`}
             alt="اشامكو إكسبريس"
           />
@@ -106,8 +72,11 @@ function NavbarStyle1Content(props: NavbarStyle1ContentProps) {
       </StyledContent>
 
       {user && (
-        <div className="relative z-10 shrink-0 p-12">
-          <div className="flex items-center gap-10 rounded-16 bg-white/10 p-10 ring-1 ring-white/10 backdrop-blur-md">
+        <div className="relative z-10 shrink-0 p-10">
+          <div
+            className="flex items-center gap-10 rounded-lg p-10"
+            style={{ backgroundColor: "var(--purple-700)" }}
+          >
             <Avatar
               src={user.avatarUrl}
               alt={displayName}
@@ -115,9 +84,8 @@ function NavbarStyle1Content(props: NavbarStyle1ContentProps) {
                 width: 40,
                 height: 40,
                 fontWeight: 700,
-                color: "#fff",
-                background: (theme) =>
-                  `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
+                color: "var(--purple-800)",
+                backgroundColor: "#fff",
               }}
             >
               {(user.firstName?.[0] ?? user.email?.[0] ?? "").toUpperCase()}
@@ -126,7 +94,10 @@ function NavbarStyle1Content(props: NavbarStyle1ContentProps) {
               <Typography className="truncate text-13 font-semibold text-white">
                 {displayName}
               </Typography>
-              <Typography className="truncate text-11 capitalize text-white/60">
+              <Typography
+                className="truncate text-11 capitalize"
+                style={{ color: "var(--purple-100)" }}
+              >
                 {user.role ?? user.email}
               </Typography>
             </div>
@@ -135,11 +106,13 @@ function NavbarStyle1Content(props: NavbarStyle1ContentProps) {
                 component={Link}
                 to="/sign-out"
                 size="small"
-                sx={{
+                sx={(theme) => ({
                   color: "#fff",
                   backgroundColor: alpha("#ffffff", 0.1),
-                  "&:hover": { backgroundColor: alpha("#ff5c7c", 0.35) },
-                }}
+                  "&:hover": {
+                    backgroundColor: alpha(theme.palette.error.main, 0.55),
+                  },
+                })}
               >
                 <FuseSvgIcon size={18}>heroicons-outline:logout</FuseSvgIcon>
               </IconButton>

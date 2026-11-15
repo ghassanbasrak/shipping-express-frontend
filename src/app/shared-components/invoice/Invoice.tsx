@@ -4,13 +4,12 @@ import InvoiceDetails from "./InvoiceDetails";
 import InvoiceBody from "./body/InvoiceBody";
 import InvoiceSummary from "./InvoiceSummary";
 import { forwardRef } from "react";
+import { tokens } from "../../../brand/tokens";
 
 const Root = styled("div")(({ theme }) => ({
   "&, & *": {
-    fontFamily:
-      theme.direction === "rtl"
-        ? "'Cairo', sans-serif !important"
-        : "'Inter var', sans-serif !important",
+    fontFamily: `${tokens.font.stack.sans} !important`,
+    fontVariantNumeric: "tabular-nums lining-nums",
   },
   ".pageLayout": { display: "flex" },
   ".header": {
@@ -31,7 +30,7 @@ const Root = styled("div")(({ theme }) => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    border: "1px solid #1976d2",
+    border: `1px solid ${tokens.color.purple["700"]}`,
     borderRadius: "50px",
     padding: "12px 30px 12px 20px",
     backgroundColor: "#ffffff",

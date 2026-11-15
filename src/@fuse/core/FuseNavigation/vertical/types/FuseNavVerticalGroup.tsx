@@ -21,16 +21,41 @@ const Root = styled(ListItem)<ListItemButtonComponentProps>(
   ({ theme, ...props }) => ({
     width: "100%",
     borderRadius: 8,
-    margin: "12px 0 4px 0",
-    paddingRight: 14,
+    margin: 0,
+    paddingRight: 10,
     paddingLeft: props.itempadding,
     paddingTop: 4,
-    paddingBottom: 4,
+    paddingBottom: 6,
+    gap: 8,
     color: alpha(theme.palette.text.primary, 0.7),
     fontWeight: 600,
-    letterSpacing: "0.025em",
+    // small square marker before the group label (purple-300), as in the approved dashboard replica
+    "&::before": {
+      content: '""',
+      width: 8,
+      height: 8,
+      borderRadius: 3,
+      flex: "none",
+      backgroundColor: "var(--purple-300)",
+    },
   }),
 );
+
+// Top-level groups are rendered as purple-700 section blocks inside the purple-900 sidebar.
+const Section = styled("li")(() => ({
+  listStyle: "none",
+  borderRadius: 14,
+  padding: "8px 6px 6px",
+  marginBottom: 10,
+  backgroundColor: "var(--purple-700)",
+  "& > ul": {
+    listStyle: "none",
+    margin: 0,
+    padding: 0,
+    display: "grid",
+    gap: 2,
+  },
+}));
 
 /**
  * FuseNavVerticalGroup is a component used to render a group of navigation items in a vertical layout.
@@ -162,8 +187,10 @@ function FuseNavVerticalGroup(props: FuseNavItemComponentProps) {
             ...(item.childrenPosition === "after" ? item.children : []),
           ]
         : [];
-    return children.filter((child) => child?.hasPermission)?.length ===
-      0 ? null : (
+    if (children.filter((child) => child?.hasPermission)?.length === 0) {
+      return null;
+    }
+    const content = (
       <>
         <Root
           component={component}
@@ -181,14 +208,13 @@ function FuseNavVerticalGroup(props: FuseNavItemComponentProps) {
             sx={{
               margin: 0,
               "& > .MuiListItemText-primary": {
-                fontSize: 11,
+                fontSize: 12,
                 color: (theme) =>
                   theme.palette.mode === "dark"
-                    ? "rgba(255,255,255,.45)"
+                    ? "var(--purple-100)"
                     : "text.secondary",
-                fontWeight: 700,
-                textTransform: "uppercase",
-                letterSpacing: ".12em",
+                fontWeight: 600,
+                letterSpacing: ".02em",
                 lineHeight: "20px",
               },
 
@@ -220,6 +246,13 @@ function FuseNavVerticalGroup(props: FuseNavItemComponentProps) {
           </>
         )}
       </>
+    );
+    return nestedLevel === 0 ? (
+      <Section>
+        <ul>{content}</ul>
+      </Section>
+    ) : (
+      content
     );
   }, [
     item,

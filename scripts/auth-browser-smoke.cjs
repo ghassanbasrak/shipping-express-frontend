@@ -381,7 +381,7 @@ async function main() {
     "protected-route redirect",
   );
   console.log("PASS Guest protected-route redirect");
-  await assertTypographyFont("Inter var");
+  await assertTypographyFont("IBM Plex Sans");
   assert.equal(
     await evaluate("document.querySelector('a[href=\"/sign-up\"]') !== null"),
     true,
@@ -648,7 +648,7 @@ async function main() {
     Buffer.from(mobile.data, "base64"),
   );
   console.log("PASS Arabic RTL and mobile sign-in");
-  await assertTypographyFont("LamaSans");
+  await assertTypographyFont("IBM Plex Sans");
   assert.equal(
     await evaluate(
       "document.documentElement.scrollWidth <= document.documentElement.clientWidth",

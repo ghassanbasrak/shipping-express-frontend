@@ -62,13 +62,13 @@ export const toTopupRequestStatusTitle = (status) => {
 export const toTopupRequestStatusColor = (status) => {
   switch (status) {
     case topupRequestStatus.pending:
-      return "bg-blue-600";
+      return "bg-status-info-bg text-status-info-fg";
     case topupRequestStatus.confirmed:
-      return "bg-green-600";
+      return "bg-status-success-bg text-status-success-fg";
     case topupRequestStatus.refused:
-      return "bg-red-600";
+      return "bg-status-error-bg text-status-error-fg";
   }
-  return "bg-blue-600";
+  return "bg-status-info-bg text-status-info-fg";
 };
 
 export const getHyperpayResultCodeError = (code, lang) => {

@@ -76,7 +76,7 @@ export function AuthForm({
           fullWidth
           loading={methods.formState.isSubmitting}
           disabled={disabled || methods.formState.isSubmitting}
-          sx={{ minHeight: 52, borderRadius: 2, fontWeight: 700, fontSize: 15, textTransform: "none", boxShadow: "none", bgcolor: "primary.main", color: "primary.contrastText", "&:hover": { bgcolor: "primary.dark", boxShadow: "0 8px 20px rgba(48, 32, 120, .16)" }, "@media (prefers-reduced-motion: reduce)": { transition: "none" } }}
+          sx={{ minHeight: 52, borderRadius: 2, fontWeight: 700, fontSize: 15, textTransform: "none", boxShadow: "none", bgcolor: "primary.main", color: "primary.contrastText", "&:hover": { bgcolor: "primary.dark", boxShadow: "0 8px 20px rgba(58, 31, 93, .22)" }, "@media (prefers-reduced-motion: reduce)": { transition: "none" } }}
         >
           {submit}
         </LoadingButton>

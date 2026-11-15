@@ -359,6 +359,9 @@ async function main() {
       },
     },
     "app/configs/themesConfig": { darkPaletteText: {}, lightPaletteText: {} },
+    "../../../brand/tokens": {
+      tokens: { color: { semantic: { light: {}, dark: {} } } },
+    },
     "../../../app/auth/user/store/userSlice": {
       setUser,
       resetUser,

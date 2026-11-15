@@ -1,4 +1,5 @@
 import { userRoles, type User } from "src/app/auth/user";
+import { tokens } from "src/brand/tokens";
 import { hasOperationPermission } from "src/app/auth/permissions";
 import IShipment from "./models/IShipment";
 import type { ShipmentFormValues } from "./models/ShipmentSchema";
@@ -108,27 +109,27 @@ export const toShipmentStatusTitle = (status: string) => {
   return "ACTIVE_SHIPMENT";
 };
 
+// Soft status-tone classes (tokens.color.tone) when classNameColor, otherwise solid brand hexes for charts/solid chips.
+// Delivered uses the neutral brand tone so it stays distinguishable from the pending (info) status.
 export const toShipmentStatusColor = (
   status: string,
   classNameColor = true,
 ) => {
+  const solid = tokens.color.solid;
   switch (status) {
     case shipmentStatus.pending:
-      return classNameColor ? "bg-blue-400" : "#5DADE2";
+      return classNameColor ? "bg-status-info-bg text-status-info-fg" : solid.info;
     case shipmentStatus.processing:
-      return classNameColor ? "bg-green-400" : "#99CC00";
+      return classNameColor ? "bg-status-success-bg text-status-success-fg" : solid.success;
     case shipmentStatus.delivered:
-      return classNameColor ? "bg-blue-700" : "#5DADE2";
+      return classNameColor ? "bg-status-neutral-bg text-status-neutral-fg" : solid.neutral;
     case shipmentStatus.failed:
-      return classNameColor ? "bg-red-600" : "#FF0000";
     case shipmentStatus.canceled:
-      return classNameColor ? "bg-red-400" : "#FF0044";
     case shipmentStatus.returned:
-      return classNameColor ? "bg-red-500" : "#FF000F";
     case shipmentStatus.requestCancel:
-      return classNameColor ? "bg-red-300" : "#FF0030";
+      return classNameColor ? "bg-status-error-bg text-status-error-fg" : solid.error;
   }
-  return classNameColor ? "bg-green-400" : "#99CC00";
+  return classNameColor ? "bg-status-success-bg text-status-success-fg" : solid.success;
 };
 
 export const toShipmentPaymentStatusTitle = (type: string) => {
@@ -149,17 +150,17 @@ export const toShipmentPaymentStatusTitle = (type: string) => {
 export const toShipmentPaymentStatusColor = (type: string) => {
   switch (type) {
     case shipmentPaymentStatus.paid:
-      return "bg-green-500";
+      return "bg-status-success-bg text-status-success-fg";
     case shipmentPaymentStatus.notPaid:
-      return "bg-red-400";
+      return "bg-status-error-bg text-status-error-fg";
     case shipmentPaymentStatus.pending:
-      return "bg-blue-400";
+      return "bg-status-info-bg text-status-info-fg";
     case shipmentPaymentStatus.settled:
-      return "bg-green-800";
+      return "bg-status-success-bg text-status-success-fg";
     case shipmentPaymentStatus.block:
-      return "bg-red-800";
+      return "bg-status-error-bg text-status-error-fg";
   }
-  return "bg-blue-400";
+  return "bg-status-info-bg text-status-info-fg";
 };
 
 export const defaultCountryId =
@@ -178,13 +179,13 @@ export const defaultCountry = {
   },
   code: defaultCountryCode,
 };
-export const toShipmentTypeColor = () => "bg-blue-500";
+export const toShipmentTypeColor = () => "bg-status-info-bg text-status-info-fg";
 export const toShippingFilterTypeColor = (value: string) =>
   value === "cashOnDelivery"
-    ? "bg-amber-500"
+    ? "bg-status-warning-bg text-status-warning-fg"
     : value === "international"
-      ? "bg-green-500"
-      : "bg-blue-500";
+      ? "bg-status-success-bg text-status-success-fg"
+      : "bg-status-info-bg text-status-info-fg";
 export const checkIfShipmentReturned = (value: Partial<IShipment>) =>
   Boolean(
     value.orderReturned ||

@@ -1,12 +1,13 @@
-/* Generated from shared/tokens.json */
+/* Generated from src/brand/tokens.json - do not edit by hand (npm run brand:generate) */
 export const tokens = {
   "meta": {
     "name": "Ashamco Express",
-    "version": "1.0.0",
-    "date": "2026-11-08",
+    "version": "1.1.0",
+    "date": "2026-11-15",
     "direction": "rtl",
     "primaryLocale": "ar-SA",
-    "secondaryLocale": "en"
+    "secondaryLocale": "en",
+    "source": "Ashamco Express Fonts.html (palette + fonts), Ashamco-Express-Dev-Handoff v1.0.0 (logos, mint, status proposals)"
   },
   "color": {
     "brand": {
@@ -15,17 +16,18 @@ export const tokens = {
       "white": "#FFFFFF"
     },
     "purple": {
+      "25": "#FBFAFD",
       "50": "#F4F1F8",
-      "100": "#E7DEF2",
-      "200": "#D1C2E5",
-      "300": "#B49CD3",
-      "400": "#9474BE",
-      "500": "#744CA9",
-      "600": "#573384",
+      "100": "#EAE3F2",
+      "200": "#D7C8E9",
+      "300": "#BEA8DC",
+      "400": "#9D75D1",
+      "500": "#7D47C2",
+      "600": "#6436A1",
       "700": "#3A1F5D",
-      "800": "#2D174A",
-      "900": "#211037",
-      "950": "#150A24"
+      "800": "#2E194A",
+      "900": "#211236",
+      "950": "#150B22"
     },
     "mint": {
       "50": "#E8FBF4",
@@ -40,16 +42,23 @@ export const tokens = {
       "900": "#0E5A43"
     },
     "neutral": {
-      "ink": "#1E1030",
-      "gray": "#6E6880",
-      "border": "#E4E0EC",
+      "ink": "#150B22",
+      "gray": "#6E5F81",
+      "border": "#EAE3F2",
       "white": "#FFFFFF",
-      "black": "#111111"
+      "black": "#111014",
+      "dark": {
+        "800": "#352E3E",
+        "850": "#26212C",
+        "900": "#1C1820",
+        "950": "#120F15"
+      },
+      "mutedDark": "#B6ADC2"
     },
     "status": {
-      "success": "#167A50",
-      "warning": "#B7791F",
-      "error": "#C9363E",
+      "success": "#14593F",
+      "warning": "#8A570D",
+      "error": "#C0392B",
       "info": "#2F6FD6"
     },
     "semantic": {
@@ -58,59 +67,98 @@ export const tokens = {
         "onPrimary": "#FFFFFF",
         "accent": "#5EE0B5",
         "onAccent": "#3A1F5D",
-        "background": "#FFFFFF",
+        "background": "#FBFAFD",
         "surface": "#FFFFFF",
         "surfaceAlt": "#F4F1F8",
-        "text": "#1E1030",
-        "textMuted": "#6E6880",
-        "border": "#7B708E",
+        "text": "#150B22",
+        "textMuted": "#6E5F81",
+        "border": "#EAE3F2",
+        "borderStrong": "#D7C8E9",
         "link": "#3A1F5D",
-        "focusRing": "#3A1F5D",
-        "success": "#167A50",
+        "focusRing": "#9D75D1",
+        "success": "#14593F",
         "warning": "#8A570D",
-        "error": "#C9363E",
+        "error": "#C0392B",
         "info": "#2F6FD6"
       },
       "dark": {
-        "primary": "#D1C2E5",
-        "onPrimary": "#150A24",
+        "primary": "#D7C8E9",
+        "onPrimary": "#150B22",
         "accent": "#5EE0B5",
-        "onAccent": "#150A24",
-        "background": "#140A22",
-        "surface": "#1E1030",
-        "surfaceAlt": "#2A1A42",
+        "onAccent": "#150B22",
+        "background": "#120F15",
+        "surface": "#1C1820",
+        "surfaceAlt": "#26212C",
         "text": "#F4F1F8",
-        "textMuted": "#B8B0C8",
-        "border": "#9A8EAE",
-        "link": "#5EE0B5",
-        "focusRing": "#5EE0B5",
+        "textMuted": "#B6ADC2",
+        "border": "#352E3E",
+        "borderStrong": "#4A4057",
+        "link": "#BEA8DC",
+        "focusRing": "#9D75D1",
         "success": "#4CC793",
         "warning": "#E2B04F",
         "error": "#F06B72",
         "info": "#7AA8F5"
       }
+    },
+    "tone": {
+      "success": {
+        "bg": "#DFF5EC",
+        "fg": "#14593F"
+      },
+      "warning": {
+        "bg": "#FBEFD5",
+        "fg": "#6B430A"
+      },
+      "error": {
+        "bg": "#FBE7E4",
+        "fg": "#8E2A20"
+      },
+      "info": {
+        "bg": "#E3ECFB",
+        "fg": "#1F4F9E"
+      },
+      "neutral": {
+        "bg": "#EAE3F2",
+        "fg": "#3A1F5D"
+      },
+      "muted": {
+        "bg": "#EFEBF3",
+        "fg": "#4A4057"
+      }
+    },
+    "chart": [
+      "#3A1F5D",
+      "#7D47C2",
+      "#9D75D1",
+      "#BEA8DC",
+      "#14593F",
+      "#8A570D",
+      "#C0392B"
+    ],
+    "solid": {
+      "success": "#14593F",
+      "warning": "#8A570D",
+      "error": "#C0392B",
+      "info": "#2F6FD6",
+      "neutral": "#3A1F5D",
+      "muted": "#6E5F81"
     }
   },
   "font": {
     "family": {
-      "sans": "IBM Plex Sans Arabic",
+      "sans": "IBM Plex Sans",
+      "arabic": "IBM Plex Sans Arabic",
+      "long": "Noto Sans",
       "naskh": "Noto Naskh Arabic"
     },
-    "fallback": {
-      "sans": [
-        "Tahoma",
-        "Arial",
-        "sans-serif"
-      ],
-      "naskh": [
-        "Traditional Arabic",
-        "Times New Roman",
-        "serif"
-      ]
+    "stack": {
+      "sans": "'IBM Plex Sans', 'IBM Plex Sans Arabic', Tahoma, Arial, sans-serif",
+      "long": "'Noto Sans', 'Noto Naskh Arabic', 'Traditional Arabic', 'Times New Roman', serif"
     },
     "use": {
-      "sans": "UI, app, web, headings, ads, signage, social",
-      "naskh": "letters, contracts, company profile body text, long reports"
+      "sans": "UI, app, dashboard, web, headings, buttons, invoices, numbers",
+      "long": "long profile text, letters, contracts, long reports"
     },
     "weight": {
       "light": 300,
@@ -119,7 +167,7 @@ export const tokens = {
       "semibold": 600,
       "bold": 700
     },
-    "googleFontsCss": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Noto+Naskh+Arabic:wght@400;700&display=swap"
+    "googleFontsCss": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=Noto+Naskh+Arabic:wght@400;700&family=Noto+Sans:wght@400;500;600;700&display=swap"
   },
   "type": {
     "display": {
@@ -185,13 +233,15 @@ export const tokens = {
     "sm": 6,
     "md": 10,
     "lg": 14,
+    "card": 16,
     "xl": 20,
+    "icon": 9,
     "pill": 999
   },
   "shadow": {
-    "sm": "0 1px 2px rgba(30,16,48,.08)",
+    "sm": "0 1px 2px rgba(21,11,34,.08)",
     "md": "0 6px 18px rgba(58,31,93,.10)",
-    "lg": "0 18px 40px rgba(30,16,48,.18)"
+    "lg": "0 18px 40px rgba(21,11,34,.18)"
   },
   "size": {
     "touchTarget": 48,
@@ -217,16 +267,25 @@ export const tokens = {
     }
   },
   "contrast": {
-    "white on purple": 13.69,
-    "mint on purple": 8.35,
-    "purple on mint": 8.35,
-    "gray on white": 5.31,
-    "ink on white": 17.92,
-    "mint on white (do not use for text)": 1.64,
-    "white on success": 5.34,
-    "white on error": 5.15,
+    "white on purple-700": 13.69,
+    "ink on background": 18.31,
+    "muted on background": 5.58,
+    "muted on purple-50": 5.19,
+    "purple-700 on purple-50": 12.25,
+    "purple-800 on white (active nav)": 15.51,
+    "purple-100 on purple-900 (group label)": 13.92,
+    "white on error": 5.44,
+    "white on success": 8.3,
+    "white on warning": 6.09,
     "white on info": 4.81,
-    "ink on warning": 4.92
+    "tone success": 7.28,
+    "tone warning": 7.57,
+    "tone error": 7.05,
+    "tone info": 6.61,
+    "tone neutral": 10.93,
+    "mint on white (do not use for text)": 1.64,
+    "tone muted": 8.25,
+    "white on muted solid": 5.81
   }
 } as const;
 export type Tokens = typeof tokens;

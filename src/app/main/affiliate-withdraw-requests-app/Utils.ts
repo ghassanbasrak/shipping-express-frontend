@@ -14,18 +14,18 @@ export const toAffiliateWithdrawRequestStatusTitle = (status: string) =>
   ] || status;
 export const toAffiliateWithdrawRequestStatusColor = (status: string) =>
   ({
-    pending: "bg-blue-600",
-    approved: "bg-green-600",
-    rejected: "bg-red-600",
-  })[status] || "bg-gray-600";
+    pending: "bg-status-info-bg text-status-info-fg",
+    approved: "bg-status-success-bg text-status-success-fg",
+    rejected: "bg-status-error-bg text-status-error-fg",
+  })[status] || "bg-status-muted-bg text-status-muted-fg";
 export const toAffiliateWithdrawRequestTypeTitle = (type: string) =>
   type === affiliateWithdrawRequestTypes.affiliateWithdraw
     ? "WITHDRAW"
     : "OTHER";
 export const toAffiliateWithdrawRequestTypeColor = (type: string) =>
   type === affiliateWithdrawRequestTypes.affiliateWithdraw
-    ? "bg-purple-600"
-    : "bg-gray-600";
+    ? "bg-status-neutral-bg text-status-neutral-fg"
+    : "bg-status-muted-bg text-status-muted-fg";
 export type AffiliateWithdrawViewFeature =
   | "affiliate-withdraw-requests"
   | "withdraw-requests";

@@ -23,7 +23,7 @@ export const applicationFeatureCanWrite = (feature: string) =>
   feature === applicationFeatures.shipments ||
   feature === applicationFeatures.shippingUsers;
 export const toApplicationFeatureColor = (feature: string) =>
-  applicationFeatureCanWrite(feature) ? "bg-green-600" : "bg-blue-600";
+  applicationFeatureCanWrite(feature) ? "bg-status-success-bg text-status-success-fg" : "bg-status-info-bg text-status-info-fg";
 export const newApplicationScope = (feature: string): IApplicationScope => ({
   feature,
   read: true,

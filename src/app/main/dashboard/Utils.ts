@@ -1,3 +1,4 @@
+import { tokens } from "src/brand/tokens";
 import type { User } from "src/app/auth/user";
 import { hasOperationPermission } from "src/app/auth/permissions";
 import type {
@@ -55,8 +56,11 @@ export const toDashboardFlowTitle = (value: string) =>
   ({ local: "LOCAL", international: "INTERNATIONAL", cod: "COD" })[value] ||
   value;
 export const toDashboardFlowColor = (value: string) =>
-  ({ local: "#0f9d8c", international: "#5576de", cod: "#bd8733" })[value] ||
-  "#64748b";
+  ({
+    local: tokens.color.chart[1],
+    international: tokens.color.chart[4],
+    cod: tokens.color.chart[5],
+  })[value] || tokens.color.solid.muted;
 export const toDashboardStageTitle = (value: string) =>
   ({
     order: "ORDER_RECEIVED",

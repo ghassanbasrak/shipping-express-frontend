@@ -124,7 +124,7 @@ export default function PaymentResultTab({
       </Typography>
       <Chip
         label={t(toTopupRequestStatusTitle(payment.status))}
-        className={toTopupRequestStatusColor(payment.status) + " text-white"}
+        className={toTopupRequestStatusColor(payment.status)}
       />
       <Typography>
         {t("TRANSACTION_ID")}: {payment.transactionId || "—"}

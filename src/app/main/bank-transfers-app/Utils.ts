@@ -20,17 +20,17 @@ export const toBankTitle = (bank: string) =>
     box: "BOX",
   })[bank] || "OTHER";
 export const toBankColor = (bank: string) =>
-  bank === banks.box ? "bg-purple-600" : "bg-blue-600";
+  bank === banks.box ? "bg-status-neutral-bg text-status-neutral-fg" : "bg-status-info-bg text-status-info-fg";
 export const toBankTransferStatusTitle = (status: string) =>
   ({ pending: "PENDING", approved: "CONFIRMED", rejected: "REFUSED" })[
     status
   ] || status;
 export const toBankTransferStatusColor = (status: string) =>
   ({
-    pending: "bg-blue-600",
-    approved: "bg-green-600",
-    rejected: "bg-red-600",
-  })[status] || "bg-gray-600";
+    pending: "bg-status-info-bg text-status-info-fg",
+    approved: "bg-status-success-bg text-status-success-fg",
+    rejected: "bg-status-error-bg text-status-error-fg",
+  })[status] || "bg-status-muted-bg text-status-muted-fg";
 export const canReviewBankTransfer = (user: User, status: string) =>
   user.role !== "user" &&
   hasOperationPermission("bank-transfers", "view", user) &&
