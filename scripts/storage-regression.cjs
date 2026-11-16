@@ -661,7 +661,7 @@ async function main() {
         },
       ],
       [schemas.schema1.create, planArg],
-      [schemas.schema2.checkout, { planId: id }],
+      [schemas.schema2.checkout, { planId: id, operation: "subscribe" }],
       [schemas.schema3.create, { ...supplyArg, warehouseId: id }],
       [schemas.schema3.updateStatus, { status: "received" }],
       [

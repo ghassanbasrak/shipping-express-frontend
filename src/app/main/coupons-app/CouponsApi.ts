@@ -3,6 +3,7 @@ import { apiService as api } from "app/store/apiService";
 import { PartialDeep } from "type-fest";
 import ICoupon from "./models/ICoupon";
 import { couponEditableFields } from "./models/CouponModel";
+import { toCouponSaveValues } from "./Utils";
 export const addTagTypes = ["Coupons", "Coupon"] as const;
 const CouponsApi = api.enhanceEndpoints({ addTagTypes }).injectEndpoints({
   endpoints: (build) => ({
@@ -36,7 +37,10 @@ const CouponsApi = api.enhanceEndpoints({ addTagTypes }).injectEndpoints({
       query: (value) => ({
         url: "v1/coupons",
         method: "POST",
-        data: _.pick(value, couponEditableFields),
+        data: _.pick(
+          toCouponSaveValues(value as ICoupon, true),
+          couponEditableFields,
+        ),
       }),
       invalidatesTags: ["Coupons"],
     }),

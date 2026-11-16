@@ -1810,5 +1810,35 @@
       "notes": "Shipment/COD fixture loaders updated for existing user-role/subscription-enum dependencies; affiliate browser fixture selector updated to target the shared action button. Browser scripts were not run outside the embedded browser."
     },
     "remaining": "Previously recorded backend storage/payment integration acceptance and unrelated common-page/dormant audits are unchanged."
+  },
+  "frontendQaFixes20261116": {
+    "date": "2026-11-16",
+    "scope": "Frontend fixes to existing features only; backend source unchanged. No migration count changes.",
+    "completed": [
+      "Payments purpose/method filters, owned record retention after failed verification, clear retry/history guidance and gateway-unavailable messages.",
+      "Optional contact city and new coupon expiry serialization; persistent failed-save messages and unchanged blank coupon expiry omission.",
+      "Saved contact hydration preserves manual edits, phone and geographic dependencies.",
+      "Browser-compatible full filtered city CSV download; failures do not download partial files.",
+      "Unconfigured storage plans are unavailable before checkout; persistent bank decision failure and returned decision validation.",
+      "Shared DataGrid row-height callback fix and removal of form debug logs."
+    ],
+    "backendHandoff": "docs/backend-fixes-20261116.txt",
+    "validation": {
+      "activeApplicationTypecheck": "passed",
+      "productionBuild": "passed; existing Browserslist/CSS/FuseDialog/chunk warnings",
+      "regressionChecks": {
+        "frontendQa": 10,
+        "shipmentUsers": 18,
+        "shipments": 40,
+        "bankTransfers": 12,
+        "storage": 32,
+        "couponsAlerts": 21,
+        "cityCsv": 1
+      },
+      "browserChecks": "Embedded browser: owned pending payment retained with verification warning; purpose+Free filters return 3 matching rows; minimal receiver creation; coupon no-expiry creation/update/deactivation; unconfigured plan actions disabled; actual 110-row city CSV downloaded and inspected. Bank rejection feedback retest documented in docs/frontend-fixes-20261116.txt."
+    },
+    "remainingFeatureAreas": 0,
+    "partialFeatureAreas": 0,
+    "exclusions": "Existing 6 excluded legacy areas and retired features remain excluded; storage remains separately tracked."
   }
 }

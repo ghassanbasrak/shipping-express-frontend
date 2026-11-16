@@ -26,9 +26,12 @@ export const toCouponTypeColor = (status: string) => {
 export const couponsPath = (shippingCompanyId = "all", userId = "all") =>
   `/coupons/${shippingCompanyId || "all"}/${userId || "all"}`;
 export const generateCouponCode = () => crypto.randomUUID();
-export function toCouponSaveValues(value: ICoupon): ICoupon {
+export function toCouponSaveValues(value: ICoupon, isNew = !value.id): ICoupon {
   const result = { ...value };
   if (!result.shippingCompanyId || result.shippingCompanyId === "all")
     delete result.shippingCompanyId;
+  // The API accepts an absent expiry on creation, but not null/empty text.
+  // Keep explicit update clears so an unsupported clear cannot silently succeed.
+  if (isNew && !result.expiresAt) delete result.expiresAt;
   return result;
 }

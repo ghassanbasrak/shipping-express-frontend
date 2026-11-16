@@ -148,6 +148,48 @@ export const ownsPayment = (user: User, payment: IPayment) =>
   user.role === "user" &&
   !!payment &&
   (payment.userId ? payment.userId === user.id : payment.user?.id === user.id);
+
+export function onlinePaymentError(
+  error: unknown,
+  fallback: string,
+  unavailable: string,
+) {
+  const failure = error as { data?: { message?: string }; message?: string };
+  const message = failure?.data?.message || failure?.message || "";
+  return /secret key|api[_ -]?key|moyasar.*configur|payment gateway.*configur/i.test(
+    message,
+  )
+    ? unavailable
+    : fallback;
+}
+
+export async function loadPaymentResult(
+  user: User,
+  id: string,
+  read: () => Promise<IPayment>,
+  verify: () => Promise<IPayment>,
+) {
+  if (!id) throw new Error("Missing payment ID");
+  const valid = (value: IPayment) =>
+    ownsPayment(user, value) &&
+    (value.id || value._id) === id &&
+    isPaymentType(value.type);
+  const stored = await read();
+  if (!valid(stored)) throw new Error("Invalid owned payment");
+  if (stored.type === paymentType.storageSubscription)
+    return { payment: stored, verificationFailed: false };
+  try {
+    const verified = await verify();
+    if (!valid(verified) || verified.type !== paymentType.topup)
+      throw new Error("Invalid payment verification response");
+    return { payment: verified, verificationFailed: false };
+  } catch (error) {
+    // A failed provider check is not evidence that the owned payment is missing.
+    const status = (error as { status?: number })?.status;
+    if (status === 401 || status === 403) throw error;
+    return { payment: stored, verificationFailed: true };
+  }
+}
 export const paymentMinimumExceptions = [
   "68287bf8e987158064265020",
   "6831c900ef73e32297c0a851",

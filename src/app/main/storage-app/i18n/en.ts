@@ -1,4 +1,8 @@
 const locale = {
+  PLAN_NOT_CONFIGURED:
+    "This plan is temporarily unavailable. Please contact support.",
+  ONLINE_PAYMENT_UNAVAILABLE:
+    "Online payment is temporarily unavailable. Please try again later.",
   STORAGE_TYPES_NOT_SAVED:
     "The server did not retain the supported storage types. Your draft is preserved; retry updates the saved record.",
   PLAN_FEATURES: "Features",

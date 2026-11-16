@@ -25,6 +25,7 @@ import {
   paymentType,
   getHostedCheckoutUrl,
   paymentFundingMethod,
+  onlinePaymentError,
 } from "../Utils";
 import { isDemoMode } from "src/app/demo/demoMode";
 import PaymentHeader from "./PaymentHeader";
@@ -115,8 +116,10 @@ export default function Payment() {
           !id ||
           !ownsPayment(user, result.payment) ||
           result.payment.type !== paymentType.topup
-        )
-          throw new Error("Invalid checkout");
+        ) {
+          setError(t("HOSTED_CHECKOUT_UNAVAILABLE"));
+          return;
+        }
         const currentCheckout = {
           ...result,
           payment: { ...result.payment, id },
@@ -132,9 +135,21 @@ export default function Payment() {
         }
         window.location.assign(url);
       }
-    } catch {
-      if (currentLocation.current === submittedLocation)
-        setError(t("CREATE_ERROR"));
+    } catch (failure) {
+      if (currentLocation.current === submittedLocation) {
+        const status = (failure as { status?: string | number })?.status;
+        const uncertain = status === "NETWORK_ERROR" || Number(status) >= 500;
+        if (uncertain) setAccepted(true);
+        setError(
+          values.method === paymentFundingMethod.online
+            ? onlinePaymentError(
+                failure,
+                t(uncertain ? "CHECK_PAYMENT_HISTORY" : "CREATE_ERROR"),
+                t("ONLINE_PAYMENT_UNAVAILABLE"),
+              )
+            : t(uncertain ? "CHECK_PAYMENT_HISTORY" : "CREATE_ERROR"),
+        );
+      }
     } finally {
       lock.current = false;
     }
@@ -202,6 +217,7 @@ export default function Payment() {
                   onClick={() => {
                     setCheckout(undefined);
                     setAccepted(false);
+                    setError("");
                     methods.setValue(
                       "method",
                       paymentFundingMethod.bankTransfer,
@@ -223,7 +239,7 @@ export default function Payment() {
               </Paper>
             ) : (
               <>
-                {accepted && (
+                {accepted && !error && (
                   <Alert severity="warning" className="mb-16">
                     {t("ACCEPTED_CHECK_HISTORY")}
                   </Alert>

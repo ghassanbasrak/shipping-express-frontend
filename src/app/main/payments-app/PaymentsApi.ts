@@ -26,6 +26,13 @@ const PaymentsApi = api.enhanceEndpoints({ addTagTypes }).injectEndpoints({
           ...(filters.statusFilter && filters.statusFilter !== "all"
             ? { status: filters.statusFilter }
             : {}),
+          ...(filters.typeFilter && filters.typeFilter !== "all"
+            ? { type: filters.typeFilter }
+            : {}),
+          ...(filters.paymentMethodTypeFilter &&
+          filters.paymentMethodTypeFilter !== "all"
+            ? { paymentMethodType: filters.paymentMethodTypeFilter }
+            : {}),
           ...(filters.dateFromFilter
             ? { dateFrom: filters.dateFromFilter }
             : {}),
@@ -80,6 +87,8 @@ export type GetPaymentsApiArg = {
   searchText?: string;
   userIdFilter?: string;
   statusFilter?: string;
+  typeFilter?: string;
+  paymentMethodTypeFilter?: string;
   dateFromFilter?: string;
   dateToFilter?: string;
   dateFromInvalid?: boolean;

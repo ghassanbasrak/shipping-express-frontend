@@ -155,6 +155,12 @@ export const storageType = {
   frozen: "frozen",
 } as const;
 export type StorageType = (typeof storageType)[keyof typeof storageType];
+export const isStoragePlanConfigured = (plan: IStoragePlan) =>
+  Array.isArray(plan?.storageTypes) &&
+  plan.storageTypes.length > 0 &&
+  plan.storageTypes.every((value) =>
+    Object.values(storageType).includes(value),
+  );
 export const toStorageTypeTitle = (value: string) =>
   ({
     [storageType.standard]: "TYPE_STANDARD",

@@ -1,4 +1,12 @@
 const locale = {
+  LOAD_PAYMENT_ERROR: "تعذر تحميل الدفعة. يرجى المحاولة مجدداً.",
+  PAYMENT_STATUS_UNVERIFIED: "تعذر تحديث حالة الدفعة",
+  PAYMENT_VERIFICATION_UNAVAILABLE:
+    "تظهر الدفعة المحفوظة أدناه، لكن تعذر التحقق من حالتها الحالية. أعد التحقق قبل اعتبار المبلغ مضافاً إلى المحفظة.",
+  ONLINE_PAYMENT_UNAVAILABLE:
+    "الدفع الإلكتروني غير متاح مؤقتاً. راجع سجل الدفعات قبل إنشاء طلب آخر، أو استخدم التحويل البنكي.",
+  CHECK_PAYMENT_HISTORY:
+    "تعذر تأكيد نتيجة الطلب. راجع السجل قبل إرسال طلب آخر.",
   DEMO_RETURN_PENDING: "العودة دون الدفع",
   DEMO_CONFIRM_PAYMENT: "محاكاة دفع ناجح",
   DEMO_HOSTED_HINT:

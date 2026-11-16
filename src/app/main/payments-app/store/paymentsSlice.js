@@ -7,6 +7,8 @@ export const paymentsInitialState = {
   searchText: "",
   userIdFilter: "all",
   statusFilter: "all",
+  typeFilter: "all",
+  paymentMethodTypeFilter: "all",
   dateFromFilter: "",
   dateToFilter: "",
   dateFromInvalid: false,
@@ -40,6 +42,14 @@ export const paymentsAppSlice = createSlice({
       state.statusFilter = valueOf(action.payload) || "all";
       state.page = 0;
     },
+    setPaymentsTypeFilter: (state, action) => {
+      state.typeFilter = valueOf(action.payload) || "all";
+      state.page = 0;
+    },
+    setPaymentsPaymentMethodTypeFilter: (state, action) => {
+      state.paymentMethodTypeFilter = valueOf(action.payload) || "all";
+      state.page = 0;
+    },
     setPaymentsDateFromFilter: (state, action) => {
       const input = valueOf(action.payload),
         date = input ? new Date(input) : null;
@@ -68,6 +78,8 @@ export const {
   setPaymentsSearchText,
   setPaymentsUserIdFilter,
   setPaymentsStatusFilter,
+  setPaymentsTypeFilter,
+  setPaymentsPaymentMethodTypeFilter,
   setPaymentsDateFromFilter,
   setPaymentsDateToFilter,
 } = paymentsAppSlice.actions;

@@ -3,7 +3,8 @@ import FeatureHeader, {
   FeatureHeaderHeading,
   FeatureHeaderActions,
 } from "app/shared-components/feature-header/FeatureHeader";
-import { Typography } from "@mui/material";
+import { Alert, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import { LoadingButton } from "@mui/lab";
 
@@ -36,6 +37,8 @@ function CouponHeader() {
   const { watch, handleSubmit, setValue, formState } =
     useFormContext<ICoupon>();
   const { id, code, isActive } = watch();
+  const [saveError, setSaveError] = useState("");
+  useEffect(() => setSaveError(""), [id, shippingCompanyId, userId]);
   const [createCoupon, creating] = useCreateCouponMutation();
   const [updateCoupon, updating] = useUpdateCouponMutation();
   const [changeActive, toggling] = useUpdateCouponMutation();
@@ -49,6 +52,9 @@ function CouponHeader() {
   const handleSaveCoupon = handleSubmit(async (values) => {
     if (!canEdit) return;
     const input = toCouponSaveValues(values);
+    if (id && !values.expiresAt && !formState.dirtyFields.expiresAt)
+      delete input.expiresAt;
+    setSaveError("");
     try {
       await (id ? updateCoupon(input) : createCoupon(input)).unwrap();
       dispatch(
@@ -59,6 +65,13 @@ function CouponHeader() {
       );
       navigate(listPath);
     } catch {
+      setSaveError(
+        t(
+          id
+            ? "SOMETHING_WENT_WRONG_WHEN_SAVE_COUPON"
+            : "SOMETHING_WENT_WRONG_WHEN_ADD_COUPON",
+        ),
+      );
       dispatch(
         showMessage({
           message: t(
@@ -185,6 +198,7 @@ function CouponHeader() {
           )}
         </FeatureHeaderActions>
       </FeatureHeaderRow>
+      {saveError && <Alert severity="error">{saveError}</Alert>}
     </FeatureHeader>
   );
 }

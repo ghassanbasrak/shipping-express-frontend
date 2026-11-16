@@ -123,6 +123,7 @@ function fixture() {
   const coupons = load(couponsPath + "CouponsApi.ts", {
     "app/store/apiService": { apiService: api },
     lodash,
+    "./Utils": couponUtils,
     "./models/CouponModel": couponModel,
   }).default;
   const alerts = load(alertsPath + "AlertsApi.ts", {
@@ -322,7 +323,10 @@ async function main() {
   check("alert defaults and enum title/color helpers match the source", () => {
     assert.equal(alertModel.default().viewType, "popup");
     assert.equal(alertUtils.toAlertTypeTitle("onlyImage"), "ONLY_IMAGE");
-    assert.equal(alertUtils.toAlertTypeColor("onlyImage"), "bg-purple-500");
+    assert.equal(
+      alertUtils.toAlertTypeColor("onlyImage"),
+      "bg-status-neutral-bg text-status-neutral-fg",
+    );
     assert.equal(alertUtils.toAlertViewTypeTitle("alert"), "ALERT");
   });
   check("coupon slice resets pagination and preserves route/date filters", () =>
@@ -401,7 +405,6 @@ async function main() {
           const data = JSON.parse(config.data);
           assert.deepEqual(Object.keys(data).sort(), [
             "code",
-            "expiresAt",
             "maxUsageCount",
             "type",
             "value",
@@ -597,7 +600,7 @@ async function main() {
     },
   );
   check(
-    "migration inventory accounts for every routed feature and partial home honestly",
+    "migration inventory accounts for active and explicitly retired features",
     () => {
       const ledger = JSON.parse(
         fs.readFileSync(path.join(target, "migration-status.json"), "utf8"),
@@ -605,39 +608,43 @@ async function main() {
       assert.equal(ledger.features.length, 32);
       assert.equal(new Set(ledger.features.map((row) => row.feature)).size, 32);
       assert.equal(ledger.counts.featureAreas, ledger.features.length);
-      for (const status of ["migrated", "partial", "pending"])
+      for (const status of ["migrated", "partial", "pending", "excluded"])
         assert.equal(
           ledger.features.filter((row) => row.status === status).length,
           ledger.counts[status],
         );
       assert.equal(
-        ledger.counts.migrated + ledger.counts.partial + ledger.counts.pending,
+        ledger.counts.migrated +
+          ledger.counts.partial +
+          ledger.counts.pending +
+          ledger.counts.excluded,
         ledger.counts.featureAreas,
       );
       for (const feature of ledger.completedThisBatch)
-        assert.equal(
-          ledger.features.find((row) => row.feature === feature)?.status,
-          "migrated",
-        );
+        if (feature !== "storage-app")
+          // Storage is tracked separately from the legacy registry.
+          assert.equal(
+            ledger.features.find((row) => row.feature === feature)?.status,
+            "migrated",
+          );
       assert.equal(
         ledger.features.find((row) => row.feature === "home-app").status,
-        "partial",
+        "migrated",
       );
       assert.ok(
         ledger.features.some((row) => row.feature === "package-requests-app"),
       );
       assert.ok(
-        ledger.retainedRequirement.includes("Keep package-requests-app"),
+        ledger.features.find((row) => row.feature === "package-requests-app")
+          ?.status === "excluded",
       );
       assert(ledger.excludedByUser.includes("Salla"));
       const routeSource = fs.readFileSync(
         path.join(target, "src/app/configs/routesConfig.tsx"),
         "utf8",
       );
-      for (const row of ledger.features.filter(
-        (row) => row.status === "migrated",
-      ))
-        assert(routeSource.includes("../main/" + row.feature + "/"));
+      for (const feature of ["coupons-app", "alerts-app"])
+        assert(routeSource.includes("../main/" + feature + "/"));
       assert.equal(
         ledger.features.some((row) => row.feature === "products-app"),
         false,

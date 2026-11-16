@@ -370,7 +370,7 @@ function CustomTable<T extends object>({
               checkboxSelection={checkboxSelection}
               disableRowSelectionOnClick={checkboxSelection}
               keepNonExistentRowsSelected={checkboxSelection}
-              getRowHeight={autoRowHeight && (() => "auto")}
+              getRowHeight={autoRowHeight ? () => "auto" : undefined}
               getEstimatedRowHeight={
                 autoRowHeight && estimatedRowHeight
                   ? () => estimatedRowHeight

@@ -12,12 +12,11 @@ import {
 } from "../../PaymentsApi";
 import IPayment from "../../models/IPayment";
 import {
-  ownsPayment,
+  loadPaymentResult,
   paymentStatus,
   toPaymentStatusTitle,
   toPaymentStatusColor,
   paymentType,
-  isPaymentType,
   toPaymentTypeTitle,
   toPaymentTypeColor,
   toPaymentMethodTypeTitle,
@@ -32,50 +31,43 @@ export default function PaymentResultTab({ id }: { id: string }) {
     [getPayment] = useLazyGetPaymentQuery(),
     [check] = useCheckPaymentStatusMutation(),
     [payment, setPayment] = useState<IPayment>(),
-    [error, setError] = useState(false),
+    [error, setError] = useState(""),
+    [verificationFailed, setVerificationFailed] = useState(false),
     [busy, setBusy] = useState(true),
     [attempt, setAttempt] = useState(0),
-    work = useRef(new Map<string, Promise<IPayment>>());
+    work = useRef(new Map<string, ReturnType<typeof loadPaymentResult>>());
   useEffect(() => {
     let active = true;
     const key = [user.id, id, attempt].join("/");
     setBusy(true);
-    setError(false);
+    setError("");
+    setVerificationFailed(false);
     setPayment(undefined);
     if (!work.current.has(key))
       work.current.set(
         key,
-        (async () => {
-          if (!id) throw new Error("paymentId");
-          const stored = await getPayment(id, false).unwrap();
-          if (
-            !ownsPayment(user, stored) ||
-            (stored.id || stored._id) !== id ||
-            !isPaymentType(stored.type)
-          )
-            throw new Error("owner");
-          if (stored.type === paymentType.storageSubscription) return stored;
-          const result = await check({ id, userId: user.id }).unwrap();
-          if (
-            !ownsPayment(user, result) ||
-            (result.id || result._id) !== id ||
-            result.type !== paymentType.topup
-          )
-            throw new Error("owner");
-          return result;
-        })(),
+        loadPaymentResult(
+          user,
+          id,
+          () => getPayment(id, false).unwrap(),
+          () => check({ id, userId: user.id }).unwrap(),
+        ),
       );
     work.current
       .get(key)
-      .then((result) => {
+      .then(({ payment: result, verificationFailed: failed }) => {
         if (!active) return;
         setPayment(result);
-        if (result.status === paymentStatus.confirmed) {
+        setVerificationFailed(failed);
+        if (!failed && result.status === paymentStatus.confirmed) {
           void auth.getUser().catch(() => {});
         }
       })
-      .catch(() => {
-        if (active) setError(true);
+      .catch((failure) => {
+        if (active)
+          setError(
+            failure?.status === 404 ? "NO_SUCH_PAYMENT" : "LOAD_PAYMENT_ERROR",
+          );
       })
       .finally(() => {
         if (active) setBusy(false);
@@ -95,7 +87,7 @@ export default function PaymentResultTab({ id }: { id: string }) {
           </Button>
         }
       >
-        {t("NO_SUCH_PAYMENT")}
+        {t(error || "LOAD_PAYMENT_ERROR")}
       </Alert>
     );
   if (payment.type === paymentType.storageSubscription)
@@ -109,11 +101,13 @@ export default function PaymentResultTab({ id }: { id: string }) {
     >
       <Typography variant="h5">
         {t(
-          success
-            ? "PAYMENT_DONE"
-            : payment.status === paymentStatus.pending
-              ? "PAYMENT_PENDING"
-              : "THE_CHECKOUT_PROCESS_HAS_FAILED",
+          verificationFailed
+            ? "PAYMENT_STATUS_UNVERIFIED"
+            : success
+              ? "PAYMENT_DONE"
+              : payment.status === paymentStatus.pending
+                ? "PAYMENT_PENDING"
+                : "THE_CHECKOUT_PROCESS_HAS_FAILED",
         )}
       </Typography>
       <Chip
@@ -144,7 +138,11 @@ export default function PaymentResultTab({ id }: { id: string }) {
       <Typography>
         {t("TOTAL")}: {Currency(payment.total ?? payment.amount)}
       </Typography>
-      {success ? (
+      {verificationFailed ? (
+        <Alert severity="warning">
+          {t("PAYMENT_VERIFICATION_UNAVAILABLE")}
+        </Alert>
+      ) : success ? (
         <Alert
           severity={
             payment.metadata?.balanceUpdateFailed ? "warning" : "success"
@@ -163,7 +161,7 @@ export default function PaymentResultTab({ id }: { id: string }) {
           {payment.responseMessage || t("PAYMENT_CHECK_HINT")}
         </Alert>
       )}
-      {!success && (
+      {(!success || verificationFailed) && (
         <Button
           variant="outlined"
           onClick={() => setAttempt((value) => value + 1)}

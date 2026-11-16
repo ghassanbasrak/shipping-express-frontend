@@ -131,8 +131,6 @@ function CustomDialog({
         !isValid),
     ...formSubmitButtonProps,
   };
-  console.log(getValues(), "getValues");
-  console.log(errors, "errors");
   return (
     <Fragment>
       <FormProvider {...methods}>

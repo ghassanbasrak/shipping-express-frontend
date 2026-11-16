@@ -9,9 +9,11 @@ import {
 } from "src/app/main/shipment-users-app/ShipmentUsersApi";
 import {
   savedShipmentContact,
+  mergeSavedShipmentContact,
   defaultCountry,
   defaultCountryCode,
 } from "../../Utils";
+import type IShipmentUser from "src/app/main/shipment-users-app/models/IShipmentUser";
 import ShipmentField from "./ShipmentField";
 import ShipmentGeoField from "./ShipmentGeoField";
 export default function ShipmentContactFields({
@@ -29,7 +31,8 @@ export default function ShipmentContactFields({
     { watch, setValue, getValues, control } = useFormContext(),
     [search, setSearch] = useState(""),
     [chosen, setChosen] = useState<string>(),
-    applied = useRef<string>();
+    applied = useRef<string>(),
+    selectionSnapshot = useRef<Record<string, unknown>>();
   const id = watch(`${path}${prefix}Id`),
     company = watch("shippingCompany"),
     local = watch("method") === "local";
@@ -49,9 +52,17 @@ export default function ShipmentContactFields({
       getValues(`${path}${prefix}Id`) !== chosen
     )
       return;
-    for (const [key, value] of Object.entries(
-      savedShipmentContact(selected.currentData, prefix),
-    ))
+    const incoming = savedShipmentContact(selected.currentData, prefix);
+    const current = Object.fromEntries(
+      Object.keys(incoming).map((key) => [key, getValues(`${path}${key}`)]),
+    );
+    const updates = mergeSavedShipmentContact(
+      incoming,
+      selectionSnapshot.current || current,
+      current,
+      prefix,
+    );
+    for (const [key, value] of Object.entries(updates))
       setValue(`${path}${key}`, value, {
         shouldDirty: true,
         shouldValidate: true,
@@ -135,6 +146,21 @@ export default function ShipmentContactFields({
                 setSearch("");
                 setChosen(selectedId);
                 applied.current = undefined;
+                selectionSnapshot.current = undefined;
+                if (selectedId !== "new" && value) {
+                  // Fill from the selected option immediately. The detail query may
+                  // refresh unchanged fields, but cannot overwrite the user's draft.
+                  const initial = savedShipmentContact(
+                    value as IShipmentUser,
+                    prefix,
+                  );
+                  selectionSnapshot.current = initial;
+                  for (const [key, next] of Object.entries(initial))
+                    setValue(`${path}${key}`, next, {
+                      shouldDirty: true,
+                      shouldValidate: true,
+                    });
+                }
                 if (selectedId === "new") {
                   for (const key of [
                     "Name",

@@ -3,7 +3,8 @@ import FeatureHeader, {
   FeatureHeaderHeading,
   FeatureHeaderActions,
 } from "app/shared-components/feature-header/FeatureHeader";
-import { IconButton, Typography } from "@mui/material";
+import { Alert, IconButton, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
 import { LoadingButton } from "@mui/lab";
 
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -38,6 +39,8 @@ export default function ShipmentUserHeader() {
     useFormContext<ShipmentUserFormValues>();
   const { id, type, fullName } = watch(),
     title = toShipmentUserTypeTitle(type);
+  const [saveError, setSaveError] = useState("");
+  useEffect(() => setSaveError(""), [id, routeType]);
   const [createShipmentUser, creating] = useCreateShipmentUserMutation(),
     [updateShipmentUser, updating] = useUpdateShipmentUserMutation(),
     [removeShipmentUser, removing] = useRemoveShipmentUserMutation();
@@ -49,6 +52,7 @@ export default function ShipmentUserHeader() {
     busy = creating.isLoading || updating.isLoading || removing.isLoading;
   const handleSaveShipmentUser = handleSubmit(async (values) => {
     if (!canEdit) return;
+    setSaveError("");
     try {
       const input = toShipmentUserSaveValues(values);
       await (
@@ -62,6 +66,9 @@ export default function ShipmentUserHeader() {
       );
       navigate(shipmentUsersPath(routeType));
     } catch {
+      setSaveError(
+        t(`SOMETHING_WENT_WRONG_WHEN_${id ? "SAVE" : "ADD"}_${title}`),
+      );
       dispatch(
         showMessage({
           message: t(
@@ -167,6 +174,7 @@ export default function ShipmentUserHeader() {
           )}
         </FeatureHeaderActions>
       </FeatureHeaderRow>
+      {saveError && <Alert severity="error">{saveError}</Alert>}
     </FeatureHeader>
   );
 }

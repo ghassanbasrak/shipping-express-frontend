@@ -18,6 +18,10 @@ import {
   canAdjustWalletBalance,
   paymentStatus,
   toPaymentStatusTitle,
+  paymentType,
+  paymentMethodType,
+  toPaymentTypeTitle,
+  toPaymentMethodTypeTitle,
 } from "../Utils";
 import {
   selectPaymentsFilters,
@@ -25,6 +29,8 @@ import {
   setPaymentsSearchText,
   setPaymentsUserIdFilter,
   setPaymentsStatusFilter,
+  setPaymentsTypeFilter,
+  setPaymentsPaymentMethodTypeFilter,
   setPaymentsDateFromFilter,
   setPaymentsDateToFilter,
 } from "../store/paymentsSlice";
@@ -52,6 +58,15 @@ export default function PaymentsHeader() {
       : []),
     ...(filters.statusFilter && filters.statusFilter !== "all"
       ? [`${t("STATUS")}: ${t(toPaymentStatusTitle(filters.statusFilter))}`]
+      : []),
+    ...(filters.typeFilter && filters.typeFilter !== "all"
+      ? [`${t("PAYMENT_TYPE")}: ${t(toPaymentTypeTitle(filters.typeFilter))}`]
+      : []),
+    ...(filters.paymentMethodTypeFilter &&
+    filters.paymentMethodTypeFilter !== "all"
+      ? [
+          `${t("PAYMENT_METHOD")}: ${t(toPaymentMethodTypeTitle(filters.paymentMethodTypeFilter))}`,
+        ]
       : []),
     ...(filters.dateFromFilter || filters.dateFromInvalid
       ? [t("START_DATE")]
@@ -199,6 +214,35 @@ export default function PaymentsHeader() {
                   { label: t("ALL"), value: "all" },
                   ...Object.values(paymentStatus).map((value) => ({
                     label: t(toPaymentStatusTitle(value)),
+                    value,
+                  })),
+                ],
+                closeOnChange: false,
+              },
+              {
+                type: FilterTypes.dropdown,
+                title: t("PAYMENT_TYPE"),
+                value: filters.typeFilter || "all",
+                onChange: (value) => dispatch(setPaymentsTypeFilter(value)),
+                items: [
+                  { label: t("ALL"), value: "all" },
+                  ...Object.values(paymentType).map((value) => ({
+                    label: t(toPaymentTypeTitle(value)),
+                    value,
+                  })),
+                ],
+                closeOnChange: false,
+              },
+              {
+                type: FilterTypes.dropdown,
+                title: t("PAYMENT_METHOD"),
+                value: filters.paymentMethodTypeFilter || "all",
+                onChange: (value) =>
+                  dispatch(setPaymentsPaymentMethodTypeFilter(value)),
+                items: [
+                  { label: t("ALL"), value: "all" },
+                  ...Object.values(paymentMethodType).map((value) => ({
+                    label: t(toPaymentMethodTypeTitle(value)),
                     value,
                   })),
                 ],

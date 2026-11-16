@@ -118,18 +118,28 @@ export const toShipmentStatusColor = (
   const solid = tokens.color.solid;
   switch (status) {
     case shipmentStatus.pending:
-      return classNameColor ? "bg-status-info-bg text-status-info-fg" : solid.info;
+      return classNameColor
+        ? "bg-status-info-bg text-status-info-fg"
+        : solid.info;
     case shipmentStatus.processing:
-      return classNameColor ? "bg-status-success-bg text-status-success-fg" : solid.success;
+      return classNameColor
+        ? "bg-status-success-bg text-status-success-fg"
+        : solid.success;
     case shipmentStatus.delivered:
-      return classNameColor ? "bg-status-neutral-bg text-status-neutral-fg" : solid.neutral;
+      return classNameColor
+        ? "bg-status-neutral-bg text-status-neutral-fg"
+        : solid.neutral;
     case shipmentStatus.failed:
     case shipmentStatus.canceled:
     case shipmentStatus.returned:
     case shipmentStatus.requestCancel:
-      return classNameColor ? "bg-status-error-bg text-status-error-fg" : solid.error;
+      return classNameColor
+        ? "bg-status-error-bg text-status-error-fg"
+        : solid.error;
   }
-  return classNameColor ? "bg-status-success-bg text-status-success-fg" : solid.success;
+  return classNameColor
+    ? "bg-status-success-bg text-status-success-fg"
+    : solid.success;
 };
 
 export const toShipmentPaymentStatusTitle = (type: string) => {
@@ -179,7 +189,8 @@ export const defaultCountry = {
   },
   code: defaultCountryCode,
 };
-export const toShipmentTypeColor = () => "bg-status-info-bg text-status-info-fg";
+export const toShipmentTypeColor = () =>
+  "bg-status-info-bg text-status-info-fg";
 export const toShippingFilterTypeColor = (value: string) =>
   value === "cashOnDelivery"
     ? "bg-status-warning-bg text-status-warning-fg"
@@ -324,6 +335,41 @@ export function shipmentContactValues(
     ...(value[`${prefix}Email`] ? { email: value[`${prefix}Email`] } : {}),
     address,
   };
+}
+/** A delayed saved-contact read must not replace edits made since selection. */
+export function mergeSavedShipmentContact(
+  incoming: Record<string, unknown>,
+  initial: Record<string, unknown>,
+  current: Record<string, unknown>,
+  prefix: "sender" | "receiver",
+) {
+  const changed = (suffix: string) =>
+    current[`${prefix}${suffix}`] !== initial[`${prefix}${suffix}`];
+  const geographyChanged = ["CountryId", "StateId", "CityId"].some(changed);
+  const phoneChanged = ["Phone", "PhoneCountry"].some(changed);
+  return Object.fromEntries(
+    Object.entries(incoming).filter(([key]) => {
+      const suffix = key.slice(prefix.length);
+      if (current[key] !== initial[key]) return false;
+      if (phoneChanged && ["Phone", "PhoneCountry"].includes(suffix))
+        return false;
+      return !(
+        geographyChanged &&
+        [
+          "CountryId",
+          "CountryName",
+          "CountryCode",
+          "StateId",
+          "StateName",
+          "CityId",
+          "CityName",
+          "Street",
+          "NationalAddress",
+          "ZipCode",
+        ].includes(suffix)
+      );
+    }),
+  );
 }
 export function compressShipment(
   value: ShipmentFormValues,

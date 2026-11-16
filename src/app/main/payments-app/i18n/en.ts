@@ -1,4 +1,12 @@
 const locale = {
+  LOAD_PAYMENT_ERROR: "Could not load this payment. Please retry.",
+  PAYMENT_STATUS_UNVERIFIED: "Payment status could not be refreshed",
+  PAYMENT_VERIFICATION_UNAVAILABLE:
+    "The saved payment is shown below. Its latest status could not be verified. Retry the status check before assuming the wallet has been credited.",
+  ONLINE_PAYMENT_UNAVAILABLE:
+    "Online payment is temporarily unavailable. Check payment history before starting another request, or use bank transfer.",
+  CHECK_PAYMENT_HISTORY:
+    "The request outcome is uncertain. Check history before submitting another request.",
   DEMO_RETURN_PENDING: "Return without paying",
   DEMO_CONFIRM_PAYMENT: "Simulate successful payment",
   DEMO_HOSTED_HINT:

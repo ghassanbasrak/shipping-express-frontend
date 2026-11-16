@@ -37,6 +37,7 @@ import {
   hasActiveStorageSubscription,
   storageError,
   storagePlanPrice,
+  isStoragePlanConfigured,
 } from "../storage-app/Utils";
 import type IStoragePlan from "../storage-app/models/IStoragePlan";
 import StorageGate from "../storage-app/shared/StorageGate";
@@ -47,6 +48,7 @@ import {
   paymentType,
   paymentMethodType,
   paymentStatus,
+  onlinePaymentError,
 } from "../payments-app/Utils";
 import { isDemoMode } from "src/app/demo/demoMode";
 type Pending = StorageCheckoutResponse;
@@ -139,6 +141,8 @@ function StorageWorkspace() {
       )
         throw new Error(t("PLAN_CHANGED"));
       if (!current.isActive) throw new Error(t("PLAN_UNAVAILABLE"));
+      if (!isStoragePlanConfigured(current))
+        throw new Error(t("PLAN_NOT_CONFIGURED"));
       if (
         JSON.stringify([
           current.price,
@@ -204,7 +208,14 @@ function StorageWorkspace() {
       if (posted && (status === "NETWORK_ERROR" || Number(status) >= 500)) {
         setAccepted(true);
         setError(t("CHECK_SUBSCRIPTION_HISTORY"));
-      } else setError(storageError(e, t("SAVE_ERROR")));
+      } else
+        setError(
+          onlinePaymentError(
+            e,
+            storageError(e, t("SAVE_ERROR")),
+            t("ONLINE_PAYMENT_UNAVAILABLE"),
+          ),
+        );
     } finally {
       busy.current = false;
       setChecking(false);
@@ -340,11 +351,15 @@ function StorageWorkspace() {
                       <li key={index}>{feature}</li>
                     ))}
                   </ul>
+                  {!isStoragePlanConfigured(plan) && (
+                    <Alert severity="warning">{t("PLAN_NOT_CONFIGURED")}</Alert>
+                  )}
                   <Button
                     variant="contained"
                     color="primary"
                     disabled={
                       !available ||
+                      !isStoragePlanConfigured(plan) ||
                       (active &&
                         operation === storageSubscriptionOperation.subscribe) ||
                       !!pending ||

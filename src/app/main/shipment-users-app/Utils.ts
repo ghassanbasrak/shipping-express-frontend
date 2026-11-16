@@ -63,7 +63,7 @@ export function toShipmentUserSaveValues(
     address: {
       countryId: address.countryId,
       stateId: address.stateId,
-      cityId: address.cityId,
+      ...(address.cityId ? { cityId: address.cityId } : {}),
       street: address.nationalAddress
         ? `${address.street || ""}${nationalAddressSeparator}${address.nationalAddress}`
         : address.street,
