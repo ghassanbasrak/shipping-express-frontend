@@ -144,6 +144,8 @@ export default function StorageSubscriptionsTable() {
         </Alert>
       )}
       <CustomTable<IStorageSubscription>
+        autoRowHeight
+        estimatedRowHeight={150}
         data={rows.slice(
           filters.page * filters.pageSize,
           (filters.page + 1) * filters.pageSize,

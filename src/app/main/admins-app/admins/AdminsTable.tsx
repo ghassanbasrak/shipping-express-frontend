@@ -137,6 +137,8 @@ export default function AdminsTable() {
         </Alert>
       )}
       <CustomTable<IAdmin>
+        autoRowHeight
+        estimatedRowHeight={100}
         fields={fields}
         data={data?.results || []}
         total={data?.total || 0}

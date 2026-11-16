@@ -305,6 +305,7 @@ export default function AffiliateTransactionsTab({
               : FetchStatus.done
         }
         autoRowHeight
+        estimatedRowHeight={140}
         checkboxSelection
         exportedFileName="Ashamco - Affiliate Ledger"
         onChangePagination={({ page, pageSize }) =>

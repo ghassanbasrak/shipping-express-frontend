@@ -31,6 +31,12 @@ import {
 } from "../Utils";
 import SupplyReviewDialog from "../supply/SupplyReviewDialog";
 import { displayName } from "../../countries-app/Utils";
+const estimatedRowHeights: Record<StorageListKind, number> = {
+  warehouses: 150,
+  plans: 130,
+  supplies: 150,
+  products: 100,
+};
 type StorageRow = {
   id: string;
   name?: string;
@@ -432,6 +438,8 @@ export default function StorageListTable({ kind }: { kind: StorageListKind }) {
         </Alert>
       )}
       <CustomTable<StorageRow>
+        autoRowHeight
+        estimatedRowHeight={estimatedRowHeights[kind]}
         data={filtered.slice(
           filter.page * filter.pageSize,
           (filter.page + 1) * filter.pageSize,

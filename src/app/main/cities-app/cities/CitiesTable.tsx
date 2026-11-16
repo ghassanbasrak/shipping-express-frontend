@@ -186,6 +186,8 @@ export default function CitiesTable() {
         </Alert>
       )}
       <CustomTable<ICity>
+        autoRowHeight
+        estimatedRowHeight={80}
         fields={fields}
         status={
           isError

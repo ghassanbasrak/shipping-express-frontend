@@ -90,7 +90,7 @@ export default function PaymentSection({
               variant="outlined"
               disabled={disabled}
               color="error"
-              sx={{ height: 56, borderRadius: "12px", flexShrink: 0 }}
+              sx={{ minHeight: 53, borderRadius: "12px", flexShrink: 0 }}
               onClick={() => {
                 setValue("couponCode", "");
                 setValue("couponCodeId", "");
@@ -107,7 +107,7 @@ export default function PaymentSection({
               variant="contained"
               disabled={disabled || !form.couponCode}
               loading={isFetching}
-              sx={{ height: 56, borderRadius: "12px", flexShrink: 0 }}
+              sx={{ minHeight: 53, borderRadius: "12px", flexShrink: 0 }}
               onClick={check}
               data-testid="check-shipment-coupon"
             >

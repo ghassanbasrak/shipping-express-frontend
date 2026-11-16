@@ -1926,5 +1926,26 @@
       "browser": "Embedded browser: admin unaffected; verified customer login, profile shortcut and server statuses; phone/email edit forms and invalid-input validation passed. Separate port 4100 fixture was unreachable from the embedded browser; no fixture UI pass claimed."
     },
     "handoff": "docs/backend-contact-verification-audit-20261116.txt"
+  },
+  "customTableRowHeights20261117": {
+    "date": "2026-11-17",
+    "scope": "Table props in existing features only; no migration count changes, new feature areas or backend changes.",
+    "auditedCallSites": 24,
+    "alreadyConfigured": 15,
+    "updatedCallSites": 9,
+    "completed": [
+      "All CustomTable usages explicitly enable autoRowHeight and pass estimatedRowHeight.",
+      "Retained all existing explicit estimates.",
+      "Set geography 80, staff 100, merchant contacts 130, affiliate/shipment ledgers 140, storage subscriptions 150.",
+      "Storage lists use per-kind estimates: warehouses 150, plans 130, supply requests 150, products 100."
+    ],
+    "validation": {
+      "sourceAudit": "passed: 24/24 call sites; dormant view-switcher selector has no runtime consumers",
+      "activeApplicationTypecheck": "passed: npm run typecheck:app",
+      "productionBuild": "passed: npm run build; existing Browserslist, CSS, mixed import and large-chunk warnings",
+      "audit": "test-results/custom-table-row-heights-audit.json"
+    },
+    "remaining": "No missing CustomTable row-height props; no feature migrations in this batch.",
+    "exclusions": "Existing retired and excluded features remain unchanged."
   }
 }

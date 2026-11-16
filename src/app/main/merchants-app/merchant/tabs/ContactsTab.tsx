@@ -193,6 +193,7 @@ export default function ContactsTab({
               : FetchStatus.done
         }
         autoRowHeight
+        estimatedRowHeight={130}
         checkboxSelection
         exportedFileName="Ashamco - Merchant Contacts"
         onChangePagination={(value) => {

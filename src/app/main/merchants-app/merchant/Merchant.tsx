@@ -194,7 +194,7 @@ export default function Merchant({ forView = false }: { forView?: boolean }) {
               scrollButtons="auto"
               indicatorColor="secondary"
               textColor="secondary"
-              classes={{ root: "w-full h-64 border-b-1" }}
+              classes={{ root: "w-full border-b-1" }}
             >
               {tabs.map((item) => (
                 <Tab key={item.id} value={item.id} label={t(item.label)} />

@@ -170,7 +170,7 @@ export const toStorageTypeTitle = (value: string) =>
   })[value] || "UNKNOWN_STORAGE_TYPE";
 export const toStorageTypeColor = (value: string) =>
   ({
-    [storageType.standard]: "bg-slate-600",
+    [storageType.standard]: "bg-purple-600",
     [storageType.dry]: "bg-amber-600",
     [storageType.chilled]: "bg-blue-600",
     [storageType.frozen]: "bg-cyan-700",

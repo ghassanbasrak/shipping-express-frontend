@@ -180,6 +180,8 @@ export default function CountriesTable() {
         </Alert>
       )}
       <CustomTable<ICountry>
+        autoRowHeight
+        estimatedRowHeight={80}
         fields={fields}
         status={
           failed

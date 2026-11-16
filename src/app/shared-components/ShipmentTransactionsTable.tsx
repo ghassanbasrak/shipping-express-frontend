@@ -24,6 +24,7 @@ export default function ShipmentTransactionsTable({
       paginationType="client"
       onChangePagination={() => {}}
       autoRowHeight
+      estimatedRowHeight={140}
       status={loading ? FetchStatus.loading : FetchStatus.done}
       exportedFileName="Ashamco Shipment Transactions"
     />

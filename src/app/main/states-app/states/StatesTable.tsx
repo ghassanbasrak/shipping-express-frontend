@@ -134,6 +134,8 @@ export default function StatesTable() {
         </Alert>
       )}
       <CustomTable<IState>
+        autoRowHeight
+        estimatedRowHeight={80}
         fields={fields}
         status={
           isError

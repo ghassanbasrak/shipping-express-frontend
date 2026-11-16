@@ -75,8 +75,8 @@ export default function ParcelSection({
           <Box
             sx={(theme) => ({
               display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
+              alignItems: "center",
+              justifyContent: "space-between",
               px: 1.5,
               py: 0.75,
               minHeight: 56,
@@ -86,20 +86,20 @@ export default function ParcelSection({
             })}
             data-testid="volumetric-weight"
           >
-            <Typography
-              color="text.secondary"
-              className="text-11 leading-tight"
-            >
-              {t("VOLUMETRIC_WEIGHT")}
-            </Typography>
+            <div>
+              <Typography className="text-12 leading-tight">
+                {t("VOLUMETRIC_WEIGHT")}
+              </Typography>
+              {!form.shippingCompanyId && (
+                <Typography className="text-11" color="text.secondary">
+                  {t("WEIGHT_CARRIER_HINT")}
+                </Typography>
+              )}
+            </div>
+
             <Typography className="text-15 font-bold" dir="ltr">
               {shipmentVolumetricWeight(form)} {t("KG")}
             </Typography>
-            {!form.shippingCompanyId && (
-              <Typography className="text-11" color="text.secondary">
-                {t("WEIGHT_CARRIER_HINT")}
-              </Typography>
-            )}
           </Box>
         </div>
       </div>

@@ -54,7 +54,7 @@ export default function ShipmentField({
                 border: `1px solid ${fieldState.error ? theme.palette.error.main : field.value ? theme.palette.primary.main : theme.palette.divider}`,
                 borderRadius: "12px",
                 px: 1.5,
-                py: 0.25,
+                py: 0.5,
                 backgroundColor: field.value
                   ? alpha(theme.palette.primary.main, 0.06)
                   : "transparent",
