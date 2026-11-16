@@ -144,10 +144,6 @@ export function ProfileFields({
         <Box
           sx={{
             display: "grid",
-            gridTemplateColumns: {
-              xs: "minmax(0, 1fr)",
-              sm: "minmax(130px, .7fr) minmax(0, 1.3fr)",
-            },
             gap: 2,
             minWidth: 0,
           }}

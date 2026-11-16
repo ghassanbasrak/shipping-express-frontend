@@ -15,17 +15,31 @@ import {
   getAccessToken,
   getRefreshToken,
   installAuthInterceptors,
-  revokeCurrentSession,
   setSession,
 } from "./session";
-import type { LoginRequest, LoginResponse, ResetPasswordRequest } from "./authContracts";
+import type {
+  LoginRequest,
+  LoginResponse,
+  ResetPasswordRequest,
+} from "./authContracts";
 import { useAppDispatch } from "app/store/hooks";
 import apiService from "app/store/apiService";
 import { closeDialog } from "@fuse/core/FuseDialog/fuseDialogSlice";
 import { resetUser } from "../../user/store/userSlice";
 import { getDemoUser, isDemoMode } from "src/app/demo/demoMode";
+import {
+  assertVerifiedContact,
+  emailVerificationProfile,
+  normalizeContact,
+  otpChallengeId,
+  type ContactKind,
+} from "./contactVerification";
 
-export type JwtAuthStatus = "configuring" | "authenticated" | "unauthenticated" | "unavailable";
+export type JwtAuthStatus =
+  | "configuring"
+  | "authenticated"
+  | "unauthenticated"
+  | "unavailable";
 export class ProfileCompletionError extends Error {
   constructor() {
     super("Account created; profile completion must be retried");
@@ -55,12 +69,17 @@ export type JwtAuthContextType = {
   ) => Promise<User>;
   signUpWithEmailAndPassword: (profile: Profile) => Promise<User>;
   completeSignUpProfile: (profile: Profile) => Promise<User>;
-  sendOtpCode: (
-    phone: string,
-    type?: "signIn",
-  ) => Promise<string>;
+  sendOtpCode: (phone: string, type?: "signIn") => Promise<string>;
   updateMe: (profile: Profile) => Promise<User>;
   getUser: () => Promise<User>;
+  sendPhoneVerificationCode: (phone: string) => Promise<string>;
+  sendEmailVerificationCode: (email: string) => Promise<void>;
+  linkWithPhoneNumber: (
+    phone: string,
+    code: string,
+    messageId: string,
+  ) => Promise<User>;
+  linkWithEmail: (email: string, code: string) => Promise<User>;
   requestResetCode: (email: string) => Promise<void>;
   verifyResetCode: (
     email: string,
@@ -73,7 +92,9 @@ export const JwtAuthContext = createContext<JwtAuthContextType | undefined>(
 );
 
 function JwtAuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(isDemoMode ? getDemoUser() : null);
+  const [user, setUser] = useState<User | null>(
+    isDemoMode ? getDemoUser() : null,
+  );
   const [authStatus, setAuthStatus] = useState<JwtAuthStatus>(
     isDemoMode ? "authenticated" : "configuring",
   );
@@ -89,7 +110,7 @@ function JwtAuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = useCallback(() => {
     if (isDemoMode) return;
     revision.current += 1;
-    void revokeCurrentSession();
+    setSession(null);
     setUser(null);
     setAuthStatus("unauthenticated");
     dispatch(apiService.util.resetApiState());
@@ -120,7 +141,9 @@ function JwtAuthProvider({ children }: { children: React.ReactNode }) {
       const { affiliateCode, password: _password, ...body } = profile;
       const next = await updateMe(body);
       if (affiliateCode)
-        await axios.post(config.applyAffiliateCode, { affiliateCode }).catch(() => {});
+        await axios
+          .post(config.applyAffiliateCode, { affiliateCode })
+          .catch(() => {});
       return next;
     },
     [updateMe],
@@ -148,7 +171,10 @@ function JwtAuthProvider({ children }: { children: React.ReactNode }) {
     async (email: string, password: string) => {
       const version = ++revision.current;
       const body: LoginRequest = { email, password };
-      const { data } = await axios.post<LoginResponse>(config.signInWithEmailAndPassword, body);
+      const { data } = await axios.post<LoginResponse>(
+        config.signInWithEmailAndPassword,
+        body,
+      );
       if (version !== revision.current) throw new Error("Session changed");
       return finishLogin(data);
     },
@@ -199,10 +225,97 @@ function JwtAuthProvider({ children }: { children: React.ReactNode }) {
   const sendOtpCode = useCallback(
     async (phone: string, type: "signIn" = "signIn") => {
       const { data } = await axios.post(config.sendOtpCode, { phone, type });
-      if (!data.msegatId) throw new Error("Unable to send sign-in code");
-      return String(data.msegatId);
+      return otpChallengeId(data.msegatId);
     },
     [],
+  );
+  const sendPhoneVerificationCode = useCallback(
+    async (phone: string) => {
+      const version = revision.current,
+        ownerId = user?.id;
+      if (!ownerId) throw new Error("Missing account");
+      const { data } = await axios.post(config.sendPhoneVerificationCode, {
+        phone,
+      });
+      if (version !== revision.current) throw new Error("Session changed");
+      const { data: current } = await axios.get<User>(config.accessToken);
+      if (
+        version !== revision.current ||
+        current.id !== ownerId ||
+        normalizeContact("phone", current.phone || "") !==
+          normalizeContact("phone", phone)
+      )
+        throw new Error("Phone update was not confirmed");
+      acceptUser(current);
+      return otpChallengeId(data.msegatId);
+    },
+    [user?.id, acceptUser],
+  );
+  const sendEmailVerificationCode = useCallback(
+    async (email: string) => {
+      const version = revision.current,
+        ownerId = user?.id;
+      const { data: current } = await axios.get<User>(config.accessToken);
+      if (version !== revision.current || !ownerId || current.id !== ownerId)
+        throw new Error("Session changed");
+      const contact = normalizeContact("email", email);
+      if (current.email !== contact) {
+        const { data: updated } = await axios.patch<User>(
+          config.updateUser,
+          emailVerificationProfile(current, contact),
+        );
+        if (
+          version !== revision.current ||
+          updated.id !== ownerId ||
+          updated.email !== contact
+        )
+          throw new Error("Email update was not confirmed");
+        acceptUser(updated);
+      }
+      await axios.post(config.sendEmailVerificationCode, { email: contact });
+      if (version !== revision.current) throw new Error("Session changed");
+    },
+    [user?.id, acceptUser],
+  );
+  const confirmContact = useCallback(
+    async (
+      kind: ContactKind,
+      contact: string,
+      code: string,
+      messageId?: string,
+    ) => {
+      const version = revision.current,
+        ownerId = user?.id;
+      if (!ownerId) throw new Error("Missing account");
+      const { data } = await axios.post(
+        kind === "phone" ? config.verifyOtpCode : config.verifyEmailCode,
+        kind === "phone"
+          ? {
+              phone: contact,
+              code,
+              msegatId: Number(otpChallengeId(messageId)),
+            }
+          : { email: normalizeContact("email", contact), code },
+      );
+      if (version !== revision.current) throw new Error("Session changed");
+      if (data.isVerified !== true || data.user?.id !== ownerId)
+        throw new Error("Invalid verification code");
+      // This is contact verification for the signed-in account, not another login.
+      // Never replace its session with tokens returned by the public phone endpoint.
+      const { data: current } = await axios.get<User>(config.accessToken);
+      if (version !== revision.current) throw new Error("Session changed");
+      return acceptUser(assertVerifiedContact(current, ownerId, kind, contact));
+    },
+    [user?.id, acceptUser],
+  );
+  const linkWithPhoneNumber = useCallback(
+    (phone: string, code: string, messageId: string) =>
+      confirmContact("phone", phone, code, messageId),
+    [confirmContact],
+  );
+  const linkWithEmail = useCallback(
+    (email: string, code: string) => confirmContact("email", email, code),
+    [confirmContact],
   );
   const requestResetCode = useCallback(async (email: string) => {
     await axios.post(config.requestResetCode, { email });
@@ -230,7 +343,10 @@ function JwtAuthProvider({ children }: { children: React.ReactNode }) {
       await getUser();
     } catch (error) {
       if (version !== revision.current) return;
-      if (isAxiosError(error) && [401, 403].includes(error.response?.status ?? 0))
+      if (
+        isAxiosError(error) &&
+        [401, 403].includes(error.response?.status ?? 0)
+      )
         signOut();
       else setAuthStatus("unavailable");
     }
@@ -260,6 +376,10 @@ function JwtAuthProvider({ children }: { children: React.ReactNode }) {
       signUpWithEmailAndPassword,
       completeSignUpProfile,
       sendOtpCode,
+      sendPhoneVerificationCode,
+      sendEmailVerificationCode,
+      linkWithPhoneNumber,
+      linkWithEmail,
       updateMe,
       getUser,
       requestResetCode,
@@ -275,6 +395,10 @@ function JwtAuthProvider({ children }: { children: React.ReactNode }) {
       signUpWithEmailAndPassword,
       completeSignUpProfile,
       sendOtpCode,
+      sendPhoneVerificationCode,
+      sendEmailVerificationCode,
+      linkWithPhoneNumber,
+      linkWithEmail,
       updateMe,
       getUser,
       requestResetCode,

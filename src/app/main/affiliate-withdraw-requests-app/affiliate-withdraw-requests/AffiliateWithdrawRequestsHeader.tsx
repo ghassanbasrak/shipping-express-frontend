@@ -1,13 +1,12 @@
+import FeatureHeaderSummaryCard from "app/shared-components/feature-header/FeatureHeaderSummaryCard";
 import FeatureHeader, {
   FeatureHeaderRow,
   FeatureHeaderHeading,
-  FeatureHeaderActions,
-  FeatureHeaderMeta,
   FeatureHeaderToolbar,
   FeatureHeaderFilter,
 } from "app/shared-components/feature-header/FeatureHeader";
 import type { AffiliateWithdrawViewFeature } from "../Utils";
-import { Alert, Button, Input, Typography } from "@mui/material";
+import { Alert, Button, Input } from "@mui/material";
 
 import { useParams, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -18,7 +17,6 @@ import { FilterTypes } from "app/shared-components/filter-icon/Utils";
 import { useAppDispatch, useAppSelector } from "app/store/hooks";
 import { selectUser } from "src/app/auth/user/store/userSlice";
 import { canViewAffiliateWithdrawRequests } from "../Utils";
-import Currency from "../../utils/currencyFormatter";
 import { Link } from "react-router-dom";
 import {
   GetAffiliateWithdrawRequestsApiArg,
@@ -91,23 +89,17 @@ export default function AffiliateWithdrawRequestsHeader({
               : t("WITHDRAW_REQUESTS")}
           </FeatureHeaderHeading>
         </div>
-        <FeatureHeaderActions>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-16 w-full lg:w-auto shrink-0">
           {balance.currentData && !balance.isError && (
-            <>
-              <FeatureHeaderMeta>
-                <Typography
-                  className="font-semibold"
-                  data-testid="affiliate-balance"
-                >
-                  {t(
-                    user.role === "user"
-                      ? "CURRENT_AFFILIATE_BALANCE"
-                      : "MERCHANT_AFFILIATE_BALANCE",
-                  )}
-                  : {Currency(balance.currentData.balance)}
-                </Typography>
-              </FeatureHeaderMeta>
-            </>
+            <FeatureHeaderSummaryCard
+              label={t(
+                user.role === "user"
+                  ? "CURRENT_AFFILIATE_BALANCE"
+                  : "MERCHANT_AFFILIATE_BALANCE",
+              )}
+              amount={balance.currentData.balance}
+              testId="affiliate-balance"
+            />
           )}
           {user.role === "user" &&
             pending.currentData?.total === 0 &&
@@ -126,7 +118,7 @@ export default function AffiliateWithdrawRequestsHeader({
                 </Button>
               </>
             )}
-        </FeatureHeaderActions>
+        </div>
       </FeatureHeaderRow>
       <FeatureHeaderToolbar
         search={

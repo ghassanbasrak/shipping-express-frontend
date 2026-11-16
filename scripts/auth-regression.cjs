@@ -13,7 +13,7 @@ const MockAdapter = require(
 const zod = require(path.join(target, "node_modules/zod"));
 const root = target;
 function load(file, imports, globals = {}) {
-  const source = fs.readFileSync(path.join(root, file), "utf8");
+  const source = fs.readFileSync(path.join(root, file), "utf8").replace(/import\.meta\.env/g, "({})");
   const js = ts.transpileModule(source, {
     compilerOptions: {
       module: ts.ModuleKind.CommonJS,
@@ -164,30 +164,33 @@ test("Invalid credentials do not trigger token refresh", async () => {
   assert.equal(f.mock.history.post.length, 1);
   f.remove();
 });
-test("Logout revokes the captured refresh token and clears local access immediately", async () => {
+test("Logout clears local credentials immediately without a backend request", () => {
   const f = fixture();
-  let sent;
-  f.mock.onPost("v1/auth-sessions/destroy").reply((request) => {
-    sent = request;
-    return [204];
-  });
-  const revocation = f.session.revokeCurrentSession();
+  f.session.setSession(null);
   assert.equal(f.session.getAccessToken(), null);
   assert.equal(f.session.getRefreshToken(), null);
-  await revocation;
-  assert.equal(JSON.parse(sent.data).refreshToken, "refresh");
-  assert.equal(sent.headers.Authorization, "Bearer old");
+  assert.equal(f.client.defaults.headers.common.Authorization, undefined);
+  assert.equal(f.mock.history.post.length, 0);
   f.remove();
 });
-test("Failed remote logout does not refresh or restore the local session", async () => {
+
+test("Repeated local logout removes legacy credentials and preserves preferences", () => {
   const f = fixture();
-  f.mock.onPost("v1/auth-sessions/destroy").reply(401, {});
-  await f.session.revokeCurrentSession();
+  for (const key of ["access_token", "refresh_token", "fcm_token"])
+    f.storage.set(key, "legacy");
+  f.storage.set("my-language", "ar");
+  f.session.setSession(null);
+  f.session.setSession(null);
   assert.equal(f.session.getAccessToken(), null);
-  assert.equal(f.mock.history.post.length, 1);
+  assert.equal(f.session.getRefreshToken(), null);
+  for (const key of ["access_token", "refresh_token", "fcm_token"])
+    assert.equal(f.storage.has(key), false);
+  assert.equal(f.storage.get("my-language"), "ar");
+  assert.equal(f.mock.history.post.length, 0);
   assert.equal(f.signouts(), 0);
   f.remove();
 });
+
 test("Expired refresh credentials clear the session without retry loops", async () => {
   const f = fixture();
   f.mock.onGet("v1/data").reply(401, {});
@@ -226,7 +229,7 @@ test("Interceptor cleanup allows safe provider remounting", async () => {
     0,
   );
 });
-test("Ashamco registration, blocking and merchant verification gates", () => {
+test("Customer contact verification gates preserve registration, blocking and retired merchant-review independence", () => {
   const p = load("src/app/auth/permissions.ts", {});
   assert.equal(p.accountDestination(null), "/sign-in");
   assert.equal(
@@ -243,7 +246,7 @@ test("Ashamco registration, blocking and merchant verification gates", () => {
   );
   assert.equal(
     p.accountDestination({ role: "user", isRegistered: true }),
-    "/verify-account",
+    "/verify-contacts",
   );
   assert.equal(
     p.accountDestination({ role: "employee", isRegistered: true }),
@@ -255,8 +258,14 @@ test("Ashamco registration, blocking and merchant verification gates", () => {
       isRegistered: true,
       verificationStatus: "approved",
     }),
-    "/home",
+    "/verify-contacts",
   );
+  for (const phoneVerified of [undefined, false, true])
+    for (const emailVerified of [undefined, false, true])
+      assert.equal(p.accountDestination({role:"user",isRegistered:true,phoneVerified,emailVerified}),
+        phoneVerified === true && emailVerified === true ? "/home" : "/verify-contacts");
+  for (const verificationStatus of ["pending", "rejected", "expired"])
+    assert.equal(p.accountDestination({role:"user",isRegistered:true,phoneVerified:true,emailVerified:true,verificationStatus}),"/home");
 });
 test("Employee feature permissions and wallet/COD route mappings", () => {
   const p = load("src/app/auth/permissions.ts", {});
@@ -291,6 +300,75 @@ test("Affiliate restrictions remain scoped to merchant accounts", () => {
     true,
   );
 });
+test("Authenticated pages wait for their matching Redux account; logout stays available", () => {
+  let storedUser = null;
+  let pathname = "/home";
+  const account = { id: "merchant-1", role: "user" };
+  const auth = { user: account, authStatus: "authenticated" };
+  const noop = () => {};
+  const Splash = () => {};
+  const SignOut = () => {};
+  const Authorization = () => {};
+  const jsx = (type, props) => ({ type, props });
+  const component = load("src/app/auth/Authentication.tsx", {
+    react: { useEffect: noop },
+    "react/jsx-runtime": { jsx, jsxs: jsx },
+    "react-router-dom": { useLocation: () => ({ pathname }) },
+    "@fuse/core/BrowserRouter": { default: noop, __esModule: true },
+    "@fuse/core/FuseAuthorization/FuseAuthorization": { default: Authorization, __esModule: true },
+    "@fuse/core/FuseSplashScreen": { default: Splash, __esModule: true },
+    "@mui/material": {},
+    "react-i18next": { useTranslation: () => ({ t: key => key }) },
+    "app/store/hooks": { useAppDispatch: () => noop, useAppSelector: () => storedUser },
+    "./user/store/userSlice": { setUser: noop, resetUser: noop, selectUser: noop },
+    "./services/jwt/useJwtAuth": { default: () => auth, __esModule: true },
+    "./useAuth": { default: () => ({ setAuthProvider: noop, resetAuthProvider: noop, setIsAuthenticated: noop }), __esModule: true },
+    "./services/firebase/FirebaseMessagingApp": { default: noop, __esModule: true },
+    "../main/auth-app/sign-out/SignOutPage": { default: SignOut, __esModule: true },
+  }).default;
+  const render = () => {
+    const content = component({ children: "protected page" }).props.children;
+    return content.type(content.props);
+  };
+  assert.equal(render().type, Splash, "null Redux account blocks page mount");
+  storedUser = { ...account, id: "previous-account" };
+  assert.equal(render().type, Splash, "previous account blocks page mount");
+  storedUser = { ...account, role: "admin" };
+  assert.equal(render().type, Splash, "previous role blocks page mount");
+  storedUser = account;
+  assert.equal(render().props.children[1].type, Authorization);
+  assert.equal(render().props.children[1].props.children, "protected page");
+  auth.user = null;
+  assert.equal(render().type, Splash, "missing auth account blocks page mount");
+  auth.authStatus = "configuring";
+  for (pathname of ["/sign-out", "/logout"])
+    assert.equal(render().type, SignOut, "logout bypasses readiness loading");
+});
+
+test("Route boundary blocks customer pages until contact verification without merchant approval", () => {
+  const permissions = load("src/app/auth/permissions.ts", {});
+  let pathname = "/payments/all";
+  const noop = () => {};
+  const Navigate = () => {};
+  const authorization = load("src/@fuse/core/FuseAuthorization/FuseAuthorization.tsx", {
+    "react/jsx-runtime": {jsx: (type, props) => ({type, props})},
+    react: {useContext: () => ({routes: []})},
+    "react-router-dom": {Navigate, useLocation: () => ({pathname,search:"",hash:""}),matchRoutes: () => [{route:{auth:["user"]}}]},
+    "app/AppContext": {default:{},__esModule:true},
+    "@fuse/utils/FuseUtils": {default:{hasPermission:()=>true},__esModule:true},
+    "src/app/auth/permissions": permissions,
+    "./sessionRedirectUrl": {getSessionRedirectUrl:noop,resetSessionRedirectUrl:noop,setSessionRedirectUrl:noop},
+  }).default;
+  const user = {id:"owner",role:"user",isRegistered:true,phoneVerified:false,emailVerified:false};
+  assert.equal(authorization({user,children:"feature"}).props.to,"/verify-contacts");
+  pathname = "/verify-contacts";
+  assert.equal(authorization({user,children:"verification"}),"verification");
+  pathname = "/payments/all";
+  assert.equal(authorization({user:{...user,phoneVerified:true,emailVerified:true,verificationStatus:"rejected"},children:"feature"}),"feature");
+  assert.equal(authorization({user:{...user,isBlocked:true},children:"feature"}).props.to,"/blocked");
+  assert.equal(authorization({user:{...user,isRegistered:false},children:"feature"}).props.to,"/register");
+});
+
 test("Auth endpoints preserve original backend paths", () => {
   const config = load("src/app/auth/services/jwt/jwtAuthConfig.ts", {}).default;
   assert.equal(config.signInWithEmailAndPassword, "v1/auth-sessions/login");

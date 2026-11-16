@@ -30,6 +30,7 @@ import {
   newBankTransfersInstance,
   setBankTransfersUpdatedByIdFilter,
 } from "../store/bankTransfersSlice";
+import { PaymentBalanceCard } from "../../payments-app/shared-components/PaymentHeaderLayout";
 export default function BankTransfersHeader() {
   const { t } = useTranslation("bankTransfersApp"),
     dispatch = useAppDispatch(),
@@ -47,6 +48,7 @@ export default function BankTransfersHeader() {
       !filters.userIdFilter ||
       filters.userIdFilter === "all",
   });
+  const account = user.role === "user" ? user : selectedUser.currentData;
   const label = (option) =>
     option
       ? `${option.firstName || ""} ${option.lastName || ""} ${option.email || ""}`.trim()
@@ -61,7 +63,29 @@ export default function BankTransfersHeader() {
               : t("BANK_TRANSFERS")}
           </FeatureHeaderHeading>
         </div>
-        {user.role === "user" && <Button component={Link} to="/payments/all/new?method=bankTransfer" variant="contained" color="primary">{t("ADD_BANK_TRANSFER")}</Button>}
+        {account && !selectedUser.isError && (
+          <PaymentBalanceCard
+            label={t(
+              user.role === "user" ? "CURRENT_BALANCE" : "MERCHANT_BALANCE",
+            )}
+            balance={account.balance}
+            accountName={
+              user.role !== "user"
+                ? `${account.firstName || ""} ${account.lastName || ""}`.trim()
+                : undefined
+            }
+          />
+        )}
+        {user.role === "user" && (
+          <Button
+            component={Link}
+            to="/payments/all/new?method=bankTransfer"
+            variant="contained"
+            color="primary"
+          >
+            {t("TOPUP_BALANCE")}
+          </Button>
+        )}
       </FeatureHeaderRow>
       <FeatureHeaderToolbar
         search={

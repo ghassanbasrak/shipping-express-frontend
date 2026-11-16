@@ -14,6 +14,7 @@ import DeleteAccountConfig from "./delete-account/DeleteAccountConfig";
 import BlockedConfig from "./blocked/BlockedConfig";
 import MaintenanceConfig from "./maintenance/MaintenanceConfig";
 import AffiliateSignUpConfig from "./affiliate-sign-up/AffiliateSignUpConfig";
+import ContactVerificationConfig from "./contact-verification/ContactVerificationConfig";
 export default [
   SignInConfig,
   SignInPhoneConfig,
@@ -26,4 +27,5 @@ export default [
   BlockedConfig,
   MaintenanceConfig,
   AffiliateSignUpConfig,
+  ContactVerificationConfig,
 ];

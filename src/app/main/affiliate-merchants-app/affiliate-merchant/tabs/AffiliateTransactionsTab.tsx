@@ -1,3 +1,4 @@
+import FeatureHeaderSummaryCard from "app/shared-components/feature-header/FeatureHeaderSummaryCard";
 import { useEffect, useRef, useState } from "react";
 import { Alert, Button, Input, Paper, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
@@ -269,12 +270,14 @@ export default function AffiliateTransactionsTab({
           {t("BALANCE_ERROR")}
         </Alert>
       ) : (
-        <Typography data-testid="affiliate-available-balance">
-          {t("CURRENT_AFFILIATE_BALANCE")}:{" "}
-          {balance.isFetching
-            ? "…"
-            : Currency(balance.currentData?.balance || 0)}
-        </Typography>
+        <div className="flex">
+          <FeatureHeaderSummaryCard
+            label={t("CURRENT_AFFILIATE_BALANCE")}
+            amount={balance.currentData?.balance || 0}
+            loading={balance.isFetching}
+            testId="affiliate-available-balance"
+          />
+        </div>
       )}
       {invalidDates && (
         <Alert severity="error">{t("INVALID_DATE_RANGE")}</Alert>

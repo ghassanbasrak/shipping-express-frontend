@@ -1,7 +1,6 @@
 import FeatureHeader, {
   FeatureHeaderRow,
   FeatureHeaderHeading,
-  FeatureHeaderActions,
   FeatureHeaderToolbar,
   FeatureHeaderFilter,
 } from "app/shared-components/feature-header/FeatureHeader";
@@ -9,7 +8,8 @@ import {
   useGetShippingCompaniesQuery,
   useGetShippingCompanyQuery,
 } from "../../shipping-companies-app/ShippingCompaniesApi";
-import { Alert, Button, Chip, Input } from "@mui/material";
+import { Alert, Button, Input } from "@mui/material";
+import FeatureHeaderSummaryCard from "app/shared-components/feature-header/FeatureHeaderSummaryCard";
 
 import { useLocation, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -19,7 +19,6 @@ import FuseSvgIcon from "@fuse/core/FuseSvgIcon";
 import { FilterTypes } from "app/shared-components/filter-icon/Utils";
 import { useAppDispatch, useAppSelector } from "app/store/hooks";
 import { selectUser } from "src/app/auth/user/store/userSlice";
-import Currency from "src/app/main/utils/currencyFormatter";
 import {
   GetMerchantDuesApiArg,
   useGetMerchantDuesUserQuery,
@@ -125,7 +124,7 @@ export default function MerchantDuesHeader({
               : t("MERCHANT_DUES")}
           </FeatureHeaderHeading>
         </div>
-        <FeatureHeaderActions>
+        <div className="w-full min-w-0 lg:w-auto lg:max-w-[65%] shrink-0">
           {summary.isError ? (
             <Alert
               severity="error"
@@ -137,7 +136,7 @@ export default function MerchantDuesHeader({
             </Alert>
           ) : summary.currentData ? (
             <div
-              className="flex flex-wrap gap-8"
+              className="flex flex-col sm:flex-row sm:flex-wrap lg:justify-end gap-16"
               data-testid="merchant-dues-summary"
             >
               {(
@@ -147,15 +146,16 @@ export default function MerchantDuesHeader({
                   ["settledDues", "SETTLED_DUES", "success"],
                 ] as const
               ).map(([field, title, color]) => (
-                <Chip
+                <FeatureHeaderSummaryCard
                   key={field}
-                  label={`${t(title)}: ${Currency(summary.currentData[field] ?? 0)}`}
+                  label={t(title)}
+                  amount={summary.currentData[field] ?? 0}
                   color={color}
                 />
               ))}
             </div>
           ) : null}
-        </FeatureHeaderActions>
+        </div>
       </FeatureHeaderRow>
       <FeatureHeaderToolbar
         search={

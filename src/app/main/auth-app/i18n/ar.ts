@@ -1,4 +1,19 @@
 export default {
+  CONTACT_VERIFICATION: "التحقق من بيانات التواصل",
+  CONTACT_VERIFICATION_DESCRIPTION:
+    "تحقق من رقم هاتفك برسالة نصية ومن بريدك الإلكتروني برمز التحقق للمتابعة إلى حسابك.",
+  VERIFY_PHONE: "التحقق من رقم الهاتف",
+  VERIFY_EMAIL: "التحقق من البريد الإلكتروني",
+  CONTACT_VERIFIED: "تم التحقق",
+  CONTACT_UNVERIFIED: "التحقق مطلوب",
+  CONTACT_CODE_SENT: "تم إرسال رمز التحقق إلى",
+  CONTACT_SEND_ERROR: "تعذر إرسال الرمز. تحقق من بيانات التواصل وحاول مجدداً.",
+  CONTACT_VERIFY_ERROR:
+    "تعذر تأكيد التحقق. تأكد من الرمز أو اطلب رمزاً جديداً ثم حاول مجدداً.",
+  CONTACTS_VERIFIED:
+    "تم التحقق من رقم هاتفك وبريدك الإلكتروني. حسابك جاهز للاستخدام.",
+  CONTINUE_TO_ACCOUNT: "المتابعة إلى حسابي",
+  REFRESH_VERIFICATION: "تحديث حالة التحقق",
   TITLE: "Ashamco Express",
   EMAIL: "البريد الإلكتروني",
   PASSWORD: "كلمة المرور",
@@ -59,7 +74,8 @@ export default {
   PASSWORD_MATCH: "يجب أن تتطابق كلمتا المرور",
   TAX_LENGTH: "يجب أن يتكون الرقم الضريبي من 15 رقماً",
   ERROR: "تعذر تنفيذ الطلب. يرجى المحاولة مجدداً.",
-  SESSION_UNAVAILABLE: "تعذر التحقق من جلستك. لا يزال حسابك مسجلاً على هذا الجهاز. حاول مجدداً.",
+  SESSION_UNAVAILABLE:
+    "تعذر التحقق من جلستك. لا يزال حسابك مسجلاً على هذا الجهاز. حاول مجدداً.",
   RETRY: "المحاولة مجدداً",
   SUCCESS: "تم الحفظ بنجاح",
   OTP_SENT: "تم إرسال رمز التحقق",

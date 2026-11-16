@@ -1,4 +1,20 @@
 export default {
+  CONTACT_VERIFICATION: "Verify your contact details",
+  CONTACT_VERIFICATION_DESCRIPTION:
+    "Verify your phone number by SMS and your email with a code to continue to your account.",
+  VERIFY_PHONE: "Phone verification",
+  VERIFY_EMAIL: "Email verification",
+  CONTACT_VERIFIED: "Verified",
+  CONTACT_UNVERIFIED: "Verification required",
+  CONTACT_CODE_SENT: "A verification code was sent to",
+  CONTACT_SEND_ERROR:
+    "Could not send the code. Check your contact details and try again.",
+  CONTACT_VERIFY_ERROR:
+    "Verification could not be confirmed. Check the code or request a new one, then try again.",
+  CONTACTS_VERIFIED:
+    "Your phone number and email are verified. Your account is ready.",
+  CONTINUE_TO_ACCOUNT: "Continue to my account",
+  REFRESH_VERIFICATION: "Refresh verification status",
   TITLE: "Ashamco Express",
   EMAIL: "Email",
   PASSWORD: "Password",
@@ -15,7 +31,8 @@ export default {
   AUTH_PANEL_BODY: "Manage your account and shipping activity in one place.",
   SIGN_UP: "Create account",
   SIGN_UP_SUBTITLE: "Set up your account to get started with Ashamco Express.",
-  REGISTER_SUBTITLE: "Complete your details to continue setting up your account.",
+  REGISTER_SUBTITLE:
+    "Complete your details to continue setting up your account.",
   SECTION_IDENTITY: "Your details",
   SECTION_CONTACT: "Contact information",
   SECTION_ADDRESS: "Address",
@@ -58,7 +75,8 @@ export default {
   PASSWORD_MATCH: "Passwords must match",
   TAX_LENGTH: "Tax number must contain 15 digits",
   ERROR: "The request failed. Please try again.",
-  SESSION_UNAVAILABLE: "We could not check your session. Your account is still signed in on this device. Try again.",
+  SESSION_UNAVAILABLE:
+    "We could not check your session. Your account is still signed in on this device. Try again.",
   RETRY: "Try again",
   SUCCESS: "Saved successfully",
   OTP_SENT: "Verification code sent",

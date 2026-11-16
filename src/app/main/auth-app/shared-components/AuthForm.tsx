@@ -86,6 +86,7 @@ export function AuthForm({
 }
 
 export function AuthField({
+  id,
   name,
   label,
   type = "text",
@@ -93,6 +94,7 @@ export function AuthField({
   options,
   autoComplete,
 }: {
+  id?: string;
   name: string;
   label: string;
   type?: string;
@@ -111,7 +113,7 @@ export function AuthField({
       render={({ field, fieldState }) => (
         <TextField
           {...field}
-          id={`auth-${name.replace(/\./g, "-")}`}
+          id={id || `auth-${name.replace(/\./g, "-")}`}
           value={field.value ?? ""}
           label={label}
           type={isPassword && visible ? "text" : type}
@@ -318,6 +320,7 @@ export function useOtpChallenge() {
     },
     clear: () => {
       setMessageId("");
+      setSeconds(0);
     },
   };
 }
@@ -340,6 +343,6 @@ export function validation(t: (key: string) => string) {
     code: z
       .string()
       .transform(digits)
-      .pipe(z.string().regex(/^\d{4}$/, t("INVALID_CODE"))),
+      .pipe(z.string().regex(/^\d{4,6}$/, t("INVALID_CODE"))),
   };
 }

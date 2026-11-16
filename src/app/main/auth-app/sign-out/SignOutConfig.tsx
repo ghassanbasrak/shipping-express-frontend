@@ -1,7 +1,5 @@
-import { lazy } from "react";
 import { FuseRouteConfigType } from "@fuse/utils/FuseUtils";
-import authRoles from "src/app/auth/authRoles";
-const Page0 = lazy(() => import("./SignOutPage"));
+import SignOutPage from "./SignOutPage";
 const SignOutConfig: FuseRouteConfigType = {
   auth: null,
   settings: {
@@ -16,8 +14,8 @@ const SignOutConfig: FuseRouteConfigType = {
     },
   },
   routes: [
-    { path: "sign-out", element: <Page0 /> },
-    { path: "logout", element: <Page0 /> },
+    { path: "sign-out", element: <SignOutPage /> },
+    { path: "logout", element: <SignOutPage /> },
   ],
 };
 export default SignOutConfig;

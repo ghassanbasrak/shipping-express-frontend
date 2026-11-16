@@ -277,7 +277,8 @@
     "test:cod-operations": "node scripts/cod-operations-regression.cjs",
     "test:cod-operations:browser": "npm run build && node scripts/cod-operations-browser-smoke.cjs",
     "brand:generate": "node scripts/generate-brand-tokens.cjs",
-    "test:frontend-qa": "node scripts/frontend-qa-regression.cjs"
+    "test:frontend-qa": "node scripts/frontend-qa-regression.cjs",
+    "test:contact-verification": "node scripts/contact-verification-regression.cjs"
   },
   "engines": {
     "node": ">=18.0.0",

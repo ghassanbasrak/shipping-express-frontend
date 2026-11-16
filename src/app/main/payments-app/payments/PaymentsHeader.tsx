@@ -98,19 +98,17 @@ export default function PaymentsHeader() {
             <Button
               color="primary"
               variant="contained"
-              size="large"
               component={Link}
               to="/payments/all/new"
               startIcon={
                 <FuseSvgIcon size={20}>heroicons-outline:plus</FuseSvgIcon>
               }
-              className="rounded-[10px] shadow-none whitespace-nowrap min-h-44"
               data-testid="new-payment"
             >
-              {t("ADD_PAYMENT")}
+              {t("TOPUP_BALANCE")}
             </Button>
           )}
-          <Button
+          {/* <Button
             component={Link}
             variant="outlined"
             to={
@@ -120,7 +118,7 @@ export default function PaymentsHeader() {
             }
           >
             {t("BANK_HISTORY")}
-          </Button>
+          </Button> */}
           {canAdjustWalletBalance(user, filters.userIdFilter) && (
             <Button
               color="primary"

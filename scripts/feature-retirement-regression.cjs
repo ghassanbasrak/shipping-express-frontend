@@ -88,13 +88,14 @@ check(
   },
 );
 check(
-  "Verification onboarding and its API are retired",
+  "Merchant-review onboarding stays retired while phone/email code verification is restored",
   () => {
     const api = read("src/app/main/auth-app/AuthApi.ts");
     assert(!api.includes("submitVerification"));
     assert(!api.includes("VerificationRequests"));
     assert(!fs.existsSync(path.join(root, "src/app/main/auth-app/verify-account")));
     assert(!read("src/app/auth/permissions.ts").includes("verificationStatus"));
+    assert(fs.existsSync(path.join(root, "src/app/main/auth-app/contact-verification/ContactVerificationPage.tsx")));
   },
 );
 check(

@@ -2,7 +2,8 @@ const locale = {
   GROSS_TRANSFER_TOTAL: "إجمالي التحويل",
   TRANSFER_VAT: "الضريبة المتضمنة",
   WALLET_CREDIT: "رصيد المحفظة عند الموافقة",
-  APPROVAL_CREDIT_HINT: "تضيف الموافقة هذا الرصيد عبر الخادم. تحقق من إيصال البنك قبل التأكيد.",
+  APPROVAL_CREDIT_HINT:
+    "تضيف الموافقة هذا الرصيد عبر الخادم. تحقق من إيصال البنك قبل التأكيد.",
   REJECTION_CREDIT_HINT: "لا تضاف أموال للمحفظة عند رفض الطلب.",
 
   RETRY: "إعادة المحاولة",
@@ -73,8 +74,8 @@ const locale = {
   BALANCE_CHANGES: "تغييرات المستحقات",
   PREVIOUS_BALANCE: "المستحقات قبل العملية",
   BALANCE_AFTER_TRANSACTION: "المستحقات بعد العملية",
-  CURRENT_BALANCE: "رصيد المستحقات المتاح",
-  MERCHANT_BALANCE: "رصيد المستحقات المتاح",
+  CURRENT_BALANCE: "الرصيد الحالي",
+  MERCHANT_BALANCE: "رصيد التاجر",
   WITHDRAW_BALANCE: "التحويل البنكي",
   WITHDRAW_BALANCE_DETAILS: "معلومات التحويل البنكي",
   WITHDRAW_BALANCE_AMOUNT: "المبلغ المراد سحبه إلى المستحقات",
@@ -168,6 +169,7 @@ const locale = {
 
   BOX: "الصندوق",
   REJECTION_NOTES: "ملاحظات الرفض",
+  TOPUP_BALANCE: "شحن الرصيد",
 };
 
 export default locale;

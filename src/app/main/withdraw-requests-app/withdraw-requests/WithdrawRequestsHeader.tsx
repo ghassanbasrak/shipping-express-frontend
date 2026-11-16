@@ -1,12 +1,11 @@
 import FeatureHeader, {
   FeatureHeaderRow,
   FeatureHeaderHeading,
-  FeatureHeaderActions,
-  FeatureHeaderMeta,
   FeatureHeaderToolbar,
   FeatureHeaderFilter,
 } from "app/shared-components/feature-header/FeatureHeader";
-import { Alert, Button, Input, Typography } from "@mui/material";
+import { Alert, Button, Input } from "@mui/material";
+import FeatureHeaderSummaryCard from "app/shared-components/feature-header/FeatureHeaderSummaryCard";
 
 import { useParams, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -17,7 +16,6 @@ import { FilterTypes } from "app/shared-components/filter-icon/Utils";
 import { useAppDispatch, useAppSelector } from "app/store/hooks";
 import { selectUser } from "src/app/auth/user/store/userSlice";
 import { canViewWithdrawRequests } from "../Utils";
-import Currency from "../../utils/currencyFormatter";
 import { Link } from "react-router-dom";
 import {
   GetWithdrawRequestsApiArg,
@@ -72,23 +70,15 @@ export default function WithdrawRequestsHeader() {
               : t("WITHDRAW_REQUESTS")}
           </FeatureHeaderHeading>
         </div>
-        <FeatureHeaderActions>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-16 w-full lg:w-auto shrink-0">
           {balance.currentData && !balance.isError && (
-            <>
-              <FeatureHeaderMeta>
-                <Typography
-                  className="font-semibold"
-                  data-testid="withdraw-balance"
-                >
-                  {t(
-                    user.role === "user"
-                      ? "CURRENT_BALANCE"
-                      : "MERCHANT_BALANCE",
-                  )}
-                  : {Currency(balance.currentData.amount)}
-                </Typography>
-              </FeatureHeaderMeta>
-            </>
+            <FeatureHeaderSummaryCard
+              label={t(
+                user.role === "user" ? "CURRENT_BALANCE" : "MERCHANT_BALANCE",
+              )}
+              amount={balance.currentData.amount}
+              testId="withdraw-balance"
+            />
           )}
           {user.role === "user" && (
             <>
@@ -104,7 +94,7 @@ export default function WithdrawRequestsHeader() {
               </Button>
             </>
           )}
-        </FeatureHeaderActions>
+        </div>
       </FeatureHeaderRow>
       <FeatureHeaderToolbar
         search={

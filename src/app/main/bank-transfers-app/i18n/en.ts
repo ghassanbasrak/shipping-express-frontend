@@ -2,7 +2,8 @@ const locale = {
   GROSS_TRANSFER_TOTAL: "Transferred total",
   TRANSFER_VAT: "Included VAT",
   WALLET_CREDIT: "Wallet credit on approval",
-  APPROVAL_CREDIT_HINT: "Approval deposits this credit through the backend. Check the bank receipt before confirming.",
+  APPROVAL_CREDIT_HINT:
+    "Approval deposits this credit through the backend. Check the bank receipt before confirming.",
   REJECTION_CREDIT_HINT: "Rejecting the request does not credit the wallet.",
 
   RETRY: "Retry",
@@ -72,8 +73,8 @@ const locale = {
   BALANCE_CHANGES: "Balance Changes",
   PREVIOUS_BALANCE: "Previous balance",
   BALANCE_AFTER_TRANSACTION: "Balance after transaction",
-  CURRENT_BALANCE: "Available Withdrawal Balance",
-  MERCHANT_BALANCE: "Available Withdrawal Balance",
+  CURRENT_BALANCE: "Current Balance",
+  MERCHANT_BALANCE: "Merchant Balance",
   WITHDRAW_BALANCE: "Withdraw Balance",
   WITHDRAW_BALANCE_DETAILS: "Withdraw Balance Details",
   WITHDRAW_BALANCE_AMOUNT: "Withdraw balance amount",
@@ -170,6 +171,7 @@ const locale = {
 
   BOX: "Box",
   REJECTION_NOTES: "Rejection Notes",
+  TOPUP_BALANCE: "Topup Balance",
 };
 
 export default locale;

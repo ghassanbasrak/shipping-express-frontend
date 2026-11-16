@@ -21,9 +21,9 @@ export type User = {
   isAuthorized?: boolean;
   isBlocked?: boolean;
   isAffiliate?: boolean;
-  /** Historical API fields only; account access never depends on verification. */
   emailVerified?: boolean;
   phoneVerified?: boolean;
+  /** Retired merchant approval fields; never used to grant account access. */
   verificationStatus?: string;
   verificationExpiresAt?: string;
   fcmToken?: string;

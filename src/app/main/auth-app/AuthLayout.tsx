@@ -1,5 +1,12 @@
 import { ReactNode } from "react";
-import { Box, Paper, Step, StepLabel, Stepper, Typography } from "@mui/material";
+import {
+  Box,
+  Paper,
+  Step,
+  StepLabel,
+  Stepper,
+  Typography,
+} from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
@@ -78,18 +85,36 @@ export default function AuthLayout({
               "& > *": { position: "relative" },
             }}
           >
-            <Typography variant="overline" sx={{ letterSpacing: ".18em", fontWeight: 700, opacity: .82 }}>
+            <Typography
+              variant="overline"
+              sx={{ letterSpacing: ".18em", fontWeight: 700, opacity: 0.82 }}
+            >
               {t("TITLE")}
             </Typography>
             <Box sx={{ mt: wide ? 10 : 0 }}>
-              <Typography variant="h3" component="p" sx={{ fontWeight: 800, fontSize: wide ? 38 : 46, lineHeight: 1.2, mb: 2 }}>
+              <Typography
+                variant="h3"
+                component="p"
+                sx={{
+                  fontWeight: 800,
+                  fontSize: wide ? 38 : 46,
+                  lineHeight: 1.2,
+                  mb: 2,
+                }}
+              >
                 {t("AUTH_PANEL_TITLE")}
               </Typography>
-              <Typography variant="body1" sx={{ lineHeight: 1.8, opacity: .86 }}>
+              <Typography
+                variant="body1"
+                sx={{ lineHeight: 1.8, opacity: 0.86 }}
+              >
                 {t("AUTH_PANEL_BODY")}
               </Typography>
             </Box>
-            <Typography variant="body2" sx={{ opacity: .7, mt: wide ? "auto" : 0 }}>
+            <Typography
+              variant="body2"
+              sx={{ opacity: 0.7, mt: wide ? "auto" : 0 }}
+            >
               {t("TITLE")}
             </Typography>
           </Box>
@@ -103,32 +128,73 @@ export default function AuthLayout({
               py: { xs: 3, sm: 4.5 },
             }}
           >
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 2, mb: { xs: 5, sm: 7 } }}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: 2,
+                mb: { xs: 5, sm: 7 },
+              }}
+            >
               <Link to="/" aria-label={t("TITLE")}>
                 <img
                   src={`/brand/logos/ashamco-ar-${theme.palette.mode === "dark" ? "on-purple" : "primary"}.svg`}
                   alt="Ashamco Express"
-                  style={{ display: "block", width: 170, height: 50, maxWidth: "100%", objectFit: "contain" }}
+                  style={{
+                    display: "block",
+                    width: 170,
+                    height: 50,
+                    maxWidth: "100%",
+                    objectFit: "contain",
+                  }}
                 />
               </Link>
               <LanguageSwitcher />
             </Box>
-            <Box sx={{ width: "100%", maxWidth: wide ? 720 : 430, mx: "auto", my: "auto", pb: { xs: 3, sm: 0 } }}>
-              <Typography component="h1" variant="h4" sx={{ fontWeight: 800, letterSpacing: "-.03em", lineHeight: 1.25, mb: 1 }}>
+            <Box
+              sx={{
+                width: "100%",
+                maxWidth: wide ? 720 : 430,
+                mx: "auto",
+                my: "auto",
+                pb: { xs: 3, sm: 0 },
+              }}
+            >
+              <Typography
+                component="h1"
+                variant="h4"
+                sx={{
+                  fontWeight: 800,
+                  letterSpacing: "-.03em",
+                  lineHeight: 1.25,
+                  mb: 1,
+                }}
+              >
                 {title}
               </Typography>
               {description && (
-                <Typography color="text.secondary" sx={{ lineHeight: 1.7, mb: 4 }}>
+                <Typography
+                  color="text.secondary"
+                  sx={{ lineHeight: 1.7, mb: 4 }}
+                >
                   {description}
                 </Typography>
               )}
-              {onboardingStep !== undefined && (
-                <Stepper activeStep={onboardingStep} alternativeLabel sx={{ mb: 4 }} aria-label={t("ONBOARDING_PROGRESS")}>
+              {/* {onboardingStep !== undefined && (
+                <Stepper
+                  activeStep={onboardingStep}
+                  alternativeLabel
+                  sx={{ mb: 4 }}
+                  aria-label={t("ONBOARDING_PROGRESS")}
+                >
                   {["STEP_ACCOUNT", "STEP_PROFILE"].map((key) => (
-                    <Step key={key}><StepLabel>{t(key)}</StepLabel></Step>
+                    <Step key={key}>
+                      <StepLabel>{t(key)}</StepLabel>
+                    </Step>
                   ))}
                 </Stepper>
-              )}
+              )} */}
               {children}
             </Box>
           </Box>
@@ -159,15 +225,20 @@ export default function AuthLayout({
         <Typography component="h1" variant="h5" className="mb-24 font-bold">
           {title}
         </Typography>
-        {onboardingStep !== undefined && (
-          <Stepper activeStep={onboardingStep} alternativeLabel className="mb-32" aria-label={t("ONBOARDING_PROGRESS")}>
+        {/* {onboardingStep !== undefined && (
+          <Stepper
+            activeStep={onboardingStep}
+            alternativeLabel
+            className="mb-32"
+            aria-label={t("ONBOARDING_PROGRESS")}
+          >
             {["STEP_ACCOUNT", "STEP_PROFILE"].map((key) => (
               <Step key={key}>
                 <StepLabel>{t(key)}</StepLabel>
               </Step>
             ))}
           </Stepper>
-        )}
+        )} */}
         {children}
       </Paper>
     </Box>

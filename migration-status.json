@@ -381,6 +381,65 @@
     "paddingRefinement": "2026-10-30: Capped outer padding at p-16 for both list and detail headers at every breakpoint. Active application typecheck, production build and diff checks passed after this adjustment.",
     "previews": "test-results/topup-header-full-width"
   },
+  "localSignOutUpdate": {
+    "date": "2026-11-16",
+    "status": "complete",
+    "scope": "Existing authentication sign-out behavior only; feature inventory and backend sources are unchanged.",
+    "changes": [
+      "Removed remote session revocation and its destroy endpoint configuration; sign-out synchronously clears browser credentials and the Authorization default, then resets account state, dialogs and API caches.",
+      "Handle /sign-out and /logout ahead of session restoration, unavailable-session screens and lazy route/layout rendering, then replace the route with /sign-in.",
+      "Keep session revision and token-refresh generation guards so responses arriving after logout cannot restore credentials or account state.",
+      "Reproduced Home reading null.role on the second sign-in after its module was already cached. Authentication now blocks feature-page mounting until both the auth-context user and Redux user exist with matching IDs and roles; sign-out remains ahead of this guard.",
+      "Updated existing logout regression expectations to local-only cleanup and aligned an obsolete verification-gate assertion with the already-retired verification policy."
+    ],
+    "validation": {
+      "activeApplicationTypecheck": "passed: npm run typecheck:app",
+      "productionBuild": "passed: initial build/local-signout-verify and follow-up build/auth-readiness-verify; existing Browserslist, CSS, mixed-import and chunk-size warnings remain",
+      "authRegression": "15/15 checks passed, including null/previous-account/previous-role page-mount guards, logout priority, local credential/header cleanup, no logout network call, refresh cancellation and preference preservation.",
+      "browser": "22 fixture checks passed: the original 10 local logout checks plus six complete cached-Home sign-out/sign-in cycles across merchant, administrator and employee accounts without document reload. Each cycle waits for the actual role-specific Home content and checks for error-boundary output. No destroy requests or uncaught browser exceptions.",
+      "report": "test-results/auth-readiness-verify/summary.json",
+      "originalReport": "test-results/local-signout-verify/summary.json",
+      "scope": "Local fixtures only; no live backend writes."
+    },
+    "partialWork": [],
+    "remainingWork": []
+  },
+  "listHeaderSummaryDesignUpdate": {
+    "date": "2026-11-16",
+    "status": "complete",
+    "scope": "Presentation changes to existing withdrawal, merchant-dues, affiliate-withdrawal, transaction, transaction-report and affiliate-profile transaction list summaries. No feature migration or inventory count changes.",
+    "completed": [
+      "Extracted the existing Payments balance-card presentation into shared FeatureHeaderSummaryCard; Payments retains its existing design and test ID.",
+      "Withdrawal requests uses the shared card beside its existing merchant action button, retaining current-account/selected-account balance reads and error/retry checks.",
+      "Merchant dues uses matching cards for canceled, pending and settled amounts, retaining status colors, zero totals, independent query scopes and retry controls. Embedded merchant dues inherits the same presentation.",
+      "Affiliate withdrawal requests uses the same available-balance card beside its existing action, including embedded affiliate-profile withdrawals.",
+      "Wallet and COD transaction headers share the card, including the merchant profile's balance tabs and selected-account scopes.",
+      "Transaction reports shows wallet and COD cards beside the heading, with responsive filters below and no empty merchant-selector column for merchants.",
+      "Affiliate-profile transactions uses the shared balance card above the ledger, preserving its loading indicator and independent error/retry behavior."
+    ],
+    "additionalListSummariesApprovedAndCompleted": [
+      "Affiliate withdrawal requests: current/selected affiliate balance, also embedded in affiliate profiles.",
+      "Transactions: current wallet or COD balance, also embedded in merchant profiles.",
+      "Transaction reports: wallet and COD account balances.",
+      "Affiliate profile transactions/profits list: available affiliate balance."
+    ],
+    "otherListDisplays": [
+      "Shipping companies shows a shipment-count chip per carrier card, without an aggregate header summary.",
+      "Applications shows read/write scope summaries within individual table rows, without aggregate header summaries.",
+      "Shipments has source analytics for carrier, method and merchant totals in a chart view; no visible list control currently selects that view."
+    ],
+    "validation": {
+      "activeApplicationTypecheck": "passed: npm run typecheck:app",
+      "productionBuild": "passed: initial build/header-summary-verify and follow-up build/header-summary-followup; existing Browserslist, CSS, mixed-import and chunk-size warnings remain",
+      "browser": "7 initial fixture checks passed for withdrawals and merchant dues. 18 follow-up fixture checks passed for affiliate withdrawals, wallet/COD transactions, transaction reports and affiliate-profile withdrawals/transactions at English 1440px and Arabic RTL 390px, staff report scopes, embedded merchant wallet/COD tabs, zero and negative balances, balance-error retry and no header overflow. No uncaught browser exceptions.",
+      "report": "test-results/header-summary-verify/summary.json",
+      "followupReport": "test-results/header-summary-followup/summary.json",
+      "scope": "Local fixtures only; no live backend changes or acceptance claims."
+    },
+    "partialWork": [],
+    "remainingImplementationWork": [],
+    "exclusions": "Per-carrier shipment counts, per-application scope summaries and the currently unexposed shipment chart view remain audit-only. Existing feature exclusions and unrelated working-tree edits remain unchanged."
+  },
   "featureHeaderDesignRollout": {
     "date": "2026-10-30",
     "status": "complete",
@@ -1840,5 +1899,32 @@
     "remainingFeatureAreas": 0,
     "partialFeatureAreas": 0,
     "exclusions": "Existing 6 excluded legacy areas and retired features remain excluded; storage remains separately tracked."
+  },
+  "contactVerificationRestoration": {
+    "date": "2026-11-16",
+    "scope": "Restore customer phone/SMS and email code verification in the existing auth feature. No new feature migration or backend source edits.",
+    "completed": [
+      "Required customer route gate after profile completion, independent of retired merchant approval fields.",
+      "Send/resend/change/verify contact forms and current verification status, English/Arabic UI, profile shortcut and refresh.",
+      "Authenticated email profile update preserves editable profile/address; code verification requires an owned matching server-read contact/flag.",
+      "Phone contact verification never replaces the current session from returned login tokens; logout generation checks reject stale responses.",
+      "Backend test challenge ID zero and four-to-six-digit phone codes supported; email codes remain six digits.",
+      "Corrected the previous handoff and added a backend enforcement audit."
+    ],
+    "remaining": [
+      "Backend must enforce contact verification for customer operations, add contact-only phone verification, and harden email challenge binding/atomic consumption/rate limits.",
+      "Live SMS/email delivery and code completion remain unverified."
+    ],
+    "exclusions": "Merchant document verification requests/admin approval, retired shipping payment plans and other excluded features remain removed.",
+    "validation": {
+      "typecheck": "passed",
+      "productionBuild": "passed with existing warnings",
+      "authChecks": 16,
+      "contactVerificationChecks": 12,
+      "retirementChecks": 9,
+      "backendPolicyAudit": "Isolated current userAuthenticated policy allows an authenticated customer with both contact flags false; no live bypass attempted.",
+      "browser": "Embedded browser: admin unaffected; verified customer login, profile shortcut and server statuses; phone/email edit forms and invalid-input validation passed. Separate port 4100 fixture was unreachable from the embedded browser; no fixture UI pass claimed."
+    },
+    "handoff": "docs/backend-contact-verification-audit-20261116.txt"
   }
 }

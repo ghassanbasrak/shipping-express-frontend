@@ -44,6 +44,7 @@ export function hasPagePermission(pathname: string, user: User | null) {
     "sign-up",
     "register",
     "register-profile",
+    "verify-contacts",
     "blocked",
     "sign-out",
     "logout",
@@ -88,5 +89,9 @@ export function accountDestination(user: User | null) {
   if (!user) return "/sign-in";
   if (user.isBlocked) return "/blocked";
   if (!user.isRegistered) return "/register";
+  if (requiresContactVerification(user)) return "/verify-contacts";
   return "/home";
 }
+export const requiresContactVerification = (user: User | null) =>
+  user?.role === "user" &&
+  (user.phoneVerified !== true || user.emailVerified !== true);

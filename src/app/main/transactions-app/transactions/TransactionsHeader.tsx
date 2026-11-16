@@ -1,12 +1,11 @@
+import FeatureHeaderSummaryCard from "app/shared-components/feature-header/FeatureHeaderSummaryCard";
 import FeatureHeader, {
   FeatureHeaderRow,
   FeatureHeaderHeading,
-  FeatureHeaderActions,
-  FeatureHeaderMeta,
   FeatureHeaderToolbar,
   FeatureHeaderFilter,
 } from "app/shared-components/feature-header/FeatureHeader";
-import { Alert, Button, Input, Typography } from "@mui/material";
+import { Alert, Button, Input } from "@mui/material";
 
 import { Link, useParams, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -17,7 +16,6 @@ import { FilterTypes } from "app/shared-components/filter-icon/Utils";
 import { useAppDispatch, useAppSelector } from "app/store/hooks";
 import { selectUser } from "src/app/auth/user/store/userSlice";
 import { hasOperationPermission } from "src/app/auth/permissions";
-import Currency from "src/app/main/utils/currencyFormatter";
 import {
   GetTransactionsApiArg,
   useGetTransactionsAccountQuery,
@@ -85,27 +83,23 @@ export default function TransactionsHeader({
               : ""}
           </FeatureHeaderHeading>
         </div>
-        <FeatureHeaderActions>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-16 w-full lg:w-auto shrink-0">
           {selected.currentData && (
-            <>
-              <FeatureHeaderMeta>
-                <Typography data-testid="ledger-current-balance">
-                  {t(
-                    filters.relatedBalanceTypeFilter === "cod"
-                      ? "COD_BALANCE"
-                      : "WALLET_BALANCE",
-                  )}
-                  :{" "}
-                  {Currency(
-                    selected.currentData[
-                      filters.relatedBalanceTypeFilter === "cod"
-                        ? "codBalance"
-                        : "balance"
-                    ] ?? 0,
-                  )}
-                </Typography>
-              </FeatureHeaderMeta>
-            </>
+            <FeatureHeaderSummaryCard
+              label={t(
+                filters.relatedBalanceTypeFilter === "cod"
+                  ? "COD_BALANCE"
+                  : "WALLET_BALANCE",
+              )}
+              amount={
+                selected.currentData[
+                  filters.relatedBalanceTypeFilter === "cod"
+                    ? "codBalance"
+                    : "balance"
+                ] ?? 0
+              }
+              testId="ledger-current-balance"
+            />
           )}
           {user.role === "user" && (
             <>
@@ -135,7 +129,7 @@ export default function TransactionsHeader({
               </Button>
             </>
           )}
-        </FeatureHeaderActions>
+        </div>
       </FeatureHeaderRow>
       <FeatureHeaderToolbar
         search={

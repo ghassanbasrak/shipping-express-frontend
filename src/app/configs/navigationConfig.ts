@@ -50,6 +50,7 @@ const navigationConfig: FuseNavItemType[] = [
         icon: "heroicons-outline:truck",
         url: "/shipments/all/all",
         auth: authRoles.user,
+        end: true,
       },
       {
         id: "shipping-price-calculator",
@@ -59,6 +60,7 @@ const navigationConfig: FuseNavItemType[] = [
         icon: "heroicons-outline:calculator",
         url: "/shipping-price-calculator",
         auth: authRoles.onlyUser,
+        end: true,
       },
       {
         id: "shipment-users",
@@ -68,6 +70,7 @@ const navigationConfig: FuseNavItemType[] = [
         icon: "heroicons-outline:identification",
         url: "/shipment-users/all",
         auth: authRoles.onlyUser,
+        end: true,
       },
       {
         id: "cancel-shipment-requests",
@@ -77,6 +80,7 @@ const navigationConfig: FuseNavItemType[] = [
         icon: "heroicons-outline:x-circle",
         url: "/cancel-shipment-requests/all",
         auth: authRoles.user,
+        end: true,
       },
     ],
   },
@@ -94,6 +98,7 @@ const navigationConfig: FuseNavItemType[] = [
         icon: "heroicons-outline:credit-card",
         url: "/payments/all",
         auth: authRoles.user,
+        end: true,
       },
       {
         id: "bank-transfers",
@@ -103,6 +108,7 @@ const navigationConfig: FuseNavItemType[] = [
         icon: "heroicons-outline:library",
         url: "/bank-transfers/all",
         auth: authRoles.user,
+        end: true,
       },
       {
         id: "withdraw-requests",
@@ -112,6 +118,7 @@ const navigationConfig: FuseNavItemType[] = [
         icon: "heroicons-outline:cash",
         url: "/withdraw-requests/all",
         auth: authRoles.user,
+        end: true,
       },
       {
         id: "affiliate-withdraw-requests",
@@ -121,6 +128,7 @@ const navigationConfig: FuseNavItemType[] = [
         icon: "heroicons-outline:cash",
         url: "/affiliate-withdraw-requests/all",
         auth: authRoles.user,
+        end: true,
       },
       {
         id: "merchant-dues",
@@ -130,6 +138,7 @@ const navigationConfig: FuseNavItemType[] = [
         icon: "heroicons-outline:currency-dollar",
         url: "/merchant-dues/all/all",
         auth: authRoles.user,
+        end: true,
       },
       {
         id: "nav-transactions",
@@ -146,6 +155,7 @@ const navigationConfig: FuseNavItemType[] = [
             icon: "heroicons-outline:cash",
             url: "/transactions/all/wallet",
             auth: authRoles.user,
+            end: true,
           },
           {
             id: "transactions-cod",
@@ -155,6 +165,7 @@ const navigationConfig: FuseNavItemType[] = [
             icon: "heroicons-outline:currency-dollar",
             url: "/transactions/all/cod",
             auth: authRoles.user,
+            end: true,
           },
           {
             id: "transaction-reports",
@@ -164,6 +175,7 @@ const navigationConfig: FuseNavItemType[] = [
             icon: "heroicons-outline:document-report",
             url: "/transaction-reports/all",
             auth: authRoles.user,
+            end: true,
           },
         ],
       },
@@ -183,6 +195,7 @@ const navigationConfig: FuseNavItemType[] = [
         icon: "heroicons-outline:users",
         url: "/merchants",
         auth: authRoles.staff,
+        end: true,
       },
       {
         id: "affiliate-merchants",
@@ -192,6 +205,7 @@ const navigationConfig: FuseNavItemType[] = [
         icon: "heroicons-outline:user-group",
         url: "/affiliate-merchants",
         auth: authRoles.staff,
+        end: true,
       },
       {
         id: "profile",
@@ -236,6 +250,7 @@ const navigationConfig: FuseNavItemType[] = [
         icon: "heroicons-outline:ticket",
         url: "/coupons/all/all",
         auth: authRoles.staff,
+        end: true,
       },
       // {
       //   id: "alerts",
@@ -262,6 +277,7 @@ const navigationConfig: FuseNavItemType[] = [
         icon: "heroicons-outline:truck",
         url: "/shipping-companies",
         auth: authRoles.staff,
+        end: true,
       },
       {
         id: "nav-locations",
@@ -278,6 +294,7 @@ const navigationConfig: FuseNavItemType[] = [
             icon: "heroicons-outline:globe-alt",
             url: "/countries/all",
             auth: authRoles.admin,
+            end: true,
           },
           {
             id: "states",
@@ -287,6 +304,7 @@ const navigationConfig: FuseNavItemType[] = [
             icon: "heroicons-outline:map",
             url: "/states/all/all",
             auth: authRoles.admin,
+            end: true,
           },
           {
             id: "cities",
@@ -296,6 +314,7 @@ const navigationConfig: FuseNavItemType[] = [
             icon: "heroicons-outline:office-building",
             url: "/cities/all/all",
             auth: authRoles.admin,
+            end: true,
           },
         ],
       },
@@ -316,11 +335,18 @@ const navigationConfig: FuseNavItemType[] = [
         url: "/storage/subscriptions",
         auth: ["admin"],
         hasPermissionGetter: canSeeStorageAdmin,
+        end: true,
       },
       {
-        id: "storage-products-admin", title: "Stored products", translate: "STORAGE_PRODUCTS",
-        type: "item", icon: "heroicons-outline:cube", url: "/storage/products",
-        auth: ["admin"], hasPermissionGetter: canSeeStorageAdmin,
+        id: "storage-products-admin",
+        title: "Stored products",
+        translate: "STORAGE_PRODUCTS",
+        type: "item",
+        icon: "heroicons-outline:cube",
+        url: "/storage/products",
+        auth: ["admin"],
+        hasPermissionGetter: canSeeStorageAdmin,
+        end: true,
       },
       {
         id: "storage-warehouses",
@@ -331,6 +357,7 @@ const navigationConfig: FuseNavItemType[] = [
         url: "/storage/warehouses",
         auth: ["admin"],
         hasPermissionGetter: canSeeStorageAdmin,
+        end: true,
       },
       {
         id: "storage-plans",
@@ -341,6 +368,7 @@ const navigationConfig: FuseNavItemType[] = [
         url: "/storage/plans",
         auth: ["admin"],
         hasPermissionGetter: canSeeStorageAdmin,
+        end: true,
       },
       {
         id: "storage-supplies-admin",
@@ -351,6 +379,7 @@ const navigationConfig: FuseNavItemType[] = [
         url: "/storage/supply-requests",
         auth: ["admin"],
         hasPermissionGetter: canSeeStorageAdmin,
+        end: true,
       },
     ],
   },
@@ -368,6 +397,7 @@ const navigationConfig: FuseNavItemType[] = [
         icon: "heroicons-outline:user-group",
         url: "/admins",
         auth: authRoles.staff,
+        end: true,
       },
       // {
       //   id: "applications",
@@ -386,6 +416,7 @@ const navigationConfig: FuseNavItemType[] = [
         icon: "heroicons-outline:document-text",
         url: "/logs",
         auth: authRoles.admin,
+        end: true,
       },
     ],
   },

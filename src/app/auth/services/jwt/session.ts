@@ -30,21 +30,6 @@ export function setSession(accessToken: Token | null, refreshToken?: Token) {
     delete axios.defaults.headers.common.Authorization;
   }
 }
-export async function revokeCurrentSession() {
-  const accessToken = getAccessToken();
-  const refreshToken = getRefreshToken();
-  setSession(null);
-  if (!accessToken || !refreshToken) return;
-  try {
-    await axios.post(
-      config.destroySession,
-      { refreshToken },
-      { headers: { Authorization: `Bearer ${accessToken}` } },
-    );
-  } catch {
-    // Local logout remains final if revocation is unavailable or the token expired.
-  }
-}
 type RetryRequest = InternalAxiosRequestConfig & { _retry?: boolean };
 const isServiceRequest = (request: RetryRequest) => {
   const base = new URL(`${API_BASE_URL}/`, window.location.origin);
@@ -81,7 +66,6 @@ export function installAuthInterceptors(onUnauthorized: () => void) {
         config.sendOtpCode,
         config.requestResetCode,
         config.verifyResetCode,
-        config.destroySession,
       ];
       if (publicEndpoints.some((endpoint) => path.endsWith(`/${endpoint}`)))
         throw error;

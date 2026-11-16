@@ -5,7 +5,7 @@ import FeatureHeader, {
 } from "app/shared-components/feature-header/FeatureHeader";
 import FuseSvgIcon from "@fuse/core/FuseSvgIcon";
 import { useTheme } from "@mui/material/styles";
-import { Avatar, Typography } from "@mui/material";
+import { Avatar, Button, Typography } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -28,6 +28,7 @@ export default function MerchantHeader({
 }) {
   const theme = useTheme();
   const { t } = useTranslation("merchantsApp");
+  const { t: tAuth } = useTranslation("ashamcoAuth");
   return (
     <FeatureHeader>
       <div className="flex items-center justify-between gap-8 min-w-0">
@@ -65,6 +66,11 @@ export default function MerchantHeader({
           </FeatureHeaderHeading>
         </div>
         <FeatureHeaderActions>
+          {self && view && (
+            <Button variant="outlined" component={Link} to="/verify-contacts">
+              {tAuth("CONTACT_VERIFICATION")}
+            </Button>
+          )}
           {!view && canSave && (
             <>
               <LoadingButton

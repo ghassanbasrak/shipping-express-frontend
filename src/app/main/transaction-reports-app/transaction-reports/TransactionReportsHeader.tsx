@@ -1,5 +1,7 @@
+import FeatureHeaderSummaryCard from "app/shared-components/feature-header/FeatureHeaderSummaryCard";
 import FeatureHeader, {
   FeatureHeaderHeading,
+  FeatureHeaderRow,
 } from "app/shared-components/feature-header/FeatureHeader";
 import {
   Alert,
@@ -7,7 +9,6 @@ import {
   Button,
   MenuItem,
   TextField,
-  Typography,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import { useState } from "react";
@@ -16,7 +17,6 @@ import { useTranslation } from "react-i18next";
 import { useAppDispatch, useAppSelector } from "app/store/hooks";
 import { selectUser } from "src/app/auth/user/store/userSlice";
 import type { User } from "src/app/auth/user";
-import Currency from "src/app/main/utils/currencyFormatter";
 import {
   useGetTransactionsAccountQuery,
   useGetTransactionsUsersQuery,
@@ -71,13 +71,31 @@ export default function TransactionReportsHeader() {
       : options;
   return (
     <FeatureHeader>
-      <FeatureHeaderHeading feature="transaction-reports-app">
-        {t("TRANSACTION_REPORTS")}
-      </FeatureHeaderHeading>
+      <FeatureHeaderRow>
+        <FeatureHeaderHeading feature="transaction-reports-app">
+          {t("TRANSACTION_REPORTS")}
+        </FeatureHeaderHeading>
+        {selected.currentData && (
+          <div className="flex flex-col sm:flex-row sm:flex-wrap lg:justify-end gap-16 w-full lg:w-auto lg:max-w-[65%] shrink-0">
+            <FeatureHeaderSummaryCard
+              label={t("WALLET_BALANCE")}
+              amount={selected.currentData.balance ?? 0}
+              testId="report-wallet-balance"
+            />
+            <FeatureHeaderSummaryCard
+              label={t("COD_BALANCE")}
+              amount={selected.currentData.codBalance ?? 0}
+              testId="report-cod-balance"
+            />
+          </div>
+        )}
+      </FeatureHeaderRow>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
-        <div className="space-y-16 min-w-0">
-          {user.role !== "user" && (
+      <div
+        className={`grid grid-cols-1 gap-16 ${user.role === "user" ? "lg:grid-cols-2" : "lg:grid-cols-3"}`}
+      >
+        {user.role !== "user" && (
+          <div className="min-w-0">
             <Autocomplete<User>
               fullWidth
               options={items}
@@ -105,20 +123,8 @@ export default function TransactionReportsHeader() {
                 />
               )}
             />
-          )}
-          {selected.currentData && (
-            <div className="space-y-8">
-              <Typography data-testid="report-wallet-balance">
-                {t("WALLET_BALANCE")}:{" "}
-                {Currency(selected.currentData.balance ?? 0)}
-              </Typography>
-              <Typography>
-                {t("COD_BALANCE")}:{" "}
-                {Currency(selected.currentData.codBalance ?? 0)}
-              </Typography>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
         <div className="space-y-16 min-w-0">
           <div className="flex flex-wrap gap-8">
             {allowed.map((balance) => (
