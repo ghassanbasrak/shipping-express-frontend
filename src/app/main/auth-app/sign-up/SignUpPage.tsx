@@ -192,13 +192,6 @@ export function ProfileFields({
             type="password"
             autoComplete="new-password"
           />
-          <Typography
-            color="text.secondary"
-            variant="caption"
-            sx={{ gridColumn: "1 / -1", mt: -1 }}
-          >
-            {t("PASSWORD_MIN")}
-          </Typography>
         </Box>
       )}
       <TermsField />

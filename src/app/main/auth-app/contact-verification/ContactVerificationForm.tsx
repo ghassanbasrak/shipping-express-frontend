@@ -143,6 +143,7 @@ export default function ContactVerificationForm({
         <LoadingButton
           type="submit"
           variant="contained"
+          color="secondary"
           fullWidth
           loading={busy}
           disabled={busy}

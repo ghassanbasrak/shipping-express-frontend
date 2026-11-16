@@ -1947,5 +1947,85 @@
     },
     "remaining": "No missing CustomTable row-height props; no feature migrations in this batch.",
     "exclusions": "Existing retired and excluded features remain unchanged."
+  },
+  "phoneSignInDesign20261117": {
+    "date": "2026-11-17",
+    "scope": "Phone sign-in presentation only; existing auth behavior, other auth pages and feature migration counts unchanged.",
+    "completed": [
+      "Phone sign-in uses the same AuthLayout product variant as email sign-in, with matching branding, form width, typography, input styling and footer links.",
+      "Added English/Arabic phone sign-in description and email sign-in link label."
+    ],
+    "reviewedPendingConfirmation": [
+      {
+        "page": "Phone sign-in code entry",
+        "route": "/otp-code-sent/:phone"
+      },
+      {
+        "page": "Forgot password",
+        "route": "/forgot-password"
+      },
+      {
+        "page": "Password reset email confirmation",
+        "route": "/reset-code-sent"
+      },
+      {
+        "page": "Reset password",
+        "route": "/reset-password"
+      },
+      {
+        "page": "Blocked account",
+        "route": "/blocked"
+      },
+      {
+        "page": "Maintenance",
+        "route": "/maintenance"
+      },
+      {
+        "page": "Account deletion information",
+        "route": "/delete-account and /delete-my-account"
+      }
+    ],
+    "alreadyMatching": [
+      "Email sign-in",
+      "Sign-up",
+      "Profile completion",
+      "Contact verification"
+    ],
+    "excluded": "MagicLinkSentPage retains a legacy design but its route config is not registered; redirect-only pages have no standalone visual design.",
+    "validation": {
+      "activeApplicationTypecheck": "passed",
+      "authRegression": "16 checks passed",
+      "productionBuild": "passed: npm run build; existing build warnings remain",
+      "browser": "Embedded browser passed: English/Arabic desktop visual checks, blank-phone validation without SMS, email-sign-in navigation and sign-up link. Original English language restored. Screenshot saved as phone-sign-in-design-20261117.jpg."
+    },
+    "followup": "Five reviewed active pages approved and updated in authPagesDesign20261117; blocked and maintenance explicitly excluded."
+  },
+  "authPagesDesign20261117": {
+    "date": "2026-11-17",
+    "scope": "Extend the approved shared auth design to five existing pages; no new feature areas, auth contract or backend changes.",
+    "completed": [
+      "Phone sign-in code entry",
+      "Forgot password",
+      "Reset-email confirmation",
+      "Reset password (form, incomplete-link and success states)",
+      "Account deletion information (both route aliases)"
+    ],
+    "presentation": "Same AuthLayout product variant as email/phone sign-in and sign-up; localized descriptions, consistent full-width actions and navigation, code recipient/support contact panels.",
+    "excludedByUser": [
+      "/blocked",
+      "/maintenance"
+    ],
+    "otherExclusions": [
+      "Inactive magic-link confirmation and redirect-only pages remain unchanged."
+    ],
+    "validation": {
+      "activeApplicationTypecheck": "passed",
+      "authRegression": "16 checks passed",
+      "productionBuild": "passed: npm run build; existing warnings remain",
+      "browser": "Embedded browser: five page layouts, blank email/code validation, resend countdown, reset form and incomplete-link views, account-deletion support link, recovery navigation and Arabic confirmation view checked. No real SMS/email, password change or account deletion performed; reset-success state reviewed in code. English restored.",
+      "sourceAudit": "passed: all five approved pages use AuthLayout product; blocked/maintenance/shared layout have no diff",
+      "screenshot": "auth-pages-design-20261117.jpg"
+    },
+    "remaining": "No remaining approved pages; explicitly excluded pages retain their current design."
   }
 }

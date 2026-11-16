@@ -2,7 +2,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
-import { Alert } from "@mui/material";
+import { Alert, Button, Typography } from "@mui/material";
 import useJwtAuth from "src/app/auth/services/jwt/useJwtAuth";
 import AuthLayout from "../AuthLayout";
 import { AuthForm, AuthField, validation } from "../shared-components/AuthForm";
@@ -21,17 +21,39 @@ export default function ResetPasswordPage() {
       message: t("PASSWORD_MATCH"),
     });
   return (
-    <AuthLayout title={t("RESET_PASSWORD")}>
+    <AuthLayout
+      title={t("RESET_PASSWORD")}
+      description={t("RESET_PASSWORD_SUBTITLE")}
+      product
+    >
       {resetComplete ? (
-        <>
+        <div className="space-y-24">
           <Alert severity="success">{t("RESET_COMPLETE")}</Alert>
-          <Link to="/sign-in">{t("SIGN_IN")}</Link>
-        </>
+          <Button
+            component={Link}
+            to="/sign-in"
+            variant="contained"
+            color="primary"
+            fullWidth
+            className="min-h-52 rounded-8"
+          >
+            {t("BACK_TO_SIGN_IN")}
+          </Button>
+        </div>
       ) : !email || !resetCode ? (
-        <>
+        <div className="space-y-24">
           <Alert severity="error">{t("RESET_INVALID")}</Alert>
-          <Link to="/forgot-password">{t("RESET_PASSWORD")}</Link>
-        </>
+          <Button
+            component={Link}
+            to="/forgot-password"
+            variant="outlined"
+            color="primary"
+            fullWidth
+            className="min-h-52 rounded-8"
+          >
+            {t("SEND_RESET_LINK")}
+          </Button>
+        </div>
       ) : (
         <AuthForm
           schema={schema}
@@ -45,13 +67,31 @@ export default function ResetPasswordPage() {
             });
           }}
         >
-          <AuthField name="password" label={t("PASSWORD")} type="password" />
+          <AuthField
+            name="password"
+            label={t("PASSWORD")}
+            type="password"
+            autoComplete="new-password"
+          />
           <AuthField
             name="passwordConfirmation"
             label={t("PASSWORD_CONFIRM")}
             type="password"
+            autoComplete="new-password"
           />
+          <Typography color="text.secondary" variant="caption">
+            {t("PASSWORD_MIN")}
+          </Typography>
         </AuthForm>
+      )}
+      {!resetComplete && (
+        <Typography
+          color="text.secondary"
+          variant="body2"
+          className="mt-32 text-center"
+        >
+          <Link to="/sign-in">{t("BACK_TO_SIGN_IN")}</Link>
+        </Typography>
       )}
     </AuthLayout>
   );

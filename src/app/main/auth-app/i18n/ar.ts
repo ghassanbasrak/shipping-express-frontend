@@ -1,4 +1,15 @@
 export default {
+  PHONE_CODE_TITLE: "تحقق من هاتفك",
+  PHONE_CODE_SUBTITLE: "أدخل الرمز المرسل برسالة نصية لإكمال تسجيل الدخول.",
+  FORGOT_PASSWORD_TITLE: "نسيت كلمة المرور؟",
+  FORGOT_PASSWORD_SUBTITLE:
+    "أدخل بريد حسابك الإلكتروني وسنرسل إليك رابط إعادة تعيين كلمة المرور.",
+  SEND_RESET_LINK: "إرسال رابط إعادة التعيين",
+  RESET_EMAIL_TITLE: "تحقق من بريدك الإلكتروني",
+  RESET_EMAIL_HELP: "إذا لم تجد الرسالة، تحقق من مجلد البريد غير المرغوب فيه.",
+  USE_ANOTHER_EMAIL: "استخدام بريد إلكتروني آخر",
+  RESET_PASSWORD_SUBTITLE: "اختر كلمة مرور جديدة لحسابك.",
+  BACK_TO_SIGN_IN: "العودة إلى تسجيل الدخول",
   CONTACT_VERIFICATION: "التحقق من بيانات التواصل",
   CONTACT_VERIFICATION_DESCRIPTION:
     "تحقق من رقم هاتفك برسالة نصية ومن بريدك الإلكتروني برمز التحقق للمتابعة إلى حسابك.",
@@ -36,6 +47,8 @@ export default {
   SECTION_ADDRESS: "العنوان",
   SECTION_SECURITY: "أمان الحساب",
   PHONE_SIGN_IN: "الدخول برقم الهاتف",
+  PHONE_SIGN_IN_SUBTITLE: "أدخل رقم هاتفك وسنرسل إليك رمزاً لتسجيل الدخول.",
+  EMAIL_SIGN_IN: "الدخول بالبريد الإلكتروني",
   FIRST_NAME: "الاسم الأول",
   LAST_NAME: "اسم العائلة",
   COMPANY_NAME: "اسم الشركة",

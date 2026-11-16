@@ -1,4 +1,15 @@
 export default {
+  PHONE_CODE_TITLE: "Check your phone",
+  PHONE_CODE_SUBTITLE: "Enter your SMS code to finish signing in.",
+  FORGOT_PASSWORD_TITLE: "Forgot your password?",
+  FORGOT_PASSWORD_SUBTITLE:
+    "Enter your account email and we’ll send you a password reset link.",
+  SEND_RESET_LINK: "Send reset link",
+  RESET_EMAIL_TITLE: "Check your email",
+  RESET_EMAIL_HELP: "If you don’t see the email, check your spam folder.",
+  USE_ANOTHER_EMAIL: "Use another email address",
+  RESET_PASSWORD_SUBTITLE: "Choose a new password for your account.",
+  BACK_TO_SIGN_IN: "Back to sign in",
   CONTACT_VERIFICATION: "Verify your contact details",
   CONTACT_VERIFICATION_DESCRIPTION:
     "Verify your phone number by SMS and your email with a code to continue to your account.",
@@ -38,6 +49,9 @@ export default {
   SECTION_ADDRESS: "Address",
   SECTION_SECURITY: "Account security",
   PHONE_SIGN_IN: "Sign in with phone",
+  PHONE_SIGN_IN_SUBTITLE:
+    "Enter your phone number and we’ll send you a code to sign in.",
+  EMAIL_SIGN_IN: "Sign in with email",
   FIRST_NAME: "First name",
   LAST_NAME: "Last name",
   COMPANY_NAME: "Company name",
