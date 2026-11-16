@@ -65,7 +65,7 @@ function NavbarStyle1Content(props: NavbarStyle1ContentProps) {
       </div>
 
       <StyledContent
-        className="relative z-10 flex min-h-0 flex-1 flex-col px-12 pb-8 pt-4"
+        className="relative z-10 flex min-h-0 flex-1 flex-col pb-8 pt-4"
         option={{ suppressScrollX: true, wheelPropagation: false }}
       >
         <Navigation layout="vertical" />

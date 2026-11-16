@@ -118,9 +118,9 @@ function FuseNavVerticalItem(props: FuseNavItemComponentProps) {
           secondary={item.subtitle}
           classes={{
             primary:
-              "text-13 font-medium fuse-list-item-text-primary whitespace-normal break-words leading-snug",
+              "text-14 font-semibold fuse-list-item-text-primary whitespace-normal break-words leading-snug",
             secondary:
-              "text-11 font-medium fuse-list-item-text-secondary leading-normal truncate",
+              "text-12 font-semibold fuse-list-item-text-secondary leading-normal truncate",
           }}
         />
         {item.badge && <FuseNavBadge badge={item.badge} />}
