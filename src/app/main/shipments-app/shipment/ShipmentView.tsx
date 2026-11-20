@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import {
   Alert,
+  Box,
   Button,
-  Chip,
-  Paper,
+  LinearProgress,
   Tab,
   Tabs,
   Typography,
 } from "@mui/material";
+import { RefreshOutlined } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
-import Currency from "src/app/main/utils/currencyFormatter";
 import FusePageCarded from "@fuse/core/FusePageCarded";
 import useThemeMediaQuery from "@fuse/hooks/useThemeMediaQuery";
 import { useAppSelector } from "app/store/hooks";
@@ -25,14 +25,12 @@ import {
   canSyncShipmentTracking,
   decompressShipment,
   shipmentErrorMessage,
-  toShipmentStatusTitle,
-  toShipmentStatusColor,
-  toShipmentPaymentStatusTitle,
 } from "../Utils";
 import ShipmentHeader from "./ShipmentHeader";
 import ShipmentOperations from "../shared-components/ShipmentOperations";
 import ShipmentDocuments from "../shared-components/ShipmentDocuments";
-import ShipmentCosts from "./components/ShipmentCosts";
+import ShipmentViewDetails from "./components/ShipmentViewDetails";
+
 export default function ShipmentView({ shipment }: { shipment: IShipment }) {
   const { t } = useTranslation("shipmentsApp"),
     user = useAppSelector(selectUser),
@@ -42,6 +40,7 @@ export default function ShipmentView({ shipment }: { shipment: IShipment }) {
     synced = useRef(""),
     isMobile = useThemeMediaQuery((theme) => theme.breakpoints.down("lg"));
   const row = decompressShipment(shipment),
+    events = [...(row.trackingStats || [])].reverse(),
     transactions = useGetShipmentTransactionsQuery(
       { trackingNumber: row.trackingNumber, userId: row.userId },
       { skip: !canUpdateShipment(user) || !row.trackingNumber || tab !== 2 },
@@ -61,126 +60,143 @@ export default function ShipmentView({ shipment }: { shipment: IShipment }) {
       refreshTracking();
     }
   }, [row.id]);
+  const tabId = (value: number) => `shipment-view-tab-${value}`;
+  const panelId = (value: number) => `shipment-view-panel-${value}`;
   return (
     <FusePageCarded
-      header={<ShipmentHeader />}
+      header={
+        <ShipmentHeader
+          shipment={row}
+          actions={
+            <>
+              <ShipmentDocuments row={shipment} buttonVariant="contained" />
+              <ShipmentOperations row={shipment} display="buttons" />
+              {tab === 1 && (
+                <Button
+                  color="primary"
+                  variant="outlined"
+                  className="min-h-44 rounded-8 px-12 text-13"
+                  startIcon={<RefreshOutlined />}
+                  disabled={state.isLoading || !canSyncShipmentTracking(row)}
+                  onClick={refreshTracking}
+                >
+                  {t(state.isLoading ? "SYNCING" : "SYNC_TRACKING")}
+                </Button>
+              )}
+            </>
+          }
+        />
+      }
       content={
-        <>
+        <Box
+          className="min-w-0 p-16"
+          sx={{ bgcolor: "background.default" }}
+          data-testid="shipment-view"
+        >
           <Tabs
             value={tab}
             onChange={(_, value) => setTab(value)}
             variant="scrollable"
-            indicatorColor="secondary"
-            textColor="secondary"
-            classes={{ root: "w-full h-64 border-b-1" }}
+            scrollButtons="auto"
+            allowScrollButtonsMobile
+            aria-label={t("SHIPMENT_DETAILS")}
+            className="min-h-48 rounded-12 border-1 px-4"
+            sx={{ bgcolor: "background.paper", borderColor: "divider" }}
           >
-            <Tab label={t("SHIPMENT_DETAILS")} />
-            <Tab label={t("TRACKING")} />
-            {canUpdateShipment(user) && <Tab label={t("TRANSACTIONS")} />}
-          </Tabs>
-          <div className="p-16 sm:p-24 space-y-24" data-testid="shipment-view">
-            {error && <Alert severity="error">{error}</Alert>}
-            {tab === 0 && (
-              <>
-                <div className="flex flex-wrap items-center gap-16">
-                  <Typography variant="h5">
-                    {row.trackingNumber || t("PENDING")}
-                  </Typography>
-                  <Chip
-                    label={t(toShipmentStatusTitle(row.status))}
-                    className={toShipmentStatusColor(row.status)}
-                  />
-                  <ShipmentOperations row={shipment} />
-                  <ShipmentDocuments row={shipment} />
-                </div>
-                {(row.reason || row.trackingText) && (
-                  <Alert severity="info">
-                    {row.reason} {row.trackingText}
-                  </Alert>
-                )}
-                <Typography>
-                  {row.shippingCompany?.name} · {row.method} ·{" "}
-                  {row.createdAt?.slice(0, 10)}
-                </Typography>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-                  {(["sender", "receiver"] as const).map((prefix) => (
-                    <Paper
-                      key={prefix}
-                      variant="outlined"
-                      className="p-16 space-y-8"
-                    >
-                      <Typography variant="h6">
-                        {t(
-                          prefix === "sender"
-                            ? "SENDER_DETAILS"
-                            : "RECEIVER_DETAILS",
-                        )}
-                      </Typography>
-                      {(
-                        [
-                          "Name",
-                          "Email",
-                          "Phone",
-                          "CountryName",
-                          "StateName",
-                          "CityName",
-                          "Street",
-                          "ZipCode",
-                        ] as const
-                      ).map((field) => (
-                        <Typography key={field}>
-                          {row[`${prefix}${field}`] || ""}
-                        </Typography>
-                      ))}
-                    </Paper>
-                  ))}
-                </div>
-                <Typography>{row.description}</Typography>
-                <Typography>
-                  {row.length} × {row.width} × {row.height} cm · {row.weight} kg
-                  · {row.packagesCount} {t("PACKAGES_COUNT")}
-                </Typography>
-                {row.products?.map((product, i) => (
-                  <Typography key={i}>
-                    {product.title} · {Currency(product.price ?? 0)}
-                  </Typography>
-                ))}
-                {row.isCod && (
-                  <Alert severity="info">
-                    {t("CASH_ON_DELIVERY")}: {row.codPrice} ·{" "}
-                    {t(
-                      toShipmentPaymentStatusTitle(
-                        shipment.shipmentCod?.codStatus,
-                      ),
-                    )}
-                  </Alert>
-                )}
-                <ShipmentCosts price={row.shipmentPrice} />
-              </>
+            <Tab
+              id={tabId(0)}
+              aria-controls={panelId(0)}
+              label={t("SHIPMENT_DETAILS")}
+              className="min-h-48 text-13"
+            />
+            <Tab
+              id={tabId(1)}
+              aria-controls={panelId(1)}
+              label={t("TRACKING")}
+              className="min-h-48 text-13"
+            />
+            {canUpdateShipment(user) && (
+              <Tab
+                id={tabId(2)}
+                aria-controls={panelId(2)}
+                label={t("TRANSACTIONS")}
+                className="min-h-48 text-13"
+              />
             )}
+          </Tabs>
+          {(row.reason || row.trackingText) && (
+            <Alert severity="info" className="mt-12">
+              {row.reason} {row.trackingText}
+            </Alert>
+          )}
+          {error && (
+            <Alert
+              severity="error"
+              className="mt-12"
+              action={
+                <Button disabled={state.isLoading} onClick={refreshTracking}>
+                  {t("RETRY")}
+                </Button>
+              }
+            >
+              {error}
+            </Alert>
+          )}
+          <div
+            id={panelId(tab)}
+            role="tabpanel"
+            aria-labelledby={tabId(tab)}
+            className="min-w-0 pt-16"
+          >
+            {tab === 0 && <ShipmentViewDetails row={row} />}
             {tab === 1 && (
               <>
-                <Button
-                  disabled={state.isLoading || !canSyncShipmentTracking(row)}
-                  onClick={refreshTracking}
-                >
-                  {t("SYNC_TRACKING")}
-                </Button>
-                {!row.trackingStats?.length && (
+                {state.isLoading && (
+                  <LinearProgress className="mb-12" aria-label={t("SYNCING")} />
+                )}
+                {!events.length && (
                   <Alert severity="info">{t("NO_TRACKING_EVENTS")}</Alert>
                 )}
-                <ol className="space-y-16">
-                  {[...(row.trackingStats || [])].reverse().map((event, i) => (
-                    <li key={i}>
-                      <Typography className="font-semibold">
-                        {event.description}
-                      </Typography>
-                      <Typography>
-                        {event.date} · {event.location}
-                      </Typography>
-                    </li>
+                <Box
+                  component="ol"
+                  className="m-0 list-none rounded-16 border-1 p-16"
+                  sx={{ bgcolor: "background.paper", borderColor: "divider" }}
+                  data-testid="shipment-tracking-events"
+                >
+                  {events.map((event, index) => (
+                    <Box
+                      component="li"
+                      key={index}
+                      className="flex gap-12 border-b-1 py-12 first:pt-0 last:border-b-0"
+                      sx={{ borderColor: "divider" }}
+                    >
+                      <Box
+                        className="mt-4 h-10 w-10 shrink-0 rounded-full"
+                        sx={{
+                          bgcolor: index === 0 ? "primary.main" : "divider",
+                        }}
+                      />
+                      <div className="min-w-0 flex-1">
+                        <Typography className="break-words text-14 font-semibold">
+                          {event.description || "—"}
+                        </Typography>
+                        <Typography
+                          className="mt-4 text-12"
+                          color="text.secondary"
+                        >
+                          {[event.date, event.location]
+                            .filter(Boolean)
+                            .join(" · ")}
+                        </Typography>
+                      </div>
+                      {index === 0 && (
+                        <Typography color="primary.main" className="text-12">
+                          {t("VIEW_LATEST_UPDATE")}
+                        </Typography>
+                      )}
+                    </Box>
                   ))}
-                </ol>
+                </Box>
               </>
             )}
             {tab === 2 && canUpdateShipment(user) && (
@@ -198,13 +214,13 @@ export default function ShipmentView({ shipment }: { shipment: IShipment }) {
                   </Alert>
                 )}
                 <ShipmentTransactionsTable
-                  transactions={transactions.data?.results || []}
+                  transactions={transactions.currentData?.results || []}
                   loading={transactions.isFetching}
                 />
               </>
             )}
           </div>
-        </>
+        </Box>
       }
       scroll={isMobile ? "normal" : "content"}
     />

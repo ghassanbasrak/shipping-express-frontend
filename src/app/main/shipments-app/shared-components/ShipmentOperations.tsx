@@ -1,4 +1,5 @@
 import CurrencyAdornment from "app/shared-components/currency-adornment/CurrencyAdornment";
+import { ExpandMoreOutlined } from "@mui/icons-material";
 import { useRef, useState } from "react";
 import {
   Alert,
@@ -230,6 +231,8 @@ export function ShipmentOperationDialog({
             />
             {local && (
               <LoadingButton
+                variant="outlined"
+                color="primary"
                 loading={busy}
                 disabled={!(Number(weight) > 0)}
                 onClick={reviewWeight}
@@ -250,10 +253,17 @@ export function ShipmentOperationDialog({
         )}
       </DialogContent>
       <DialogActions>
-        <Button disabled={busy} onClick={onClose}>
+        <Button
+          color="primary"
+          variant="outlined"
+          disabled={busy}
+          onClick={onClose}
+        >
           {t("CLOSE")}
         </Button>
         <LoadingButton
+          color="primary"
+          variant="contained"
           loading={busy}
           disabled={!eligible.length}
           onClick={save}
@@ -265,7 +275,15 @@ export function ShipmentOperationDialog({
     </Dialog>
   );
 }
-export default function ShipmentOperations({ row }: { row: IShipment }) {
+export default function ShipmentOperations({
+  row,
+  buttonVariant = "text",
+  display = "menu",
+}: {
+  row: IShipment;
+  buttonVariant?: "text" | "outlined";
+  display?: "menu" | "buttons";
+}) {
   const user = useAppSelector(selectUser),
     { t } = useTranslation("shipmentsApp"),
     { shippingCompanyId = "all", shippingType = "all" } = useParams(),
@@ -285,9 +303,53 @@ export default function ShipmentOperations({ row }: { row: IShipment }) {
   const returned = canGenerateReturnedShipment(user, row);
   return (
     <>
-      {(items.length > 0 || returned) && (
+      {display === "buttons" && (
+        <>
+          {items.map((item) => (
+            <Button
+              key={item}
+              data-shipment-operation={item}
+              variant={item === "settle" ? "contained" : "outlined"}
+              color={
+                item === "settle" || item === "delivered"
+                  ? "success"
+                  : item === "cancel"
+                    ? "error"
+                    : item === "returned" || item === "weight"
+                      ? "warning"
+                      : "primary"
+              }
+              className="min-h-44 rounded-8 px-12 text-13 shadow-none"
+              onClick={() => setOperation(item)}
+            >
+              {t(`OPERATION_${item.toUpperCase()}`)}
+            </Button>
+          ))}
+          {returned && (
+            <Button
+              component={Link}
+              color="secondary"
+              variant="outlined"
+              className="min-h-44 rounded-8 px-12 text-13"
+              to={`${shipmentPath(shippingCompanyId, shippingType, "new")}?returnFrom=${row.id}`}
+            >
+              {t("GENERATE_RETURN_SHIPMENT")}
+            </Button>
+          )}
+        </>
+      )}
+      {display === "menu" && (items.length > 0 || returned) && (
         <Button
           size="small"
+          variant={buttonVariant}
+          className={
+            buttonVariant === "outlined"
+              ? "min-h-44 rounded-12 px-16 text-13"
+              : undefined
+          }
+          endIcon={
+            buttonVariant === "outlined" ? <ExpandMoreOutlined /> : undefined
+          }
           aria-label={t("SHIPMENT_ACTIONS")}
           onClick={(e) => setAnchor(e.currentTarget)}
         >

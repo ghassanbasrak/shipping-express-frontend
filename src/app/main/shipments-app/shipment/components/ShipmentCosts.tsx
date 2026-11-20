@@ -1,11 +1,14 @@
-import { Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import Currency from "src/app/main/utils/currencyFormatter";
 import { IShipmentPrice } from "../../models/IShipment";
 export default function ShipmentCosts({
   price = {},
+  highlightTotal = false,
 }: {
   price: IShipmentPrice;
+  highlightTotal?: boolean;
 }) {
   const { t } = useTranslation("shipmentsApp");
   const rows = [
@@ -24,16 +27,44 @@ export default function ShipmentCosts({
       {rows
         .filter(([key]) => price[key] !== undefined)
         .map(([key, label]) => (
-          <div key={key} className="flex flex-wrap justify-between gap-16">
-            <Typography>{t(label)}</Typography>
+          <Box
+            key={key}
+            className={`flex flex-wrap items-center justify-between gap-12 ${highlightTotal && key === "total" ? "!mt-12 rounded-12 p-12" : ""}`}
+            sx={(theme) => ({
+              bgcolor:
+                highlightTotal && key === "total"
+                  ? alpha(theme.palette.primary.main, 0.065)
+                  : undefined,
+            })}
+          >
+            <Typography
+              className={
+                highlightTotal
+                  ? key === "total"
+                    ? "text-14 font-bold"
+                    : "text-13"
+                  : ""
+              }
+            >
+              {t(label)}
+            </Typography>
             <Typography
               dir="ltr"
-              className="font-semibold"
+              className={
+                highlightTotal && key === "total"
+                  ? "text-20 font-bold"
+                  : "font-semibold"
+              }
+              color={
+                highlightTotal && key === "total"
+                  ? "primary.main"
+                  : "text.primary"
+              }
               data-testid={`shipment-cost-${key}`}
             >
               {Currency(price[key] ?? 0)}
             </Typography>
-          </div>
+          </Box>
         ))}
     </div>
   );

@@ -69,18 +69,19 @@ export default function merchantDueFields(
       label: t("COMPANY"),
       type: TableDataTypes.normal,
       valueGetter: (row) => row.shipment.shippingCompany?.name,
-      flex: 1,
-      minWidth: 100,
+      valueFormatter: (row) => row.shipment.shippingCompany?.name,
+      flex: 0.7,
+      minWidth: 70,
       renderCell: ({ row }) => (
-        <div className="flex flex-col gap-8">
+        <div className="flex flex-col items-center gap-8">
           {row.shipment.shippingCompany?.logoUrl && (
             <img
-              className="h-32 max-w-96 object-contain"
+              className="h-32 max-w-64 object-contain"
               src={row.shipment.shippingCompany.logoUrl}
               alt=""
             />
           )}
-          <span>{row.shipment.shippingCompany?.name}</span>
+          {/* <span>{row.shipment.shippingCompany?.name}</span> */}
         </div>
       ),
     },

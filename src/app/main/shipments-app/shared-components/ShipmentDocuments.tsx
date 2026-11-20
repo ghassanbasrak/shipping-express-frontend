@@ -15,6 +15,12 @@ import {
   Typography,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import {
+  PrintOutlined,
+  OpenInNewOutlined,
+  ReceiptLongOutlined,
+  ImageOutlined,
+} from "@mui/icons-material";
 import { useAppSelector } from "app/store/hooks";
 import { selectUser } from "src/app/auth/user/store/userSlice";
 import Currency from "src/app/main/utils/currencyFormatter";
@@ -33,10 +39,12 @@ export default function ShipmentDocuments({
   row,
   initialMode,
   onClose,
+  buttonVariant = "text",
 }: {
   row: IShipment;
   initialMode?: "label" | "invoice" | "image";
   onClose?: () => void;
+  buttonVariant?: "text" | "outlined" | "contained";
 }) {
   const { t } = useTranslation("shipmentsApp"),
     user = useAppSelector(selectUser),
@@ -111,18 +119,39 @@ export default function ShipmentDocuments({
   }
   const value = decompressShipment(row),
     products = value.products || [];
+  const buttonClassName =
+    buttonVariant !== "text"
+      ? "min-h-44 rounded-8 px-12 text-13 shadow-none"
+      : undefined;
   return (
     <>
       {!initialMode && (
         <div className="flex flex-wrap gap-8">
           {!!row.trackingNumber &&
             (user.role !== "user" || row.status !== "failed") && (
-              <Button size="small" onClick={() => open("label")}>
+              <Button
+                variant={buttonVariant}
+                color="primary"
+                className={buttonClassName}
+                startIcon={
+                  buttonVariant !== "text" ? <PrintOutlined /> : undefined
+                }
+                size="small"
+                onClick={() => open("label")}
+              >
                 {t("LABEL")}
               </Button>
             )}
           {!!row.trackingUrl && (
             <Button
+              variant={
+                buttonVariant === "contained" ? "outlined" : buttonVariant
+              }
+              color="primary"
+              className={buttonClassName}
+              startIcon={
+                buttonVariant !== "text" ? <OpenInNewOutlined /> : undefined
+              }
               size="small"
               component="a"
               href={row.trackingUrl}
@@ -135,12 +164,34 @@ export default function ShipmentDocuments({
           {row.method === "international" &&
             !!row.trackingNumber &&
             !!row.labelUrl && (
-              <Button size="small" onClick={() => open("invoice")}>
+              <Button
+                variant={
+                  buttonVariant === "contained" ? "outlined" : buttonVariant
+                }
+                color="primary"
+                className={buttonClassName}
+                startIcon={
+                  buttonVariant !== "text" ? <ReceiptLongOutlined /> : undefined
+                }
+                size="small"
+                onClick={() => open("invoice")}
+              >
                 {t("INVOICE")}
               </Button>
             )}
           {row.method === "international" && !!row.imageUrl && (
-            <Button size="small" onClick={() => open("image")}>
+            <Button
+              variant={
+                buttonVariant === "contained" ? "outlined" : buttonVariant
+              }
+              color="primary"
+              className={buttonClassName}
+              startIcon={
+                buttonVariant !== "text" ? <ImageOutlined /> : undefined
+              }
+              size="small"
+              onClick={() => open("image")}
+            >
               {t("SHIPMENT_IMAGE")}
             </Button>
           )}
@@ -271,6 +322,8 @@ export default function ShipmentDocuments({
         </DialogContent>
         <DialogActions>
           <Button
+            color="primary"
+            variant="contained"
             disabled={busy || !!error || (!url && mode !== "invoice")}
             onClick={download}
           >
@@ -278,6 +331,8 @@ export default function ShipmentDocuments({
           </Button>
           {url && (
             <Button
+              color="primary"
+              variant="outlined"
               component="a"
               href={url}
               target="_blank"
@@ -286,7 +341,12 @@ export default function ShipmentDocuments({
               {t("OPEN_DOCUMENT")}
             </Button>
           )}
-          <Button disabled={busy} onClick={close}>
+          <Button
+            color="primary"
+            variant="outlined"
+            disabled={busy}
+            onClick={close}
+          >
             {t("CLOSE")}
           </Button>
         </DialogActions>

@@ -9,14 +9,25 @@ import { Link, useParams } from "react-router-dom";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import FuseSvgIcon from "@fuse/core/FuseSvgIcon";
-import { shipmentPath } from "../Utils";
+import type { ReactNode } from "react";
+import type IShipment from "../models/IShipment";
+import {
+  shipmentPath,
+  toShipmentStatusColor,
+  toShipmentStatusTitle,
+  toShippingTypeTitle,
+} from "../Utils";
 
 export default function ShipmentHeader({
   calculator = false,
   returned = false,
+  shipment,
+  actions,
 }: {
   calculator?: boolean;
   returned?: boolean;
+  shipment?: IShipment;
+  actions?: ReactNode;
 }) {
   const { t } = useTranslation("shipmentsApp"),
     theme = useTheme(),
@@ -36,7 +47,7 @@ export default function ShipmentHeader({
         ? "NEW"
         : "DETAILS";
   return (
-    <FeatureHeader>
+    <FeatureHeader className={shipment ? "!gap-12" : ""}>
       <Typography
         className="flex items-center self-start gap-4 text-12 font-medium hover:underline"
         component={Link}
@@ -54,24 +65,64 @@ export default function ShipmentHeader({
       <FeatureHeaderRow>
         <FeatureHeaderHeading
           feature="shipments-app"
+          eyebrow={shipment ? t("SHIPMENT_DETAILS") : undefined}
           icon={
             calculator
               ? "heroicons-outline:calculator"
               : "heroicons-outline:truck"
           }
           description={
-            mode !== "DETAILS" ? t(`SHIPMENT_FORM_SUBTITLE_${mode}`) : undefined
+            shipment ? (
+              <div className="flex flex-wrap items-center gap-x-12 gap-y-6">
+                <Chip
+                  size="small"
+                  label={t(toShipmentStatusTitle(shipment.status))}
+                  className={toShipmentStatusColor(shipment.status)}
+                />
+                <span>
+                  {[
+                    shipment.shippingCompany?.name,
+                    shipment.method
+                      ? t(toShippingTypeTitle(shipment.method))
+                      : "",
+                    shipment.createdAt?.slice(0, 10),
+                  ]
+                    .filter(Boolean)
+                    .join(" · ")}
+                </span>
+              </div>
+            ) : mode !== "DETAILS" ? (
+              t(`SHIPMENT_FORM_SUBTITLE_${mode}`)
+            ) : (
+              t("SHIPMENT_VIEW_SUBTITLE")
+            )
           }
         >
-          {t(
-            {
-              CALCULATOR: "SHIPPING_PRICE_CALCULATOR",
-              RETURN: "GENERATE_RETURNED_SHIPMENT",
-              NEW: "ADD_SHIPMENT",
-              DETAILS: "SHIPMENT_DETAILS",
-            }[mode],
+          {shipment ? (
+            <bdi className="select-all">
+              {shipment.trackingNumber || t("PENDING")}
+            </bdi>
+          ) : (
+            t(
+              {
+                CALCULATOR: "SHIPPING_PRICE_CALCULATOR",
+                RETURN: "GENERATE_RETURNED_SHIPMENT",
+                NEW: "ADD_SHIPMENT",
+                DETAILS: "SHIPMENT_DETAILS",
+              }[mode],
+            )
           )}
         </FeatureHeaderHeading>
+        {actions && (
+          <FeatureHeaderActions>
+            <div
+              className="flex min-w-0 flex-wrap items-center gap-8 lg:justify-end"
+              data-testid="shipment-view-header-actions"
+            >
+              {actions}
+            </div>
+          </FeatureHeaderActions>
+        )}
         {mode !== "DETAILS" && (
           <FeatureHeaderActions>
             {method && (

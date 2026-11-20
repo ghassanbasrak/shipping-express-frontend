@@ -21,6 +21,7 @@ import {
   canReturnShipmentStatus,
   canRequestShipmentCancel,
   canGenerateReturnedShipment,
+  toShippingTypeColor,
 } from "../Utils";
 import type { ShipmentOperation } from "./ShipmentOperations";
 export type ShipmentDocumentMode = "label" | "invoice" | "image";
@@ -71,14 +72,32 @@ export default function shipmentFields(
       id: "shippingCompany.name",
       label: t("SHIPPING_COMPANY"),
       type: TableDataTypes.normal,
-      flex: 1,
-      minWidth: 100,
+      valueGetter: (row) => row.shippingCompany?.name,
+      valueFormatter: (row) => row.shippingCompany?.name,
+      renderCell: ({ row }) => (
+        <div className="flex flex-col items-center gap-8">
+          {row.shippingCompany?.logoUrl && (
+            <img
+              className="h-32 max-w-64 object-contain"
+              src={row.shippingCompany.logoUrl}
+              alt=""
+            />
+          )}
+          {/* <span>{row.shipment.shippingCompany?.name}</span> */}
+        </div>
+      ),
+      flex: 0.7,
+      minWidth: 70,
     },
     {
       id: "method",
       label: t("SHIPPING_TYPE"),
       type: TableDataTypes.normal,
-      valueFormatter: (row) => t(toShippingTypeTitle(row.method)),
+      chip: true,
+      toChipTitle: (value) => t(toShippingTypeTitle(value)),
+      toChipColor: (value) => toShippingTypeColor(value),
+      chipThemeColor: true,
+      // valueFormatter: (row) => t(toShippingTypeTitle(row.method)),
       flex: 0.6,
       minWidth: 60,
     },

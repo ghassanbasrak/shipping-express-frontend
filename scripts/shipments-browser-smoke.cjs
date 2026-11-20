@@ -5,6 +5,8 @@ const http = require("node:http");
 const { spawn } = require("node:child_process");
 const assert = require("node:assert/strict");
 const target = path.resolve(__dirname, "..");
+// Exercise carrier selection without unrelated list, finance or warehouse setup.
+const carriersOnly = process.argv.includes("--carriers-only");
 const build = path.resolve(target, process.env.SHIPMENTS_BUILD_DIR || "build");
 const output = path.join(target, "test-results/shipments-browser");
 fs.mkdirSync(output, { recursive: true });
@@ -303,8 +305,117 @@ async function downloadedSince(start, type) {
 }
 
 async function shipmentList(){await navigate('/shipments/all/all');await until(exists('[data-testid=shipments-table]'),'shipments table');await until(exists('[role=row][data-id]'),'shipment rows');}
-async function openOperation(title){await click('[aria-label="Shipment actions"]');await clickText(title,'[role=menuitem]');await until(exists('[role=dialog]'),'operation dialog');}
+async function openOperation(title){if(await evaluate(`[...document.querySelectorAll('[data-shipment-operation]')].some(button=>button.textContent.trim()===${JSON.stringify(title)})`)){await clickText(title,'[data-shipment-operation]');}else{await click('[aria-label="Shipment actions"]');await clickText(title,'[role=menuitem]');}await until(exists('[role=dialog]'),'operation dialog');}
 async function newContact(prefix,path=''){const rtl=await evaluate("getComputedStyle(document.body).direction==='rtl'");await fillField(path+prefix+'Name','New '+(prefix==='sender'?'Sender':'Receiver'));await fillField(path+prefix+'Phone','+966555123456');await selectUser(path+prefix+'StateId',rtl?states[0].name.ar:'Riyadh');await selectUser(path+prefix+'CityId',rtl?cities[0].name.ar:'Riyadh City');await fillField(path+prefix+'Street','New Street');await fillField(path+prefix+'NationalAddress','N123');}
+async function checkShipmentView(languageScript) {
+  await login('viewer@example.test');
+  await until("location.pathname==='/home'",'view-only staff');
+  await navigate('/shipments/all/all/shipment-3');
+  await until(exists('[data-testid=shipment-view-sender]'),'shipment contact cards');
+  assert.equal(await evaluate("Boolean(document.querySelector('[aria-label=\"Shipment actions\"]'))"),false);
+  assert.equal(await evaluate("[...document.querySelectorAll('[role=tab]')].some(x=>x.textContent.includes('Transactions'))"),false);
+  assert.equal(await evaluate("document.querySelector('[data-testid=shipment-view-sender]').innerText.includes('+966-555123456')"),true);
+  assert.equal(await evaluate("document.querySelector('[data-testid=shipment-view]').innerText.includes('+1-2025550123')"),false);
+  await screenshot('shipment-view-en-desktop');
+  await evaluate("document.querySelector('[data-testid=shipment-view-sender]').scrollIntoView({block:'start'})");
+  await screenshot('shipment-view-details-en-desktop');
+  pass('Shipment view labels primary contact details and respects read-only staff permissions');
+
+  await clickText('Waybill');
+  await until(exists('iframe[src="https://reports.example.test/generated.pdf"]'),'waybill preview');
+  failFile=true;await clickText('Download');
+  await until("document.querySelector('[role=dialog]').innerText.includes('500')",'waybill error');
+  failFile=false;await clickText('Retry');
+  await until("!document.querySelector('[role=dialog] button').disabled",'waybill recovery');
+  await clickText('Close');
+  pass('Redesigned document actions retain waybill generation and retryable downloads');
+
+  await clickText('Tracking','button[role=tab]');
+  await until(exists('[data-testid=shipment-tracking-events]'),'tracking timeline');
+  const timeline=await evaluate("document.querySelector('[data-testid=shipment-tracking-events]').innerText");
+  assert.ok(timeline.indexOf('In transit')<timeline.indexOf('Accepted'));
+  const syncCount=calls.filter(x=>x.url==='/v1/shipments/shipment/tracking/shipment-3').length;
+  await clickText('Sync tracking');
+  await until(`Boolean([...document.querySelectorAll('[data-testid=shipment-view-header-actions] button')].find(button=>button.textContent.includes('Sync tracking')&&!button.disabled))`,'tracking refresh');
+  assert.equal(calls.filter(x=>x.url==='/v1/shipments/shipment/tracking/shipment-3').length,syncCount+1);
+  await screenshot('shipment-view-tracking-en-desktop');
+  pass('Timeline displays newest updates first and refreshes the actual shipment');
+
+  await login('editor@example.test');await until("location.pathname==='/home'",'editor view');
+  await navigate('/shipments/all/all/shipment-1');await until(exists('[data-testid=shipment-view]'),'editor detail');
+  assert.equal(await evaluate("document.querySelectorAll('[data-testid=shipment-view-header-actions] [data-shipment-operation]').length"),4);
+  assert.equal(await evaluate("Boolean(document.querySelector('[aria-label=\"Shipment actions\"]'))"),false);
+  assert.equal(await evaluate("[...document.querySelectorAll('[data-testid=shipment-view-header-actions] .MuiButton-root')].every(button=>/MuiButton-(contained|outlined)(Primary|Secondary|Success|Warning|Error)/.test(button.className))"),true);
+  assert.equal(await evaluate("(()=>{const heading=document.querySelector('[data-feature-header] h1').getBoundingClientRect(),actions=document.querySelector('[data-testid=shipment-view-header-actions]').getBoundingClientRect();return actions.left>=heading.right && actions.top<heading.bottom && actions.bottom>heading.top})()"),true);
+  pass('Large-screen header places its action group opposite the title in the same flex row');
+  await screenshot('shipment-view-staff-en-desktop');
+  pass('Each permitted operation is a colored contained or outlined button in the page header');
+  const ledgerBefore=calls.filter(x=>x.url==='/v1/transactions').length;
+  await clickText('Transactions','button[role=tab]');
+  await until("document.body.innerText.includes('TX-TRACK')",'detail transactions');
+  assert.equal(calls.filter(x=>x.url==='/v1/transactions').length,ledgerBefore+1);
+  assert.equal(calls.filter(x=>x.url==='/v1/transactions').at(-1).query.search,'TRACK-1');
+  assert.equal(calls.filter(x=>x.url==='/v1/transactions').at(-1).query.userId,'merchant-1');
+  await evaluate("document.querySelector('.MuiDataGrid-virtualScroller').scrollTop=100000");
+  await until(exists('[role=row][data-id=tx-12]'),'all transactions');
+  await clickText('Shipment Details','button[role=tab]');
+  await openOperation('Attach invoice number');await fillSelector('[role=dialog] input','VIEW-INV');
+  failWrite=true;await clickReady('[data-testid=confirm-shipment-operation]');
+  await until("document.querySelector('[role=dialog]').innerText.includes('Write failed')",'operation failure');
+  assert.equal(await evaluate("document.querySelector('[role=dialog] input').value"),'VIEW-INV');
+  failWrite=false;await clickReady('[data-testid=confirm-shipment-operation]');
+  await until("!document.querySelector('[role=dialog]')",'operation retry');
+  assert.equal(records[0].closeInvoiceNumber,'VIEW-INV');
+  pass('Staff ledger remains scoped and actions preserve failed-write drafts and retry');
+
+  await login('merchant@example.test');await until("location.pathname==='/home'",'merchant view');
+  await navigate('/shipments/all/all/shipment-21');await until("location.pathname==='/home'",'foreign shipment guard');
+  await navigate('/shipments/all/all/shipment-3');await until(exists('[data-testid=shipment-view-cod-total]'),'COD summary');
+  assert.equal(await evaluate("document.querySelector('[data-testid=shipment-view-cod-total]').innerText.includes('50.00')"),true);
+  assert.equal(await evaluate("document.querySelector('[data-testid=shipment-cost-total]').innerText.includes('12.00')"),true);
+  pass('Merchant ownership remains enforced and COD stays separate from shipping costs');
+
+  const empty=records[4];empty.shipmentPrice=undefined;empty.trackingStats=[];
+  await navigate('/shipments/all/all/shipment-5');await until("document.body.innerText.includes('breakdown is not available')",'missing cost fallback');
+  await clickText('Tracking','button[role=tab]');
+  assert.equal(await evaluate("document.body.innerText.includes('No tracking events yet')"),true);
+  empty.shipmentPrice={shippingCompanyPrice:0,total:0};empty.shipmentCod.codPrice=0;
+  await navigate('/shipments/all/all/shipment-5');await until(exists('[data-testid=shipment-cost-total]'),'zero cost');
+  assert.equal(await evaluate("document.querySelector('[data-testid=shipment-cost-total]').innerText.includes('0.00')"),true);
+  assert.equal(await evaluate("document.querySelector('[data-testid=shipment-view-cod-total]').innerText.includes('0.00')"),true);
+  pass('Empty tracking, unavailable costs and zero amounts remain distinct');
+
+  await send('Page.removeScriptToEvaluateOnNewDocument',{identifier:languageScript.identifier});
+  await evaluate("localStorage.setItem('my-language','ar')");
+  await send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
+  await navigate('/shipments/all/all/shipment-3');await until(exists('[data-testid=shipment-view-receiver]'),'Arabic desktop header');
+  assert.equal(await evaluate("(()=>{const heading=document.querySelector('[data-feature-header] h1').getBoundingClientRect(),actions=document.querySelector('[data-testid=shipment-view-header-actions]').getBoundingClientRect();return actions.right<=heading.left && actions.top<heading.bottom && actions.bottom>heading.top})()"),true);
+  await screenshot('shipment-view-ar-desktop');
+  pass('Arabic desktop header mirrors the title and actions without stacking them');
+  await send('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true});
+  await navigate('/shipments/all/all/shipment-3');await until(exists('[data-testid=shipment-view-receiver]'),'Arabic shipment detail');
+  assert.equal(await evaluate('getComputedStyle(document.body).direction'),'rtl');
+  await screenshot('shipment-view-ar-mobile');
+  await evaluate("document.querySelector('[data-testid=shipment-view-sender]').scrollIntoView({block:'start'})");
+  await screenshot('shipment-view-contacts-ar-mobile');
+  await evaluate("document.querySelector('[data-testid=shipment-cost-total]').scrollIntoView({block:'center'})");
+  await screenshot('shipment-view-costs-ar-mobile');
+  assert.equal(await evaluate("document.documentElement.scrollWidth>innerWidth"),false);
+  await evaluate("document.querySelectorAll('[role=tab]')[1].click()");
+  await until(exists('[data-testid=shipment-tracking-events]'),'Arabic timeline');
+  await evaluate("document.querySelector('[data-testid=shipment-tracking-events]').scrollIntoView({block:'center'})");
+  await screenshot('shipment-view-tracking-ar-mobile');
+  assert.equal(await evaluate("document.documentElement.scrollWidth>innerWidth"),false);
+  pass('Arabic mobile contacts, financial cards and timeline fit without horizontal overflow');
+  await send('Emulation.setDeviceMetricsOverride',{width:320,height:844,deviceScaleFactor:1,mobile:true});
+  await navigate('/shipments/all/all/shipment-3');await until(exists('[data-testid=shipment-view-receiver]'),'narrow Arabic layout');
+  assert.equal(await evaluate("document.documentElement.scrollWidth>innerWidth"),false);
+  assert.equal(await evaluate("[...document.querySelectorAll('[data-testid=shipment-view-header-actions] .MuiButton-root')].every(button=>button.getBoundingClientRect().height>=44)"),true);
+  pass('Narrow 320px layouts retain readable content and comfortable action targets');
+  assert.deepEqual(fixtureErrors,[]);assert.deepEqual(exceptions,[]);
+  fs.writeFileSync(path.join(output,'shipment-view-summary.json'),JSON.stringify({checks:passed,fixtureErrors,exceptions,calls},null,2));
+  console.log(`${passed}/${passed} shipment view browser checks passed; no uncaught exceptions.`);
+}
 async function main() {
   server = http.createServer((req, res) => {
     let file = path.join(
@@ -434,6 +545,8 @@ async function main() {
 
 
   await reset('/shipments/all/all');await until("location.pathname==='/sign-in'",'guest');pass('Shipment routes require authentication');
+  if (process.argv.includes('--view-only')) { await checkShipmentView(languageScript); return; }
+  if (!carriersOnly) {
   await login('admin@example.test');await until("location.pathname==='/home'",'admin warehouse scenario');
   await navigate('/storage/warehouses/new');await until(exists('[data-testid=warehouse-form]'),'warehouse form');
   await fillField('name','Full Address Warehouse');await fillField('address','Full pickup address');await fillField('pickup.phone','+966-555123456');
@@ -472,6 +585,9 @@ async function main() {
 
   await login('merchant@example.test');await until("location.pathname==='/home'",'merchant');await shipmentList();assert.equal(await evaluate("document.querySelector('[role=row][data-id=shipment-2]').innerText.includes('View')"),false);await navigate('/shipments/all/all/shipment-21');await until("location.pathname==='/home'",'foreign detail');pass('Merchant list hides failed-record view and blocks another owner’s details');
   await navigate('/shipments/all/all/shipment-3');await until(exists('[data-testid=shipment-view]'),'merchant detail');await openOperation('Request cancellation');await clickReady('[data-testid=confirm-shipment-operation]');await until("!document.querySelector('[role=dialog]')",'cancel request');assert.equal(calls.filter(x=>x.url==='/v1/requests'&&x.method==='POST').at(-1).body.shipmentId,'shipment-3');pass('Merchant cancellation sends pending request with actual owner and shipment');
+  } else {
+    await login('merchant@example.test');await until("location.pathname==='/home'",'merchant carrier checks');
+  }
 
   await navigate('/shipments/all/all/new');await until(exists('[data-testid=shipment-details-step]'),'new draft');
   assert.equal(await evaluate("Boolean(document.querySelector('[data-testid=carrier-carrier-1]'))"),false);
@@ -492,6 +608,11 @@ async function main() {
   await clickReady('[data-testid=submit-shipment-details]');await until(exists('[data-testid=carrier-carrier-1]'),'carrier selection');
   await until(exists('[data-testid=carrier-carrier-1]'),'automatic carrier offers');assert.equal(calls.filter(x=>x.url==='/v1/shipments/review/companies').length,initialQuoteCount+2);assert.equal(creates().length,initialCreateCount);
   assert.equal(await evaluate("document.querySelector('[data-testid=carrier-carrier-auth]').disabled"),true);
+  assert.equal(await evaluate("document.querySelector('[data-testid=unsuitable-carriers]').open"),false);
+  await click('[data-testid=unsuitable-carriers] summary');
+  assert.equal(await evaluate("document.body.innerText.includes('Account authorization is required')"),true);
+  await click('[data-testid=unsuitable-carriers] summary');
+  pass('Unavailable carriers stay separate and their reasons can be expanded');
   failQuote=true;await clickReady('[data-testid=review-shipment-costs]');await until("document.body.innerText.includes('Quote failed')",'automatic quote failed');
   assert.equal(await evaluate("document.querySelector('[data-testid=create-shipments]').disabled"),true);
   failQuote=false;omitQuoteId=true;const contactsBeforeMissingQuote=contactCreates;await clickReady('[data-testid=review-shipment-costs]');
@@ -515,6 +636,14 @@ async function main() {
   await navigate('/shipments/all/all/new');await until(exists('[name=senderName]'),'new contact draft');await newContact('sender');await newContact('receiver','receivers.0.');
   await fillField('description','New contacts shipment');assert.equal(await evaluate("Boolean(document.querySelector('[name=isCommercial], [name=acceptExtraWeightTerms], [data-testid=add-shipment-product]'))"),false);await clickReady('[data-testid=submit-shipment-details]');await until(exists('[data-testid=carrier-carrier-1]'),'new contact carrier');
   await clickReady('[data-testid=carrier-carrier-1]');await until("!document.querySelector('[data-testid=create-shipments]').disabled",'new quote');
+  await evaluate("document.querySelector('[data-testid=carrier-carrier-1]').focus()");
+  await send('Input.dispatchKeyEvent',{type:'keyDown',key:'ArrowDown',code:'ArrowDown'});
+  await send('Input.dispatchKeyEvent',{type:'keyUp',key:'ArrowDown',code:'ArrowDown'});
+  assert.equal(await evaluate("document.querySelector('[data-testid=carrier-carrier-2]').checked"),true);
+  await evaluate("document.querySelector('[data-testid=carrier-carrier-1]').closest('label').click()");
+  assert.equal(await evaluate("document.querySelector('[data-testid=carrier-carrier-1]').checked"),true);
+  pass('Carrier cards support native arrow-key selection and clicking the whole card');
+  await screenshot('carrier-selector-en-desktop');
   const offersBeforeSwitch=calls.filter(x=>x.url==='/v1/shipments/review/companies').length;
   await clickReady('[data-testid=carrier-carrier-2]');await until("!document.querySelector('[data-testid=create-shipments]').disabled",'second carrier quote');
   assert.equal(calls.filter(x=>x.url==='/v1/shipments/review/companies').length,offersBeforeSwitch);const secondQuote=calls.filter(x=>x.url==='/v1/shipments/review/companies').at(-1);assert.equal(secondQuote.body.shippingCompanyId,undefined);assert.equal(secondQuote.body.senderStateName,'Riyadh');assert.equal(secondQuote.body.senderCityName,'Riyadh City');assert.equal(secondQuote.body.senderCityId,'city-1');assert.equal(secondQuote.body.receiverCityId,'city-1');assert.equal(await evaluate("document.querySelector('[data-testid=carrier-price-carrier-2]').innerText.includes('22')"),true);pass('Changing carriers uses an already returned price and preserves the carrier-neutral request');
@@ -538,6 +667,7 @@ async function main() {
   assert.equal(await evaluate("Boolean(document.querySelector('[data-testid=create-shipments]'))"),false);pass('Price calculator follows the new carrier flow without creating shipments');await screenshot('calculator-en-desktop');
 
   await navigate('/shipments/carrier-1/local/new');await until(exists('[name=senderName]'),'carrier-filtered new');assert.equal(await evaluate("Boolean(document.querySelector('[data-testid=carrier-carrier-1]'))"),false);pass('Carrier-filtered list routes do not preselect a carrier in the detail form');
+  if (!carriersOnly) {
   warehouseTestEnabled=true;failWarehouseCreate=true;
   await navigate('/shipments/all/all/new');await until("document.querySelector('[data-testid=fulfillment-warehouse]')&&!document.querySelector('[data-testid=fulfillment-warehouse]').disabled",'subscribed warehouse source');
   await clickReady('[data-testid=fulfillment-warehouse]');await selectUser('shipmentWarehouseId','Full Address Warehouse');await clickReady('[data-testid=add-warehouse-product]');await selectUser('warehouseItems.0.productId','Stored Product');await fillField('warehouseItems.0.quantity','2');
@@ -548,6 +678,7 @@ async function main() {
   failWarehouseCreate=false;await clickReady('[data-testid=submit-shipment-details]');await until("!document.querySelector('[data-testid=create-shipments]').disabled",'corrected warehouse quote');await clickReady('[data-testid=create-shipments]');await until(exists('[data-testid=shipments-table]'),'corrected warehouse accepted');
   assert.equal(creates().filter(x=>x.body.warehouseId).at(-1).body.products[0].quantity,1);warehouseTestEnabled=false;
   pass('Corrected warehouse quantity is repriced and submitted without repeating an accepted receiver');
+  }
   await send('Page.removeScriptToEvaluateOnNewDocument',{identifier:languageScript.identifier});await evaluate("localStorage.setItem('my-language','ar')");await send('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true});
   await navigate('/shipments/all/all/new');await until(exists('[name=senderName]'),'Arabic new');assert.equal(await evaluate('getComputedStyle(document.body).direction'),'rtl');await screenshot('shipment-ar-mobile');
   for(const id of ['receiver','parcel']){await evaluate(`document.querySelector('#shipment-section-${id}').scrollIntoView({block:'start'})`);await screenshot('shipment-ar-mobile-'+id);}

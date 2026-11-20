@@ -1,4 +1,34 @@
 const locale = {
+  VIEW_DIMENSIONS_SHORT: "Dimensions",
+  SHIPMENT_VIEW_SUBTITLE:
+    "Tracking, delivery details and costs — all in one place.",
+  VIEW_ROUTE_CONTACTS: "Route & contacts",
+  VIEW_PICKUP: "From · Sender",
+  VIEW_DELIVERY: "To · Receiver",
+  VIEW_LOCATION: "Location",
+  VIEW_PARCEL_DETAILS: "Parcel details",
+  VIEW_DIMENSIONS: "Dimensions (length × width × height)",
+  VIEW_CONTENTS: "Shipment contents",
+  VIEW_SHIPPING_COSTS: "Shipping costs",
+  VIEW_COSTS_UNAVAILABLE: "The shipping cost breakdown is not available yet.",
+  VIEW_COD_COLLECT: "Amount to collect from the receiver",
+  VIEW_COD_HINT:
+    "This is the collection amount, separate from the shipping costs.",
+  VIEW_LATEST_UPDATE: "Latest tracking update",
+  VIEW_TRACKING_HISTORY: "Tracking history",
+  VIEW_TRACKING_HINT: "Carrier updates, with the most recent event first.",
+  AVAILABLE_CARRIER_COUNT: "Available carriers ({{count}})",
+  CARRIERS_LOWEST_FIRST: "Lowest price first",
+  CARRIER_LOWEST_PRICE: "Lowest price",
+  CARRIER_SELECTED: "Selected carrier",
+  CARRIER_SELECT: "Select this carrier",
+  CARRIER_QUOTE_TOTAL: "Shipping total",
+  CARRIER_TOTAL_SCOPE:
+    "Totals cover all pending receivers. Select a carrier to see the full price breakdown.",
+  CARRIER_UNAVAILABLE_HINT:
+    "View why these carriers are unavailable for your shipment",
+  NO_ELIGIBLE_CARRIERS_HINT:
+    "No carriers are available for these details. Check the reasons below, then edit your shipment details and try again.",
   SUITABLE_CARRIERS: "Available carriers & prices",
   UNSUITABLE_CARRIERS: "Unavailable carriers",
   REVIEWING_ALL_CARRIERS: "Checking carrier availability and prices…",
